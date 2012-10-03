@@ -1,0 +1,509 @@
+<apex:component controller="XactlyExpress.XactlySMBLookupsField"  allowDML="true"> 
+   <apex:attribute name="objectName" description="Internal name of object" type="String" assignTo="{!myObject}"  access="public" />
+
+    <style>
+        #newLookupsField.xactlySuperBox div.close{
+            display: none;
+        }
+         
+        .inputLayer {
+            background: #F1F1F1 url({!URLFOR($Resource.XactlySMBResources, 'img/layout/crtlookupls.gif')}) no-repeat scroll 0pt 0%;
+            height:auto;
+            padding:0pt;
+            width:560px;
+            float: left;
+        }       
+        
+        .rightSide {
+            background: transparent url({!URLFOR($Resource.XactlySMBResources, 'img/layout/crtlookuprs.gif')}) no-repeat scroll right 0pt;
+            padding:0pt;
+            text-align:left;
+            width:560px;
+            position: relative;
+        }
+        
+        .rightTop {
+            background:transparent url({!URLFOR($Resource.XactlySMBResources, 'img/layout/crtlookuptop.gif')}) no-repeat scroll 0pt 0pt;
+            height:18px;
+            padding: 0px;
+            position:absolute;
+            width:560px;
+            z-index:15;
+            text-align:left;
+        }
+        
+        .popupLayerTop {
+            background:transparent url({!URLFOR($Resource.XactlySMBResources, 'img/layout/crtlookuprtc.gif')}) no-repeat scroll right top;
+            height:4px;
+            padding:0pt;
+            text-align:left;
+        }
+        
+        .rightBottom {
+            background: transparent url({!URLFOR($Resource.XactlySMBResources, 'img/layout/crtlookupbottom.gif')}) no-repeat scroll 0pt bottom;
+            padding:0px;
+            text-align:left;
+            width:560px;
+            height:8px;
+            z-index: 1000;
+            position: absolute;
+        }
+        
+        a.popupLayerClose:link {
+            background:transparent url({!URLFOR($Resource.XactlySMBResources, 'img/layout/crtlookupclose.gif')}) no-repeat 0pt 1px;
+        }
+        
+        a.popupLayerClose:hover {
+            background:transparent url({!URLFOR($Resource.XactlySMBResources, 'img/layout/crtlookupclose.gif')}) -20px 1px no-repeat;
+        }
+        
+        a.popupLayerClose {
+            background:transparent url({!URLFOR($Resource.XactlySMBResources, 'img/layout/crtlookupclose.gif')}) no-repeat 0pt 1px;
+            height:19px;
+            left:534px;
+            top:3px;
+            position:absolute;
+            width:18px;
+            z-index:1000000;
+        }
+        
+        .rightBottomCorner {
+            background: transparent url({!URLFOR($Resource.XactlySMBResources, 'img/layout/crtlookuprbc.gif')}) no-repeat scroll right bottom;
+            height: 8px;
+            padding:0pt;
+            text-align:left;
+        }
+        
+        .popupLayerHeader {
+            background: transparent url({!URLFOR($Resource.XactlySMBResources, 'img/layout/crtlookupheader.gif')}) repeat-x scroll 0pt 0pt;
+            width: 546px;
+            height: 18px;
+            padding:4px 0pt 4px 10px;
+            color: #FFFFFF;
+            font-size: 1.2em;
+            font-weight: bold;
+            margin:0pt 3px 0pt 1px;
+            text-align:left;
+        }
+        
+        .popupLayerHeader h1 {
+            font-size: 150%;
+        }
+        
+        .popupLayerBody {
+            height: auto;
+            margin:0pt;
+            padding:10px 16px;
+        }
+        
+            
+        /* ======== CSS File Information ========
+                  version: 21.0
+                     skin: Salesforce
+                 cssSheet: crtlayout
+                  postfix: 
+           spritesEnabled: true */
+        
+        <!-- Internet Explorer has to be in quirks mode, this comment just does that -->
+
+
+        
+
+        
+        /* begin lookups styling */
+        
+        a.linkToOverlay {
+            color: #FFFFFF;
+        }
+        
+        .overlayLayer {
+            position: absolute;
+            visibility: hidden;
+            top: 0px;
+            left: 0px;
+            width: 100%;
+            z-index: 1000;
+            height: 100%;
+            background-color: white;
+            opacity: 0.6;
+            filter: alpha(opacity = 60);
+        }
+        
+        .inputLayerContainer {
+            position: absolute;
+            visibility: hidden;
+            left: 50%;
+            top: 0px;
+            margin-top: -250px;
+            margin-left: -280px;
+            z-index: 2000;
+        }
+        
+        #mainTableDiv {
+            width: 100%;
+        }
+        
+        .lookupAndPath {
+            background-color: #FFFFFF;
+            border: 1px #919191 solid;
+            padding: 10px 20px;
+        }
+        
+        .pathBox {
+            background-color: #236FDB;
+            padding: 5px 4px;
+            color: #FFFFFF
+        }
+        
+        .pathBox a {
+            color: #FFFFFF
+        }
+        
+        #headerPrimObj {
+            color: #236fbd;
+        }
+        
+        .selectFields {
+            padding: 5px 0px;
+        }
+        
+        .lookupBox {
+            height: 250px;
+            overflow: auto;
+            padding: 4px;
+        }
+        
+        .contentBox {
+            border: 1px solid #B9B9B9;
+        }
+        
+        .overlayButtons {
+            padding-top: 10px;
+            text-align: center;
+        }
+        
+        span.sectionHeadLink {
+            color: white;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        
+        span.sectionHeadLink:hover {
+            text-decoration: underline;
+        }
+        
+        /* more stuff */
+        td.usedAvailField {
+            background-color: #EEEEEE;
+            color: #B0B0B0;
+            cursor: default;
+        }
+        
+        td.availField {
+            height: 25px;
+            border: 0px none;
+            border-top: 0px none;
+            text-align: left;
+            vertical-align: middle;
+            width: 45%;
+        }
+        
+        .unusedAvailField {
+            background-color: #CCCCAA;
+            color: black;
+            cursor: pointer;
+        }
+        
+        .availSection {
+            background-color: #CCCCCC;
+            padding: 4px 0px 4px 0px;
+            border: 1px solid;
+            width: 100%;
+        }
+        
+        .availSectionTable {
+            width: 98%;
+        }
+        
+        .lookupHighlightSection {
+            border: 3px solid black;
+        }
+        
+        .layoutSecHeader {
+            background-color: #AF756A;
+            padding: 1px 2px;
+        }
+        
+        td.layoutSecHeaderLeft {
+            width: 99%;
+            color: white;
+            font-weight: bold;
+        }
+        
+        td.layoutSecHeaderLink {
+            color: white;
+            font-size: 80%;
+            font-weight: bold;
+        }
+        
+        .noFloat {
+            clear: both;
+        }
+        
+        /* LookupSection styling */
+        
+        td.usedLookupCell {
+            background-color: #EEEEEE;
+            color: #B0B0B0;
+            cursor: default;
+        }
+        
+        td.lookupCell {
+            height: 25px;
+            text-align: center;
+            vertical-align: middle;
+            width: 45%;
+        }
+        
+        td.availLookupCell {
+            background-color: #CCCCAA;
+            color: black;
+            cursor: pointer;
+        }
+        
+        .availFieldsSection {
+            background-color: #CCCCCC;
+            padding: 4px 0px 4px 0px;
+            border: 1px solid;
+            width: 99%;
+        }
+        
+        table.availLookupSectionTable {
+            width: 98%;
+            table-layout: fixed;
+        }
+        
+        .lookupHighlightSection {
+            border: 3px solid black;
+        }
+        
+        .availHeadPaging {
+            font-size: 75%;
+        }
+        
+        .availHeadLine {
+            width: 98%;
+            height:0;
+            border:0;
+            border-top: 1.5px solid black;
+        }
+        
+        .lookupSectionTableDiv {
+            border-top: 1px solid black;
+            border-bottom: 1px solid black;
+            border-color: #000000;
+            background-color: #FFFFFF;
+            padding: 1px;
+        }
+        
+        .nextButton {
+            float: right;
+            font-size: 95%;
+        }
+        
+        .prevButton {
+            float: left;
+            font-size: 95%;
+        }
+        
+        .maxLimit {
+            color: #FFFF00;
+        }
+        
+        /* mouseOver styles*/
+        .mouseOverHeader {
+            background-color: #747E96;
+            width: 100%;
+            color: #FFFFFF;
+        }
+        
+        .mouseOverBody {
+            padding: 2px;
+        }
+        
+        .mouseOverBox {
+            background-color:#FFFFFF;
+            border:1px solid black;
+            color:#000000;
+            display: none;
+            font-weight:normal;
+            position:absolute;
+            white-space:normal;
+            width:20em;
+            z-index:20000;
+            word-wrap: break-word;
+        }
+        
+        .crtDisabledLink {
+            color:  #888888;
+        }
+        
+        #availableSectionWrapper {
+            position: relative;
+            top: 0px;
+            left: 0px;
+        }
+        
+        .fieldsCounter {
+            text-align: center;
+        }
+        
+        .fieldsCounterInner {
+            font-weight: bold;
+        }
+        
+        .fieldsLimitError {
+            display: none;
+            color:#CC0000;
+            font-weight:bold;
+            text-align:center;
+        }
+
+        .itemLookupBox{
+            color:#333435;
+        }    
+
+    </style>
+    
+        <input type="hidden" class="newLookupsField" />
+        <div id='newLookupsField' style="display: none;" >
+               <div class="inputLayer">
+                   <div class="rightSide">
+                       <div class="popupLayerHeader">{!$Label.addFieldViaLookup}</div>
+                       <div class="popupLayerBody">
+                           <apex:outputPanel layout="block" id="lookupInnerHeader">
+                           <h3>
+	                           Add Fields Related to <span id="headerPrimObj">{!myObject}</span> Via Lookup
+                           </h3>
+                               <p>
+                               <apex:outputText value="{!$Label.xactlyexpress__NewlyAddedFields}"  >
+                                    <apex:param value="{!sourceName}" />
+                               </apex:outputText>
+                               
+                               </p>
+                           </apex:outputPanel>
+                           <div class="lookupAndPath">
+                               <div class="selectFields">
+                                   <h2>{!$Label.addFieldOrMore}:</h2>
+                               </div>
+                               <a class="popupLayerClose" href="javascript: jQuery.superbox.close();"></a>
+                               <div class="lookupSelectBox">
+                                   <apex:outputPanel id="lookupsContainer" layout="block" styleClass="contentBox">
+                                       <div id="pathBox" class="pathBox">
+                                           <b>Path: </b>&nbsp;  
+                                           <apex:variable var="levelPath" value="{!0}"/>
+                                           <apex:repeat value="{!pathExplorer}" var="elem" >
+                                               <a href="javascript:;"  onclick="waitOn();jQuery('.currentFieldLookup').val('{!elem.value}');refreshLookups();">{!elem.label}</a>
+                                               <apex:outputPanel layout="none"   rendered="{!levelPath < pathExplorer.size - 1}">
+                                                » 
+                                               </apex:outputPanel>
+                                               <apex:variable var="levelPath" value="{!levelPath +1}"/>
+                                               <apex:outputPanel layout="none" rendered="{!levelPath == 5}">
+                                                    <div class="maxLimit">({!$Label.xactlyexpress__MaximumLookupLimitReached})</div>
+                                               </apex:outputPanel>     
+                                           </apex:repeat>
+                                       </div>
+                                       <apex:outputPanel layout="block" id="lookupBoxLevel0" styleClass="lookupBox" rendered="{!myField == ''}">
+                                           <apex:repeat value="{!toSelectItems}" var="field" >
+	                                           <br/>
+	                                           <a href="javascript:;" onclick="waitOn();jQuery('.currentFieldLookup').val('{!field.externalReferenceName}');refreshLookups();" class="itemLookupBox"> {!field.name} » </a>
+                                           </apex:repeat>
+                                       </apex:outputPanel>
+                                       <apex:outputPanel layout="block" id="lookupBox" styleClass="lookupBox" rendered="{!myField != ''}">
+                                           <apex:repeat value="{!toSelectItems}" var="field" >
+                                                <apex:outputPanel layout="none" rendered="{!field.toSelect }">
+	                                               <input type="radio" name="selectField" onclick="finalField = '{!field.externalReferenceName}';referenceObj = '{!field.lookupName}'"/>
+	                                            </apex:outputPanel>
+                                                <apex:outputPanel layout="none" rendered="{!!field.toSelect }">
+                                                   <input type="radio" name="selectField" disabled="disabled"/>
+                                                </apex:outputPanel>
+	                                             {!field.name} 
+	                                            <apex:outputPanel layout="none" rendered="{!field.isLookups && levelPath < 5 }">
+	                                                &nbsp; <a href="javascript:;" onclick="waitOn();jQuery('.currentFieldLookup').val('{!field.internalReferenceName}');refreshLookups();"> {!$Label.viewRelatedFields}</a>
+	                                            </apex:outputPanel>
+	                                            <br/>
+                                            </apex:repeat>
+                                       </apex:outputPanel>
+                                   </apex:outputPanel>
+                               </div>
+                           </div>
+                           <div class="overlayButtons">
+                               <input type="button" title="{!$Label.OK}" onclick="finalSelectionLookups();" name="ok" class="btn" value=" {!$Label.OK} "/>
+                               <input type="button" title="{!$Label.Cancel}" onclick="jQuery.superbox.close();" name="cancel" class="btn" value="{!$Label.Cancel}"/>
+                           </div>
+                       </div>
+                       <div class="rightBottom">
+                           <div class="rightBottomCorner"></div>
+                       </div>
+                   </div>
+               </div>
+               <apex:inputText id="currentField" value="{!myField}" styleClass="currentFieldLookup" style="display:none;"/>
+               <apex:inputText id="currentType" value="{!myType}" styleClass="currentTypeLookup" style="display:none;"/>
+        </div>  
+        <apex:actionFunction name="refreshLookups" action="{!refreshList}"  rerender="lookupsContainer, lookupInnerHeader"  oncomplete="jQuery.superbox.refreshSuperboxContent();waitOff();" />
+        <a id="newLookupsFieldLink" rel="superbox[content#newLookupsField.xactlySuperBox][565][600]" href="#newLookupsField" onclick="jQuery('.hiddenResults').hide();" style="display:none"></a>
+        <script>
+            var finalField = '';
+            var dropDownToModified = '';
+            var referenceObj = '';
+            
+            function newLookupsFieldSetter(obj){
+                jQuery('#newLookupsFieldLink').trigger('click');
+                dropDownToModified = obj;
+                setTimeout('clearNewLookupsField()',500);
+            }
+            
+            /**
+             * clearNewLookupsField is called when the popup is displayed.
+             * It deletes any error msg previously defined
+             */
+            function clearNewLookupsField(){
+              waitOn();
+              jQuery('.currentFieldLookup').val('');
+              
+              refreshLookups();
+              var errorMsg = $innerbox.find('.errorMsg');
+                if(errorMsg!=undefined){
+                  errorMsg.html('');
+                }
+            }
+            
+            function finalSelectionLookups(){
+                if(dropDownToModified.options[0].text.indexOf('.') > 0){
+                    dropDownToModified.remove(0);
+                }
+                if(finalField != ''){
+	                var option=document.createElement("option");
+	                option.value=finalField;
+	                option.text=finalField;
+	                if(referenceObj == 'Account'){
+	                   accountMap[finalField] = finalField;
+	                }else if(referenceObj == 'Product2'){
+                       productMap[finalField] = finalField;
+	                }
+	                if(_isIE){
+                       dropDownToModified.add(option,0);
+	                }else{
+                       dropDownToModified.add(option,dropDownToModified.options[0]);
+	                }
+	                dropDownToModified.selectedIndex = 0;
+	                jQuery(dropDownToModified).trigger('change');
+                    jQuery.superbox.close();
+                }
+                
+                waitOff();
+            }
+            
+        </script>
+
+</apex:component>

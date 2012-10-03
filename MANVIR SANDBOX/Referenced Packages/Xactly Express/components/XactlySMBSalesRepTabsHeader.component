@@ -1,0 +1,160 @@
+<!--
+ * Developed by Timba Software Corp. www.timbasoftware.com admin@timbasoftware.com
+ * This component displays the tabs in Dashboard pages
+ * @author Matias Damonte <mdamonte@timbasoftware.com>
+ --> 
+
+<apex:component id="salesRepTabComp" controller="XactlyExpress.XactlySMBHeaderController" >
+    <apex:attribute name="CurrentUserOrSlected" description="The Current User" type="User" required="false" />
+    <apex:attribute name="emulatingUserURLAppend" description="The Emulated User" type="String" required="false" />
+    <apex:attribute name="nbrSeparator" description="To Determinate the number format" type="String" required="false" />
+    <apex:attribute name="nbrDecimal" description="To Determinate the number format" type="String" required="false" />
+    <apex:attribute name="isActive" description="Derminate if the user is active" type="Boolean" required="false" />
+    <apex:attribute name="isAdmin" description="Derminate if the user is admin" type="Boolean" required="false" />
+    <apex:attribute name="isSalesAdmin" description="Derminate if the user is sales admin" type="Boolean" required="false" />
+    <apex:attribute name="isManager" description="Derminate if the user is manager" type="Boolean" required="false" />
+    <apex:attribute name="isEmulatedManager" description="Derminate if the user is emulated manager" type="Boolean" required="false" />
+    <apex:attribute name="lastClosedPeriod" description="lastClosedPeriod" type="XactlyExpress__XCPeriod__c" required="false" />
+     
+    <apex:attribute name="selected" description="The selected tab" type="Integer" required="false" />
+    <apex:attribute name="hlabel" description="The label bottom of wizard" type="String" required="false" />
+    <apex:attribute name="dealsLabel" description="The Deal Label" type="String" required="false" />
+    <apex:attribute name="emulatingUserURLAppend" description="The userId append to the links" type="String" required="true" />    
+    <apex:attribute name="stepHelp" description="The parameter to help page" type="String" required="false" />
+    <apex:includeScript value="{!URLFOR($Resource.XactlyExpress__CSN, 'jquery.js')}" />
+     
+    <link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.XactlySMBResources ,'css/XactlySMBHeader.css')}" /> 
+    <style>
+        .botHeader{
+            color:#FFFFFF;
+            margin-left: 9px;
+            font-family: arial;
+        }
+        
+        .header{
+            position: absolute !important;
+        }
+        
+        div#XactlySMBHeader{
+            float:left;
+            background: none !important;
+            height:42px !important;
+            margin-left:7px;
+            width:98.1% !important;
+        }
+         
+        .HeaderBottom{
+            background: none !important;
+        }
+        
+        .HeaderBottom ul {
+            background: none !important;
+        }
+        
+        .HeaderBottom li{ 
+            border-right: none;
+            padding-top:10px !important;
+            height: 18px !important;
+            margin:0 12px;
+        }
+        
+        .HeaderBottom li a{
+            padding:0 !important;
+			text-align:center  !important;
+			width:100%  !important;
+        }
+        
+        .HeaderBottom li a:hover{ 
+            color:#3E6E91
+        }
+        
+        li#currentTab {
+            background: url( {!URLFOR($Resource.XactlySMBResources, 'img/layout/tabSelected.png')}) no-repeat; 
+            height:18px !important;
+            width:138px !important;
+            border:none !important;
+            padding:10px 0 !important;
+            margin:0 12px;
+        }      
+        
+        li#currentTab a{
+            text-align: center;
+            width: 100%;
+            padding:0px !important;
+        }
+    </style>
+      
+
+      <div id="XactlySMBHeader">
+        <div style="float:left; width:55%; height:42px;">
+            <apex:outputPanel layout="none" rendered="{!isActive}">
+                <div class="HeaderBottom" style="{!IF(selected=1,'margin-left:1px;background:url(' + URLFOR($Resource.XactlySMBResources ,'img/layout/left_header_tabs_sel.png') + ') no-repeat scroll left top transparent;','')}" >
+                  <ul>
+                        <li id="{!IF(selected=1,'currentTab','')}" style="margin-left: 0px;">
+	                       <a href="{!$Page.XactlySMBDashRepHome}{!IF(LEN(emulatingUserURLAppend)>0,'?'&emulatingUserURLAppend,'')}" class="{!IF(selected=1,'PNovaSemiBold14c2','PNovaSemiBold14c3')}">{!$Label.Dashboard}</a>
+                        </li>
+                       <apex:outputPanel layout="none">
+                           <li id="{!IF(selected=4,'currentTab','')}">
+                                <a href="{!$Page.XactlyExpress__XactlySMBDashRepMyPayments}{!IF(LEN(emulatingUserURLAppend)>0,'?'&emulatingUserURLAppend,'')}" class="{!IF(selected=4,'PNovaSemiBold14c2','PNovaSemiBold14c3')}">{!$Label.xactlyexpress__MyPayments}</a>
+                           </li>
+                       </apex:outputPanel>
+                                              
+                       <apex:outputPanel rendered="{!!isManager}" layout="none">
+                           <li id="{!IF(selected=2,'currentTab','')}">
+                             
+                               <a href="{!$Page.XactlySMBDashRepMyDeals}{!IF(LEN(CurrentUserOrSlected.Id) > 0,'?userId='&CurrentUserOrSlected.Id,'')}" class="{!IF(selected=2,'PNovaSemiBold14c2','PNovaSemiBold14c3')}">
+                                   <apex:outputtext value="{!$Label.xactlyexpress__MyDeals}">
+                                       <apex:param value="{!dealsLabel}" />
+                                   </apex:outputtext>
+                               </a>
+                           </li> 
+                       </apex:outputPanel>
+                       <apex:outputPanel rendered="{!isManager}" layout="none">
+                           <li id="{!IF(selected=2,'currentTab','')}">
+                               
+                               <a href="{!$Page.XactlySMBDashRepMyDeals}" class="{!IF(selected=2,'PNovaSemiBold14c2','PNovaSemiBold14c3')}">
+                                   <apex:outputtext value="{!$Label.xactlyexpress__MyDeals}">
+                                       <apex:param value="{!dealsLabel}" />
+                                   </apex:outputtext>
+                               </a>
+                           </li> 
+                       </apex:outputPanel>
+                       
+                       <!--  style="{!IF(selected=3,'background: url(' + URLFOR($Resource.XactlySMBResources ,'img/layout/right_header_tabs_sel.png') + ') no-repeat scroll right top transparent;','')} border-right: 0pt none; padding-right: 40px;" -->
+                       <li id="{!IF(selected=3,'currentTab','')}" >
+                           
+                            <a href="{!$Page.XactlySMBDashRepPlanDetails}{!IF(LEN(emulatingUserURLAppend)>0,'?'&emulatingUserURLAppend,'')}" class="{!IF(selected=3,'PNovaSemiBold14c2','PNovaSemiBold14c3')}">{!$Label.MyPlan}</a>
+                       </li>   
+                  </ul>
+                </div>
+                
+            </apex:outputPanel>
+            <script>
+                $('.header')[0].style.height = '92px';
+            </script>      
+        </div>
+        
+        <!-- VIEW RESULTS FOR -->
+        <apex:outputPanel id="userEmulate" layout="block" style="float:right;padding-left:20px;height:35px;padding-top:10px;" rendered="{!IF(selected=1,'true','false')}">
+            <apex:outputpanel rendered="{!isAdmin}">
+                <apex:outputLabel value="{!$Label.xactlyexpress__LoggedIn}" for="periodSelect" />
+                <apex:selectList id="peopleOptionsLst" value="{!selectedPeople}" multiselect="false" size="1" onchange="changeSelectedPeople(this.value);waitOn();">
+                <apex:selectOptions value="{!peopleOptions}" />
+            </apex:selectList>                    
+            </apex:outputpanel>
+            <apex:outputpanel rendered="{!isManager}">                            
+                <apex:outputLabel value="{!$Label.xactlyexpress__LoggedIn}" for="periodSelect" />
+                <apex:selectList id="managerSubordinatesLst" value="{!selectedSubordinate}" multiselect="false" size="1" onchange="changeSelectedSubordinate(this.value);waitOn();">
+                    <apex:selectOptions value="{!managerSubordinates}" />
+                </apex:selectList>                       
+            </apex:outputpanel>                        
+
+        </apex:outputPanel>
+        <!-- END VIEW RESULTS FOR -->        
+    </div>
+    <script>
+       var nbrSeparator = "{!nbrSeparator}";
+       var nbrDecimal = "{!nbrDecimal}";
+       var ChangesWillNotBeSaved = "{!$Label.xactlyexpress__ChangesWillNotBeSaved}";
+    </script>
+</apex:component>

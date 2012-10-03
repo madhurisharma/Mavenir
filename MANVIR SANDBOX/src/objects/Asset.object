@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <enableFeeds>false</enableFeeds>
+    <fields>
+        <fullName>ProductFamily</fullName>
+        <picklist>
+            <picklistValues>
+                <fullName>AirMessenger</fullName>
+                <default>false</default>
+            </picklistValues>
+            <picklistValues>
+                <fullName>AirGate</fullName>
+                <default>false</default>
+            </picklistValues>
+            <picklistValues>
+                <fullName>Other not covered</fullName>
+                <default>false</default>
+            </picklistValues>
+            <picklistValues>
+                <fullName>OAM</fullName>
+                <default>false</default>
+            </picklistValues>
+            <picklistValues>
+                <fullName>Converged IP Telephony</fullName>
+                <default>false</default>
+            </picklistValues>
+            <picklistValues>
+                <fullName>Mobility Server</fullName>
+                <default>false</default>
+            </picklistValues>
+            <picklistValues>
+                <fullName>UMA</fullName>
+                <default>false</default>
+            </picklistValues>
+            <picklistValues>
+                <fullName>Rich Messaging Server</fullName>
+                <default>false</default>
+            </picklistValues>
+            <picklistValues>
+                <fullName>Presence Server</fullName>
+                <default>false</default>
+            </picklistValues>
+            <picklistValues>
+                <fullName>Social Aggregation</fullName>
+                <default>false</default>
+            </picklistValues>
+            <picklistValues>
+                <fullName>IP-SMSC</fullName>
+                <default>false</default>
+            </picklistValues>
+            <picklistValues>
+                <fullName>Routers</fullName>
+                <default>false</default>
+            </picklistValues>
+            <picklistValues>
+                <fullName>HTTP Gateways</fullName>
+                <default>false</default>
+            </picklistValues>
+            <picklistValues>
+                <fullName>Databases</fullName>
+                <default>false</default>
+            </picklistValues>
+            <picklistValues>
+                <fullName>Media Servers</fullName>
+                <default>false</default>
+            </picklistValues>
+            <picklistValues>
+                <fullName>EIR</fullName>
+                <default>false</default>
+            </picklistValues>
+            <picklistValues>
+                <fullName>XDMS</fullName>
+                <default>false</default>
+            </picklistValues>
+            <picklistValues>
+                <fullName>SMS Policy Engines</fullName>
+                <default>false</default>
+            </picklistValues>
+            <picklistValues>
+                <fullName>IMS Core</fullName>
+                <default>false</default>
+            </picklistValues>
+            <sorted>false</sorted>
+        </picklist>
+        <type>Picklist</type>
+    </fields>
+    <fields>
+        <fullName>Status</fullName>
+        <picklist>
+            <picklistValues>
+                <fullName>Purchased</fullName>
+                <default>false</default>
+            </picklistValues>
+            <picklistValues>
+                <fullName>Shipped</fullName>
+                <default>false</default>
+            </picklistValues>
+            <picklistValues>
+                <fullName>Installed</fullName>
+                <default>false</default>
+            </picklistValues>
+            <picklistValues>
+                <fullName>Registered</fullName>
+                <default>false</default>
+            </picklistValues>
+            <picklistValues>
+                <fullName>Obsolete</fullName>
+                <default>false</default>
+            </picklistValues>
+            <sorted>false</sorted>
+        </picklist>
+        <type>Picklist</type>
+    </fields>
+    <listViews>
+        <fullName>AllAssets</fullName>
+        <filterScope>Everything</filterScope>
+        <label>All Assets</label>
+    </listViews>
+</CustomObject>

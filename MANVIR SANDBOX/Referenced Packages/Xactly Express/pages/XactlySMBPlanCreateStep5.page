@@ -1,0 +1,2247 @@
+<!--
+Developed by Timba Software Corp. www.timbasoftware.com admin@timbasoftware.com
+This page defines plans 
+@author Alvaro Acuna <aacuna@timbasoftware.com>
+-->  
+<apex:page id="planPayments" controller="XactlyExpress.XactlySMBPlanController" title="{!$Label.xactlyexpress__ManagePlans} : {!$Label.xactlyexpress__PlanWizardStep5}" sidebar="false" showHeader="false" standardStylesheets="true" action="{!redirectWhenAccessIsDenied}">     
+   <!-- Custom Cursor Loader -->
+   <c:XactlySMBCursor />
+   <!-- Custom Cursor Loader -->
+   <title>{!$Label.ManagePlans} : {!$Label.PlanWizardStep4}</title>
+    <link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.XactlySMBResources ,'css/XactlySMBStyles.css')}"/>
+    <link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.XactlySMBResources, 'popup/css/jqpopup.css')}"/>
+    <link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.XactlySMBResources ,'css/XactlySMBNumeratedBox.css')}" /> 
+
+    <style>
+    
+        input .inputName {
+            width: 238px;
+            margin-left:10px;
+        }
+        
+        hr {
+            color: #E8C9AE;
+            background-color: #E8C9AE;
+            height: 1px;
+            border: 0;
+            margin:0;
+        }
+        
+        .show{display:block;}
+        .hide{display:none;}
+        
+        .avancedSeccion{
+            background-color:#FFFFFF;
+            border-top:1px solid #CE641B;
+            color:#CE641B;
+            font-size:10pt;
+            font-weight:bold;
+            margin-top:20px;
+            padding-top:5px;
+            width:680px;
+        }
+        
+        .clear{
+            clear:both;
+        }
+        
+        .avancedOptions{
+            color:Black;
+            font-size:11px;
+            font-weight:normal;
+            margin-top:5px;
+        }
+        .optionLine{
+            clear: both;
+            margin-bottom:3px;
+        }       
+        
+        .pageContent {
+            min-height: 1000px;
+        }
+        
+        *Div.stepTableContainer table tr td{
+            padding-bottom:0px;
+            padding-left:0px;
+            padding-right:0px;
+            padding-top:0px;
+        }
+        
+        div.toShowHide{
+        	width:130px;
+        }
+        .collapseBarUp{
+          background: url({!URLFOR($Resource.XactlySMBResources ,'img/layout/collapsebarHorizontalUp.JPG')}) no-repeat;
+          color:#FFFFFF;
+          width:754px;
+          height:8px;
+          top:-5px;
+          z-index:3;
+          cursor:pointer;
+        } 
+        
+        .collapseBarDown{
+          background: url({!URLFOR($Resource.XactlySMBResources ,'img/layout/collapsebarHorizontalDown.JPG')}) no-repeat;
+          color:#FFFFFF;
+          width:754px;
+          height:8px;
+          top:-5px;
+          z-index:3;
+          cursor:pointer;
+        } 
+        
+        
+        .paymentsTable{
+            width:auto;
+            min-width :753px;
+         }
+         
+        .paymentsTable thead tr th{
+            border-left:1px solid #CAE2F9;
+            color:#3B6080;
+            font-size:15px;
+            font-weight:bold;
+            padding:6px;
+            text-align:left;
+            white-space:normal;
+            vertical-align:top;
+        }
+
+        .paymentsTable thead tr th{
+            border-left:1px solid #CAE2F9;
+            color:#3B6080;
+            font-size:12px;
+            font-weight:bold;
+            padding:6px;
+            text-align:left;
+            white-space:normal;
+            vertical-align:top;
+        }
+        
+        .rampDel{
+            color:#565656;
+            font-size:11px;
+            font-weight:bold;
+        }
+        
+        .paymentsTable tr td{
+            padding:7px;
+            border-left:1px solid #DEDEDE;
+        }         
+        
+        .finishCell{
+            border-right:1px solid #DEDEDE;
+        }
+        
+        .deleteFieldBtn {
+            margin-left:20px;
+            margin-right:20px;
+            margin-top:3px;
+            float:left;
+        }
+                
+        .totalAmountSelect select { 
+            margin: 0px;
+        }
+        .totalAmountDesc {
+            font-size: 9px;
+        }  
+                
+         
+         .marginBtn {
+            display:inline;
+            float:left;
+            margin:5px 5px 0 0;
+            overflow:hidden;
+            padding:0;
+            position:relative;
+         }
+         
+         .explanationHiddenSection {
+            margin-top: 20px;
+         }
+         
+         .alphabeticalBox{
+            overflow:auto;
+
+            min-height:220px;
+         }
+         
+         .jqpopup {
+            width:545px !important;
+            position:fixed;
+         }
+
+  
+
+        
+        .needComma{
+            width: 60px;
+            text-align: right;
+        }
+        
+        .clsMax{
+            display:inline-block;
+            text-align:right;
+            width:70px;
+        }
+        
+        .formuleLink{
+            display:inline-block;
+        }
+        
+        .qualifierSel{
+            width: 100%;
+            float: left;
+            margin-bottom:3px;
+        }
+        
+        div.formula div.close a span{
+            display:none;
+         }
+         
+         .titleA{
+            font-size:24px;
+         }
+         
+         .titleB{
+            font-size:26px;
+         }
+         
+         .expBoxContainerLeft{
+             float:left;
+             width:351px;
+         }
+         .expBoxContainerRight{
+             float: left;
+             margin-left:28px;
+             width:351px;
+         }
+         .expBoxTop{
+             float:left;
+         }
+         .expBoxTitle{
+             width:332px;
+             float:left;
+             background-color:#EBEBEB;
+             border-left:2px solid #D2AB85;
+             border-right:2px solid #D2AB85;
+             padding-left:15px;
+             padding-bottom:10px;
+             color:#3B6080;
+             font-size:14px;
+             font-weight:bold;
+             *margin-top: -2px;
+         }
+         .expBoxBody{
+             width: 347px;
+             float:left;
+             border-left:2px solid #D2AB85;
+             border-right:2px solid #D2AB85;
+			 font-size:10px;
+             position:relative;
+             color:#7A7E80;
+         }
+         .expBoxGrafImg{
+             float:right;
+             margin-right:20px;
+             margin-top:8px;
+         }
+         .expBoxDescription{
+             padding-top:10px;
+             padding-left:15px;
+             width:137px;
+             font-weight:bold;
+         }
+         .expBoxLineToFooter{
+             height: 1px;
+             width:auto;
+             margin:5px;
+             background-color:#8A8A8A;
+         }
+         .expBoxTextFooter{
+             padding-left:15px;
+             color:#B08364;
+             width:125px;
+         }
+         .expBoxBottom{
+             float:left;
+         }
+		 .expVerticalGraText {
+		    -webkit-transform: rotate(90deg);
+            filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=1);
+			-moz-transform:rotate(90deg);
+			font-size:9px;
+			left:179px;
+			position:absolute;
+			top:83px;
+			white-space:nowrap;
+			color:#717A7C;
+		 }
+         .expHorizontalGraText {
+			font-size:9px;
+			left:235px;
+			position:absolute;
+			top:139px;
+            color:#717A7C;
+         }
+         
+         div.criteriasPanelBottomMiddleWhite {
+		    width: 710px !important;
+		 }
+		 .selectCreditQuotaSubCrit{
+		    width: 100px !important;
+		 }
+		 
+		 .selectCreditSubCrit{
+		    width: 100px !important;
+         }
+         
+         .formulaIcon{
+            background: url({!URLFOR($Resource.XactlySMBResources ,'img/buttons/formulaIcon.png')});
+	        background-position:top;
+	        width:25px;
+	        height:21px;
+	        float:right;
+         }
+         
+         
+    </style>
+         
+        
+    
+    <c:XactlySMBShadows />
+    
+    <!-- PAGE WRAPPER -->
+    <div class="pageContent" id="pContent">
+        <apex:form id="planForm">
+            <!-- HEADER -->
+            <apex:outputPanel layout="block" styleClass="header">
+                <c:XactlySMBHeader isActive="{!isActive}" nbrSeparator="{!nbrSeparator}" nbrDecimal="{!nbrDecimal}" currentUserOrSlected="{!currentUserOrSlected}" emulatingUserURLAppend="{!emulatingUserURLAppend}" selected="3" wclabel="{!currentSettings.creditsPlural}" wId="{!plan.id}" step="4" wlabel="{!currentSettings.dealsPlural}" wqlabel="{!currentSettings.quotasPlural}" wtype="plan" hlabel="{!$Label.xactlyexpress__DefineCommission}" stepHelp="PlanCreateStep5" stepBreadcrumb="{!plan.Name} {!$Label.Plan} &gt; {!pmm.activeMeasure.m.name}"/>
+            </apex:outputPanel>
+            
+            
+            
+            <!-- INSUFFICIENT PERMISSIONS -->
+            <apex:outputPanel rendered="{!!isAdmin}" >
+                <c:XactlySMBErrorMsg error="{!$Label.xactlyexpress__InsufficientPermissions}" />
+            </apex:outputPanel>
+            
+            <apex:outputPanel layout="block" styleclass="additionalContent" rendered="{!isAdmin && isActive}">    
+                <c:XactlySMBChatterWall objectId="{!$User.Id}" showHeader="true" showWall="true" currentPage="{!$CurrentPage.Name}"/>
+            </apex:outputPanel>
+
+            <!-- MAIN CONTENT -->
+            <apex:outputPanel layout="block" style="padding-bottom:50px;" styleClass="mainContent" id="mainContent" rendered="{!isAdmin}">
+            
+                <!-- LEFT PANEL --> 
+                <apex:outputPanel layout="block" id="leftPanel" styleClass="leftPanel" style="border-right:0px;{!IF(creditOptions.size = 1,'min-height:500px;','')} ">
+                    <c:XactlySMBLeftPanelAccordeon currentSettings="{!currentSettings}" fiscalYear="{!plan.XactlyExpress__XCFiscalYearSettingsID__c}" currentPlan="{!plan.id}" step="5" planId="{!plan.id}" currentPayment="{!pdm.activeMeasure.id}" indexSelected="3" havePreviousYear="{!havePreviousYear}" namePreviousYear="{!namePreviousYear}" haveNextYear="{!haveNextYear}" nameNextYear="{!nameNextYear}"/>
+                    <div>
+                        <apex:outPutPanel layout="block"  rendered="{!IF(measureList.size > 0 && pmm.activeMeasureId != null,true,false)}" >
+                            <div class="buttonCurvy" onmouseover="jQuery(this).css('background-position','bottom');"  onmouseout="jQuery(this).css('background-position','top');" onclick="rerenderNoCompare=false;confirmReset();" style="cursor:pointer;">
+                               <center><div style="padding-top:5px;"><apex:outputtext escape="false" value="{!$Label.xactlyexpress__deleteThisPayment}" styleclass="HelveticaRegular12c1"/></div></center>
+                            </div>
+                        </apex:outPutPanel>
+                    </div>
+                </apex:outputPanel>
+                
+                <a id="displayFormulaWrapper" rel="superbox[content#formulaWrapper.xactlySuperBox #formulaWrapper.formula][900]" href="#formulaWrapper" style="display:none;"></a>
+                <a id="qualifiers" rel="superbox[iframe#qualifiers.xactlySuperBox #qualifiers.formula][1000x700]" href="https://c.na7.visual.force.com/apex/XactlySMBQualifiersRulesPopup?id=a0SA0000003khVQMAY&qualifier=0" style="display:none;"></a>
+                <!-- CONTENT -->
+                <apex:outputPanel id="paymentContent" style="border-left:1px solid #CAE2F9;height:auto;" layout="block" styleClass="content scrollContent" rendered="{!creditOptions.size > 1}"> 
+                    <apex:actionFunction name="refreshPaymentContent" action="{!pdm.refresh}" rerender="subCritContainer,paymentContent,imgPanel,formulaContent" oncomplete="replaceCommaAll();setMax();formatBudget();introAsTab();setterTitle();overrideColor();waitOff();"/> 
+                    <apex:actionFunction name="refreshF"  action="{!pdm.dummyRefresh}" rerender="formulaContent" oncomplete="replaceCommaAll();setMax();introAsTab();setterTitle();overrideColor();waitOff();"/>
+                    <apex:actionFunction name="refresh" rerender="paymentContent" oncomplete="replaceCommaAll();setMax();formatBudget();introAsTab();"/>
+                    <apex:actionFunction name="refreshQualifiers"  action="{!pdm.genQualifiers}" rerender="paymentContent" oncomplete="replaceCommaAll();setMax();formatBudget();introAsTab();setterTitle();overrideColor();waitOff();"/>
+                    <apex:actionFunction name="refreshRampTiers"  action="{!pdm.genRuleRamps}" rerender="alphabeticalBox, amountType" oncomplete="replaceCommaAll();setMax();formatBudget();introAsTab();setterTitle();overrideColor();storeValues();waitOff();"/>
+                   
+                    <apex:actionFunction name="clearRampTiers"  action="{!pdm.dummyRefresh}" rerender="alphabeticalBox, amountType" oncomplete="replaceCommaAll();setMax();formatBudget();introAsTab();setterTitle();overrideColor();storeValues();waitOff();"/>
+                    <apex:actionFunction name="resetPaymentsAF" action="{!deleteMeasure}" />
+                    <apex:actionFunction name="refreshReleaseRuleSelect2" action="{!pdm.dummyRefresh}" oncomplete="waitOff();replaceCommaAll();" rerender="releaseRuleSelectWrapper"/>
+                    
+                    <apex:actionFunction action="{!changeSelectedYear}" name="changeFyscalYear" rerender="startDate, endDate, leftPanel,errorMsg" oncomplete="waitOff();">
+                      <apex:param name="move" assignTo="{!fyscalYearOption}" value="" />
+                    </apex:actionFunction> 
+                    
+                    <div id="paymentCreateContainer">
+                        <apex:outputPanel id="errorMsg" layout="block">
+                            <c:XactlySMBErrorMsg error="{!errorMsg}"/>
+                        </apex:outputPanel>
+                        <apex:outputPanel styleClass="totCont" id="totCont" layout="block">
+                            <apex:outputPanel style="margin-left: 20px;width:730px; overflow: visible;" styleClass="stepTableContainer" id="stepTableContainer"> 
+    
+                                    <!--  STEP 1 -->
+                                    
+                                    
+                                    <div class="box" style="margin-right: 15px; margin-bottom: 15px; margin-left: 15px;">
+                                        <div class="tm">
+                                            <div style="float: left;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/tl.png')}" /></div>
+                                            <div style="float: right;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/tr.png')}" /></div>
+                                            <div style="clear:both"></div>
+                                        </div> 
+                                        <div class="roundedBox">
+                                            <div class="boxHeader">
+                                                <div class="PNovaBlack60c5 stepActionNumber">
+                                                    A
+                                                </div>
+                                                <div class="titleWrapper">  
+                                                    <div class="mainTitle PNovaSemiBold17c3">{!$Label.PaymentRuleName}</div>
+                                                    <div class="detailedTitle HelveticaRegular12c3">{!$Label.PaymentNameDescription}</div>
+                                                </div>
+                                                <div style="clear:both"></div>
+                                            </div>
+                                            <div class="boxContent"> 
+                                                {!$Label.Name}: <apex:inputField id="inputName" styleClass="inputName" value="{!pdm.activeMeasure.Name}" required="false" style="width:236px;"/>
+                                                <div class="avancedSeccion" style="display:none;">
+                                                   {!$Label.xactlyexpress__AdditionalOptions}
+                                                
+                                                   <div class="avancedOptions">
+                                                       <div class="optionLine"><b>{!$Label.xactlyexpress__paymentDescription}</b> ({!$Label.xactlyexpress__paymentDescriptionDescription}): <br/>
+                                                       <apex:inputField id="inputDesc" styleClass="inputName" style="height: 110px;margin-top: 10px;width: 520px;" value="{!pdm.activeMeasure.XactlyExpress__Description__c}" required="false"/></div>
+                                                       <div class="optionLine"><b>{!$Label.xactlyexpress__PayrollCategory}</b> {!$Label.xactlyexpress__PayrollCategoryDescription}:                             
+                                                           <apex:selectList id="categoryOptionsLst" value="{!pdm.activeMeasure.XactlyExpress__PayrollCategory__c}" multiselect="false" size="1"> 
+                                                               <apex:selectOptions value="{!pdm.categoryOptions}" />
+                                                           </apex:selectList> 
+                                                       </div>
+                                                       <div class="optionLine"><b>{!$Label.xactlyexpress__PlannedSpend}</b> ({!$Label.xactlyexpress__PlannedSpendDescription}): <apex:inputField id="inputPlannedSpend" styleClass="inputName needComma" value="{!pdm.activeMeasure.XactlyExpress__BudgetedSpend__c}" style="width:150px;" required="false" onblur="chkVal(this, 'Number')"/></div>
+                                                       <script>
+                                                           var inputPlannedSpend = '{!$Component.inputPlannedSpend}'.replace(/:/g,'\\:');
+                                                       </script>
+                                                   </div>
+                                                </div>
+                                                <div>
+	                                                <a href="javascript:;" onclick="showHideAdditionalOptions();">
+		                                                <span class="buttonCurvy" style="margin-left:-12px;margin-top:10px;" onmouseover="jQuery(this).css('background-position','bottom');"  onmouseout="jQuery(this).css('background-position','top');">
+		                                                   <apex:outputText escape="false" style="padding-top:5px; text-align:center; width:100%;float: left;" styleClass="textToChange" value="{!$Label.additionalOption} &gt;&gt;"/>
+		                                                </span>
+		                                            </a>
+	                                            </div>
+	                                            <div style="clear:both;"></div>
+                                            </div>    
+                                        </div>         
+                                        <div class="bm">
+                                            <div style="float: left;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/bl.png')}" /></div>
+                                            <div style="float: right;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/br.png')}" /></div>
+                                        </div> 
+                                    </div>
+                         <apex:outputPanel id="paymentCont" Styleclass="paymentCont" layout="block">
+                                                        
+                            
+                                    <!--  STEP 2 -->
+                            
+                                    <div class="box" style="margin-right: 15px; margin-bottom: 15px; margin-left: 15px;">
+                                        <div class="tm">
+                                           <div style="float: left;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/tl.png')}" /></div>
+                                           <div style="float: right;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/tr.png')}" /></div>
+                                           <div style="clear:both"></div>
+                                        </div> 
+                                        <div class="roundedBox">
+                                            <div class="boxHeader">
+                                                <div class="PNovaBlack60c5 stepActionNumber">
+                                                    B
+                                                </div>
+                                                <div class="titleWrapper">  
+                                                    <div class="mainTitle PNovaSemiBold17c3">{!$Label.HowWouldYouLikeToPayPeople}</div>
+                                                    <div class="detailedTitle HelveticaRegular12c3">{!$Label.SelectPaymentsType}</div>
+                                                </div>
+                                            </div>  
+                                            <div class="boxContent" style="padding-top: 0px; padding-bottom: 0px;padding-left: 20px">
+                                                <apex:selectRadio layout="lineDirection"  style="color:#3B6080 !important;margin:0px" onclick="alertChange(this);"  id="selPayPeople" value="{!pdm.activeMeasure.XactlyExpress__PaymentAmountType__c}">
+                                                    <apex:selectOptions value="{!pdm.PayPeopleOptions}"/>
+                                                </apex:selectRadio>
+                                                <script type="text/javascript">
+                                                    var selRatioVal = '{!JSENCODE(pdm.activeMeasure.PaymentAmountType__c)}';
+                                                    var selRatio = '{!$Component.selPayPeople}';
+                                                </script>
+                                        
+                                         <div class="explanationHiddenSection" id="step2Explanation" style="display:none;">                        
+                                                   <div class="expBoxContainerLeft">
+                                                       <div class="expBoxTop">
+                                                           <img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/table_top_351.png')}" />
+                                                       </div>
+                                                       <div style="clear:both"></div>                                   
+                                                       <div class="expBoxTitle">
+                                                           {!$Label.COMMISSIONTYPE}
+                                                       </div>
+                                                       <div style="clear:both"></div>                                   
+                                                       <div class="expBoxBody">
+                                                           <div class="expVerticalGraText">{!$Label.Pay}</div>
+                                                           <div class="expHorizontalGraText">{!$Label.Sales}</div>
+                                                           <img  class="expBoxGrafImg" src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/pay_gra1.png')}" />
+                                                           <p class="expBoxDescription">{!$Label.COMMISSIONTYPEDesc}</p>
+                                                           <p class="expBoxDescription">{!$Label.COMMISSIONTYPEDesc2}</p>
+                                                           <hr class="expBoxLineToFooter"/>
+                                                           <p class="expBoxTextFooter">{!$Label.COMMISSIONTYPEFooter}</p>
+                                                       </div>
+                                                       <div style="clear:both"></div>                                   
+                                                       
+                                                       <div class="expBoxBottom">
+                                                           <img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/table_bottom_351.png')}" />
+                                                       </div>
+                                                   </div>      
+                                                    <div class="expBoxContainerRight">
+                                                       <div class="expBoxTop">
+                                                           <img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/table_top_351.png')}" />
+                                                       </div>
+                                                       <div style="clear:both"></div>                                   
+                                                       <div class="expBoxTitle">
+                                                           {!$Label.BONUSTYPE}
+                                                       </div>
+                                                       <div style="clear:both"></div>                                   
+                                                       <div class="expBoxBody">
+                                                           <div class="expVerticalGraText" style="left:186px;">{!$Label.Pay}</div>
+                                                           <div class="expHorizontalGraText">{!$Label.Sales}</div>
+                                                           <img class="expBoxGrafImg" src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/pay_gra2.png')}" />
+                                                           <p class="expBoxDescription">{!$Label.BONUSTYPEDesc}</p>
+                                                           <p class="expBoxDescription">{!$Label.BONUSTYPEDesc2}</p>
+                                                           <hr class="expBoxLineToFooter"/>
+                                                           <p class="expBoxTextFooter">{!$Label.BONUSTYPEFooter}</p>
+                                                       </div>
+                                                       <div style="clear:both"></div>                                   
+                                                       <div class="expBoxBottom">
+                                                           <img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/table_bottom_351.png')}" />
+                                                       </div>
+                                                   </div>          
+	                                                <div style="clear:both;"></div>                               
+                                                </div>
+                                                <div>
+                                                    <a href="javascript:;" onclick="rerenderNoCompare = false;hideShowSection('step2Explanation');">
+                                                        <span class="buttonCurvy" style="margin-left:-12px;margin-top:10px;" onmouseover="jQuery(this).css('background-position','bottom');"  onmouseout="jQuery(this).css('background-position','top');">
+                                                           <apex:outputText escape="false" style="padding-top:5px; text-align:center; width:100%;float: left;" styleClass="toChangeStep2" value="{!$Label.SeeExplanation} &gt;&gt;"/>
+                                                        </span>
+                                                    </a>
+                                                </div>
+                                                <div style="clear:both;"></div>    
+                                            </div>    
+                                        </div>     
+                                        <div class="bm">
+                                            <div style="float: left;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/bl.png')}" /></div>
+                                            <div style="float: right;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/br.png')}" /></div>
+                                        </div> 
+                                    </div>
+                 
+                                    <!--  STEP 3 -->
+                            
+                                    <div class="box" style="margin-right: 15px; margin-bottom: 15px; margin-left: 15px;">
+                                        <div class="tm">
+                                           <div style="float: left;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/tl.png')}" /></div>
+                                           <div style="float: right;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/tr.png')}" /></div>
+                                           <div style="clear:both"></div>
+                                        </div> 
+                                        <div class="roundedBox">
+                                            <div class="boxHeader">
+                                                <div class="PNovaBlack60c5 stepActionNumber">
+                                                 C
+                                                </div>
+                                                <div class="titleWrapper">  
+                                                    <div class="mainTitle PNovaSemiBold17c3">{!pdm.paymentCreditSelect}</div>
+                                                    <div class="detailedTitle HelveticaRegular12c3">{!$Label.paymentCreditSelectDescription}</div>
+                                                </div>
+                                                <div class="extraTitleStuff"></div>
+                                                <div style="clear:both"></div>
+                                            </div>
+                                            <div class="boxContent" style="padding-top: 7px; padding-bottom: 0px;padding-left: 20px">
+                                                <apex:selectList id="CreditList" size="1" multiselect="false" value="{!pdm.activeMeasure.XactlyExpress__CreditRuleID__c}" onchange="addCreditCheck(this);waitOn();reQuotaName();" style="width:115px;float:none;">
+                                                    <apex:selectOptions value="{!creditOptions}" />
+                                                </apex:selectList>         
+                                                <script>
+                                                    var selectCredit = $('#' + '{!$Component.CreditList}'.replace(/:/g,'\\:'))[0].value;
+                                                </script>                                 
+                                                &nbsp;&nbsp;&nbsp;
+                                                <apex:outputPanel id="quotaName"> 
+                                                    <apex:outputPanel rendered="{!IF(pdm.currentCreditQuotaName != '',true,false)}" layout="none">  
+                                                       {!currentSettings.quotasCap}: {!pdm.currentCreditQuotaName}
+                                                    </apex:outputPanel>
+                                                </apex:outputPanel>
+                                                <div id="quotaOldName" style="display:none;">
+                                                    {!currentSettings.quotasCap}: {!pdm.currentCreditQuotaName}
+                                                </div>
+                                                    <script>
+                                                        var quotaName = '{!$Component.quotaName}'.replace(/:/g,'\\:');
+                                                    </script>
+                                                <apex:outputPanel id="overrideQuota" rendered="{!IF(pdm.quotaList.size > 0,true,false)}"> 
+                                                    <img id="penIconOverride" src="{!URLFOR($Resource.XactlySMBResources, 'img/buttons/pencilEdit.png')}" style="cursor:pointer;" onclick="overrideQuota();"/>
+                                                    <img id="cancelIconOverride" src="{!URLFOR($Resource.XactlySMBResources ,'img/buttons/delete_small.png')}" style="cursor:pointer;display:none;" onclick="resetQuotaOverride();"/>
+                                                    <apex:inputCheckbox id="overrideCheckbox" style="display:none;" value="{!pdm.overrideQuota}"/>
+                                                    <script>
+                                                        var overrideCheckbox = '{!$Component.overrideCheckbox}'.replace(/:/g,'\\:');
+                                                    </script>
+                                                    <apex:selectList style="display:none;" id="overrideWithQuota" size="1" multiselect="false" value="{!pdm.overrideWithQuota}">
+                                                        <apex:selectOptions value="{!pdm.quotaList}" />
+                                                    </apex:selectList>
+                                                    <img id="okIconOverride" src="{!URLFOR($Resource.XactlySMBResources, 'img/buttons/tic.png')}" style="cursor:pointer;display:none;" onclick="confirmQuota();"/>
+                                                    <script>
+                                                        var overrideWithQuota = '{!$Component.overrideWithQuota}'.replace(/:/g,'\\:');
+                                                    </script>
+                                                </apex:outputPanel>
+                                                
+                                                <apex:actionFunction name="reQuotaName" action="{!pdm.defaultFreq}" rerender="quotaName,creditFrequencySelection,amountType, step7" oncomplete="waitOff();replaceCommaAll();"/>
+                                            </div>    
+                                        </div>         
+                                        <div class="bm">
+                                            <div style="float: left;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/bl.png')}" /></div>
+                                            <div style="float: right;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/br.png')}" /></div>
+                                        </div> 
+                                    </div>   
+                                                    
+                                    <!--  STEP 4 -->
+                            
+                                    <div class="box" style="margin-right: 15px; margin-bottom: 15px; margin-left: 15px;">
+                                        <div class="tm">
+                                           <div style="float: left;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/tl.png')}" /></div>
+                                           <div style="float: right;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/tr.png')}" /></div>
+                                           <div style="clear:both"></div>
+                                        </div> 
+                                        <div class="roundedBox">
+                                            <div class="boxHeader">
+                                                <div class="PNovaBlack60c5 stepActionNumber">
+                                                    D
+                                                </div>
+                                                <div class="titleWrapper">  
+                                                    <div class="mainTitle PNovaSemiBold17c3">{!$Label.timeframeForAttainment}</div>
+                                                    <div class="detailedTitle HelveticaRegular12c3">{!$Label.timeframeForAttainmentDescription}</div>
+                                                </div>
+                                                <div style="clear:both"></div>
+                                            </div>
+                                            <div class="boxContent" style="padding-top: 0px; padding-bottom: 0px;padding-left: 20px">
+                                                
+                                                <apex:outputPanel id="creditFrequencySelection" style="float:none;">
+                                                    <apex:outputtext escape="false" value="<input" /> type="radio" id="step4Radio1" value="MTD" name="step4Radios" onclick="$('#'+quotaFreq).val('{!IF(pdm.CreditQuotaSt == true,pdm.MEASURE_QUOTA_MONTHLY,'')}');$('#'+creditFreq).val('{!pdm.MEASURE_CREDIT_MTD}');refreshStep7();" {!IF(pdm.CheckMTD == true,'checked=\"checked\"','')} {!IF(NOT(pdm.CreditQuotaSt),'',IF(pdm.QuotaFrequency == 'Month','','disabled=\"true\"'))}<apex:outputtext escape="false" value="/>"/>
+                                                    <label for="step1Radio2"> {!$Label.xactlyexpress__MonthlyToDate} </label>
+                                                    <apex:outputtext escape="false" value="<input" /> type="radio" id="step4Radio2" value="QTD" name="step4Radios" onclick="$('#'+quotaFreq).val('{!IF(pdm.CreditQuotaSt == true,pdm.MEASURE_QUOTA_QUARTERLY,'')}');$('#'+creditFreq).val('{!pdm.MEASURE_CREDIT_QTD}');refreshStep7();" {!IF(pdm.CheckQTD == true,'checked=\"checked\"','')} {!IF(NOT(pdm.CreditQuotaSt),'',IF(OR(pdm.QuotaFrequency == 'Month',pdm.QuotaFrequency == 'Quarter'),'','disabled=\"true\"'))}<apex:outputtext escape="false" value="/>" />
+                                                    <label for="step1Radio2"> {!$Label.xactlyexpress__QuarterlyToDate}</label>
+                                                    <apex:outputtext escape="false" value="<input" /> type="radio" id="step4Radio3" value="YTD" name="step4Radios" onclick="$('#'+quotaFreq).val('{!IF(pdm.CreditQuotaSt == true,pdm.MEASURE_QUOTA_ANNUAL,'')}');$('#'+creditFreq).val('{!pdm.MEASURE_CREDIT_YTD}');refreshStep7();" {!IF(pdm.CheckYTD == true,'checked=\"checked\"','')} {!IF(NOT(pdm.CreditQuotaSt),'',IF(OR(pdm.QuotaFrequency == 'Year' ,pdm.QuotaFrequency == 'Quarter',pdm.QuotaFrequency == 'Month'),'','disabled=\"true\"'))}<apex:outputtext escape="false" value="/>" />
+                                                    <label for="step1Radio2"> {!$Label.xactlyexpress__AnnualToDate}</label>
+                                                    <br/>
+                                                    <apex:outputtext escape="false" value="<input" /> type="radio" id="step4Radio4" value="QTD Monthly" name="step4Radios" onclick="$('#'+quotaFreq).val('{!IF(pdm.CreditQuotaSt == true,pdm.MEASURE_QUOTA_MONTHLY,'')}');$('#'+creditFreq).val('{!pdm.MEASURE_CREDIT_QTD}');refreshStep7();" {!IF(pdm.CheckQTDMonthly == true,'checked=\"checked\"','')} {!IF(NOT(pdm.CreditQuotaSt),'disabled=\"true\"',IF(pdm.QuotaFrequency == 'Month','','disabled=\"true\"'))}<apex:outputtext escape="false" value="/>" />
+                                                    <label for="step1Radio2"> {!$Label.xactlyexpress__QTDMonthly}</label>
+                                                    <apex:outputtext escape="false" value="<input" /> type="radio" id="step4Radio5" value="YTD Monthly" name="step4Radios" onclick="$('#'+quotaFreq).val('{!IF(pdm.CreditQuotaSt == true,pdm.MEASURE_QUOTA_MONTHLY,'')}');$('#'+creditFreq).val('{!pdm.MEASURE_CREDIT_YTD}');refreshStep7();" {!IF(pdm.CheckYTDMonthly == true,'checked=\"checked\"','')} {!IF(NOT(pdm.CreditQuotaSt),'disabled=\"true\"',IF(pdm.QuotaFrequency == 'Month','','disabled=\"true\"'))}<apex:outputtext escape="false" value="/>" />
+                                                    <label for="step1Radio2"> {!$Label.xactlyexpress__YTDMonthlyLarge}</label>
+                                                    <apex:outputtext escape="false" value="<input" /> type="radio" id="step4Radio6" value="YTD Quarterly" name="step4Radios" onclick="$('#'+quotaFreq).val('{!IF(pdm.CreditQuotaSt == true,pdm.MEASURE_QUOTA_QUARTERLY,'')}');$('#'+creditFreq).val('{!pdm.MEASURE_CREDIT_YTD}');refreshStep7();" {!IF(pdm.CheckYTDQuarterly == true,'checked=\"checked\"','')} {!IF(NOT(pdm.CreditQuotaSt),'disabled=\"true\"',IF(OR(pdm.QuotaFrequency == 'Month',pdm.QuotaFrequency == 'Quarter'),'','disabled=\"true\"'))}<apex:outputtext escape="false" value="/>" />
+                                                    <label for="step1Radio2"> {!$Label.xactlyexpress__YTDQuarterlyLarge}</label> 
+                                                    <apex:inputHidden id="creditFreq" value="{!pdm.activeMeasure.XactlyExpress__CreditFrequency__c}"/>
+                                                    <apex:inputHidden id="quotaFreq" value="{!pdm.activeMeasure.XactlyExpress__QuotaFrequency__c}"/>
+                                                    <apex:actionFunction name="reLoadStep7" action="{!pdm.dummyRefresh}" rerender="step7" oncomplete="waitOff();"/>
+                                                    
+                                                    <script>
+                                                        var creditFreq = '{!$Component.creditFreq}'.replace(/:/g,'\\:');
+                                                    </script>
+                                                    <script>
+                                                        var quotaFreq = '{!$Component.quotaFreq}'.replace(/:/g,'\\:');
+                                                    </script>
+                                                </apex:outputPanel>
+                                            
+                                                <div class="explanationHiddenSection" id="step4Explanation" style="display:none;">
+                                                    <img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/ExplanationQuotaType.jpg')}" />
+                                                </div>
+                                                <div>
+                                                    <a href="javascript:;" onclick="rerenderNoCompare = false;hideShowSection('step4Explanation');">
+                                                        <span class="buttonCurvy" style="margin-left:-12px;margin-top:10px;" onmouseover="jQuery(this).css('background-position','bottom');"  onmouseout="jQuery(this).css('background-position','top');">
+                                                           <apex:outputText escape="false" style="padding-top:5px; text-align:center; width:100%;float: left;" styleClass="toChangeStep2" value="{!$Label.SeeExplanation} &gt;&gt;"/>
+                                                        </span>
+                                                    </a>
+                                                </div>
+                                                <div style="clear:both;"></div>
+                                            </div>    
+                                        </div>         
+                                        <div class="bm">
+                                            <div style="float: left;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/bl.png')}" /></div>
+                                            <div style="float: right;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/br.png')}" /></div>
+                                        </div> 
+                                    </div>
+                                                              
+                                                              
+                                    <!--  STEP 5 -->
+                            
+                                    <div class="box" style="margin-right: 15px; margin-bottom: 15px; margin-left: 15px;">
+                                        <div class="tm">
+                                           <div style="float: left;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/tl.png')}" /></div>
+                                           <div style="float: right;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/tr.png')}" /></div>
+                                           <div style="clear:both"></div>
+                                        </div> 
+                                        <div class="roundedBox">
+                                            <div class="boxHeader">
+                                                <div class="PNovaBlack60c5 stepActionNumber">
+                                                    E 
+                                                </div>
+                                                <div class="titleWrapper">  
+                                                    <div class="mainTitle PNovaSemiBold17c3">{!$Label.howFrequentlyPayPayment}</div>
+                                                    <div class="detailedTitle HelveticaRegular12c3">{!$Label.howFrequentlyPayPaymentDescription}</div>
+                                                </div>
+                                                <div class="extraTitleStuff"></div>
+                                                <div style="clear:both"></div>
+                                            </div> 
+                                            <div class="boxContent" style="padding-top: 0px; padding-bottom: 0px;padding-left: 20px">
+                                                <div id="varyPayments"> 
+                                                    <table style="float: none;margin-left: -5px;">
+                                                        <tr><td>
+                                                            <apex:selectRadio style="float:none;"  onclick="waitOn();refreshReleaseRuleSelect2();" id="selHowOften" value="{!pdm.activeMeasure.XactlyExpress__PayFrequency__c}" >
+                                                                <apex:selectOptions value="{!pdm.HowOftenOptions}"/>
+                                                            </apex:selectRadio>
+                                                        </td>  
+                                                        <td>    
+                                                            <apex:outputpanel id="releaseRuleSelectWrapper" rendered="{!pdm.HowOftenOptions.size > 3}">
+                                                                <apex:actionFunction name="refreshReleaseRuleSelect" action="{!pdm.genReleaseRuleList}" rerender="selectedReleaseRuleR" oncomplete="setterTitle();overrideColor();waitOff();replaceCommaAll();" />
+                                                                <apex:outputpanel id="selectedReleaseRuleR">
+                                                                    <apex:selectList id="selectedReleaseRule" disabled="{!IF(AND(pdm.activeMeasure.XactlyExpress__PayFrequency__c == pdm.OnMultipleEvents, OR(pdm.activeMeasure.XactlyExpress__PaymentAmountType__c == pdm.MEASURE_PAYMENT_RATE , pdm.activeMeasure.XactlyExpress__PaymentAmountType__c == pdm.AMOUNT_TYPE_RATE_SALE)),'false','true')}" styleclass="needTitle {!IF(AND(pdm.activeMeasure.XactlyExpress__PayFrequency__c == pdm.OnMultipleEvents, OR(pdm.activeMeasure.XactlyExpress__PaymentAmountType__c == pdm.MEASURE_PAYMENT_RATE , pdm.activeMeasure.XactlyExpress__PaymentAmountType__c == pdm.AMOUNT_TYPE_RATE_SALE)), '','disabledOpacityButton')}" size="1" multiselect="false" value="{!pdm.activeMeasure.XactlyExpress__ReleaseRuleID__c}" onChange="setterTitle();overrideColor();" style="width:190px;float:left;">
+                                                                        <apex:selectOptions value="{!pdm.releaseRuleList}" />
+                                                                    </apex:selectList>
+                                                                    
+                                                                    <div class="btnToLeft btnAction ruleActionsBtn" style="float:left;">
+                                                                        <div class="separateBtn" style="margin-right:5px;">
+                                                                            <a href="javascript:;" onclick="{!IF(AND(pdm.activeMeasure.PayFrequency__c == pdm.OnMultipleEvents, OR(pdm.activeMeasure.PaymentAmountType__c == pdm.MEASURE_PAYMENT_RATE , pdm.activeMeasure.PaymentAmountType__c == pdm.AMOUNT_TYPE_RATE_SALE)), 'rerenderNoCompare=false;editRule();','')}">
+                                                                                <span class="rightBtnOrange {!IF(AND(pdm.activeMeasure.PayFrequency__c == pdm.OnMultipleEvents, OR(pdm.activeMeasure.PaymentAmountType__c == pdm.MEASURE_PAYMENT_RATE , pdm.activeMeasure.PaymentAmountType__c == pdm.AMOUNT_TYPE_RATE_SALE)), '','disabledOpacityButton')}" >
+                                                                                    <span class="leftBtnOrange" style="margin-bottom:expression('-3px');">
+                                                                                        <span class="middleBtnOrange">
+                                                                                            {!$Label.xactlyexpress__EditRule}
+                                                                                        </span> 
+                                                                                    </span>
+                                                                                </span> 
+                                                                            </a>
+                                                                        </div>
+                                                                        <script type="text/javascript">
+                                                                           selectedRule='{!$Component.selectedReleaseRule}';
+                                                                        </script>
+                                                                        <div class="separateBtn">
+                                                                            <a href="javascript:;" onclick="{!IF(AND(pdm.activeMeasure.PayFrequency__c == pdm.OnMultipleEvents, OR(pdm.activeMeasure.PaymentAmountType__c == pdm.MEASURE_PAYMENT_RATE , pdm.activeMeasure.PaymentAmountType__c == pdm.AMOUNT_TYPE_RATE_SALE)), 'rerenderNoCompare=false;newRule();','')};">
+                                                                                <span class="rightBtnOrange {!IF(AND(pdm.activeMeasure.PayFrequency__c == pdm.OnMultipleEvents, OR(pdm.activeMeasure.PaymentAmountType__c == pdm.MEASURE_PAYMENT_RATE , pdm.activeMeasure.PaymentAmountType__c == pdm.AMOUNT_TYPE_RATE_SALE)), '','disabledOpacityButton')}" >
+                                                                                    <span class="leftBtnOrange" style="margin-bottom:expression('-3px');">
+                                                                                        <span class="middleBtnOrange">
+                                                                                            {!$Label.xactlyexpress__NewRule}
+                                                                                        </span>
+                                                                                    </span>
+                                                                                </span>
+                                                                            </a>
+                                                                        </div>                      
+                                                                    </div>
+                                                                </apex:outputpanel>
+                                                            </apex:outputpanel>
+                                                        </td></tr>
+                                                    </table>
+                                                </div>                                
+                                            </div>    
+                                        </div>         
+                                        <div class="bm">
+                                            <div style="float: left;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/bl.png')}" /></div>
+                                            <div style="float: right;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/br.png')}" /></div>
+                                        </div> 
+                                    </div> 
+                                </apex:outputPanel> 
+                            </apex:outputpanel>  
+                            
+                            <!-- Collapse -->
+                            <div style="margin-top:5px; margin-left: 20px;  text-align:center;">
+                                <apex:outputPanel layout="block" styleClass="collapseBarUp" id="collapseBar" onclick="toggleCollapse();"/>
+                                <script>
+                                    var collapseBarId = '{!$Component.collapseBar}';
+                                </script>
+                                <a style="display:none;" id="aCollapse" onclick="loadCollapse();" href="javascript:;"></a>
+                                <a class="btnAction" onclick="toggleCollapse();" href="javascript:;">
+                                  <span class="rightBtnSilver" style="margin-left: 290px; margin-top: -13px;">
+                                    <span class="leftBtnSilver">
+                                        <span class="middleBtnSilver collapseToChangeText">
+                                            <apex:outputtext value="{!$Label.xactlyexpress__hidePaymentSetup}"></apex:outputtext>
+                                        </span>
+                                    </span>
+                                  </span>
+                                </a>  
+                            </div>
+                            <br />
+                            <apex:actionFunction name="saveCollapseAF" action="{!pdm.saveCollapse}" rerender="aux" oncomplete="rerenderNoCompare=true;"/>
+                            <apex:inputHidden value="{!pdm.collapseOption}" id="collapseOptions"/>
+                            <script>
+                                function toggleCollapse(){
+                                    var bar = document.getElementById(collapseBarId);
+                                    var element = document.getElementById('{!$Component.collapseOptions}');
+                                    if(element.value == '1'){
+                                        collapse();
+                                        bar.className = 'collapseBarUp';
+                                        $('.collapseToChangeText').html('{!JSENCODE($Label.showPaymentSetup)}');
+                                        element.value = '0';
+                                    }else{
+                                        expand();
+                                        bar.className = 'collapseBarDown';
+                                        $('.collapseToChangeText').html('{!JSENCODE($Label.hidePaymentSetup)}');
+                                        element.value = '1';
+                                    }
+                                    rerenderNoCompare = false;
+                                    saveCollapseAF();
+                                }
+                                function loadCollapse(){
+                                    var bar = document.getElementById(collapseBarId);
+                                    var element = document.getElementById('{!$Component.collapseOptions}');
+                                    if(element.value == '0'){
+                                        collapse();
+                                        bar.className = 'collapseBarUp';
+                                        $('.collapseToChangeText').html('{!JSENCODE($Label.showPaymentSetup)}');
+                                    } else {
+                                        expand();
+                                        bar.className = 'collapseBarDown';
+                                        $('.collapseToChangeText').html('{!JSENCODE($Label.hidePaymentSetup)}');
+                                    }
+                                }
+                            </script>
+
+                            <div style="margin-left:40px;width:710px;"></div>
+                        
+                            <!--  STEP 6 -->
+                       
+                            <div class="box" style="margin-right: 15px; margin-bottom: {!IF(pdm.activeMeasure.PaymentAmountType__c == pdm.AMOUNT_TYPE_AMOUNT,'15px','80px')}; margin-left: 15px;">    
+                                <div class="tm">
+                                    <div style="float: left;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/tl.png')}" /></div>
+                                    <div style="float: right;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/tr.png')}" /></div>
+                                    <div style="clear:both"></div>
+                                </div> 
+                                <div class="roundedBox">
+                                    <div class="boxHeader">
+                                        <div class="PNovaBlack60c5 stepActionNumber">
+                                            F 
+                                        </div>
+                                        <div class="titleWrapper">  
+                                            <div class="mainTitle PNovaSemiBold17c3">{!$Label.DefinePaymentStructure}</div>
+                                            <div class="detailedTitle HelveticaRegular12c3">{!$Label.DefinePaymentStructureDescription}</div>
+                                        </div>
+                                        <div class="extraTitleStuff">
+                                            
+                                        </div>
+                                        <div style="clear:both"></div>
+                                    </div>
+                                    <div class="boxContent" style="padding: 4px;position:relative;"> 
+                                        <apex:outputPanel layout="block" id="amountType" styleclass="varyPaymentOptions" style="background-color:#EEEEEE;height:25px;margin-left:-4px;margin-top:-4px;padding-top:5px;">
+                                            <div  style="padding-top: 3px; float: left;padding-left:2px;" class="areaTitle {!IF(pdm.selectProfile != null && pdm.selectProfile != 'a00000000000000000','disabledOpacityButton','')}">
+                                                 {!$Label.typeOfAttainment}:
+                                            </div>           
+                                            <apex:outputtext escape="false" value="<input" /> {!IF(pdm.selectProfile != null && pdm.selectProfile != 'a00000000000000000','disabled','')} type="radio" id="step6Radio1" value="{!pdm.RAMP_TYPE_ATTAINMENT}" name="step6Radios" onclick="$('#'+RampType).val($(this).val());refreshStep7();" {!IF(pdm.activeMeasure.XactlyExpress__PaymentRampType__c == pdm.RAMP_TYPE_ATTAINMENT,'checked=\"checked\"','')} {!IF(pdm.CreditQuotaSt == true,'','disabled=\"true\"')}<apex:outputtext escape="false" value="/>" />
+                                            <label class="{!IF(pdm.selectProfile != null && pdm.selectProfile != 'a00000000000000000','disabledOpacityButton','')}"  for="step6Radio1"> {!pdm.RampTypeQuota}</label>
+                                            <apex:outputtext escape="false" value="<input" /> {!IF(pdm.selectProfile != null && pdm.selectProfile != 'a00000000000000000','disabled','')} type="radio" id="step6Radio2" value="{!pdm.RAMP_TYPE_RESULT}" name="step6Radios" onclick="$('#'+RampType).val($(this).val());refreshStep7();" {!IF(pdm.activeMeasure.XactlyExpress__PaymentRampType__c == pdm.RAMP_TYPE_RESULT,'checked=\"checked\"','')}<apex:outputtext escape="false" value="/>" />
+                                            <label class="{!IF(pdm.selectProfile != null && pdm.selectProfile != 'a00000000000000000','disabledOpacityButton','')}"  for="step6Radio2"> {!$Label.MEASURE_RAMP_TYPE_RESULT}</label>
+                                            <apex:inputHidden id="RampType" value="{!pdm.activeMeasure.XactlyExpress__PaymentRampType__c}"/>
+                                            <apex:inputHidden id="RampIndex" value="{!pdm.selectedRampIndex}"/>
+                                            <apex:inputHidden id="TierIndex" value="{!pdm.selectedTierIndex}"/>
+                                            <script>
+                                                var RampType = '{!$Component.RampType}'.replace(/:/g,'\\:');
+                                                var RampIndex = '{!$Component.RampIndex}';
+                                                var TierIndex = '{!$Component.TierIndex}';
+                                            </script>
+                                        </apex:outputPanel>
+                                        <div style="clear:both;"></div>
+                                        <div id="paymentsTableContainer" class="tableContainer" style="margin-left:-4px;">   
+                                            <apex:outputPanel id="alphabeticalBox" styleClass="alphabeticalBox" layout="block" style="position: relative;">                                                
+                                                <apex:outputPanel id="dummy"/>    
+                                                <apex:actionFunction name="loadFormulasAF" action="{!pdm.loadFormulas}" rerender="formulaContent" oncomplete="rerenderNoCompare = true;showPopup();replaceCommaAll();setMax();rerenderPopupIE();introAsTab();setterTitle();overrideColor();waitOff();"/>
+                                                <apex:actionFunction name="addRuleRamp" action="{!pdm.addRuleRamp}" rerender="paymentsTable, step7" oncomplete="rerenderNoCompare = true;replaceCommaAll();setMax();setterTitle();overrideColor();waitOff();"/>
+                                                <apex:actionFunction name="clearQL"  action="{!pdm.clearQL}" rerender="alphabeticalBox, amountType" oncomplete="replaceCommaAll();setMax();formatBudget();introAsTab();setterTitle();overrideColor();storeValues();savePlanStep5();"/>
+                                                <apex:actionFunction name="clearQLOnSaveNext"  action="{!pdm.clearQL}" rerender="alphabeticalBox, amountType" oncomplete="replaceCommaAll();setMax();formatBudget();introAsTab();setterTitle();overrideColor();storeValues();saveNext();"/>
+                                                <apex:actionFunction name="saveNext"  action="{!saveNext}" rerender="errorMsg,redirect" oncomplete="waitOff();redirect();"/>
+                                                <apex:actionFunction name="deleteFormulaAF" action="{!pdm.deleteFormula}" rerender="formulaBlock, rawAdvFormula, override" oncomplete="waitOff();introAsTab();replaceCommaAll();setMax();jQuery.superbox.refreshSuperboxContent();"/>
+                                                <apex:actionFunction name="removeRampAF" action="{!pdm.removeRamp}" rerender="paymentsTable, step7" oncomplete="replaceCommaAll();setMax();setterTitle();overrideColor();rerenderNoCompare = true;waitOff();" />
+                                                <apex:actionFunction name="removeQualifierLink" action="{!pdm.removeQualifierLink}" rerender="paymentsTable" oncomplete="rerenderNoCompare = true;replaceCommaAll();setMax();setterTitle();overrideColor();waitOff();" />
+                                                <apex:inputHidden id="selectedIndexHidden" value="{!pdm.selectedIndex}" />
+                                                <apex:inputHidden id="selectedQLIndex" value="{!pdm.selectedQLIndex}" />
+                                                <script>
+                                                    var selectedIndex = document.getElementById('{!$Component.selectedIndexHidden}');
+                                                    var paymentsTableId = '{!$Component.paymentsTable}';
+                                                    var selectedQLIndex = '{!$Component.selectedQLIndex}';
+                                                </script>   
+                                                <apex:outputPanel id="paymentsTable">
+                                                   <table class="paymentsTable finishCell" cellspacing="0" cellpadding="0" style="width:{!FLOOR((pdm.qualifiersLinks.size + 1) * 170 + 150)}px;">
+                                                      <thead>
+                                                        <tr>
+                                                            <th width="250" class="{!IF(pdm.selectProfile != null && pdm.selectProfile != 'a00000000000000000','disabledOpacityButton','')}">{!IF(pdm.activeMeasure.PaymentAmountType__c == pdm.AMOUNT_TYPE_AMOUNT,$Label.AttainmentAmount,$Label.AttainmentTiers)}</th>
+                                                            <th colspan="{!pdm.qualifiersLinks.size + 1}">{!IF(pdm.activeMeasure.PaymentAmountType__c == pdm.AMOUNT_TYPE_AMOUNT,$Label.Amount,$Label.rates)}</th>
+                                                            <th style="border-left: 0pt none;">&nbsp;</th>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>&nbsp;</td>
+                                                            <apex:variable var="qlItemsCount" value="{!1}"/> 
+                                                            <apex:repeat id="repsqualifiersLinks" value="{!pdm.qualifiersLinks}" var="ql">
+                                                               <td valign="top" style="{!IF(qlItemsCount == 1,'border-left: 1px solid #DEDEDE;','border-left: 0pt none;')}border-right: 0pt none;">
+                                                                   <apex:outputPanel layout="block"  rendered="{!qlItemsCount < pdm.qualifiersLinks.size}" style="color:#6E6E6E;font-size:11px;float:left;">  
+                                                                        <apex:outputtext value="{!currentSettings.qualifierCap}"></apex:outputtext>
+                                                                        #{!FLOOR(qlItemsCount)}
+                                                                   </apex:outputPanel>   
+                                                                   <apex:outputPanel layout="block"  rendered="{!qlItemsCount == pdm.qualifiersLinks.size}" style="color:#6E6E6E;font-size:11px;">  
+                                                                         <apex:outputtext value="{!$Label.xactlyexpress__RatesWithoutQualifiers}">
+                                                                                <apex:param value="{!currentSettings.qualifierPlural}"/>
+                                                                         </apex:outputtext>
+                                                                   </apex:outputPanel>
+                                                                   <span id="qlId{!FLOOR(qlItemsCount)}" style="display:none;">{!ql.Id}</span>
+                                                               </td>
+                                                               <apex:variable var="qlItemsCount" value="{!qlItemsCount+1}"/> 
+                                                            </apex:repeat>
+                                                            <td style="border-left: 0pt none;">&nbsp;</td>
+                                                            <td style="border-left: 0pt none;">&nbsp;</td>
+                                                        </tr>
+                                                      </thead>  
+                                                    <apex:variable var="rampCount" value="{!0}"/>
+                                                    <tbody><apex:repeat id="reppaymentRuleRampList" value="{!pdm.paymentRuleRampList}" var="p"><tr style="{!IF(MOD(rampCount,2) > 0,'','background-color: #E6E6E6;')}">
+                                                            <apex:outputPanel layout="none" rendered="{!IF(pdm.activeMeasure.XactlyExpress__PaymentRampType__c == 'No',true,false)}">
+                                                                <td>
+                                                                     {!$Label.forAllValues}&nbsp;
+                                                                </td>
+                                                            </apex:outputPanel>   
+                                                            <apex:outputPanel layout="none" rendered="{!IF(pdm.activeMeasure.XactlyExpress__PaymentRampType__c == 'No',true,false)}">
+                                                                <td>
+                                                                     {!$Label.notEditable}&nbsp;   
+                                                                </td>
+                                                            </apex:outputPanel>                                        
+                                                            <apex:outputPanel id="rampDel1Cont" layout="none"  rendered="{!IF(pdm.activeMeasure.XactlyExpress__PaymentAmountType__c == pdm.AMOUNT_TYPE_AMOUNT,true,false)}" >  
+                                                                <td>
+                                                                    <div style="float:left;">
+                                                                        <a class="rampDel" href="javascript:;" onclick="{!IF(pdm.selectProfile != null && pdm.selectProfile != 'a00000000000000000','return false;','')}rerenderNoCompare = false;waitOn();removeRamp({!floor(rampCount)});">                                  
+                                                                              {!$Label.xactlyexpress__REMOVE}
+                                                                        </a>                               
+                                                                        <apex:inputField id="rampDel1-1" styleClass="inputVisible needComma noPointFor0" onblur="replaceComma(this);" value="{!p.t.XactlyExpress__Min__c}" onclick="{!IF(pdm.selectProfile != null && pdm.selectProfile != 'a00000000000000000','this.readOnly = true;','')}"/>
+                                                                        <span style="{!IF(pdm.activeMeasure.PaymentRampType__c == pdm.RAMP_TYPE_RESULT,'display:none','display:inline')};width:auto;" class="clsMax">%</span>
+                                                                    </div>
+                                                                </td>
+                                                            </apex:outputPanel>             
+
+                                                            <apex:outputPanel id="rampDel2Cont" layout="none"  rendered="{!IF((pdm.activeMeasure.XactlyExpress__PaymentAmountType__c == pdm.AMOUNT_TYPE_RATE || pdm.activeMeasure.XactlyExpress__PaymentAmountType__c == pdm.AMOUNT_TYPE_RATE_SALE) && pdm.activeMeasure.XactlyExpress__PaymentRampType__c == pdm.RAMP_TYPE_RESULT,true,false)}" >  
+                                                                <td class="{!IF(pdm.selectProfile != null && pdm.selectProfile != 'a00000000000000000','disabledOpacityButton','')}">
+                                                                    <div style="float:left;">
+                                                                        <a class="rampDel" href="javascript:;" onclick="{!IF(pdm.selectProfile != null && pdm.selectProfile != 'a00000000000000000','return false;','')}rerenderNoCompare = false;waitOn();removeRamp({!floor(rampCount)});">                                  
+                                                                              {!$Label.xactlyexpress__REMOVE}
+                                                                        </a>              
+                                                                        <apex:inputField id="rampDel2-1" styleClass="inputVisible needComma noPointFor0"  onblur="replaceComma(this);setPrevMax(this);setMax();" value="{!p.t.XactlyExpress__Min__c}" onclick="{!IF(pdm.selectProfile != null && pdm.selectProfile != 'a00000000000000000','this.readOnly = true;','')}"/> 
+                                                                        <img alt="" src="{!URLFOR($Resource.XactlyExpress__XactlySMBResources ,'img/layout/formFlech.png')}" style="display:inline;margin-left:5px;"/>
+                                                                        <apex:inputField id="rampDel2-2" styleClass="inputHidden needComma noPointFor0"   value="{!p.t.XactlyExpress__Max__c}" onclick="this.readOnly  = true;"/>
+                                                                    </div>
+                                                                </td>
+                                                            </apex:outputPanel> 
+                                                            
+                                                           <apex:outputPanel id="rampDel3Cont" layout="none"  rendered="{!IF((pdm.activeMeasure.XactlyExpress__PaymentAmountType__c == pdm.AMOUNT_TYPE_RATE || pdm.activeMeasure.XactlyExpress__PaymentAmountType__c == pdm.AMOUNT_TYPE_RATE_SALE) && pdm.activeMeasure.XactlyExpress__PaymentRampType__c == pdm.RAMP_TYPE_ATTAINMENT,true,false)}" >  
+                                                                <td class="{!IF(pdm.selectProfile != null && pdm.selectProfile != 'a00000000000000000','disabledOpacityButton','')}">
+                                                                    <div style="float:left;">    
+                                                                        <a class="rampDel" href="javascript:;" onclick="{!IF(pdm.selectProfile != null && pdm.selectProfile != 'a00000000000000000','return false;','')}rerenderNoCompare = false;waitOn();removeRamp({!floor(rampCount)});">                                  
+                                                                              {!$Label.xactlyexpress__REMOVE}
+                                                                        </a>              
+                                                                        <apex:inputField id="rampDel3-1" styleClass="inputVisible needComma noPointFor0"  onblur="replaceComma(this);setPrevMax(this);setMax();" value="{!p.t.XactlyExpress__Min__c}" onclick="{!IF(pdm.selectProfile != null && pdm.selectProfile != 'a00000000000000000','this.readOnly = true;','')}"/><div style="display:inline;">%</div>
+                                                                        <img alt="" src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/formFlech.png')}"  style="display:inline;margin-left:5px;"/>
+                                                                        <apex:inputField id="rampDel3-2" styleClass="inputHidden needComma noPointFor0"  style="width: 65px;" value="{!p.t.XactlyExpress__Max__c}" onclick="this.readOnly = true;"/>
+                                                                        <span style="display:inline;" class="clsMax">%</span>
+                                                                    </div> 
+                                                                </td>
+                                                            </apex:outputPanel>                                                             
+                                                            
+                                                            <apex:variable var="linkCount" value="{!1}"/>
+                                                            <apex:repeat id="reptiers" value="{!p.tiers}" var="q">
+                                                                <apex:outputPanel layout="none"  rendered="{!IF((pdm.activeMeasure.XactlyExpress__PaymentAmountType__c == pdm.AMOUNT_TYPE_RATE || pdm.activeMeasure.XactlyExpress__PaymentAmountType__c == pdm.AMOUNT_TYPE_RATE_SALE),true,false)}" >  
+                                                                    <td width="140">
+                                                                        <apex:inputCheckBox value="{!q.toSet}" style="{!IF(pdm.selectProfile != null && pdm.selectProfile != 'a00000000000000000','','display:none;')}" onclick="changeToOverride(this);"/>
+                                                                        <apex:outputPanel rendered="{!IF(q.formulaSize > 0,false,true)}">
+                                                                            <apex:inputField id="inpTier" styleClass="inputVisible needComma" style="display:inline;{!IF(q.toSet,'','display:none;')}" onblur="replaceComma(this);$(this).val($(this).val().replace('-'+nbrSeparator,'-'))" value="{!q.t.XactlyExpress__Value__c}" /> <span  style="{!IF(q.toSet ,'display:inline;','display:none;')}"> {!IF(pdm.activeMeasure.PaymentAmountType__c == pdm.AMOUNT_TYPE_RATE,'%','')} </span>
+                                                                            <span class="toHideShow" style="{!IF(q.toSet,'display:none;','display:inline;')}"><span class="needCommaSpan">{!q.dt.Value__c}</span>{!IF(pdm.activeMeasure.PaymentAmountType__c == pdm.AMOUNT_TYPE_RATE,'%','')} &nbsp;</span>
+                                                                            
+                                                                        </apex:outputPanel>
+                                                                        
+                                                                        <div  class="inLineC" style="display:inline;">
+                                                                            <div class="formulaIcon formuleLink" id="fx{!FLOOR(rampCount)}-{!FLOOR(linkCount)}" style="{!IF(q.toSet,'display:inline;','display:none;')}" onmouseover="jQuery(this).css('background-position','bottom');"  onclick="rerenderNoCompare = false;loadFormulas({!FLOOR(rampCount)},{!FLOOR(linkCount - 1)});" onmouseout="jQuery(this).css('background-position','top');"></div>
+                                                                        </div>
+                                                                        <div class="toShowHide"  style="margin-top:expression('0px');{!IF(q.toSet,'','display:none;')}">
+                                                                            <apex:outputLabel value="{!q.formulaDisplay}"></apex:outputLabel>
+                                                                        </div> 
+                                                                        <div class="toHideShow" style="margin-top:expression('0px');{!IF(q.toSet,'display:none;','')}">
+                                                                            <apex:outputLabel value="{!q.formulaDisplayDefault}"></apex:outputLabel>
+                                                                        </div> 
+                                                                    </td>
+                                                                </apex:outputPanel>  
+                                                                
+                                                                <apex:outputPanel layout="none"  rendered="{!IF(pdm.activeMeasure.XactlyExpress__PaymentAmountType__c == pdm.AMOUNT_TYPE_AMOUNT,true,false)}" >  
+                                                                    <td width="140">
+                                                                        <apex:inputCheckBox value="{!q.toSet}" style="{!IF(pdm.selectProfile != null && pdm.selectProfile != 'a00000000000000000','','display:none;')}" onclick="changeToOverride(this);"/>
+                                                                        <apex:outputPanel rendered="{!IF(q.formulaSize > 0,false,true)}">
+                                                                            <apex:inputField styleClass="inputVisible needComma" style="display:inline;{!IF(q.toSet,'','display:none;')}" onblur="replaceComma(this);" value="{!q.t.XactlyExpress__Value__c}" />
+                                                                            <span class="toHideShow needCommaSpan" style="{!IF(q.toSet,'display:none;','display:inline;')}">{!q.dt.XactlyExpress__Value__c}</span>
+                                                                        </apex:outputPanel>
+                                                                        
+                                                                        <apex:outputPanel styleClass="toShowHide" style="{!IF(q.toSet,'','display:none;')}"  rendered="{!IF(q.formulaSize > 0,true,false)}">
+                                                                            <apex:outputText value="{!$Label.xactlyexpress__FormulaCap}" styleclass="areaTitle" style="font-size:11px;"/>
+                                                                        </apex:outputPanel>  
+                                                                        <apex:outputPanel styleClass="toHideShow" style="{!IF(q.toSet,'display:none;','')}" rendered="{!IF(q.formulaDefaultSize > 0,true,false)}">
+                                                                            <apex:outputText value="{!$Label.xactlyexpress__FormulaCap}" styleclass="areaTitle" style="font-size:11px;"/>
+                                                                        </apex:outputPanel>  
+                                                                        <div  class="inLineC" style="display:inline;">
+                                                                            <div class="formulaIcon formuleLink" style="{!IF(q.toSet,'display:inline;','display:none;')}" onmouseover="jQuery(this).css('background-position','bottom');"  onclick="rerenderNoCompare = false;loadFormulas({!FLOOR(rampCount)},{!FLOOR(linkCount - 1)});" onmouseout="jQuery(this).css('background-position','top');"></div>
+                                                                        </div>
+                                                                        <div class="toShowHide"  style="margin-top:expression('0px');{!IF(q.toSet,'','display:none;')}">
+                                                                            <apex:outputLabel value="{!q.formulaDisplay}"></apex:outputLabel>
+                                                                        </div> 
+                                                                        <div class="toHideShow" style="margin-top:expression('0px');{!IF(q.toSet,'display:none;','')}">
+                                                                            <apex:outputLabel value="{!q.formulaDisplayDefault}"></apex:outputLabel>
+                                                                        </div> 
+                                                                    </td>
+                                                                </apex:outputPanel> 
+                                                                <apex:variable var="linkCount" value="{!linkCount+1}"/>
+                                                            </apex:repeat>  
+                                                            <td valign="top" style="width: 30px;max-width: 30px;" class="{!IF(pdm.selectProfile != null && pdm.selectProfile != 'a00000000000000000','disabledOpacityButton','')}">               
+                                                                <apex:commandLink rendered="{!rampCount == 0}" styleClass="btnAction"  action="{!pdm.addQualifierLink}" onclick="{!IF(pdm.selectProfile != null && pdm.selectProfile != 'a00000000000000000','return false;','')}waitOn();" oncomplete="showOptions();replaceCommaAll();setMax();setterTitle();overrideColor();waitOff();" rerender="paymentsTable" style="position:relative;">
+                                                                    <span class="rightBtnSilver" style="white-space: nowrap; -webkit-transform: rotate(90deg);-moz-transform: rotate(90deg); filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=1);position:absolute;top:44px;left:-35px; top: 0\9; left: 0\9;">
+                                                                        <span class="leftBtnSilver  {!IF(pdm.selectProfile != null && pdm.selectProfile != 'a00000000000000000','disabledOpacityButton','')}">
+                                                                            <span class="middleBtnSilver" style="text-align:center;width:100px">
+                                                                                <apex:outputtext value="{!$Label.xactlyexpress__AddMoreQualifiers}">
+                                                                                    <apex:param value="{!currentSettings.qualifierPluralCap}"/>
+                                                                                </apex:outputtext>
+                                                                            </span>
+                                                                        </span>
+                                                                    </span>
+                                                                </apex:commandLink>
+                                                            </td>
+                                                            <td style="border-left: 0pt none;">&nbsp;<apex:variable var="rampCount" value="{!rampCount+1}"/></td>
+                                                        </tr></apex:repeat><tr class="ultimateRow {!IF(pdm.selectProfile != null && pdm.selectProfile != 'a00000000000000000','disabledOpacityButton','')}">
+                                                            <td  valign="top" style="padding-top: 0px;">
+                                                               <table style="clear: both;{!IF(pdm.showOptions,'display: none;','')}" class="optionsHide" cellspacing="0" cellpadding="0">
+                                                                   <tr><td style="border-left: 0pt none;padding: 0px;">
+                                                                       <div class="btnToLeft btnAction">
+                                                                           <a href="javascript:;" onclick="{!IF(pdm.selectProfile != null && pdm.selectProfile != 'a00000000000000000','return false;','')}addRuleRampWithCheck();" class="areaTitle actionButton newActionbutton">
+                                                                               <span class="rightBtnSilver {!IF(pdm.selectProfile != null && pdm.selectProfile != 'a00000000000000000','disabledOpacityButton','')}" >
+                                                                                   <span class="leftBtnSilver" style="margin-bottom:expression('-3px');">
+                                                                                       <span class="middleBtnSilver" >
+                                                                                           {!$Label.AddRows}
+                                                                                       </span>
+                                                                                   </span>
+                                                                               </span>
+                                                                           </a>
+                                                                       </div>
+                                                                   </td><td style="border-left: 0pt none;padding: 0px;">
+                                                                       <apex:inputText value="{!pdm.numRowsCreate}" styleClass="tierNumberInput" onchange="IsNumeric(this);" style="width:30px;text-align:center;"  onclick="{!IF(pdm.selectProfile != null && pdm.selectProfile != 'a00000000000000000','this.readOnly = true;','')}"/>
+                                                                   </td></tr>      
+                                                               </table>
+                                                            </td>
+                                                            <apex:variable var="qItemsCount" value="{!1}"/>
+                                                            <apex:repeat id="repqualifiersLinks" value="{!pdm.qualifiersLinks}" var="ql">
+                                                                   <td valign="top" style="padding-top: 0px;border-left: 0pt none;">
+                                                                      <apex:outputPanel layout="block"  style="position: relative;{!IF(qItemsCount < pdm.qualifiersLinks.size,'','display:none;')}">  
+                                                                            <apex:outputPanel rendered="{!qItemsCount == pdm.qualifiersLinks.size - 1}" style="position: absolute; right: 0pt;">
+                                                                               <a class="btnAction"  onclick="{!IF(pdm.selectProfile != null && pdm.selectProfile != 'a00000000000000000','return false;','')}showOptions();" href="javascript:;">
+                                                                                  <span class="rightBtnSilver">
+                                                                                    <span class="leftBtnSilver">
+                                                                                        <span class="middleBtnSilver optionsToChangeText">
+                                                                                            <apex:outputtext value="{!IF(pdm.showOptions,$Label.xactlyexpress__Hide,$Label.xactlyexpress__Options)}"></apex:outputtext>
+                                                                                        </span>
+                                                                                    </span>
+                                                                                  </span>
+                                                                                </a>
+                                                                            </apex:outputPanel>
+                                                                            
+                                                                            <apex:actionFunction name="saveQualifierOptionsAF" action="{!pdm.saveQualifierOption}" rerender="aux" oncomplete="rerenderNoCompare=true;"/>
+                                                                            <apex:inputHidden value="{!pdm.optionQualifiers}" id="optionQualifiers"/>
+                                                                            <div style="clear:both;"></div>
+                                                                            <div style="padding-top:30px;{!IF(pdm.showOptions && qItemsCount < pdm.qualifiersLinks.size,'','display: none;')}" class="{!IF(qItemsCount < pdm.qualifiersLinks.size,'optionsShow','')}">
+                                                                                
+                                                                                <apex:selectList id="qualifLst" styleclass="needTitle qualifierSel" multiselect="false" size="1"  value="{!ql.XactlyExpress__PaymentQualifierID__c}" >
+                                                                                   <apex:selectOptions value="{!pdm.qualifiers}"/>
+                                                                                </apex:selectList>
+                                                                                <div style="clear:both;"></div>
+                                                                                <a href="javascript:;" class="btnAction"  onclick="{!IF(pdm.selectProfile != null && pdm.selectProfile != 'a00000000000000000','return false;','')}rerenderNoCompare = false;openQualifierPopup('{!planId}',-1);">
+                                                                                    <span class="rightBtnSilver">
+                                                                                        <span class="leftBtnSilver">
+                                                                                            <span class="middleBtnSilver"  style="padding: 3px 0 3px 1pt;">
+                                                                                                <apex:outputtext value="{!$Label.xactlyexpress__NewRule}"></apex:outputtext>
+                                                                                            </span>
+                                                                                        </span>
+                                                                                    </span>
+                                                                                </a>
+                                                                                <a href="javascript:;" class="btnAction" onclick="{!IF(pdm.selectProfile != null && pdm.selectProfile != 'a00000000000000000','return false;','')}rerenderNoCompare = false;openQualifierPopup('{!planId}',{!FLOOR(qItemsCount)});">
+                                                                                    <span class="rightBtnSilver"  style="margin-left: 3px;">
+                                                                                        <span class="leftBtnSilver">
+                                                                                            <span class="middleBtnSilver"  style="padding:3px 0;">
+                                                                                                <apex:outputtext value="{!$Label.xactlyexpress__EditRule}"></apex:outputtext>
+                                                                                            </span>
+                                                                                        </span>
+                                                                                    </span>
+                                                                                </a>
+                                                                                <div style="clear:both;"></div>
+                                                                                <a href="javascript:;" class="btnAction"  onclick="removeQL({!FLOOR(qItemsCount)});">
+                                                                                    <span class="rightBtnSilver"  style="margin: 2px; width:120px; {!IF(qItemsCount < pdm.qualifiersLinks.size,'','display:none;')}">
+                                                                                        <span class="leftBtnSilver" style="width: 115px;">
+                                                                                            <span class="middleBtnSilver"  style="padding: 3px 0 3px 3px; text-align: center; width: 110px;">
+                                                                                                <apex:outputtext value="{!$Label.xactlyexpress__removeQualifier}">
+                                                                                                    <apex:param value="{!currentSettings.qualifierCap}"/>
+                                                                                                </apex:outputtext>
+                                                                                            </span>
+                                                                                        </span>
+                                                                                    </span>
+                                                                                </a>
+                                                                            </div>
+                                                                        </apex:outputPanel>
+                                                                        <apex:variable var="qItemsCount" value="{!qItemsCount+1}"/>   
+                                                                   </td> 
+                                                            </apex:repeat>
+                                                            <td style="border-left: 0pt none;">&nbsp;</td>
+                                                            <td style="border-left: 0pt none;">&nbsp;</td>
+                                                        </tr>
+                                                    </tbody>
+                                                    </table> 
+                                                     <table style="clear: both;{!IF(pdm.showOptions,'','display: none;')}"  class="optionsShow" cellspacing="0" cellpadding="0">
+                                                        <tr><td style="border-left: 0pt none;padding: 0px;">
+                                                            <div class="btnToLeft btnAction">
+                                                                <a href="javascript:;" onclick="{!IF(pdm.selectProfile != null && pdm.selectProfile != 'a00000000000000000','return false;','')}addRuleRampWithCheck();" class="areaTitle actionButton newActionbutton">
+                                                                    <span class="rightBtnSilver {!IF(pdm.selectProfile != null && pdm.selectProfile != 'a00000000000000000','disabledOpacityButton','')}" >
+                                                                        <span class="leftBtnSilver" style="margin-bottom:expression('-3px');">
+                                                                            <span class="middleBtnSilver" >
+                                                                                {!$Label.AddRows}
+                                                                            </span>
+                                                                        </span>
+                                                                    </span>
+                                                                </a>
+                                                            </div>
+                                                        </td><td style="border-left: 0pt none;padding: 0px;">
+                                                            <input value="{!pdm.numRowsCreate}" class="tierNumberInput" onchange="IsNumeric(this);$('.tierNumberInput')[0].value=this.value;" style="width:30px;text-align:center;"  onclick="{!IF(pdm.selectProfile != null && pdm.selectProfile != 'a00000000000000000','this.readOnly = true;','')}"/>
+                                                        </td></tr>      
+                                                    </table>
+                                                    <script>
+                                                        var overridenPerson = new Array();
+                                                        var isWithOut0 = {!IF(pdm.activeMeasure.PaymentAmountType__c == pdm.AMOUNT_TYPE_RATE_SALE,'true','false')};
+                                                        <apex:repeat value="{!pdm.overridenProfiles}" var="person">
+                                                              overridenPerson["{!person.id}"] = "{!person.ProfileId__r.UserId__r.Name}";
+                                                        </apex:repeat>
+                                                    </script>
+                                                </apex:outputPanel> 
+                                                <script>
+                                                    var selectedIndex = document.getElementById('{!$Component.selectedIndexHidden}');
+                                                    var paymentsTableId = '{!$Component.paymentsTable}';
+                                                </script>
+                                                <apex:selectList id="profielsToOverviewLst" onchange="waitOn();checkRefreshRampTiers(this);" styleclass="needTitle toColorizeOverride selProfiles" multiselect="false" size="1"  value="{!pdm.selectProfile}" style="border:1px solid #CECECE;position:absolute;right:52px;top:5px;z-index:10;">
+                                                   <apex:selectOptions value="{!pdm.profielsToOverview}"/>
+                                                </apex:selectList> 
+                                            </apex:outputPanel>
+                                            <br/>
+                                            <span class="areaTitle {!IF(pdm.selectProfile != null && pdm.selectProfile != 'a00000000000000000','disabledOpacityButton','')}"  style="margin-left: 5px;{!IF(pdm.activeMeasure.XactlyExpress__PaymentAmountType__c == pdm.AMOUNT_TYPE_AMOUNT,'display:none;','')}">{!$Label.HighestRate}:</span> <apex:inputCheckBox value="{!pdm.activeMeasure.XactlyExpress__ApplyHighestRate__c}" disabled="{!pdm.selectProfile != null && pdm.selectProfile != 'a00000000000000000'}" style="{!IF(pdm.activeMeasure.XactlyExpress__PaymentAmountType__c == pdm.AMOUNT_TYPE_AMOUNT,'display:none;','')}"/> 
+                                            <span style="margin-left:10px;{!IF(pdm.activeMeasure.XactlyExpress__PaymentAmountType__c == pdm.AMOUNT_TYPE_AMOUNT,'display:none;','')}"  class="{!IF(pdm.selectProfile != null && pdm.selectProfile != 'a00000000000000000','disabledOpacityButton','')}">{!$Label.HighestRateDesc}</span>
+                                        </div>
+                                    </div>    
+                                    <apex:inputHidden value="{!pdm.showOptions}" id="showOptionsI"/>
+                                    <script>
+                                        var showOptionsId = '{!$Component.showOptionsI}'.replace(/:/g,'\\:');
+                                    </script>
+                                </div>         
+                                <div class="bm">
+                                    <div style="float: left;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/bl.png')}" /></div>
+                                    <div style="float: right;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/br.png')}" /></div>
+                                </div> 
+                            </div>
+                            
+      
+                            <apex:outputPanel id="step7" layout="block">
+                                      <!--  STEP 7 -->
+                                <div class="box" id="step7" style="{!IF(pdm.activeMeasure.PaymentAmountType__c == pdm.AMOUNT_TYPE_AMOUNT,'','display:none;')}margin-right: 15px; margin-bottom: 80px; margin-left: 15px;">
+                                    <div class="tm">
+                                       <div style="float: left;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/tl.png')}" /></div>
+                                       <div style="float: right;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/tr.png')}" /></div>
+                                       <div style="clear:both"></div>
+                                    </div> 
+                                    <div class="roundedBox">
+                                        <div class="boxHeader">
+                                            <div class="PNovaBlack60c5 stepActionNumber">
+                                                G 
+                                            </div>
+                                            <div class="titleWrapper">  
+                                                <div class="mainTitle PNovaSemiBold17c3">{!$Label.PAYMENT_TRUE_UP}</div>
+                                                <div class="detailedTitle HelveticaRegular12c3">{!$Label.PAYMENT_TRUE_UP_Desc}</div>
+                                            </div>
+                                            <div class="extraTitleStuff"></div>
+                                            <div style="clear:both"></div>
+                                        </div> 
+                                        <div class="boxContent" style="padding-top: 10px; padding-bottom: 0px; padding-left: 40px;">
+                                                <apex:inputCheckBox id="trueUP" value="{!pdm.activeMeasure.XactlyExpress__IsTrueUp__c}" style="float: left;" disabled="{!(pdm.activeMeasure.CreditRuleId__r.QuotaId__r.XactlyExpress__Frequency__c == 'Annual' || !pdm.checkQTD ||  pdm.activeMeasure.XactlyExpress__PaymentRampType__c != pdm.RAMP_TYPE_ATTAINMENT || pdm.paymentRuleRampList.size != 1)}"/>        
+                                                <script>
+                                                    var inputCheck = document.getElementById('{!$Component.trueUP}'); 
+                                                    {!IF(pdm.activeMeasure.PaymentAmountType__c != pdm.AMOUNT_TYPE_AMOUNT || pdm.activeMeasure.CreditRuleId__r.QuotaId__r.Frequency__c == 'Annual' || !pdm.checkQTD ||  pdm.activeMeasure.PaymentRampType__c != pdm.RAMP_TYPE_ATTAINMENT || pdm.paymentRuleRampList.size != 1, 'inputCheck.checked = false;', '')};
+                                                </script>
+                                                <div style="margin-left: 30px;margin-top: 2px;" >
+                                                    {!$Label.PAYMENT_TRUE_UP_check} <br/>
+                                                    <br/>
+                                                    <apex:outputText styleClass="font-size:10px;" value="{!$Label.xactlyexpress__PAYMENT_TRUE_UP_note}">
+                                                        <apex:param value="{!currentSettings.quotas}"/>
+                                                    </apex:outputText><br/>
+                                                </div>                     
+                                                
+                                        </div>    
+                                    </div>         
+                                    <div class="bm">
+                                        <div style="float: left;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/bl.png')}" /></div>
+                                        <div style="float: right;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/br.png')}" /></div>
+                                    </div> 
+                                </div>
+                            </apex:outputPanel>     
+                        </apex:outputPanel>
+                    </div>  
+
+                </apex:outputPanel>
+                <apex:outputPanel style="border-left:1px solid #CAE2F9;height:100%;" layout="block" styleClass="content scrollContent" rendered="{!creditOptions.size == 1}"> 
+                    {!$Label.xactlyexpress__notCreditForPayment} 
+                </apex:outputpanel>  
+                <div style="clear:both"></div>  
+            </apex:outputPanel>  
+            <!-- FOOTER  -->
+            <apex:outputPanel layout="block" styleClass="footer" rendered="{!AND(isAdmin,!isNull(pdm.activeMeasure))}" id="pFooter">
+                <apex:outputPanel layout="block" styleClass="previousStepWrapper" style="max-width:150px;">
+                    <div class="previousStepRight"></div>
+                        <a href="{!$Page.XactlySMBPlanCreateCredits}?step=2&id={!plan.Id}" class="previousStepMiddle prev" id="prevBtn" onclick="">
+                            {!$Label.PreviousStep}
+                        </a>
+                    <div class="previousStepLeft"></div>
+                </apex:outputpanel> 
+                
+                
+                <apex:actionFunction name="savePlanStep5" action="{!savePlanStep5}"/>
+                <apex:outputPanel layout="block" styleClass="actionButtons" rendered="{!creditOptions.size > 0}">                        
+                    <apex:outputPanel layout="block" styleClass="actionButtonWrapper">
+                        <div class="actionButtonLeft"></div>
+                        <a class="actionButtonMiddle center1" id="saveBtn" href="javascript:;" onclick="storeValues();checkNewQL();">
+                            <apex:outputtext escape="false" value="{!$Label.xactlyexpress__SaveChanges}"> 
+                                <apex:param value="{!URLFOR($Resource.XactlyExpress__XactlySMBResources ,'img/buttons/navigateSaveMiddle.gif')}" />
+                            </apex:outputtext>  
+                        </a>
+                        <div class="actionButtonRight"></div>    
+                    </apex:outputpanel>
+                 
+                    <apex:outputPanel layout="block" styleClass="actionButtonWrapper" rendered="{!creditOptions.size > 0}">
+                        <div class="actionButtonLeft"></div>
+                        <a href="javascript:;" id="discardChangBtn" class="actionButtonMiddle" onclick="discardChangesConfirm('{!$Page.XactlySMBPlanCreateStep5}?step=5&id={!JSENCODE(idPlan)}&payment={!JSENCODE(payment)}');">
+                            <apex:outputtext escape="false" value="{!$Label.xactlyexpress__DiscardChanges}">
+                               <apex:param value="{!URLFOR($Resource.XactlyExpress__XactlySMBResources ,'img/buttons/navigateCancelMiddle.gif')}" />
+                            </apex:outputtext>
+                        </a>
+                        <div class="actionButtonRight"></div>    
+                    </apex:outputpanel>
+                </apex:outputPanel>
+        
+                <apex:outputPanel layout="block" styleClass="nextStepWrapper" style="margin-right:100px;">
+                    <div class="nextStepLeft"></div>
+                    <a href="javascript:;" id="nextStepbtn" class="nextStepMiddle" onclick="saveNextStep();">
+                        {!$Label.NextStep}
+                    </a>
+                    <div class="nextStepRight"></div>
+                </apex:outputPanel>
+            </apex:outputPanel>
+            <c:XactlySMBNewCredit /> 
+            <apex:inputText id="deleteCriteriaKeyInput" value="{!pdm.deleteCritIndx}" style="display:none;"/>
+        </apex:form>   
+        <c:XactlySMBReleaseRuleBox id="releaseRuleComp"/>
+    </div>  
+    
+        <!-- LIGHT BOX -->
+        <div style="display:none;padding-right:5px;" title="{!$Label.Formula}" id="formulaWrapper">
+        <apex:form id="formulaContent">
+           <div style="margin-bottom:-5px;background-image: url('{!URLFOR($Resource.XactlySMBResources ,'img/layout/topOrange.png')}');margin-left:15px;margin-right:11px;">
+                <div style="float: left;margin-left:-15px;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/topLeftOrange.png')}"/></div>
+                <div style="float: right;margin-right:-15px;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/topRightOrange.png')}"/></div>
+                <div style="clear:both"></div>
+            </div>
+            <div style="width:100%;border-right:2px solid #D49761;border-left:2px solid #D49761;background-color:#FFF;">
+                <div class="box" style="margin-right: 15px; margin-left: 15px;">
+                    <div class="tm">
+                       <div style="float: left;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/tl.png')}" /></div>
+                       <div style="float: right;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/tr.png')}" /></div>
+                       <div style="clear:both"></div>
+                    </div> 
+                    <div class="roundedBox">
+                        <div class="boxHeader">
+                            <div class="PNovaBlack60c5 stepActionNumber">
+                             
+                            </div>
+                            <div class="titleWrapper">  
+                                <div class="mainTitle PNovaSemiBold17c3"><apex:outputText value="{!$Label.xactlyexpress__quicklyFormulas}" escape="false"></apex:outputText></div>
+                                <div class="detailedTitle HelveticaRegular12c3"></div>
+                            </div>
+                            <div class="extraTitleStuff"></div>
+                            <div style="clear:both"></div>
+                        </div>
+                        <div class="boxContent" style="padding-left:10px">
+                             <!-- - ->
+                                <div id="formulaItems">
+                                    <apex:outputPanel id="formulaBlock" style="float:left;margin-bottom:5px;border-left: 5px solid;border-right: 5px solid;width:470px" layout="block"> 
+
+                                        <div style="border: 1px solid; width: 5px; height: 5px; background-color: black;float:left;"></div>
+                                        <div style="border: 1px solid; width: 5px; height: 5px; background-color: black;float:right;"></div>
+                                        <div style="clear:both"></div>
+
+                                        <apex:variable var="i" value="{!1}"/>
+                                        <apex:repeat value="{!pdm.activeTier.formulas}" var="f">
+                                                <div style="float:left;">
+                                                    <apex:selectList styleclass="operator" rendered="{!IF(f.Order__c == 0, false,true)}" id="selOp" value="{!f.Operator__c}" multiselect="false" size="1"  style="width: 40px">
+                                                        <apex:selectOptions value="{!pdm.SelForOptions}"/>
+                                                    </apex:selectList>
+                                                </div>
+                                                
+                                                <div style="clear:both;"></div>
+                                                
+                                                <apex:outputPanel layout="block" style="clear:both; height:10px"></apex:outputPanel>
+                                                
+                                                <div style="float:left;margin-left:5px;" id="letter">
+                                                    {!FLOOR(i)}
+                                                </div>
+                                                
+                                                <div onclick="waitOn();deleteFormula('{!JSENCODE(TEXT(f.Order__c))}');" class="deleteFieldBtn" style="color:#CE641B;cursor:pointer;font-size:7pt;font-weight:bolder;">
+                                                    {!$Label.REMOVE}
+                                                </div>
+                                                
+                                                <div style="float:left;"> 
+                                                    <select class="show needTitle" size="1" style="width: 120px;" id="formulaType_{!FLOOR(f.Order__c )}" name="formulaType_{!FLOOR(f.Order__c )}" onchange="formulaPopupHandler.loadFormulaItem(this);">
+                                                      <option value="1">
+                                                        Data Field
+                                                      </option>
+                                                      <option value="2">
+                                                        System Field
+                                                      </option>
+                                                      <option value="3">
+                                                        Numeric Value
+                                                      </option>
+                                                      <option value="4">
+                                                        Percent Value
+                                                      </option>
+                                                    </select>    
+                                                </div>
+                                                                                            
+                                                <div class="formulaItemDiv" style="float:left;"> 
+                                                    <apex:selectList styleclass="{!IF(f.Field__c!='Number' && f.Field__c!='Percentage','show','hide')} formulaOption f_{!FLOOR(f.Order__c )}" onchange="setterTitle();formulaPopupHandler.updateRawAdvFormulaOnChange({!FLOOR(i)-1});" value="{!f.Field__c}" multiselect="false" size="1" style="width: 120px;margin-left:20px;">
+                                                         <apex:selectOptions value="{!pdm.selObjOptions}"/>
+                                                    </apex:selectList>
+                                                    <apex:inputtext size="10" value="{!f.Value__c}" styleclass="{!IF(f.Field__c=='Number' || f.Field__c=='Percentage','show','hide')}" style="margin-left:20px;width:118px;" onblur="validateNumber(this);" onchange="formulaPopupHandler.updateRawAdvFormulaOnChange({!FLOOR(i)-1});"/>
+                                                    <!--  apex:inputtext size="10" value="{!f.Value__c}" styleclass="{!IF(f.Field__c=='Percentage','show','hide')}" style="margin-left:20px;width:118px;" onblur="validateNumber(this);" onchange="formulaPopupHandler.updateRawAdvFormulaOnChange({!FLOOR(i)-1});"/ - ->
+                                                    
+                                                    
+                                                </div>
+                                                <div style="float: left; width: 20px; height: 20px;">
+                                                    <span id="percentSymbol_{!FLOOR(f.Order__c )}" class="titleA" style="font-size: 17px; font-weight: bold; margin-left: 2px; display: none;">%</span>
+                                                </div>
+                                           
+                                            <apex:variable var="i" value="{!i + 1}"/>    
+                                        </apex:repeat>
+                                        <div style="clear:both"></div>
+                                        <div style="border: 1px solid; width: 5px; height: 5px; background-color: black;float:left;"></div>
+                                        <div style="border: 1px solid; width: 5px; height: 5px; background-color: black;float:right;"></div>
+                                        <div style="clear:both"></div>
+                                    </apex:outputPanel>
+                                    <div style="float:left;margin-left:5px;margin-top:15px;" class="selectedNumericDeal">X {!pdm.activeMeasure.CreditRuleID__r.DealAttributeID__r.DisplayName__c}</div>
+                                    <div style="clear:both"></div>
+                                </div>
+                                <div>
+                                    <div style="height:80px;padding-left:20px;">
+                                        <hr style="margin-left:6px;"/>
+                                        <apex:outputPanel layout="block" styleClass="actionButtonWrapper" style="margin-top:-1px;">
+                                            <div class="actionButtonLeft" style="margin:0;"></div>
+                                                <apex:commandLink action="{!pdm.addFormulaField}" styleClass="actionButtonMiddle" style="margin:0;color:#CE641B;" rerender="formulaBlock, rawAdvFormula, override" onclick="waitOn();jQuery.superbox.overrideSourceWithSuperboxContent();" oncomplete="replaceCommaAll();setMax();introAsTab();setterTitle();jQuery.superbox.refreshSuperboxContent();formulaPopupHandler.updateFormulaTypes();formulaPopupHandler.generateReadableAdvancedFormula();waitOff();">
+                                                      {!$Label.AddMoreFields2}
+                                                </apex:commandLink>
+                                            <div class="actionButtonRight" style="margin:0;"></div>
+                                        </apex:outputPanel>
+                                        <div style="clear: both;"></div>
+                                        <div style="display: block; margin-top: 20px;">
+                                          {!$Label.IsThere}<apex:inputCheckbox value="{!pdm.activeTier.t.XactlyExpress__IsAdvFormula__c}" id="isAdvFormula" onclick="formulaPopupHandler.switchAdvFormulas();" />
+                                          <br/>
+                                          <apex:inputField value="{!pdm.activeTier.t.Formula__c}" id="rawAdvFormula" style="display:none;" />
+                                          <div id="advFormulaDiv" style="display:none;">
+                                            <input size="55" id="advFormula" onkeypress="formulaPopupHandler.filterNotAllowedChars(event);" onkeyup="jQuery(this).val(jQuery(this).val().toUpperCase());" />
+                                            <span style="margin-left: 15px;" class="selectedNumericDeal">X {!pdm.activeMeasure.CreditRuleID__r.DealAttributeID__r.DisplayName__c}</span>
+                                          </div>
+                                        </div>
+                                    </div>
+                                    <div style="clear: both;"></div>
+                                    -->
+                                    <apex:outputPanel id="subCritContainer" layout="block" style="position:relative;">
+	                                    <div id="tableCrtieriasContainer">
+	                                        <div id="tableCriterias" style="float:left" class="tableCriterias">
+	                                            <c:XactlySMBSubCriteriasComp id="subCritComp" sysFuncHelp="{!pdm.systemFunctionHelperInstanceList}" showOrNot="true" rowCount="1" iterIndex="1" formulaOptions="{!pdm.formulaOptions}" creditListQuota="{!pdm.creditListQuota}" FUNCTION_TYPE_ATTAINMENT="{!pdm.FUNCTION_TYPE_ATTAINMENT}" FUNCTION_TYPE_CREDIT="{!pdm.FUNCTION_TYPE_CREDIT}" CreditList="{!pdm.CreditsList}" periodOptions="{!pdm.periodOptions}" operatorsOptions="{!pdm.operatorsOptions}" isAdvFormula="{!pdm.activeTier.t.XactlyExpress__IsAdvFormula__c}" humanReadableSystemFunction="{!pdm.humanReadableSystemFunction}" systemFieldOptions="{!pdm.systemFieldOptions}"  dataFieldOptions="{!pdm.dataFieldOptions}" showWtespce="true" MEASURE_FORMULA_QUOTA="{!pdm.MEASURE_FORMULA_QUOTA}"/>
+	                                        </div>
+	                                        <div style="position:absolute;top:50%;margin-left:750px;" class="selectedNumericDeal">
+	                                            X {!IF(pdm.activeTier.overridePay,pdm.activeTier.overrideLabel,pdm.OverrideLabel)}
+	                                        </div>
+	                                        <div style="clear:both"></div>
+                                        </div>
+                                    </apex:outputPanel>
+                                    <div style="float: right;width:200px;margin-top:20px;">
+                                        <apex:outputPanel id="override" layout="block" rendered="{!pdm.activeMeasure.XactlyExpress__PaymentAmountType__c == pdm.AMOUNT_TYPE_RATE}">
+                                            <div class="totalAmountSelect" style="{!IF(pdm.activeTier.overridePay, '', 'display:none;')}">
+                                                <apex:selectList id="overrideWithNumericDealAttr" styleclass="needTitle" multiselect="false" size="1"  value="{!pdm.activeTier.t.XactlyExpress__DealAttributeID__c}" style="width: 95px" onchange="changeTextOverride();">
+                                                    <apex:selectOptions value="{!pdm.numericDealAttr}"/>
+                                                </apex:selectList>
+                                            </div>
+                                            <apex:inputCheckBox onclick="changeTotalAmountMode(this);setterTitle();" value="{!pdm.activeTier.overridePay}" styleclass="overridePayCheck"/>                                            
+                                            <apex:outputtext styleclass="totalAmountDesc" value="{!$Label.xactlyexpress__OverridePay}">
+                                                <apex:param value="{!currentSettings.quotas}"/>
+                                            </apex:outputtext>
+                                        </apex:outputPanel>
+                                    </div>
+                                    
+                                    <div style="clear: both;"></div>
+                                <!-- </div> -->
+                        </div>    
+                    </div>         
+                    <div class="bm">
+                        <div style="float: left;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/bl.png')}" /></div>
+                        <div style="float: right;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/br.png')}" /></div>
+                    </div> 
+                </div>
+           
+                <apex:outputPanel id="popupContainer" layout="block">
+                    <div id="formulaButtons" class="btnAction" style="clear:both; height:30px; margin-left:150px; margin-top:0px; padding-top:10px;">
+        
+                        <div class="marginBtn">
+                            <div onclick="waitOn(); return cancelFormulaPopup();" style="cursor:pointer;">
+                                <div class="rightBtnSilver">
+                                    <div class="leftBtnSilver">
+                                        <div class="middleBtnSilver">
+                                            {!$Label.Cancel}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="marginBtn">
+                            <div onclick="waitOn();resetFormula();" style="cursor:pointer;">
+                                <div class="rightBtnSilver">
+                                    <div class="leftBtnSilver">
+                                        <div class="middleBtnSilver">
+                                            {!$Label.Reset}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="marginBtn">
+                            <div style="cursor:pointer;" onclick="criteriasHandler.clrErr(jQuery('.tableCriterias')[1]);jQuery.superbox.overrideSourceWithSuperboxContent();if(criteriasHandler.chkErrors('criteriaRowSubCrit')==false){return false;};saveFormula();">
+                                <div class="rightBtnSilver">
+                                    <div class="leftBtnSilver">
+                                        <div class="middleBtnSilver">
+                                            {!$Label.Save_Return}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="marginBtn">
+                            <div onclick="waitOn();$innerbox.find('.overridePayCheck').attr('checked',false);jQuery.superbox.overrideSourceWithSuperboxContent();return clearFormula();" style="margin-right:10px; cursor:pointer;">
+                                <div class="rightBtnSilver">
+                                    <div class="leftBtnSilver">
+                                        <div class="middleBtnSilver">
+                                            {!$Label.clearFormula}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <apex:actionFunction name="cancelFormula" oncomplete="closePopupOnComplete();setterTitle();" action="{!pdm.ReloadFormulas}" rerender="paymentsTable"/>
+                        <apex:actionFunction name="saveReturnFormulasPopup" action="{!pdm.saveFormulas}" rerender="paymentsTable" oncomplete="closePopupOnComplete();" />
+                        <apex:actionFunction name="clearFormula" action="{!pdm.onlyClearFormula}" rerender="paymentsTable" oncomplete="closePopupOnComplete();" />
+                        <apex:actionFunction name="resetFormulaPopup" action="{!pdm.ReloadFormulas}" rerender="paymentsTable" oncomplete="closePopupOnComplete();setterTitle();" />
+                        <apex:actionFunction name="cancelFormulaPopup" oncomplete="closePopupOnComplete();" action="{!pdm.cancelFormulas}" rerender="paymentsTable" />
+                        <apex:actionFunction name="rerenderPopupIE" action="{!dummyRefresh}" rerender="popupContainer" oncomplete="setterTitle();" />
+                        <apex:actionFunction name="rerenderReleaseRuleBox" action="{!dummyRefresh}" rerender="releaseRuleBox" oncomplete="setterTitle();" />
+                        <apex:actionFunction name="deleteSubCriteriaAction" action="{!pdm.removeSubCriteria}" oncomplete="jQuery.superbox.refreshSuperboxContent();waitOff();criteriasHandler.setOperatorSelectValues('operatorCell');introAsTab();" rerender="subCritContainer"/>
+                        <apex:actionFunction name="addSubCriteriaAC" action="{!pdm.addSubCriteria}" oncomplete="jQuery.superbox.refreshSuperboxContent();waitOff();criteriasHandler.setOperatorSelectValues('operatorCell');introAsTab();rerenderNoCompare=true;" rerender="subCritContainer"/>
+                    </div>
+                     
+                </apex:outputPanel>
+                            
+           </div>
+           
+           <div style="background-image: url('{!URLFOR($Resource.XactlySMBResources ,'img/layout/bottomOrange.png')}');margin-left:15px;margin-right:11px;">
+               <div style="float: left;margin-left:-15px;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/bottomLeftOrange.png')}"/></div>
+               <div style="float: right;margin-right:-15px;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/bottomRightOrange.png')}"/></div>
+               <div style="clear:both"></div>
+           </div> 
+           </apex:form> 
+        </div>
+        
+        
+        <a href="javascript:;" id="openFormulaPopup"></a>
+    
+        <div style="display: none;">
+            <div id="fooPopup_px" class="jqpopup_cross"></div>
+            <div class="jqpopup_header" id="fooPopup_ph"></div>
+            <div id="fooPopup_pm" class="jqpopup_message"></div>
+            <div id="'fooPopup'_pc" class="jqpopup_content"></div>
+            <div id="fooPopup_pf" class="jqpopup_footer"></div>
+            <div id="fooPopup_ps" class="jqpopup_resize"></div>
+            <div id="fooPopup_pl" class="jqpopup_center"></div>
+        </div>
+    
+    <apex:includeScript value="{!URLFOR($Resource.XactlyExpress__CSN, 'jquery.js')}" />
+    <c:XactlySMBFooterScript /> 
+    
+    <script type="text/javascript" language="javascript" src="{!URLFOR($Resource.XactlySMBResources, 'js/jquery.curvycorners.min.js')}"></script>
+    <script type="text/javascript" language="javascript" src="{!URLFOR($Resource.XactlySMBResources, 'js/XactlySMBJavascript.js')}"></script>
+    <script type="text/javascript" src="{!URLFOR($Resource.XactlySMBResources, 'popup/js/jqDnR.min.js')}"></script>
+    <script type="text/javascript" src="{!URLFOR($Resource.XactlySMBResources, 'popup/js/jquery.jqpopup.min.js')}"></script>
+    <script type="text/javascript" src="{!URLFOR($Resource.XactlySMBResources, 'js/jquery.superbox-min.js')}"></script>
+    <script type="text/javascript" src="{!URLFOR($Resource.XactlySMBResources ,'js/jquery.tools.min.js')}"></script>
+    <script type="text/javascript" src="{!URLFOR($Resource.XactlySMBResources ,'js/jquery.bgiframe.min.js')}"></script>
+    <apex:includeScript value="{!URLFOR($Resource.XactlyExpress__XactlySMBResources, 'js/criteriasHandler.js')}" />
+	<script src="../../soap/ajax/19.0/connection.js" type="text/javascript"></script>
+	
+    <apex:outputPanel id="redirect">
+        <script>
+            function redirect(){
+                if({!IF(LEN(errorMsg)>0,false,true)}){    
+                    window.location = '{!$Page.XactlyExpress__XactlySMBReviewPlan}?step=6&id={!plan.Id}';
+                }else{
+                    savePageHandler.enableBottomBar();
+                }
+            }    
+            function redirectSave(){
+                if({!IF(LEN(errorMsg)>0,false,true)}){    
+                    window.location = '{!$Page.XactlyExpress__XactlySMBPlanCreateStep5}?step=5&id={!plan.Id}';
+                }
+            }
+        </script>
+    </apex:outputPanel>
+    <script>
+    
+            /**
+            ** Global Vars Definition
+            */
+            // Save Current Session ID
+            var SESSION_ID = '{!$Api.Session_ID}';
+            var NAMESPACE_PREFIX = '{!JSENCODE(namespace)}';
+            var CURRENT_USER = '{!$User.Id}';
+     
+            // Call Constructor Methods
+            window.onload = salesforceConstructor;
+     
+            /**
+            ** Constructor Methods
+            */
+            function salesforceConstructor () {
+                    // Login to the Application Org
+                    var loginSuccess = salesforceLogin();
+                    if (!loginSuccess) {
+                        alert('Login Error!!');
+                    }
+            }
+     
+            /**
+            ** Connect with the Salesforce API
+            */
+            function salesforceLogin () {
+                var success = true;
+                try{
+                    sforce.connection.sessionId = SESSION_ID;
+                    sforce.connection.defaultNamespace = NAMESPACE_PREFIX;
+                }
+                catch(error) {
+                    console.info(error);
+                    success = false;
+                }
+                return success;
+            }
+           
+             
+             /*function switchAdvFormulas(obj){
+                var operators = jQuery(obj).parents('div[class*="criteriasPanelMiddleRight"]').find('.operatorCellSubCrit select');
+                if(jQuery(obj).is(':checked') == true){
+                    operators.each(function(index){
+                        if(index < operators.size()-1){
+                            jQuery(this).hide();
+                        }
+                    });
+                    jQuery(obj).nextAll('input[id$="humanReadableSystemFunction"]').show();
+                }else{
+                    operators.each(function(index){
+                        if(index < operators.size()-1){
+                            jQuery(this).show();
+                        }
+                    });
+                    jQuery(obj).nextAll('input[id$="humanReadableSystemFunction"]').hide();
+                }
+                jQuery.superbox.overrideSourceWithSuperboxContent();
+             }*/
+    
+        function changeTextOverride(){
+            if($innerbox.find('.overridePayCheck').is(':checked')){
+                 //get html from selected option:
+                 var overrideHtml = $innerbox.find('select[id$="overrideWithNumericDealAttr"]').find('option:selected').html();
+                 $innerbox.find('.selectedNumericDeal').each(function(){
+                     jQuery(this).html('X '+ overrideHtml);
+                 })
+             } 
+        }   
+        
+        function addSubCriteria(){
+            rerenderNoCompare=false;
+            addSubCriteriaAC();
+        }
+        
+        function saveFormula(){
+            if(criteriasHandler.checkSubCriterias() && criteriasHandler.isThereSubcriteriaErrors($innerbox) == false){
+                jQuery.superbox.overrideSourceWithSuperboxContent();
+                waitOn(); 
+                saveReturnFormulasPopup();   
+            }
+        }
+        
+        function resetFormula(){
+            jQuery('.overridePayCheck').each(function(){
+                if(jQuery(this).is(':checked'))
+                    jQuery(this).attr('checked', false);
+            });
+            resetFormulaPopup();
+        }
+        
+        $(document).ready(function() {
+            // setup ul.tabs to work as tabs for each div directly under div.panes
+            loadAccordion();
+            storeValues();
+            document.getElementById('aCollapse').onclick();
+            showOptionsLoad(); 
+            var labelsArr = new Array();
+            labelsArr[0] = '{!$Label.AdvFormulaMissingParenthesis}';
+            labelsArr[1] = '{!$Label.advancedIsEmpty}';
+            labelsArr[2] = '{!$Label.AdvanceFormulaCheckLogicalStatement}';
+            labelsArr[3] = '{!$Label.AdvanceFormulaWrongChar}';
+            labelsArr[4] = '{!$Label.WrongDateFormatJS}';
+            labelsArr[5] = '{!$Label.errorsInCriteria}';
+            labelsArr[6] = '{!$Label.deleteAFilterCriteria}';
+            labelsArr[7] = '{!$Label.CriteriaNumberNotExists}';
+            labelsArr[8] = '{!$Label.CriteriaNegativeNumbers}';
+            labelsArr[9] = '{!$Label.incompleteAdvFmla}';
+            labelsArr[10] = '{!$Label.invalidAdvFormula}';
+            criteriasHandler.init('','','','',labelsArr, '', '');
+            
+            criteriasHandler.setAttainment('{!JSENCODE(pdm.FUNCTION_TYPE_ATTAINMENT)}');
+	        criteriasHandler.setCredit('{!JSENCODE(pdm.FUNCTION_TYPE_CREDIT)}');
+	        criteriasHandler.setInnerboxReference($innerbox);
+            
+        });
+
+        $(function(){
+            $.superbox.settings = {
+                closeTxt: "X",
+                loadTxt: "Loading...",
+                nextTxt: "Next",
+                prevTxt: "Previous"
+            };
+            $.superbox();
+        });
+    
+     
+    
+        function hideShowSection (idComponent) {
+            var hidenSection = document.getElementById(idComponent);
+            if (hidenSection.style.display == 'none') {
+                hidenSection.style.display = '';
+                if(idComponent == 'step2Explanation'){
+                    $('.toChangeStep2').html('{!$Label.HideExplanation} &gt;&gt;');
+                }
+                if(idComponent == 'step4Explanation'){
+                    $('.toChangeStep4').html('{!$Label.HideExplanation} &gt;&gt;');
+                }
+            }
+            else {
+                hidenSection.style.display = 'none';
+                if(idComponent == 'step2Explanation'){
+                    $('.toChangeStep2').html('{!$Label.SeeExplanation} &gt;&gt;');
+                }
+                if(idComponent == 'step4Explanation'){
+                    $('.toChangeStep4').html('{!$Label.SeeExplanation} &gt;&gt;');
+                }
+            }
+            setTimeout('rerenderNoCompare = true',200); 
+        }
+        
+        var rerenderNoCompare = true;
+        var _isIE = (navigator.userAgent.toLowerCase().indexOf('msie') != -1);
+        $('#formulaWrapper').jqpopup_close();
+        $('#formulaWrapper').hide();
+        
+        function replaceCommaAll(){
+            var inputs = $('.needComma');
+            for(var i=0; i < inputs.length; i++){
+                replaceComma(inputs[i]);                
+            }   
+            var spans = $('.needCommaSpan');
+            for(var i=0; i < spans.length; i++){
+                replaceCommaSpan(spans[i]);                
+            }               
+            $('.varyPaymentOptions input:radio').click(function(){
+                changeRadio();
+            });  
+        }     
+         
+        function closePopupOnComplete(){
+            //$('#formulaWrapper').jqpopup_close();
+            jQuery.superbox.close();
+            replaceCommaAll();
+            introAsTab();
+            setMax();
+            waitOff();
+        }
+                
+       
+       var isNew = true;
+       var tempSel = '';
+       $(document).ready(function() {
+           savePageHandler.storeBottomBarOnclickEvents();
+           savePageHandler.setExtraBottomBarClick();
+           waitOn();
+           getRadioSelected();
+           
+
+           isNew = {!IF(pdm.activeMeasure.Id == null,'true','false')};
+           
+           replaceCommaAll();
+           setMax();
+           formatBudget();
+           introAsTab();
+           setterTitle();
+           overrideColor();
+           storeValues();
+           var tempSel = $('.selProfiles')[0].value;
+           waitOff();
+        });
+        
+        var saveBtn = function(){
+            savePageHandler.disableBottomBar();
+        }
+        
+        var discardChanges = function(){
+                    
+            rerenderNoCompare = false;
+                        
+        }
+
+        function formatBudget(){
+            var budgetVal = formatNumber(parseFloat(unformatNumber($('#'+inputPlannedSpend).val())).toFixed(0));
+            $('#'+inputPlannedSpend).val(budgetVal.substr(0,budgetVal.length-3));
+        }
+        
+        function replaceComma(obj){
+        	obj.value = String(obj.value).replace(/(^\s*)|(\s*$)/g,'');
+        	obj.value = unformatNumber(obj.value);
+            obj.value = formatNumber(parseFloat(parseFloat(systemFormatNumber(obj.value)).toFixed(2)));
+            if(isWithOut0 && parseFloat(parseFloat(systemFormatNumber(obj.value)).toFixed(2)) < 1 && !$(obj).hasClass('noPointFor0')){
+                obj.value = String(obj.value).substr(1);
+            }
+        } 
+        
+        function replaceCommaSpan(obj){
+            obj.innerHTML = formatNumber(parseFloat(parseFloat(systemFormatNumber(obj.innerHTML)).toFixed(2)));
+            if(isWithOut0 && parseFloat(parseFloat(systemFormatNumber(obj.innerHTML)).toFixed(2)) < 1 ){
+                obj.innerHTML = String(obj.innerHTML).substr(1);
+            }
+        }         
+        
+        
+        function collapse(){  
+            $('.paymentCont').hide('slow');
+            $('.alphabeticalBox').css('min-height', '220px');
+        }
+        
+                   
+       function expand(){
+            $('.paymentCont').show('slow');
+            $('.alphabeticalBox').css('min-height', '220px');
+        }
+        
+        function showPopup () {
+            $('#displayFormulaWrapper').trigger('click');
+        }
+        
+        var payp;
+
+        $(document).keyup(function(event){
+            if ((event.keyCode == 27)&&($('#formulaWrapper_p').is(':visible'))) {
+                cancelFormula();
+            }  
+        });
+  
+        function getRadioSelected(){ 
+            var ratioChecked;
+            if (document.getElementsByName(selRatio)[0].checked) {
+                ratioChecked = document.getElementsByName(selRatio)[0];
+            }
+            else {
+                ratioChecked = document.getElementsByName(selRatio)[1];
+            }
+            savePayP(ratioChecked);
+        }
+
+        function savePayP(obj){
+            payp=obj.value;
+        }     
+        
+        function removeQL(i){
+        	waitOn();
+        	rerenderNoCompare = false;
+            document.getElementById(selectedQLIndex).value = i-1;
+            removeQualifierLink();
+        }
+        
+        
+        function showBorder(obj){
+            obj.className = 'inputVisible';
+            obj.readOnly = false;
+
+        }
+
+        function hideBorder(obj){
+            obj.className = 'inputHidden';
+            obj.readOnly = true;
+            //obj.value = formatNumber(obj.value);
+        }
+        
+        function changeRadio(){
+          refreshPaymentContent();
+                
+        }
+        
+        function deleteFormula(i){
+            i=Math.round(i);
+            selectedIndex.value = i;
+            deleteFormulaAF();
+        }
+
+        function removeRamp(i){
+            selectedIndex.value = i;
+
+            var tableRows = $('.paymentsTable')[0].getElementsByTagName('tr');
+            var inputElement = tableRows[i + 2].getElementsByTagName('input');
+            if(i==0){
+                inputElement[1].value = 0;
+            }
+            inputElement[1].value = formatNumber(parseFloat(unformatNumber(inputElement[1].value).replace(',','\.'))  + 0.01 );
+            setPrevMax(inputElement[1]);
+            setNextMin(inputElement[1]);
+            removeRampAF();            
+        } 
+
+               
+        function setMax(){
+            if(payp != '{!pdm.AMOUNT_TYPE_AMOUNT}'){
+                var table = document.getElementById('paymentsTableContainer');
+                var trs = table.getElementsByTagName('tr');
+               
+                for (var i = 2; i < trs.length-1; i++){
+                    var td = trs[i].getElementsByTagName('td')[0];
+                    var tdMin = trs[i].getElementsByTagName('td')[0];
+                    var input = td.getElementsByTagName('input');
+                    var inputMin = tdMin.getElementsByTagName('input');
+                    if(input[1] != undefined){
+                        var obj = input[1];
+                        var objMin = inputMin[0];
+                    }
+                }     
+                if(obj != undefined){  
+                    var parent = $(obj).parents('td');
+                    $(obj).hide();
+                    $(obj).val($(objMin).val()+1);
+                    $('.clsMax', parent).remove();
+                    $('.clear', parent).remove();
+                    parent.append("<div class=\'clsMax\' style=\'float:left;\'>{!JSENCODE($Label.MAX)}</div><div class=\clear:both;\'></div>");
+                }
+            }
+        }
+        
+        
+        
+        function setNextMin (ele) {
+            var parentTr = ele.parentNode.parentNode.parentNode;
+            var nextTr;
+            if (parentTr != null) {
+                nextTr = parentTr.nextSibling;
+                if (nextTr != null && nextTr != undefined  && nextTr.innerHTML != undefined) {
+                    var nextTrInputs = nextTr.getElementsByTagName('input');
+                    if (nextTrInputs.length > 0 && !$(nextTrInputs[0]).hasClass('.tierNumberInput')) {
+                        var minInput = nextTrInputs[0];
+                        minInput.value = ele.value;
+                    }   
+                }
+            }
+        }   
+        
+        
+        function setPrevMax (ele) {
+            var parentTr = ele.parentNode.parentNode.parentNode;
+            var prevTr;
+            if (parentTr != undefined) {
+                prevTr = parentTr.previousSibling;
+                if (prevTr != undefined && prevTr.innerHTML != undefined) {
+                    var prevTrInputs = prevTr.getElementsByTagName('input');
+                    if (prevTrInputs.length > 1) {
+                        var maxInput = prevTrInputs[1];
+                        maxInput.value = formatNumber(unformatNumber(ele.value) - 0.01);
+                    }   
+                }
+            }
+        }                 
+        
+        function loadFormulas(iRamp,iTier){
+            document.getElementById(RampIndex).value = iRamp;
+            document.getElementById(TierIndex).value = iTier;
+            selectedIndex.value = i;
+            waitOn();
+            rerenderNoCompare=false;
+            loadFormulasAF(); 
+        } 
+        
+        function validateNumber(obj){
+            if(isNaN(obj.value)){
+                alert('{!$Label.PleaseEnterValidNumber}');
+                obj.value = '0.00';
+                obj.focus();
+            }
+            
+        }
+        function confirmReset(){
+              if(confirm('{!$Label.ResetPaymentConfirm}')){
+                  resetPaymentsAF();
+                  waitOn();
+              }
+              else{
+                  rerenderNoCompare=true;
+              }
+        }
+        
+        
+        
+        window.onbeforeunload = function(){
+            if(compareValues(true,rerenderNoCompare) != undefined){
+                setTimeout("savePageHandler.enableBottomBar();",1000);
+            }
+            window.onunload = function() {savePageHandler.disableBottomBar();}
+            return compareValues(true,rerenderNoCompare);
+        }     
+        
+        function chkVal(obj, type){
+            var val = parseFloat(unformatNumber(obj.value).replace(',','\.'));
+            if(nbrDecimal == ','){
+                var val2 = obj.value.replace(/\./g,'');
+                val = val.toString().replace('\.',',');
+            }
+            else{
+                var val2 = obj.value.replace(/,/g,'');
+            }
+            
+            $(".errorMsg", obj.ParentNode).remove();
+            if(val2!=val&&obj.value!=null&&obj.value!=''){
+                createError(obj, type);
+                obj.value='';
+                obj.focus();
+            }else{
+                formatBudget();
+            }
+        }
+        
+        function createError(obj, type){
+            var parent = obj.parentNode;
+            $(parent).append('<div class="errorMsg"><strong>Error:</strong> Invalid ' + type + '</div>');
+        } 
+        
+        function changeTotalAmountMode (theEle) {
+            if (theEle.checked){
+                $('.totalAmountSelect')[0].style.display = '';    
+                $('.totalAmountSelect')[1].style.display = '';                
+                $('.overridePayCheck:first').attr('checked', true)
+                $('.overridePayCheck:last').attr('checked', true)
+                
+            }else {
+                $('.totalAmountSelect')[0].style.display = 'none';
+                $('.totalAmountSelect')[1].style.display = 'none';
+                $('.overridePayCheck:first').attr('checked', false);
+                $('.overridePayCheck:last').attr('checked', false);
+            }
+        }
+        
+        function IsNumeric(obj) {
+        
+            var value = obj.value;
+            if (value.toString().search(/^[0-9]+$/) != 0) {
+                alert('{!$Label.PleaseEnterValidNumber}');
+                obj.value = 1; 
+                return false;
+            }
+            return true
+        
+        
+             /*if (isNaN(parseInt(inputVal.value))) {
+                  alert('{!$Label.PleaseEnterValidNumber}');
+                  inputVal.value = 1; 
+                  return false;
+             }
+             return true*/
+        }
+
+
+        function editRule(){
+           //rerenderNoCompare=false;
+            if (document.getElementById(selectedRule).value != '') { 
+                waitOn();
+                jQuery('#' + measureId).val('{!pdm.activeMeasure.id}');
+                jQuery('#' + releaseRuleId).val( document.getElementById(selectedRule).value);
+                initRR();
+              //  releaseRuleWindow = window.open('{!$Page.XactlySMBReleaseRulesPopup}?rrId=' + document.getElementById(selectedRule).value + '&mId={!pdm.activeMeasure.id}', 'SelectSource','location=0,status=0,scrollbars=1,width=800px,height=580px'); 
+              //  releaseRuleWindow.moveTo(50,50);
+            }
+            //rerenderNoCompare=true;
+        } 
+        
+        function newRule(){  
+            waitOn();
+            jQuery('#' + measureId).val('');
+			jQuery('#' + releaseRuleId).val('');
+            initRR();
+            // releaseRuleWindow = window.open('{!$Page.XactlySMBReleaseRulesPopup}', 'SelectSource','location=0,status=0,scrollbars=1,width=800px,height=580px'); 
+            // releaseRuleWindow.moveTo(50,50);
+            //rerenderNoCompare=true;
+        }
+            
+        function alertChange(obj){
+        
+            if(obj.value!=selRatioVal){
+            
+                if(confirm('{!$Label.IfYouChangeThis}')){
+                    waitOn();
+                    refreshPaymentContent();
+                    savePayP(obj);
+                    selRatioVal = obj.value;
+                }else{
+                    if (obj.id.search('0') != -1){
+                        var radioSelected = 0;}
+                    else{
+                        var radioSelected = 1;}
+                    var ratios = $('input[id*="selPayPeople"]', obj.ParentNode);
+                    for(var i=0 ; i < ratios.length ; i++){
+                        if(ratios[i].value != selRatioVal ){
+                            ratios[i].checked=false;
+                        }else{
+                            ratios[i].checked=true;
+                        }
+                    }  
+                    
+                    return false;
+                } 
+            }   
+        }
+       
+        function showHideAdditionalOptions(){
+            rerenderNoCompare = false;
+            if($('.avancedSeccion')[0].style.display == 'none'){
+                $('.avancedSeccion')[0].style.display = 'block';
+                $('.textToChange')[0].innerHTML = '{!$Label.hideOption} &gt;&gt;';
+            }else{
+                $('.avancedSeccion')[0].style.display = 'none';
+                $('.textToChange')[0].innerHTML = '{!$Label.additionalOption} &gt;&gt;';
+            }
+            setTimeout('rerenderNoCompare = true',100);
+        }
+        
+        function addRuleRampWithCheck(){
+            if($('.even').size()*2 + parseInt($('.tierNumberInput')[0].value)> 999){ 
+                alert('{!JSENCODE($Label.toManyFormulas)}');
+            }else{
+                rerenderNoCompare = false; 
+                waitOn();
+                addRuleRamp();
+            }
+        } 
+         
+        function openQualifierPopup(pid,qid){
+           var quali = '';
+           if(pid== ''){return;}
+           if(qid>-1){
+                quali = '&qualifier=' + $('.qualifierSel')[qid-1].value ; 
+           }else{
+                quali = '&qualifier=0'; 
+           }
+           
+           jQuery('#qualifiers').attr('href','{!$Page.XactlySMBQualifiersRulesPopup}?id=' + pid + quali + '&qid=' + qid + '&selRatioVal=' + selRatioVal);
+		   jQuery('#qualifiers').trigger('click');
+       }        
+       
+       function checkNewQL(saveNext){
+           var qs = $('.qualifierSel');
+           var toSave = true;
+           var i=0;
+           while(toSave && i < (qs.length -1)){
+                if(document.getElementById('qlId' + (i + 1)).innerHTML == '' && qs[i].value == 'a00000000000000000'){
+                    toSave = false;
+                }
+                i++;
+           }
+           
+           if(toSave || confirm('{!JSENCODE(LabelAddQualifierNotLinked)}')){
+                waitOn();
+                if(saveNext == undefined){
+                	clearQL();
+                }else{
+                	clearQLOnSaveNext();
+                }	
+                savePageHandler.disableBottomBar();
+           }
+           
+
+       }
+       
+       function overrideColor(){
+           changeValueToSelectProfile();
+           var elementsColor = $('.toColorizeOverride');
+           for(j=0;j < elementsColor.length;j++) {
+               elementColor = elementsColor[j];
+               for(i=0;i < elementColor.options.length;i++) {
+                  if(overridenPerson[elementColor.options[i].value] != undefined){
+                      elementColor.options[i].style.color = 'red';
+                  }
+               }
+           }
+        }
+
+       function changeValueToSelectProfile(){
+           var elementsProfiles = $('.selProfiles');
+           for(j=0;j < elementsProfiles.length;j++) {
+              elementsProfile = elementsProfiles[j];
+              elementsProfile.options[0].value = '';
+           }
+       }
+       
+       function changeToOverride(check){
+            if(check.checked == true){
+                $('.toHideShow',$(check).parent()).hide();
+                $('.inputVisible',$(check).parent()).show();
+                $('.formuleLink',$(check).parent()).show();
+            }else{
+                $('.toHideShow',$(check).parent()).show();
+                $('.inputVisible',$(check).parent()).hide();
+                $('.formuleLink',$(check).parent()).hide();
+            }
+       }
+       
+       function checkRefreshRampTiers(obj){
+            waitOn();
+            var toSave = false;
+            var selOp = obj.value;
+            obj.value = tempSel;
+            if(isNew){
+                alert('{!JSENCODE($Label.mustSavePaymentOverride)}');
+                waitOff();
+            }else{
+                if(compareValues(true,true)!=undefined){
+                    if(confirm('{!$Label.IfYouChangeThis}')){
+                        obj.value = selOp;
+                        refreshRampTiers();
+                    }else{
+                        waitOff();
+                    }
+                }else{
+                    obj.value = selOp;
+                    refreshRampTiers();
+                }
+            }
+            tempSel = obj.value;
+            
+       }
+       
+       function refreshStep7(){
+          waitOn();
+          reLoadStep7();
+       }
+       
+       function addCreditCheck(obj){
+          if(obj.value == ''){
+              newCreditSetter();
+              obj.value = selectCredit;
+          }
+      }             
+       
+       Object.size = function(obj) {
+            var size = 0, key;
+            for (key in obj) {
+                if (obj.hasOwnProperty(key)) size++;
+            }
+            return size;
+       };
+       
+       
+       function showOptions(){
+          var element = jQuery('input[id$="optionQualifiers"]')[0];
+              if($('.optionsToChangeText').length>0){
+                  if(element.value == '1'){
+                       $('.optionsToChangeText')[0].innerHTML = '{!JSENCODE($Label.Options)}';
+                       $('.ultimateRow').css('background-color','#ffffff');
+                       $('.optionsShow').hide();
+                       $('.optionsHide').show();
+                       $('.alphabeticalBox').css('min-height', '220px');
+                       $('#' + showOptionsId )[0].value = 'false';
+                       element.value = '0';
+                  }else{
+                       $('.optionsToChangeText')[0].innerHTML = '{!JSENCODE($Label.Hide)}';
+                       $('.ultimateRow').css('background-color','#DEE7F0');
+                       $('.optionsShow').show();
+                       $('.optionsHide').hide();
+                       $('.alphabeticalBox').css('min-height', '260px');
+                       $('#' + showOptionsId )[0].value = 'true';
+                       element.value = '1';
+                  }
+                  rerenderNoCompare=false;
+                  saveQualifierOptionsAF();
+              }
+          }
+          
+          function showOptionsLoad(){
+              var element = jQuery('input[id$="optionQualifiers"]')[0];
+              if($('.optionsToChangeText').length>0){
+                  if(element.value == '0'){
+                       $('.optionsToChangeText')[0].innerHTML = '{!JSENCODE($Label.Options)}';
+                       $('.ultimateRow').css('background-color','#ffffff');
+                       $('.optionsShow').hide();
+                       $('.optionsHide').show();
+                       $('.alphabeticalBox').css('min-height', '220px');
+                       $('#' + showOptionsId )[0].value = 'false';
+                  }else{
+                       $('.optionsToChangeText')[0].innerHTML = '{!JSENCODE($Label.Hide)}';
+                       $('.ultimateRow').css('background-color','#DEE7F0');
+                       $('.optionsShow').show();
+                       $('.optionsHide').hide();
+                       $('.alphabeticalBox').css('min-height', '260px');
+                       $('#' + showOptionsId )[0].value = 'true';
+                  }
+              }
+          }
+          
+          
+          function saveNextStep(){
+          	storeValues();
+          	checkNewQL('saveNext');
+       	  }
+       	  
+       	  function overrideQuota(){
+       	      jQuery('#penIconOverride').hide();
+              jQuery('#okIconOverride').show();
+       	      jQuery('#cancelIconOverride').show();
+       	      jQuery('#'+overrideWithQuota).show();
+       	      if({!pdm.alertOverride}){
+       	          alert('{!JSENCODE(pdm.overrideErrorMsg)}');
+       	      }
+       	  }
+       	  
+          function confirmQuota(){
+              jQuery('#penIconOverride').show();
+              jQuery('#okIconOverride').hide();
+              jQuery('#cancelIconOverride').hide();
+              jQuery('#'+overrideWithQuota).hide();
+              jQuery('#'+overrideCheckbox).attr('checked',true);
+              jQuery('#'+quotaName).html('{!currentSettings.quotasCap}: ' + jQuery('#'+overrideWithQuota)[0].options[jQuery('#'+overrideWithQuota)[0].selectedIndex].innerHTML);
+              
+              if({!pdm.alertOverride}){
+                  alert('{!JSENCODE(pdm.overrideErrorMsg)}');
+              }
+          }
+       	  
+         
+          function resetQuotaOverride(){
+              jQuery('#penIconOverride').show();
+              jQuery('#okIconOverride').hide();
+              jQuery('#cancelIconOverride').hide();
+              jQuery('#'+overrideWithQuota).hide();
+              jQuery('#'+quotaName).html(jQuery('#quotaOldName').html());
+              jQuery('#'+overrideCheckbox).attr('checked',false);
+          }
+       	  
+         </script>
+ 
+ 
+</apex:page>

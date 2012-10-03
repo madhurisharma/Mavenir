@@ -1,0 +1,392 @@
+<!--
+ Developed by Timba Software Corp. www.timbasoftware.com admin@timbasoftware.com
+ This page lists plans
+ @author Guillermo Freire <guillermo.freire@gmail.com>
+-->
+<apex:page id="TermsCreate" controller="XactlyExpress.XactlySMBTermsAndConditionsController" sidebar="false" showHeader="false" standardStylesheets="true" action="{!redirectWhenAccessIsDenied}">
+ 
+   <!-- Custom Cursor Loader -->
+   <c:XactlySMBCursor />
+   <!-- Custom Cursor Loader -->
+    <title>{!$Label.ManageTermsAndConditions} : {!$Label.TermsAndConditions}</title>
+    <link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.XactlySMBResources ,'css/XactlySMBStyles.css')}" />
+    <link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.XactlySMBResources ,'css/XactlySMBTermsAndConditions.css')}" />
+    <link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.XactlySMBResources, 'popup/css/jqpopup.css')}"/>  
+    <style>
+        div.topTable {
+            background: url({!URLFOR($Resource.XactlySMBResources ,'img/layout/table_top_710w_no_title_bar.png')}) no-repeat;
+            height: 9px;
+            margin-bottom:expression('-5px');
+        }
+        
+        div.bottomTable {
+            background: url({!URLFOR($Resource.XactlySMBResources ,'img/layout/table_bottom_710w.png')}) no-repeat;
+            height: 9px;
+            margin-top:expression('-5px');
+        }
+        
+            /*POPUP CSS */
+        .dijitDialog {  background: #eee;   border: 1px solid #999; -webkit-box-shadow: 0px 5px 10px #adadad;}
+        .dijitDialog .dijitDialogTitle {    border-top: none;   border-left: none;  border-right: none;}
+        .dijitDialog .dijitDialogPaneContent {  background: #ffffff;    border:none;    border-top: 1px solid #ccc;     padding:10px;}
+        .dijitDialogTitleBar {      background: #fafafa  repeat-x bottom left;      padding: 4px 8px 2px 4px;   cursor: move;   outline:0; }
+        .dijitDialogTitle {     font-weight: bold;  padding: 8px 12px 8px 12px; outline:0;}
+        .dijitDialogCloseIcon {display:none}
+        .dijitDialogContent {       padding: 8px;}
+        .closeText{display:none;}
+        
+        
+        .show{display:;}
+        .addMoreFields{
+            display:block;
+            float:right;        
+        }
+        .scrollBox{
+            border:1px solid;
+            clear:both;
+            display:block;
+            float:right;
+            height:200px;
+            overflow:auto;
+        }
+        .scrollBox td{
+            margin:5px;
+        }
+        .arrowUp{
+            background: transparent url({!URLFOR($Resource.XactlySMBResources ,'img/icons/arrowUpNew.png')}) no-repeat;
+            line-height: 12px;
+            float: left;
+            height: 12px;
+            width: 11px;
+            margin: 0px 2px;
+            padding: 0px;                    
+        }
+        .arrowDown{
+            background: transparent url({!URLFOR($Resource.XactlySMBResources ,'img/icons/arrowDownNew.png')}) no-repeat;
+            line-height: 12px;
+            float: left;
+            height: 12px;
+            width: 11px;
+            margin: 0px 2px;
+            padding: 0px; 
+        
+        }
+        .deleteBtn{
+            background: transparent url({!URLFOR($Resource.XactlySMBResources ,'img/buttons/delete_small.png')}) no-repeat;
+            display:block;
+            height:17px;
+            width:18px;
+        }
+        .hide{display:none;}
+                .selectBtn{
+            padding:5px;
+            border: 1px solid black;
+            margin-top:15px;
+            display:block;
+        }
+        
+        .popupColumns{
+            float:left;
+            margin-left:20px;
+            margin-top:20px;
+            margin-bottom:20px;
+        }
+        .jqpopup{
+            width:500px !important;
+         }
+         
+         .prevTextContainer {
+            clear:both;
+            margin-left:26px;
+            margin-top:-14px;
+            position:relative;
+         }    
+        
+         .prevTextContainer img {
+            vertical-align:middle;
+         }   
+    </style>
+    
+    <c:XactlySMBShadows />
+    
+    <!-- PAGE WRAPPER --> 
+    <div class="pageContent" id="pContent">
+        <apex:form id="TermsForm">
+            <!-- HEADER -->
+            <apex:outputPanel layout="block" styleClass="header">
+                <c:XactlySMBHeader isAdmin="{!isAdmin}"  isActive="{!isActive}" nbrSeparator="{!nbrSeparator}" nbrDecimal="{!nbrDecimal}" currentUserOrSlected="{!currentUserOrSlected}" emulatingUserURLAppend="{!emulatingUserURLAppend}" selected="3"  step="1" wqlabel="{!currentSettings.quotasPlural}" wclabel="{!currentSettings.creditsPlural}" wlabel="{!currentSettings.dealsPluralCap}" wtype="terms" hlabel="{!$Label.xactlyexpress__CreateTermsTitle}" stepHelp="TermsCreate" stepBreadcrumb="{!Terms.Name}"/>
+            </apex:outputPanel>
+            
+            
+            <!-- INSUFFICIENT PERMISSIONS -->
+            <apex:outputPanel rendered="{!!isAdmin || !isActive}">
+                <c:XactlySMBErrorMsg error="{!$Label.xactlyexpress__InsufficientPermissions}" />
+            </apex:outputPanel>
+                
+            
+            <!-- MAIN CONTENT -->
+            <apex:outputPanel layout="block" styleClass="mainContent" rendered="{!isAdmin && isActive}">
+                <c:XactlySMBChatterWall objectId="{!$User.Id}" showHeader="true" showWall="true" currentPage="{!$CurrentPage.Name}"/> 
+                <!-- LEFT PANEL -->
+                <apex:outputPanel layout="block" styleClass="leftPanel" style="width:290px !important;"> 
+                     <br />
+                
+                    <div style="margin-top:23px;">
+                    	<div class="newPlan newLeftPanel"  style="white-space:nowrap; height:expression('30px')">
+                    		<div class="btnToLeft btnAction newLeftPanel">
+                    			<div class="leftSide ; white-space:nowrap">
+                    		  {!$Label.CreateNew}<br />{!$Label.TermsAndConditions}
+                    			</div>
+                    			<div class="rightSide; white-space:nowrap">
+                    				<apex:commandLink styleClass="discardChanges" action="{!newTC}">
+                    					<div class="rightBtnOrange" style="padding-left:34px">
+                         		   			<div class="leftBtnOrange">
+                         		   	 			<div class="middleBtnOrange">
+                             	       				{!$Label.New}
+                               	     			</div>
+                         		  			</div>
+                        	   			</div>
+                    	  	 		</apex:commandLink>
+                    	   		</div>
+                			</div>
+                    	</div>
+                    <apex:outputPanel rendered="{!NOT(ISNULL(Terms.Id))}">
+                 	   <div class="newPlan newLeftPanel"  style="white-space:nowrap; height:expression('30px')">
+                    	   	<div class="btnToLeft btnAction newLeftPanel" >
+                    			<div class="leftSide ; white-space:nowrap">
+                    				{!$Label.DeleteThis}<br />{!$Label.TermsAndConditions}
+                    			</div>
+                    			<div class="rightSide; white-space:nowrap">
+                    				<apex:commandLink styleclass="areaTitle actionButton newActionbutton" action="{!deleteTerms}" rendered="{!isDeletable}" onclick="return DeleteTerms();">
+                        	    		<div class="rightBtnOrange" style="padding-left:20px">
+                         			   	<div class="leftBtnOrange">
+                         			   		<div class="middleBtnOrange">
+                             	    	 		{!$Label.Delete}
+                               	     		</div>
+                         		  	  	 </div>
+                        	   			</div>
+                    	  	 		</apex:commandLink>
+                    	   		</div>
+                			</div>
+                   		
+                    	</div>
+                    </apex:outputPanel>
+                    
+                    </div>
+                    <input type="Hidden" id="selectedIndexHidden" value="{!Terms.name}" />
+                    <div class="leftSelectATermsWrapper">
+                        <c:XactlySMBLeftSelectTerms currentTermsId="{!Terms.id}" currentFiscalYear="{!Terms.XactlyExpress__XCFiscalYearSettingsID__c}"/>
+                    </div>
+                    
+                </apex:outputPanel>
+                
+                <!-- CONTENT -->
+                <apex:outputPanel layout="block" styleClass="content" id="contentTC" style="width:750px !important;">
+                    
+                    <div id="TermsCreateContainer">
+                    	<apex:outputPanel id="errorMsg" layout="block" styleClass="errorScrollBox">
+	                        <c:XactlySMBErrorMsg error="{!errorMsg}"/>
+	                    </apex:outputPanel>
+     
+                        <div class="subSection">
+                            <div id="tNameDiv">
+                                <apex:outputLabel value="{!$Label.xactlyexpress__Name}" for="inputName"/>
+                                <apex:inputField id="inputName" styleClass="inputName" value="{!Terms.Name}" required="false" />
+                            </div>
+                            <div id="tYearDiv">
+                                <apex:actionFunction name="changeDates" action="{!genList}" rerender="dummy, editMeasuresContainer" onComplete="waitOff();"/>
+                                <apex:outputLabel value="{!$Label.xactlyexpress__FiscalYear}" for="fiscalyearselect"/>
+                                                                
+                                <apex:selectList id="fiscalyearselect" value="{!Terms.XactlyExpress__XCFiscalYearSettingsID__c}" multiselect="false" size="1" required="false" onchange="waitOn();changeDates();">
+                                    <apex:selectOptions value="{!fiscalYearOptions}"/>
+                                </apex:selectList>
+                            </div>
+                            <div id="tAssociateDiv">
+                            	<div class="btnToLeft btnAction newLeftPanel" >
+                    				<div class="leftSide" style="{!IF(!isNull(Terms.Id),'','visibility:hidden;')}padding-right:10px;">
+                    					{!$Label.PlansAssociatedTitle}
+                    				</div>
+                    				
+                    					<a href="javascript:;" Class="areaTitle actionButton newActionbutton" onclick="showPopup();" style="{!IF(!isNull(Terms.Id),'','visibility:hidden;')}">
+                    						<span class="rightBtnOrange">
+                         		   				<span class="leftBtnOrange">
+                         		   	 				<span class="middleBtnOrange">
+                             	       					{!$Label.Change}
+                               	     				</span>
+                         		  				</span>
+                        	   				</span>
+                    	  	 			</a>
+                    	   			
+                				</div>
+                            </div>
+                            <div id="tTermsAndConditionsDiv">
+                            <div class="topTable">
+                            </div>   
+	                            <apex:inputTextArea richText="true" style="margin-top:-6px;height:600px;" id="inputDescription" styleClass="inputDescription" value="{!Terms.XactlyExpress__TermsAndConditions__c}" rows="11" /> 
+		                    <div class="bottomTable"> 
+		                    </div> 
+		                    </div>    
+                        </div>
+  
+                    </div>    
+                           
+                </apex:outputPanel>
+                <div style="clear:both;"></div>
+            </apex:outputPanel>
+            
+            <!-- FOOTER  -->
+            <apex:outputPanel layout="block" styleClass="footer" rendered="{!isAdmin && isActive}" id="pFooter">
+                <apex:outputPanel layout="block" styleClass="previousStepWrapper" style="max-width:260px;margin-right:150px;">
+                   <div class="previousStepRight"></div>
+                   <a href="{!$Page.XactlySMBPlanList}" class="previousStepMiddle" id="prevBtn" onclick="savePageHandler.disableBottomBar();">
+                      <div class="prevTextContainer">
+                           <apex:outputtext escape="false" value="{!$Label.xactlyexpress__backToOverviewPL}">
+                              <apex:param value="{!URLFOR($Resource.XactlyExpress__XactlySMBResources ,'img/buttons/orangeArrow.png')}"/>
+                           </apex:outputtext>                                         
+                      </div>
+                   </a>
+                   <div class=""></div>
+                </apex:outputpanel>
+                    
+                <apex:outputPanel layout="block" styleClass="actionButtons">                        
+                    <apex:outputPanel layout="block" styleClass="actionButtonWrapper">
+                        <div class="actionButtonLeft"></div>
+                        <apex:commandLink styleClass="actionButtonMiddle" id="saveBtn" action="{!saveTerms}" onclick="savePageHandler.disableBottomBar();">
+                            <apex:outputtext escape="false" value="{!$Label.xactlyexpress__SaveChanges}">
+                               <apex:param value="{!URLFOR($Resource.XactlyExpress__XactlySMBResources ,'img/buttons/navigateSaveMiddle.gif')}" />
+                            </apex:outputtext>  
+                        </apex:commandLink>
+                        <div class="actionButtonRight"></div>    
+                    </apex:outputpanel>
+                    
+                    <apex:outputPanel layout="block" styleClass="actionButtonWrapper">
+                        <div class="actionButtonLeft"></div>
+                        <a href="javascript:;" class="actionButtonMiddle" onclick="discardChangesConfirm(window.location.href);">
+                            <apex:outputtext escape="false" value="{!$Label.xactlyexpress__DiscardChanges}">
+                               <apex:param value="{!URLFOR($Resource.XactlyExpress__XactlySMBResources ,'img/buttons/navigateCancelMiddle.gif')}" />
+                            </apex:outputtext>
+                        </a>
+                        <div class="actionButtonRight"></div>    
+                    </apex:outputpanel>
+                </apex:outputPanel>
+            
+                <apex:outputPanel layout="block" styleClass="nextStepWrapper" style="margin-right:100px;">
+                    <div class="nextStepLeft"></div> 
+                    <apex:commandLink styleClass="nextStepMiddle" action="{!saveNext}" onclick="savePageHandler.disableBottomBar();">
+                        {!$Label.xactlyexpress__NextStep}
+                    </apex:commandLink>  
+                    <div class="nextStepRight"></div>
+                </apex:outputPanel>
+            </apex:outputPanel>         
+        </apex:form> 
+    </div>   
+    <!-- POPUP -->
+    <apex:outputPanel id="dummy" layout="block">
+	    <div style="display:none; height:auto; width:500px" title="{!$Label.PlansAssociatedTitle}" id="popup">
+	        <apex:form id="popupForm">
+	            <div style="text-align:center">{!$Label.xactlyexpress__PlansAssociatedSubtitle}</div>
+	            <apex:outputPanel layout="block" id="popupContent">
+	                <div class="popupColumns">
+	                    <apex:outputText value="{!$Label.xactlyexpress__AvailablePlans}"/>
+	                    <br />
+	                    <apex:selectList size="6" multiSelect="true" value="{!planNotSelected}" style="width: 200px;">
+	                        <apex:selectOptions value="{!notselOptions}" />
+	                    </apex:selectList>
+	                </div>
+	                
+	                <div class="popupColumns">
+	                    <apex:commandLink action="{!selectTerms}" styleClass="selectBtn" rerender="popupForm" oncomplete="waitOff();introAsTab();" onclick="waitOn();">{!gtChar}</apex:commandLink><br/>
+	                    <apex:commandLink action="{!unselectTerms}" styleClass="selectBtn" rerender="popupForm" oncomplete="waitOff();introAsTab();" onclick="waitOn();">{!ltChar}</apex:commandLink>
+	                </div>
+	                
+	                <div class="popupColumns">
+	                    <apex:outputText value="{!$Label.xactlyexpress__SelectedPlans}"/>
+	                    <br />
+	                    <apex:selectList size="6" multiSelect="true" value="{!planSelected}" style="width: 200px;">
+	                        <apex:selectOptions value="{!selOptions}" />
+	                    </apex:selectList>
+	                </div>
+	                <div style="clear: both;" />
+	            
+	            </apex:outputPanel>
+	        </apex:form>  
+	    </div>
+    </apex:outputPanel>
+    <!-- END POPUP --> 
+        
+    <a href="javascript:;" id="openPopup"></a>
+
+    <div style="display: none;">
+        <div id="fooPopup_px" class="jqpopup_cross"></div>
+        <div class="jqpopup_header" id="fooPopup_ph"></div>
+        <div id="fooPopup_pm" class="jqpopup_message"></div>
+        <div id="'fooPopup'_pc" class="jqpopup_content"></div>
+        <div id="fooPopup_pf" class="jqpopup_footer"></div>
+        <div id="fooPopup_ps" class="jqpopup_resize"></div>
+        <div id="fooPopup_pl" class="jqpopup_center"></div>
+    </div>
+    <apex:includeScript value="{!URLFOR($Resource.XactlyExpress__CSN, 'jquery.js')}" />
+    <c:XactlySMBFooterScript /> 
+    
+    <script type="text/javascript" language="javascript" src="{!URLFOR($Resource.XactlySMBResources, 'js/XactlySMBJavascript.js')}"></script>
+    <script type="text/javascript" src="{!URLFOR($Resource.XactlySMBResources, 'popup/js/jqDnR.min.js')}"></script>
+    <script type="text/javascript" src="{!URLFOR($Resource.XactlySMBResources, 'js/jquery.bgiframe.min.js')}"></script>
+    <script type="text/javascript" src="{!URLFOR($Resource.XactlySMBResources, 'popup/js/jquery.jqpopup.min.js')}"></script>
+    <script type="text/javascript" src="{!URLFOR($Resource.XactlySMBResources ,'js/jquery.superbox-min.js')}"></script>
+    <script type="text/javascript">
+    	var rerenderNoCompare = true;
+        $(function(){
+            $.superbox.settings = {
+                closeTxt: "X",
+                loadTxt: "Loading...",
+                nextTxt: "Next",
+                prevTxt: "Previous"
+            };
+            $.superbox();
+        });
+    </script>
+    
+    <script>
+    
+        $(document).ready(function (){
+            introAsTab();
+        });
+    
+    	window.onload = function(){
+				savePageHandler.storeBottomBarOnclickEvents();
+    			savePageHandler.setExtraBottomBarClick();
+        };
+        
+        var saveBtn = function(){
+        
+	      	savePageHandler.disableBottomBar();
+	    	        
+		}
+		
+        function showPopup () {   
+  
+            $('#popup').jqpopup_open('openFormulaPopup');
+            $('#popup').jqpopup_toCenter('openFormulaPopup');
+            var  close = $('#popupCloseBtn');
+            $('#popup_ph').append('<div id="popupCloseBtn"></div>');
+            $('#popupCloseBtn').css({"position":"absolute","right":"0px","top":"0px","background":"transparent no-repeat url({!URLFOR($Resource.XactlySMBResources,'img/buttons/closeComment.png')}) 0 0","width":"17px","height":"18px","cursor":"pointer"});
+            $('#popupCloseBtn').click(hidePopup); 
+        }
+        
+        function hidePopup(){
+            if($('#popup_ph').length != 0){   
+                $('#popup').jqpopup_close();
+            }
+        }
+                
+        function DeleteTerms(){
+            if ('{!plansseleced}' > 0){
+                if(confirm('{!$Label.TermsAssocPlan}')){
+                    return true;}
+                else{
+                    return false;}
+            } 
+        }
+        
+    </script>
+</apex:page>

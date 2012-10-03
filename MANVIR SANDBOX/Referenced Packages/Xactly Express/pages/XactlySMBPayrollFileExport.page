@@ -1,0 +1,3 @@
+<apex:page controller="XactlyExpress.XactlySMBPayrollFileExportController" cache="true" sidebar="false" showHeader="false" standardStylesheets="false" contentType="text/csv#Payroll_{!periodName}.csv">
+<apex:repeat value="{!payrollList}" var="iter"><apex:outputtext escape="false" value="{!iter.line}" /></apex:repeat>
+</apex:page>

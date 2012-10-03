@@ -1,0 +1,141 @@
+<apex:page sidebar="false" showHeader="false" standardStylesheets="true">
+   
+   <!-- Custom Cursor Loader -->
+   <c:XactlySMBCursor />
+   <!-- Custom Cursor Loader -->
+   <title>Page Under Construction - Xactly Express</title>
+   <style type="text/css">
+        body {
+	        margin: 0px; 
+	        min-width: 1070px;
+	        min-height: 831px;
+	        padding: 0px;
+	        width: 100%; 
+	        height: 100%;   
+        }
+        
+        a , a:hover {
+	        text-decoration: none;
+	        cursor: pointer;
+        }
+        
+        .pageContent {
+	        background: url({!URLFOR($Resource.XactlySMBResources ,'img/layout/backgroundUnderConstruction.png')}) center center no-repeat;
+	        width: 1070px;
+	        height: 831px;
+	        position: relative;
+	        overflow: hidden;
+	        padding: 0px;
+        }
+        
+        .header {
+			margin-left:20px;
+			overflow:hidden;
+			padding:0;
+			position:relative;
+			width:710px;
+        }
+        
+        .bPageHeader{
+       		display:none;
+        }
+
+        .mainContent {
+	        height: 630px;
+	        margin: 11px 0px 0px 20px;
+	        padding: 0px;
+	        position:relative;
+	        overflow: hidden;
+        }
+        
+        .mainContent .content {
+	        margin: 0px;
+	        padding: 0px;
+	        height: 630px;
+	        margin-top: 230px;
+        }
+        
+        .contentHeader {
+	        height: 25px;
+	        text-align: center;
+	        margin-top: 20px;
+        }
+
+        
+        .comingSoon {
+	   		clear:both;
+			color:#DC6B1D;
+			float:left;
+			font-size:22px;
+			font-weight:bold;
+			margin:5px 0 10px;
+			text-align:center;
+        }
+        
+        .subComingSoon{
+        	float:left;
+        }
+        
+        .bottomComingSoon{
+        	float:left;
+        	border-top:2px solid #DC6B1D;
+        	width:100%;
+        	margin-top:12px;
+        }
+        
+        .bottomComingSoon ul{
+        	list-style:none outside none;
+			padding-left:0;
+        }
+        
+        .bottomComingSoon ul li{
+        	margin-left:0px;
+        }      
+        
+        .validationApp{
+        	background: url({!URLFOR($Resource.XactlySMBResources ,'img/layout/validationApp.png')}) center center no-repeat;	
+        	float:left;
+			height:347px;
+			width:701px;
+			border:none;
+        }
+   </style>  
+   <script type="text/javascript" language="javascript" src="{!URLFOR($Resource.XactlySMBResources, 'js/XactlySMBJavascript.js')}"></script>
+   <c:XactlySMBShadows />
+   
+   <!-- PAGE WRAPPER -->  
+   <div class="pageContent">
+      <apex:form >
+         <!-- HEADER -->
+         <apex:outputPanel layout="block" styleClass="header">
+         	 <div class="comingSoon">
+             	An Error Has Occured: Application Not Deployed
+             </div>
+             <div class="subComingSoon">
+				An error has ocurred due to the fact that the application has not been deployed. Please see the screenshots below with a description on how to resolve the issue. If you continue to have issues, please contact our support team so we can assist in resolving the issue
+             </div>
+         	 <div class="bottomComingSoon">
+				<ul>
+					<li> From within Salesforce: </li> 
+					<li> 1) Click 'Setup'</li>
+					<li> 2) Click 'View Intalled Packages' within 'App Setup'</li>
+					<li> 3) Locale the 'xactly Incent Express' package and click on it</li>
+					<li> 4) Click Deploy from within the Package Details page</li>
+				</ul>
+				
+             </div>
+         
+         </apex:outputPanel>
+          
+         <!-- MAIN CONTENT -->
+         <apex:outputPanel layout="block" styleClass="mainContent">
+         	 <img class="validationApp"/>
+             <!-- CONTENT -->
+             <apex:outputPanel layout="block" styleClass="content">
+               
+             </apex:outputPanel>
+             
+         </apex:outputPanel>
+      </apex:form>
+   </div>        
+</apex:page>

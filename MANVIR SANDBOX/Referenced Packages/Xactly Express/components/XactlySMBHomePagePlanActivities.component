@@ -1,0 +1,111 @@
+<apex:component controller="XactlyExpress.XactlySMBHomePlanActivitiesController">
+	<apex:attribute name="dealsLabel" description="The Deal Label" type="String" required="false" access="public"/>
+	
+	<style> 
+		.planActivitiesBox {
+			font-size:11px;
+			margin:0px;
+			width:360px;
+			padding: 0px;
+		}
+		.planActivitiesBox .boxTitle {
+			background:transparent url({!URLFOR($Resource.XactlyExpress__XactlySMBResources ,'img/layout/table_top_360w_with_title.png')}) no-repeat scroll 0 0;
+			font-weight:bold;
+			height:20px;
+			padding:2px 0 0 10px;
+		}
+		.planActivitiesBox .boxContent {
+			background:white none repeat scroll 0 0;
+			height:230px;
+			overflow-y:auto;
+			padding:4px;
+			border-left: 1px solid #CCCCCC;
+			border-right: 1px solid #CCCCCC;
+			font-size: 12px;
+		}
+		.planActivitiesBox .boxBottom {
+			background:transparent url({!URLFOR($Resource.XactlyExpress__XactlySMBResources ,'img/layout/table_bottom_360w_with_title.png')}) no-repeat scroll 0 0;
+			height:15px;
+		}
+		
+		.planActivitiesBox .infoContent {
+			margin: 20px 15px;
+		}
+		
+		.planActivitiesBox .loadingStatus {
+			color: #3B6080;
+		}
+		
+		.planActivitiesBox ul.linkList {
+			list-style-type: none;
+			margin: 10px 20px;
+			padding: 0px;	
+		}
+		
+		.planActivitiesBox ul.linkList li {
+			margin: 0px;
+			padding: 6px;	
+		}
+		
+		.planActivitiesBox ul.linkList li a {
+			text-decoration: none;
+			color: blue;	
+		}
+		
+		.planActivitiesBox .selectPlanPanel {
+			margin-left: 10px;
+		}
+	</style>
+	
+	<div class="planActivitiesBox">
+		<div class="boxTitle">
+			{!$Label.xactlyexpress__PlanActivities}  
+		</div>	
+		<div class="boxContent">
+			<apex:form > 
+				<apex:actionFunction name="changeCurrentPlanInfo" action="{!genCurrentPlanInfo}" rerender="currentPlanInfoPanel" status="changingCurrentPlan"/>
+				<apex:outputpanel layout="block" styleclass="selectPlanPanel" rendered="{!IF(planListSize == 0, false, true)}">
+					<apex:selectList multiselect="false" size="1" value="{!currentPlanId}" onchange="changeCurrentPlanInfo();">
+						<apex:selectOptions value="{!planOptionsList}" /> 
+					</apex:selectList>
+				</apex:outputpanel>
+				 	<apex:actionStatus id="changingCurrentPlan"> 
+						<apex:facet name="start">
+							<apex:outputpanel layout="block" styleclass="infoContent">
+								<span class="loadingStatus">{!$Label.xactlyexpress__WaitLoading}</span>
+							</apex:outputpanel>
+						</apex:facet>
+						<apex:facet name="stop">
+							<apex:outputpanel layout="block" id="currentPlanInfoPanel" styleclass="infoContent">
+								<apex:outputpanel rendered="{!IF(planListSize == 0, true, false)}">
+									{!$Label.xactlyexpress__NoPlansToShow}	
+								</apex:outputpanel>
+								<apex:outputpanel rendered="{!IF(planListSize == 0, false, true)}">
+									<div class="totalCompensation">
+										{!$Label.TotalCompensation} {!currentPeriod}: {!totalCompensationString}
+									</div>
+									
+									<ul class="linkList">
+										<li><a href="{!$Page.XactlySMBPlanCreate}?id={!currentPlan.id}">{!$Label.ViewPeopleOnPlan}</a></li>
+										<!-- 
+										<li>
+										     <a href="{!$Page.XactlySMBCalculateStep3}?planId={!currentPlan.id}">
+										         <apex:outputtext value="{!$Label.ViewDealsCreditsOnPlan}">
+										             <apex:param value="{!dealsLabel}" />
+										         </apex:outputtext>
+										     </a>
+										</li>
+										-->
+										<li><a href="{!$Page.XactlySMBCalculateManagePayments}?pln={!currentPlan.id}">{!$Label.ViewCommResultsForPlan}</a></li>
+										<li><a href="{!$Page.XactlySMBPlanCreate}?id={!currentPlan.id}">{!$Label.ViewEditPlan}</a></li>
+										<li><a href="{!$Page.XactlySMBReviewPlan}?step=6&id={!currentPlan.id}">{!$Label.ReviewAndModelPlan}</a></li>
+									</ul>
+								</apex:outputpanel>
+							</apex:outputpanel>
+						</apex:facet>
+					</apex:actionStatus>
+			</apex:form>
+		</div>
+		<div class="boxBottom"></div>
+	</div>
+</apex:component>

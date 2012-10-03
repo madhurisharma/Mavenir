@@ -1,0 +1,156 @@
+<apex:page controller="XactlyExpress.XactlySMBCalculatePayroll" showHeader="false" sidebar="false">
+    <link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.XactlySMBResources ,'css/XactlySMBFontStyles.css')}" /> 
+    <style>
+    body {
+        font-family: 'Helvetica', Arial, sans-serif !important;
+        margin: 0px !important;
+        padding: 0px !important;
+    }
+    body td{font-family: 'Helvetica', Arial, sans-serif !important;}
+    body .x-btn button, body .btn, body .btnImportant, body .btnDisabled, body .btnCancel, body .menuButton .menuButtonButton, body .menuButton .menuButtonMenu a, body .menuButton .menuButtonMenu input.theOption, h1, h2, h3, h4, h5, h6 {font-family: 'Helvetica', Arial, sans-serif !important;}
+        
+    .odd{
+        background:#EDF3EE;
+        height: 30px;
+    }
+    .even{
+        background:#FFFFFF;
+        height: 31px;
+    }
+    .topTable{
+        background:transparent url({!URLFOR($Resource.XactlySMBResources,'img/layout/table_top_710w_no_title_bar.png')}) no-repeat scroll 0 0;
+        height: 9px;
+     }
+     
+     .bottomTable{
+        background:transparent url({!URLFOR($Resource.XactlySMBResources,'img/layout/table_top_710w_no_title_bar.png')}) no-repeat scroll 0 0;
+        height: 9px;
+     }
+     #planList{
+        width:100%;
+        max-height:320px;
+        overflow:auto;
+     }
+     .tble{
+        width:100%;
+     }
+     
+     .btnAction .leftBtnOrange {
+        background:url({!URLFOR($Resource.XactlySMBResources,'img/buttons/orange_button_left.png')}) transparent  no-repeat scroll 0 0;
+        float: left;
+        height:19px;
+        padding:0px 0px 0px 5px;
+        width:auto;
+    }
+    
+    
+    .btnAction .middleBtnOrange {
+        color: white;
+        font-size: 10px;
+        font-weight: bold;
+        padding: 3px 5px;
+        width: auto;
+    }
+    
+    
+    .btnAction .rightBtnOrange {
+        background: url({!URLFOR($Resource.XactlySMBResources,'img/buttons/orange_button_right.png')}) transparent no-repeat scroll right center;
+        float:left;
+        height:19px;
+        padding:0px 5px 0px 0px;
+        width:auto;
+    }
+    
+    .header {
+        background: url({!URLFOR($Resource.XactlySMBResources, 'img/layout/SearchBackgroundHeader.jpg')}) white repeat-x;
+        height: 28px;
+        margin: 0px;
+        padding: 0px;
+    }
+    
+    .xactlyLogo {
+        background: url({!URLFOR($Resource.XactlySMBResources, 'img/layout/SearchXactlyLogo.png')}) white no-repeat right bottom;
+        height: 59px;
+        width: 100%;
+        padding: 0px;
+        bottom: 10px;
+        right: 20px;
+    }
+    .titleLabel { 
+        color: #E26E1B;
+        font-weight: bold;
+        font-size: 14px;
+    }
+    
+    .titleTip {
+        margin-top: 3px;
+        font-size: 11px;    
+    }
+    
+    .content {
+        font-size: 11px;
+        padding: 0px;
+        margin: 20px;
+        position:relative;
+        overflow: hidden;
+    }  
+    </style>
+    <div class="header"></div>
+    <div class="content">
+     <apex:form >
+
+         <div class="titleLabel">
+             <apex:outputText value="{!$Label.xactlyexpress__anErrorOccured}"/>
+         </div>
+         <div class="titleTip">
+             <apex:outputText value="{!$Label.xactlyexpress__errorOnImport}"/>
+         </div>
+         <div style="width:400px;margin-top:20px;">
+             <div class="topTable"></div>
+          <div id="planList"></div>
+          <div class="bottomTable"></div>
+         </div>
+         <div class="btnAction">
+             <div style="margin-top:15px;margin-left:15px;">
+              <a href="javascript:;" onclick="window.close();">
+                  <div class="rightBtnOrange">
+                      <div class="leftBtnOrange">
+                          <div class="middleBtnOrange">
+                              {!$Label.Close}
+                          </div>
+                      </div>
+                  </div> 
+              </a>
+           </div>
+          </div>
+          <div class="xactlyLogo"></div>
+     </apex:form>
+    </div>
+
+    
+    <apex:includeScript value="{!URLFOR($Resource.XactlyExpress__CSN, 'jquery.js')}" />
+    <c:XactlySMBFooterScript /> 
+    <script>
+    $(document).ready(function(){
+       var listPlans = error.split(',');
+       var outPut = '<table class="tble">';
+       for(var i = 0; i < listPlans.length; i++){
+            outPut += '<tr><td>'+listPlans[i]+'</td></tr>';
+       }
+       outPut += '</table>';
+       $('#planList').html(outPut);
+       reColourTableRows()
+    });
+    
+    function reColourTableRows(){
+        var rows = $('tr',$('#planList'));
+        var j=0;
+        for(var i=0; i<rows.length; i++){
+            if($(rows[i]).is(':visible')){
+                $(rows[i]).removeClass('odd').removeClass('even').addClass(j%2 == 0 ? 'odd' : 'even');
+                j++;
+            }
+        }
+    }
+    </script>
+</apex:page>

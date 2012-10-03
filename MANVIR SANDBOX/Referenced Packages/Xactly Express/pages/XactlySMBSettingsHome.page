@@ -1,0 +1,71 @@
+<!--
+Developed by Timba Software Corp. www.timbasoftware.com admin@timbasoftware.com
+ This page defines Settings
+ @author Juan Bessonart <jbessonart@timbasoftware.com>
+-->
+<apex:page id="XactlySMBSettingsHome" controller="XactlyExpress.XactlySMBSettingsHomeController" sidebar="false" showHeader="false" standardStylesheets="true" action="{!redirectWhenAccessIsDenied}">
+	
+   <!-- Custom Cursor Loader -->
+   <c:XactlySMBCursor />
+   <!-- Custom Cursor Loader -->
+    <title>{!$Label.settingsTitle}</title>
+	<link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.XactlySMBResources ,'css/XactlySMBStyles.css')}" />
+    <script type="text/javascript" language="javascript" src="{!URLFOR($Resource.XactlySMBResources, 'js/XactlySMBJavascript.js')}"></script>
+    <c:XactlySMBShadows />
+ 
+    <!-- PAGE WRAPPER -->  
+    <div class="pageContent" id="pContent">
+        <apex:form id="settingsForm">
+            <!-- HEADER -->
+            <apex:outputPanel layout="block" styleClass="header">
+                <c:XactlySMBHeader isAdmin="{!isAdmin}"  isActive="{!isActive}" nbrSeparator="{!nbrSeparator}" nbrDecimal="{!nbrDecimal}" currentUserOrSlected="{!currentUserOrSlected}" emulatingUserURLAppend="{!emulatingUserURLAppend}" selected="7"  wqlabel="{!currentSettings.quotasPlural}" wclabel="{!currentSettings.creditsPlural}" wlabel="{!currentSettings.dealsPluralCap}"  step="5"  wtype="setting"/>
+            </apex:outputPanel>
+            
+            
+
+            <!-- INSUFFICIENT PERMISSIONS -->
+            <apex:outputPanel rendered="{!!isAdmin}">
+                <c:XactlySMBErrorMsg error="{!$Label.xactlyexpress__InsufficientPermissions}" />
+            </apex:outputPanel>
+            
+            <!-- MAIN CONTENT -->
+            <apex:outputPanel layout="block" styleClass="mainContent" rendered="{!isAdmin}">
+                
+                
+                <div class="help">
+                    <a style="float:left; margin-top: 10px;"href="javascript: helpWindow = window.open('{!$Page.XactlySMBHelp}?page=SettingsHome', 'Help','location=0,status=0,scrollbars=1,width=700px,height=500px'); helpWindow.moveTo(100,100);" class="orangeLink">
+                    {!$Label.HowDoesThisPageWork}
+                    </a>
+                    <a href="javascript: helpWindow = window.open('{!$Page.XactlySMBHelp}?page=SettingsHome', 'Help','location=0,status=0,scrollbars=1,width=700px,height=500px'); helpWindow.moveTo(100,100);"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/icons/help_button.png')}"/>
+                    </a>
+                </div>
+                <!-- LEFT PANEL -->
+                <apex:outputPanel layout="block" styleClass="leftPanel">
+                    <div class="bestPracticesComponent">
+                        <c:XactlySMBLeftPanel pageNameFor="SettingsHome"/>
+                    </div>
+                </apex:outputPanel>
+                
+                <!-- CONTENT -->
+                <apex:outputPanel layout="block" styleClass="content">
+
+				</apex:outputPanel>
+			</apex:outputPanel>
+			
+			<!-- FOOTER  -->
+			<apex:outputPanel layout="block" styleClass="footer" rendered="{!isAdmin}" id="pFooter">
+				<div class="btnToRight btnAction">
+                    <a href="javascript:;" onclick="location.href = '/apex/XactlySMBSettingsUsers';">
+                        <div class="rightBtnOrange">
+                            <div class="leftBtnOrange">
+                                <div class="middleBtnOrange">
+                                   {!$Label.xactlyexpress__NextStep}
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+			</apex:outputPanel>			
+		</apex:form>
+	</div>	
+</apex:page>

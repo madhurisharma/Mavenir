@@ -1,0 +1,611 @@
+<apex:page showHeader="false" sidebar="false" title="Payment Details" controller="XactlyExpress.XactlySMBPaymentDetails"  action="{!redirectWhenAccessIsDenied}">
+ 
+<c:XactlySMBCursor />
+    <link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.XactlySMBResources ,'css/XactlySMBFontStyles.css')}" /> 
+    <style>
+        body {
+            font-family: 'Helvetica', Arial, sans-serif !important;
+            margin: 0px !important;
+            padding: 0px !important;    
+        }
+        body td{font-family: 'Helvetica', Arial, sans-serif !important;}
+        body .x-btn button, body .btn, body .btnImportant, body .btnDisabled, body .btnCancel, body .menuButton .menuButtonButton, body .menuButton .menuButtonMenu a, body .menuButton .menuButtonMenu input.theOption, h1, h2, h3, h4, h5, h6 {font-family: 'Helvetica', Arial, sans-serif !important;}
+        
+            
+        .content {
+            font-size: 11px;
+            padding: 0px;
+            margin: 5px;
+            position:relative;
+            overflow: hidden;
+        }  
+            
+        a {
+            text-decoration: none;
+        }
+        
+        .btnAction {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btnAction input {
+            float: left;
+        }
+        
+        .btnAction .leftBtnOrange {
+            background:url({!URLFOR($Resource.XactlySMBResources, 'img/buttons/orange_button_left.png')}) transparent  no-repeat scroll 0 0;
+            float: left;
+            height:19px;
+            padding:0px 0px 0px 5px;
+            width:auto;
+        }
+        .btnAction .middleBtnOrange {
+            color: white;
+            font-size: 10px;
+            font-weight: bold;
+            padding: 3px 5px;
+            width: auto;
+        }
+        .btnAction .rightBtnOrange {
+            background: url({!URLFOR($Resource.XactlySMBResources, 'img/buttons/orange_button_right.png')}) transparent no-repeat scroll right center;
+            float:left;
+            height:19px;
+            padding:0px 5px 0px 0px;
+            width:auto;
+            margin-top: 1px;
+            margin-left: 5px;
+        }          
+        
+        .header {
+            background: url({!URLFOR($Resource.XactlySMBResources, 'img/layout/SearchBackgroundHeader.jpg')}) white repeat-x;
+            height: 28px;
+            margin: 0px;
+            padding: 0px;
+        }
+        
+        .topBorder {
+            background: url({!URLFOR($Resource.XactlySMBResources, 'img/layout/SearchBackgroundTopBorder.jpg')}) white repeat-x;
+            height: 9px;
+            margin: 0px;
+            padding: 0px;
+        }
+        
+        .bottomBorder {
+            background: url({!URLFOR($Resource.XactlySMBResources, 'img/layout/SearchBackgroundBottomBorder.jpg')}) white repeat-x;
+            height: 4px;
+            padding: 0px;
+            bottom: 69px;
+            right: 20px;
+            left: 20px;
+            position: absolute;
+        }
+            
+        .xactlyLogo {
+            background: url({!URLFOR($Resource.XactlySMBResources, 'img/layout/SearchXactlyLogo.png')}) white no-repeat right bottom;
+            height: 45px;
+            width: 100%;
+        }
+        
+        #icon{
+            float:left;
+            margin-left:10px;
+            width:57px;
+            height:57px;
+            /*background: url('estilo/img/icons/magnifier2.png') no-repeat;*/
+            background: url({!URLFOR($Resource.XactlySMBResources, 'img/icons/magnifier2.png')}) no-repeat;
+        }
+        
+        #centerContainer{
+            margin-left:auto
+            margin-top:auto;            
+        }
+        
+        .rightAligned{
+            text-align:right;
+        }
+        
+        .rightAligned input{
+            text-align:right;
+        }
+            
+        .collapseArrowDown{
+            padding-left:12px;
+            cursor:pointer;
+            background:url({!URLFOR($Resource.XactlySMBResources,'img/icons/collapseArrowDown.png')}) no-repeat; 
+        }
+         
+        .collapseArrowRight{
+            padding-left:12px;
+            cursor:pointer;
+            background:url({!URLFOR($Resource.XactlySMBResources,'img/icons/collapseArrowRight.png')}) no-repeat;
+        }
+        
+        .indent1{
+            margin-left:10px;
+        }
+        
+        .indent2{
+            margin-left:30px;
+        }
+        
+        table tr td{
+            padding:5px;
+         }
+         
+         table tr th{
+            padding:5px;
+         }
+         
+         table{
+            border-collapse: collapse;
+         }
+        
+         table td{
+            border-right: 1px solid #888888;
+         }
+         
+         table th{
+            border-right: 1px solid #888888;
+         }
+         
+         table tr.odd{
+            background-color: #E5E5E5;
+         }
+         
+         table tr.even{
+            background-color: #CECECE;
+         }
+         
+         table thead tr{
+            background-color: #CECECE;
+            color: #426E83;
+            border-bottom: 1px solid #000000;
+         }
+         
+        .addCommentLink {
+            -moz-background-clip:border;
+            -moz-background-inline-policy:continuous;
+            -moz-background-origin:padding;
+            background:transparent url({!URLFOR($Resource.XactlySMBResources, 'img/buttons/noCommentBtn.png')}) no-repeat scroll 0 0;
+            display:block;
+            height:16px;
+            width:18px;
+        }
+        .editCommentLink {
+            -moz-background-clip:border;
+            -moz-background-inline-policy:continuous;
+            -moz-background-origin:padding;
+            background:transparent url({!URLFOR($Resource.XactlySMBResources, 'img/buttons/commentBtn.png')}) no-repeat scroll 0 0;
+            display:block;
+            height:16px;
+            width:18px;
+        }
+        .commentBox {
+            height:80px;
+            margin:auto;
+            width:100%;
+            margin-top:10px;
+        }
+        .commentTextArea {
+            height:50px;
+            width:641px;
+        }
+        .commentHeader {
+            -moz-background-clip:border;
+            -moz-background-inline-policy:continuous;
+            -moz-background-origin:padding;
+            background:white none repeat scroll 0 0;
+            border:1px solid black;
+            padding:6px;
+            position:relative;
+        }
+        .commentBoxBtn {
+            -moz-background-clip:border;
+            -moz-background-inline-policy:continuous;
+            -moz-background-origin:padding;
+            background:transparent url({!URLFOR($Resource.XactlySMBResources, 'img/buttons/closeComment.png')}) no-repeat scroll 0 0;
+            float:right;
+            height:25px;
+            position:absolute;
+            right:10px;
+            width:25px;
+        }
+        
+        .disabledOpacityButton {
+			opacity: 0.4;
+		}
+        
+        table tr.selectedRowTable{
+            background-color: #D6AC8B;
+        }
+        
+        .areaTitle  {
+			color:#3B6080;
+			font-size:12px;
+			font-weight:bold;
+		}
+        
+        /*************** footer button styles ***************/
+        
+        /**
+         * AO 02/11/10: this class is used to identify in JS which bottom bar button is "none"
+         **/
+        div.displayNone{
+            display:none;
+            
+        }
+            
+        .btnAction .middleBtnSilver, .btnAction .middleBtnSilverDisabled {
+            font-size: 10px;
+            font-weight: bold;
+            padding: 3px 5px;
+            width: auto;
+        }
+        
+        /**
+         * AO 02/10/10: I have changed the background property from this class to a gif image
+         */
+        .btnAction .leftBtnSilver {
+            /*background:url(../img/buttons/silver_button_left.png) transparent  no-repeat scroll top left;*/
+            background:url({!URLFOR($Resource.XactlySMBResources, 'img/buttons/silver_button_left.gif')}) transparent  no-repeat scroll top left;
+            float: left;
+            height:19px;
+            padding:0px 0px 0px 5px;
+            width:auto;
+        }
+        
+        
+        /**
+         * AO 02/10/10: I have changed the background property from this class to a gif image
+         */
+        .btnAction .rightBtnSilver {
+            background: url({!URLFOR($Resource.XactlySMBResources, 'img/buttons/silver_button_right.gif')}) transparent no-repeat scroll right top;
+            /*background: url(../img/buttons/silver_button_right.png) transparent no-repeat scroll right top;*/
+            float:left;
+            height:19px;
+            padding:0px 5px 0px 0px;
+            width:auto;
+            margin-left: 5px;           
+        }
+            
+        /*************** end of footer button styles ***************/
+            
+        .topGrayTable{
+	        background:transparent url({!URLFOR($Resource.XactlySMBResources,'img/layout/topGrayCurvy.png')}) no-repeat scroll 0 0;
+	        height: 5px;
+	        width: 990px;
+	    }
+     
+	    .bottomGrayTable{
+	        background:transparent url({!URLFOR($Resource.XactlySMBResources,'img/layout/bottomGrayCurvy.png')}) no-repeat scroll 0 0;
+	        height: 5px;
+	        width: 990px;
+	    }
+	    
+	    .errorMsg {
+            color: #DD0000;
+            text-align: center;
+        }
+    </style>
+    
+        
+    <apex:form id="theForm" >
+        <div class="header"></div>
+        <div class="content">
+            <div id="centerContainer">
+                <div id="icon"></div>
+                <div style="float: left; margin-top: 20px;">                     
+                    <div style="float: left;">
+                        <span style="font-family: 'ProximaNovaSemiBold' !important;font-size: 22px;color: rgb(216, 128, 69); margin-left: 10px;">Payment Details</span> 
+                        &nbsp;for
+                    </div>
+                    <apex:outputpanel layout="block" style="float:left;margin-top:5px;margin-left:5px;">
+	                    <apex:outputPanel layout="block" id="dropdownsFilter" styleclass="dropdownsFilter">
+	                        <apex:actionFunction name="reloadDropDownsFiscalYear" action="{!reloadDropDownsFiscalYear}" oncomplete="waitOff();" rerender="mainTableCont, dropdownsFilter"/>
+		                    <apex:actionFunction name="reloadDropDownsPeriods" action="{!reloadDropDownsPeriods}" oncomplete="waitOff();" rerender="mainTableCont, dropdownsFilter"/>
+		                    <apex:actionFunction name="reloadDropDownsPlan" action="{!reloadDropDownsPlan}" oncomplete="waitOff();" rerender="mainTableCont, dropdownsFilter"/>
+		                    <apex:actionFunction name="reloadAll" action="{!groupsAndFilter}" oncomplete="waitOff();" rerender="mainTableCont, dropdownsFilter"/>
+		                    <apex:actionFunction name="reloadDropDownsPayment" action="{!reloadDropDownsPayment}" oncomplete="waitOff();" rerender="mainTableCont, dropdownsFilter"/>
+                     
+                            <apex:outputPanel rendered="{!isAdmin}">
+							    <apex:selectList value="{!crrntUserId}"  size="1" multiSelect="false" onchange="reloadAll();waitOn();detailsHandler.switchDivsDisplay();">
+								    <apex:selectOptions value="{!salesPersonsOptions}"/> 
+								</apex:selectList>
+                            </apex:outputpanel>
+                            <apex:outputPanel rendered="{!isManager}">
+								<apex:selectList value="{!crrntUserId}"  size="1" multiSelect="false" onchange="reloadAll();waitOn();detailsHandler.switchDivsDisplay();">
+							   	    <apex:selectOptions value="{!managerSubordinates}"/> 
+							    </apex:selectList>
+							</apex:outputpanel>
+                     
+							<apex:selectList value="{!crrntPlanId}" size="1" multiSelect="false" onchange="reloadDropDownsPlan();waitOn();detailsHandler.switchDivsDisplay();">
+							    <apex:selectOptions value="{!planOptions}"/>
+							</apex:selectList>   
+							
+							<apex:selectList value="{!crrntPaymentId}" size="1" multiSelect="false" onchange="reloadDropDownsPayment();waitOn();detailsHandler.switchDivsDisplay();">
+							    <apex:selectOptions value="{!paymentOptions}"/>
+							</apex:selectList>
+							
+							<apex:selectList value="{!crrntPeriodId}" size="1" multiSelect="false" onchange="reloadDropDownsPeriods();waitOn();detailsHandler.switchDivsDisplay();">
+							    <apex:selectOptions value="{!periodOptions}"/>
+							</apex:selectList>
+				                    
+						    <apex:selectList value="{!crrntFiscalYearId}" size="1" multiSelect="false" onchange="reloadDropDownsFiscalYear();waitOn();detailsHandler.switchDivsDisplay();">
+						        <apex:selectOptions value="{!fiscalYearOptions}"/>
+						    </apex:selectList>  
+						    
+                        </apex:outputPanel>
+                    </apex:outputPanel>                            
+                </div>
+                <div style="clear: both;"></div>
+                <div style="clear: both; margin-bottom: 2px;"></div>
+                
+                <apex:outputPanel id="errorMsg" layout="block">
+                    <c:XactlySMBErrorMsg error="{!errorMsg}"/> 
+                </apex:outputPanel>
+                
+                <div class="topGrayTable"></div>
+                <div style="font-size: 10pt;background-color: #7C7B79;padding:5px 10px 10px 10px;width:970px" id="mainCornerDiv" class="mainCornerDiv">
+                    <div style="font-weight:bold;color:white;margin-top:4px;float:left;">Deal Level Results</div>
+                    <div style="font-weight:bold;color:white;margin-bottom:5px;float:right;">
+		                {!$Label.GoToPage}
+		                <apex:actionFunction name="goToPageAF" action="{!goToPage}" rerender="mainTableCont" oncomplete="waitOff();"/>
+		                <apex:selectList multiselect="false" size="1" value="{!currentPage}" onchange="goToPage();">
+		                    <apex:selectOptions value="{!pages}" />
+		                </apex:selectList>
+		            </div>
+                    <div style="clear: both;"></div> 
+                  
+                    <div style="width:100%;height: 440px;overflow: auto;" id="mainDiv" class="mainDiv">            
+                        <apex:actionFunction name="loadDetailAF" action="{!loadDetail}" rerender="detailTableCont" oncomplete="waitOff();detailsHandler.switchDivsDisplay(212);"/>
+                        <apex:outputPanel layout="block" id="mainTableCont" rendered="{!IF(LEN(errorMsg)>0,false,true)}">
+                            <table style="min-width: 1100px;width:100%;">  
+                                <thead> 
+                                    <tr>
+                                        <th>
+                                            <apex:outputpanel style="white-space: nowrap">
+                                                {!$Label.xactlyexpress__User}
+                                            </apex:outputpanel>
+                                        </th>
+                                        <th>
+                                            <apex:outputpanel style="white-space: nowrap">
+                                                {!$Label.xactlyexpress__Plan}                                                
+                                            </apex:outputpanel>
+                                        </th>
+										<th>
+										    <apex:outputpanel style="white-space: nowrap">										        
+										        {!$Label.xactlyexpress__PaymentRule}
+										    </apex:outputpanel>
+										</th>
+										<th>
+								            <apex:outputpanel style="white-space: nowrap">
+								                <apex:outputpanel rendered="{!IF(sortBy == 'CreditAmount', true, false)}">
+								                    <img  src="{!IF(sortByDesc == true, URLFOR($Resource.XactlySMBResources, 'img/icons/arrowUp.png'), URLFOR($Resource.XactlySMBResources, 'img/icons/arrowDown.png'))}" />
+								                </apex:outputpanel>
+										        <apex:commandLink onclick="waitOn();" oncomplete="selectCurrent();waitOff();detailsHandler.colorizeRow();" value="{!$Label.xactlyexpress__CreditAmount}"  action="{!groupsAndFilter}" rerender="mainTableCont" styleclass="areaTitle">
+										             <apex:param name="sortBy" value="CreditAmount"/>
+										        </apex:commandLink>
+										    </apex:outputpanel>
+										</th>
+										<th>
+				                            <apex:outputpanel style="white-space: nowrap">
+				                                <apex:outputpanel rendered="{!IF(sortBy == 'Rate', true, false)}">
+				                                    <img  src="{!IF(sortByDesc == true, URLFOR($Resource.XactlySMBResources, 'img/icons/arrowUp.png'), URLFOR($Resource.XactlySMBResources, 'img/icons/arrowDown.png'))}" />
+				                                </apex:outputpanel>
+										        <apex:commandLink onclick="waitOn();" oncomplete="selectCurrent();waitOff();detailsHandler.colorizeRow();" value="{!$Label.xactlyexpress__Rate}"  action="{!groupsAndFilter}" rerender="mainTableCont" styleclass="areaTitle">
+										            <apex:param name="sortBy" value="Rate"/>
+										        </apex:commandLink>
+										    </apex:outputpanel>    
+										</th>
+										<th> 
+										    <apex:outputpanel style="white-space: nowrap"> 
+										        <apex:outputpanel rendered="{!IF(sortBy == 'holdBalance', true, IF(sortBy == 'Earned', true, IF(sortBy == 'Paid', true, IF(sortBy == 'held', true, IF(sortBy == 'released', true, false)))))}" style="white-space: nowrap">
+										            <img  src="{!IF(sortByDesc == true, URLFOR($Resource.XactlySMBResources, 'img/icons/arrowUp.png'), URLFOR($Resource.XactlySMBResources, 'img/icons/arrowDown.png'))}" />
+										        </apex:outputpanel>
+										        <apex:commandLink onclick="waitOn();" oncomplete="selectCurrent();waitOff();detailsHandler.colorizeRow();" value="{!IF(selectedCategory == 'earned', earnedLabel, IF(selectedCategory == 'paid', $Label.xactlyexpress__Payment, IF(selectedCategory == 'held', $Label.xactlyexpress__Hold, IF(selectedCategory == 'released', $Label.xactlyexpress__Release, $Label.xactlyexpress__HoldBalance))))}" action="{!groupsAndFilter}" rerender="mainTableCont" styleclass="areaTitle">
+										            <apex:param name="sortBy" value="{!selectedCategory}"/>
+										        </apex:commandLink>
+										    </apex:outputpanel>
+										</th>
+										<th>
+										    <apex:outputpanel style="white-space: nowrap">
+										        <apex:outputpanel rendered="{!IF(sortBy == 'HoldRule', true, false)}">
+										           <img  src="{!IF(sortByDesc == true, URLFOR($Resource.XactlySMBResources, 'img/icons/arrowUp.png'), URLFOR($Resource.XactlySMBResources, 'img/icons/arrowDown.png'))}" />
+										        </apex:outputpanel>
+										        <apex:commandLink onclick="waitOn();" oncomplete="selectCurrent();waitOff();detailsHandler.colorizeRow();" value="{!$Label.xactlyexpress__HoldRule}"  action="{!groupsAndFilter}" rerender="mainTableCont" styleclass="areaTitle">
+										            <apex:param name="sortBy" value="HoldRule"/>
+										        </apex:commandLink>
+										    </apex:outputpanel> 
+										</th>
+                                        <apex:variable var="dealAttrCount" value="{!0}"/>  
+                                        <apex:repeat value="{!dealAttributes}" var="d">
+                                            <th>
+                                                <apex:outputpanel style="white-space: nowrap">
+                                                    <apex:outputpanel rendered="{!IF(sortBy == d.XactlyExpress__DisplayName__c, true, false)}">
+                                                        <img src="{!IF(sortByDesc == true, URLFOR($Resource.XactlySMBResources, 'img/icons/arrowUp.png'), URLFOR($Resource.XactlySMBResources, 'img/icons/arrowDown.png'))}" />
+                                                    </apex:outputpanel>
+                                                    <apex:commandLink onclick="waitOn();" oncomplete="selectCurrent();waitOff();detailsHandler.colorizeRow();" value="{!d.XactlyExpress__DisplayName__c}"  action="{!groupsAndFilter}" rerender="mainTableCont" styleclass="areaTitle">
+                                                        <apex:param name="sortBy" value="{!d.XactlyExpress__DisplayName__c}"/> 
+                                                    </apex:commandLink>
+                                                </apex:outputpanel>
+                                            </th>
+                                            <apex:variable var="dealAttrCount" value="{!(dealAttrCount) + 1}"/>
+                                        </apex:repeat>
+                                    </tr>
+                                </thead>
+                                <tbody>
+		                            <apex:variable var="rowCount" value="{!0}"/>
+		                            <apex:repeat value="{!dealToShow}" var="d">
+		                                <tr id="{!d.dealLevel.id}" onclick="loadDetail(this,'{!d.dealLevel.Id}');" class="{!IF(rowCount = 0, 'odd','even')}" style="{!IF(d.dealLevel.Id != '', 'cursor:pointer','')}">
+                                            <td>
+                                                <span style="white-space: nowrap">{!d.dealLevel.UserName}</span>
+                                            </td>
+                                            <td>
+                                                <span style="white-space: nowrap">{!d.dealLevel.PlanName}</span>
+                                            </td>
+                                            <td>
+                                                <span style="white-space: nowrap">{!d.dealLevel.PaymentRule}</span>
+                                            </td>
+	                                        <td class="rightAligned">
+	                                            {!d.dealLevel.CreditAmount}
+	                                        </td>
+	                                        <td class="rightAligned">
+	                                            {!d.dealLevel.Rate}
+	                                        </td>
+	                                        <td class="rightAligned">
+	                                            <apex:outputtext value="{!IF(selectedCategory == 'earned', d.dealLevel.Earned, IF(selectedCategory == 'paid', d.dealLevel.Paid, IF(selectedCategory == 'held', d.dealLevel.held, IF(selectedCategory == 'released', d.dealLevel.released, d.dealLevel.holdBalance))))}" />
+	                                        </td>
+	                                        <td>
+	                                            <span style="white-space: nowrap">{!d.dealLevel.HoldRule}</span>
+	                                        </td>
+                                            <apex:repeat value="{!d.dealAttr}" var="dattr"> 
+                                                <td class="rightAligned"><span style="white-space: nowrap">{!dattr}</span></td>
+                                            </apex:repeat> 
+                                        </tr>
+                                        <apex:variable var="rowCount" value="{!(rowCount * -1) + 1}"/>
+                                    </apex:repeat>
+                                </tbody>
+                            </table>
+                        </apex:outputPanel> 
+                        <apex:inputHidden id="dealId" value="{!selectedDealId}"/>
+		                <script>
+		                    var dealId = '{!$Component.dealId}'; 
+		                </script>
+                    </div>
+                    <div style="clear: both;">&nbsp;</div>
+                </div>
+                <div class="bottomGrayTable"></div>
+                       
+                <!-- DRAGBAR --> 
+                <div style="width:100%;position:absolute;display:none;" id="dragBar">
+                    <img src="{!URLFOR($Resource.XactlySMBResources, 'img/layout/dragToResize.jpg')}" style="border:none" width="100%"/>
+                </div>
+                
+                <br/>
+
+                <div style="clear: both;">&nbsp;</div>
+                   
+                <div id="detailDiv" class="detailDiv" style="display:none;">
+                    <div class="btnToCenter btnAction" style="float:right;margin-right:15px">   
+                        <div class="separateBtn">
+                            <a href="javascript:;" onclick="detailsHandler.switchDivsDisplay();">
+                                <div class="rightBtnOrange">
+                                    <div class="leftBtnOrange">
+                                        <div style="color: white;" class="middleBtnOrange">
+                                            >>
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>                
+                        </div>
+                    </div>
+                    <div style="float: right;color:#426E83;font-weight: bold;font-size:10pt;padding-top:2px;">Close Details</div>
+                    <div style="clear: both; margin-bottom: 2px;"></div>
+                      
+                    <div style="font-size: 10pt;background-color: #C26F2D;padding:5px 10px 10px 10px" id="detailCornerDiv" class="detailCornerDiv">
+                        <div style="font-weight:bold;color:white;margin-bottom:5px;">Hold and Release Information</div>
+                        <apex:outputPanel layout="block" style="width:100%;height: 145px;overflow: auto;" id="detailTableCont" styleClass="detailTableCont">            
+                            <table style="min-width: 980px;width:100%">
+                                <thead>
+	                                <tr>
+	                                    <th>Edit</th>
+		                                <th>Period</th>
+		                                <th>Event</th>
+		                                <th>Original Held Amount</th>
+		                                <th>Released</th>
+		                                <th>Pending Release</th>
+		                                <th>Balance</th>
+		                            </tr>
+                                </thead> 
+                                <tbody>
+                                    <apex:variable var="rowCount" value="{!0}"/>
+                                    <apex:repeat value="{!releaseList}" var="rel"> 
+		                                <tr class="{!IF(rowCount = 0, 'odd','even')}">
+		                                    <td style="width:10px;" class="disabledOpacityButton"><img src="{!URLFOR($Resource.XactlySMBResources, 'img/icons/adjustPaymentIcon.png')}" /></td>
+		                                    <td>{!rel.Period}</td>
+		                                    <td class="rightAligned">{!rel.Event}</td>
+		                                    <td class="rightAligned">{!rel.Amount}</td>
+		                                    <td class="rightAligned">{!rel.Released}</td>
+		                                    <td class="rightAligned">{!rel.PendingRelease}</td>
+		                                    <td class="rightAligned">{!rel.Balance}</td>
+		                                </tr>
+                                        <apex:variable var="rowCount" value="{!(rowCount * -1) + 1}"/>
+                                    </apex:repeat>
+                                </tbody>
+                            </table>
+                        </apex:outputPanel>
+                    </div>
+                </div>
+                <div style="clear: both;"></div>    
+                <div id="commentBox"></div>
+                <div id="liaCommentBox"></div>
+               
+            </div>
+            <b>
+            <apex:outputText value="{!limitWarning}" />
+            </b>
+            <div style="clear: both;">&nbsp;</div>
+            <div class="xactlyLogo"></div>
+            </div>
+        </apex:form>
+        
+        <apex:includeScript value="{!URLFOR($Resource.XactlyExpress__CSN, 'jquery.js')}" />
+        <c:XactlySMBFooterScript /> 
+        
+        <script type="text/javascript" language="javascript" src="{!URLFOR($Resource.XactlySMBResources, 'js/XactlySMBJavascript.js')}"></script>
+        <script type="text/javascript" language="javascript" src="{!URLFOR($Resource.XactlySMBResources, 'js/jquery-ui.min.js')}"></script>
+        <script type="text/javascript" language="javascript" src="{!URLFOR($Resource.XactlySMBResources, 'js/jquery.curvycorners.min.js')}"></script>
+        <script type="text/javascript" charset="utf-8">
+        
+            $(document).ready(function(){
+                
+                              
+               $('#detailCornerDiv').corner({
+                    tl: { radius: 5 },
+                    tr: { radius: 5 },
+                    bl: { radius: 5 },
+                    br: { radius: 5 },
+                    antiAlias: true
+                });
+                
+                detailsHandler.init();
+                detailsHandler.initDrag(150,460,343);
+                
+            });
+            
+            
+            //This function is fired when the user clicks on any row of the upper div
+            function loadDetail(tr,rId){
+                
+                if(rId == ""){
+                    //alert('no releaseResult');
+                    return false
+                }        
+                
+                detailsHandler.colorizeRow(tr);                
+                document.getElementById(dealId).value = rId;
+                waitOn();
+                loadDetailAF();
+                           
+            }
+            
+            function goToPage(){
+            
+                waitOn();
+                goToPageAF();
+                
+            }
+            
+            function selectCurrent(){
+                var selec = $('.needSelected');
+                for(var i = 0; i < selec.length; i++){
+                    selec.addClass('selected');      
+                } 
+            }
+            
+            
+        
+        </script>
+        
+</apex:page>

@@ -1,0 +1,12 @@
+<!--
+Developed by Timba Software Corp. www.timbasoftware.com admin@timbasoftware.com
+ This component displays an error message if not empty
+ @author Guillermo Freire <guillermo.freire@gmail.com>
+-->
+<apex:component >
+	<apex:attribute name="error" description="The application error" type="String" required="false"/>
+	<apex:attribute name="errStyle" description="The text to be shown" type="String" required="false" access="public"/>
+	<apex:outputPanel layout="block" style="{!errStyle}" styleClass="errorMsg XactlySMBErrorMsg">
+	   <apex:outputText escape="false"  value="{!error}" />
+    </apex:outputPanel>
+</apex:component>

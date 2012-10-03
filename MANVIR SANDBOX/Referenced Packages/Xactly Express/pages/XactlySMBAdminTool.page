@@ -1,0 +1,67 @@
+<apex:page controller="XactlyExpress.XactlySMBAdminToolController">
+    <apex:outputLabel value="Export a plan."/>
+    <apex:form >
+        <apex:actionFunction name="exportPlan" action="{!dummy}" oncomplete="waitOff();" rerender="exportLink"/>
+        <apex:outputpanel > 
+        <apex:selectList id="planName" value="{!currentPlanName}" onchange="exportPlan();" multiselect="false" size="1">
+            <apex:selectOptions value="{!plans}" /> 
+        </apex:selectList>
+        </apex:outputpanel>  
+        <apex:outputpanel id="exportLink">
+            <a href="{!$Page.XactlyExpress__XactlySMBDataExport}?plan={!currentPlanName}">Export Plan</a>     
+        </apex:outputPanel>
+        <!--
+        <apex:actionFunction name="validateShares" action="!{validateShares}" oncomplete="waitOff();"/>
+        <apex:commandButton value="validateShares" action="{!validateShares}"/>
+        -->
+    </apex:form>
+    <div style="margin-top:24px;" />
+
+    <apex:outputLabel value="Import a plan."/>
+    <apex:form >
+        <apex:inputFile value="{!document.body}" filename="{!document.name}" contentType="{!document.contentType}" />
+        <apex:commandButton value="Import Plan" action="{!onImport}"/>
+    </apex:form>
+
+    <!--
+    <div style="margin-top:24px;" />
+    <apex:outputLabel value="Create a plan from template."/>
+    <apex:form >
+        <apex:selectList id="planTemplateName" value="{!currentPlanTemplateName}" multiselect="false" size="1">
+            <apex:selectOptions value="{!planTemplates}" />
+        </apex:selectList>
+        <apex:commandButton value="Create Plan" action="{!onImportByTemplate}"/>
+    </apex:form>
+    -->
+
+    <div style="margin-top:24px;" />
+    <apex:form >
+        <apex:outputText >Current Period = {!currentPeriod}</apex:outputText>
+    </apex:form>
+
+    <div style="margin-top:12px;" />
+    <apex:form >
+        <apex:outputText >Delete current period calculated results (credits and payments but NOT manual adjustments):&nbsp;&nbsp;</apex:outputText> <apex:commandButton value="Delete Results" action="{!onCleanCurrentPeriodResults}"/>
+    </apex:form>
+    
+    <div style="margin-top:12px;" />
+    <apex:form >
+        <apex:outputText >Delete current period manual adjustments:&nbsp;&nbsp;</apex:outputText><apex:commandButton value="Delete Manual Adjustments" action="{!onDeleteCurrentPeriodManualAdjustments}"/>
+    </apex:form>
+
+    <div style="margin-top:12px;" />
+    <apex:form >
+        <apex:outputText >Delete current period deals:&nbsp;&nbsp;</apex:outputText> <apex:commandButton value="Delete Deals" action="{!onDeleteCurrentPeriodDeals}"/>
+    </apex:form>
+
+    <div style="margin-top:12px;" />
+    <apex:form >
+        <apex:outputText >Unclose current period (does NOT delete manual adjustments and deals):&nbsp;&nbsp;</apex:outputText><apex:commandButton value="Unclose Period" action="{!onUnClosePeriod}"/>
+    </apex:form>
+    
+    <div style="margin-top:12px;" />
+    <apex:form >
+        <apex:outputText >Calculate (credits & payments) for all plans synchronously:&nbsp;&nbsp;</apex:outputText><apex:commandButton value="Calculate" action="{!calcSync}"/>
+    </apex:form>
+    
+</apex:page>

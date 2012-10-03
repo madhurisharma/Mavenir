@@ -1,0 +1,391 @@
+<!-- 
+Developed by Timba Software Corp. www.timbasoftware.com admin@timbasoftware.com
+ This page defines Settings
+ @author Juan Bessonart <jbessonart@timbasoftware.com>
+-->
+<apex:page id="XactlySMBSettingsPayroll" controller="XactlyExpress.XactlySMBSettingsPayrollController" sidebar="false" showHeader="false" standardStylesheets="true" action="{!redirectWhenAccessIsDenied}">
+   <!-- Custom Cursor Loader -->
+   <c:XactlySMBCursor />
+   <!-- Custom Cursor Loader --> 
+    <title>{!$Label.ChangeMy} : {!$Label.SettingsWhizardPayroll}</title>
+    <link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.XactlySMBResources ,'css/XactlySMBStyles.css')}" />
+    <link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.XactlySMBResources ,'css/XactlySMBNumeratedBox.css')}" /> 
+     
+    <style>
+        .sectionTitle {
+            font-size: 16px;
+            color: #D8691C;
+            font-weight: bold;    
+        }
+        
+        .sectionSubTitle{
+            font-size: 11px;
+            color: #333333;
+            font-weight: normal; 
+            margin: 5px 0px 0px 30px;   
+        }
+        
+        .sectionTableWrapper { 
+            padding: 0px;
+            max-height: 215px;
+            height: expression(this.scrollHeight > 216? "215px": "auto");
+            overflow: auto;
+            position: relative;
+            margin: 0px 50px 0px 50px;
+            width: 100%;
+        }
+        
+        .heightFix {
+            max-height: 150px !important;
+            height: expression(this.scrollHeight > 151? "150px": "auto");
+        }
+        
+        .sectionTableWrapper .sectionTable {
+            margin: 0px;
+            position: relative;
+            overflow: hidden;
+            width: 776px;
+        }
+        
+        .sectionTableWrapper .sectionTable th .newCategory a {
+            font-size: 11px;
+            color: #D8691C;
+            font-weight: normal;
+            float: left;
+            margin-left: 10px;
+        }
+
+		.newCategory{ 
+        	float:right;
+        	display:inline;
+        	/*margin-top:4px;*/
+        }
+        
+        .mainContent {
+        } 
+        
+        div.topTableOther {
+            background: url({!URLFOR($Resource.XactlySMBResources ,'img/layout/grayTopTable.png')});
+            height:9px;
+        }
+        
+        div.bottomTableOther {
+            background: url({!URLFOR($Resource.XactlySMBResources ,'img/layout/grayBottomTable.png')});
+            height:3px;
+        }
+        
+        
+        .payemntsFilter {
+            margin: 10px 0px 0px 110px;
+        }
+        
+        .errorScrollBox{
+            max-height:100px;
+            overflow:auto;
+        }
+        .btnAction .middleBtnOrange:hover{
+            color:#0000ff!important;
+        }
+        
+
+    </style>
+
+    <c:XactlySMBShadows />
+
+    <!-- PAGE WRAPPER -->   
+    <div class="pageContent" id="pContent">
+        <apex:form id="settingsForm">
+            <!-- HEADER -->
+            <apex:outputPanel layout="block" styleClass="header">
+                <c:XactlySMBHeader isAdmin="{!isAdmin}"  isActive="{!isActive}" nbrSeparator="{!nbrSeparator}" nbrDecimal="{!nbrDecimal}" currentUserOrSlected="{!currentUserOrSlected}" emulatingUserURLAppend="{!emulatingUserURLAppend}" selected="7" wqlabel="{!currentSettings.quotasPlural}" wclabel="{!currentSettings.creditsPlural}" wlabel="{!currentSettings.dealsPluralCap}"  step="5" wtype="setting" hlabel="{!$Label.xactlyexpress__ControlOptionalBeh}" stepHelp="SettingsPayroll"/>
+            </apex:outputPanel>
+  
+            <apex:actionFunction name="refreshPayments" action="{!genPayments}" rerender="paymentsResult,errorMsg" oncomplete="waitOff();"/>
+
+            <div  class="error">
+            <!-- INSUFFICIENT PERMISSIONS -->
+            <apex:outputPanel rendered="{!!isAdmin || !isActive}">
+                <c:XactlySMBErrorMsg error="{!$Label.xactlyexpress__InsufficientPermissions}" />
+            </apex:outputPanel>
+            
+            <apex:outputPanel layout="block" styleclass="additionalContent" rendered="{!isAdmin && isActive}">    
+                <c:XactlySMBChatterWall objectId="{!$User.Id}" showHeader="true" showWall="true" currentPage="{!$CurrentPage.Name}"/>
+            </apex:outputPanel>
+           
+            <!-- MAIN CONTENT -->
+            <apex:outputPanel layout="block" styleClass="mainContent" rendered="{!isAdmin && isActive}">
+               <apex:pageMessages />
+               
+                <!-- CONTENT -->
+                <apex:outputPanel id="settingsContent" layout="block" styleClass="content" style="width:100%;padding-top:10px;">
+                    <apex:outputPanel id="errorMsg" layout="block" styleClass="errorScrollBox">
+                        <c:XactlySMBErrorMsg error="{!errorMsg}"/>
+                    </apex:outputPanel>
+                    <div style="width:990px; margin: 0px 0px 0px 20px;">
+                        
+                        <div class="box">
+                            <div class="tm">
+                                <div style="float: left;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/tl.png')}" /></div>
+                                <div style="float: right;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/tr.png')}" /></div>
+                                <div style="clear:both"></div>
+                            </div>
+                            <div class="roundedBox">
+                                <div class="boxHeader">
+                                    <div class="stepActionNumber PNovaBlack60c5">
+                                     A
+                                    </div>
+                                    <div class="titleWrapper">  
+                                        <div class="mainTitle PNovaSemiBold17c3">{!$Label.DefineCategoriesPayments}</div>
+                                        <div class="detailedTitle HelveticaRegular12c3">{!$Label.paymentCatStep1Sub}</div>
+                                    </div>
+                                    <div class="extraTitleStuff">
+                                    
+                                        <div class="newCategory">
+				                            <div class="btnAction">
+				                                <apex:commandLink id="addCaterogyLink" action="{!newCategory}" styleClass="newCategoryButton" rerender="categoriesTable,errorMsg" onclick="buttonUtils.setObjectTarget($('.newCategoryButton'));buttonUtils.storeOnclickEvents();buttonUtils.disableButton();" oncomplete="buttonUtils.setObjectTarget($('.newCategoryButton'));buttonUtils.enableButton();">
+				                                    <apex:outputPanel layout="block" styleClass="rightBtnOrange">
+				                                        <apex:outputPanel layout="block" styleClass="leftBtnOrange">
+				                                            <apex:outputPanel layout="block" styleClass="middleBtnOrange">
+				                                                {!$Label.xactlyexpress__NewCategory}
+				                                            </apex:outputPanel>
+				                                        </apex:outputPanel>
+				                                    </apex:outputPanel>   
+				                                    <apex:outputPanel layout="block" styleClass="rightBtnSilver displayNone">
+				                                        <apex:outputPanel layout="block" styleClass="leftBtnSilver">
+				                                            <apex:outputPanel layout="block" styleClass="middleBtnSilver">
+				                                                {!$Label.xactlyexpress__NewCategory}
+				                                            </apex:outputPanel>
+				                                        </apex:outputPanel>
+				                                    </apex:outputPanel>
+				                               </apex:commandLink>
+				                            </div>
+				                        </div>
+                                    
+                                    </div>
+                                    <div style="clear:both"></div>
+                                </div> 
+                                <div class="boxContent"> 
+                                    
+                                    <div style="width:776px;">
+				                        <div class="topTableOther" style="width:100%;margin-left:50px;"></div>
+				                        <apex:outputPanel id="categoriesTable" layout="block" styleClass="sectionTableWrapper heightFix">
+				                        <table class="commonTable" cellspacing="0px" cellpadding="0px" border="0px" width="100%">
+				                            <colgroup span="1" width="auto"></colgroup>
+				                            <colgroup span="1" width="18px"></colgroup>
+				                               <apex:repeat value="{!categories}" var="iter" id="tableGenerator">
+				                                   <tr class="{!IF(mod(iter.index,2)!=0,'odd','even')}">
+				                                       <td class="noBorderCell">
+				                                           <apex:inputText maxlength="80" id="categoryName" value="{!iter.cat.name}" />
+				                                       </td>
+				                                       <td>
+				                                           <apex:commandLink id="deleteCategory" action="{!deleteCategory}" onclick="waitOn();" rerender="categoriesTable,paymentsResult,errorMsg" oncomplete="waitOff();">
+				                                               <apex:param name="delId" value="{!iter.index}" /> 
+				                                               <img src="{!URLFOR($Resource.XactlySMBResources, 'img/buttons/delete_small.png')}" />
+				                                           </apex:commandLink>
+				                                       </td>
+				                                   </tr>
+				                               </apex:repeat>
+				                        </table>
+				                        </apex:outputPanel>
+				                         <div class="bottomTableOther" style="width:100%;margin-left:50px;"></div>
+				                    </div>
+                                        
+                                </div>    
+                            </div>      
+                            <div class="bm">
+                                <div style="float: left;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/bl.png')}" /></div>
+                                <div style="float: right;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/br.png')}" /></div>
+                            </div>
+                        </div>
+                        
+                        <div style="height:10px">&nbsp;</div>
+                        
+                        <div class="box" style="margin-bottom:70px;">
+                            <div class="tm">
+                                <div style="float: left;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/tl.png')}" /></div>
+                                <div style="float: right;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/tr.png')}" /></div>
+                                <div style="clear:both"></div>
+                            </div>
+                            <div class="roundedBox">
+                                <div class="boxHeader">
+                                    <div class="stepActionNumber PNovaBlack60c5">
+                                     B
+                                    </div>
+                                    <div class="titleWrapper">  
+                                        <div class="mainTitle PNovaSemiBold17c3">{!$Label.AssociateCategoryPlans}</div>
+                                        <div class="detailedTitle HelveticaRegular12c3">{!$Label.paymentCatStep2Sub}</div>
+                                    </div>
+                                    <div class="extraTitleStuff">
+                                    </div>
+                                    <div style="clear:both"></div>
+                                </div> 
+                                <div class="boxContent"> 
+                                    
+                                    <div class="sectionSubTitle">
+		                              <apex:outputtext value="{!$Label.xactlyexpress__IfYouHaveNotCreatedPlans}" />
+		                            </div>
+		                            
+		                            <apex:outputpanel id="paymentsResult">
+		                              <div class="payemntsFilter">
+		                                <apex:outputtext value="{!$Label.xactlyexpress__SelectPayments}" />&nbsp;&nbsp; 
+		                                <apex:selectList id="selectFiscalYear" value="{!selFiscalYear}" multiselect="false" size="1" onchange="refreshPayments();waitOn();">
+		                                  <apex:selectOptions value="{!fiscalYears}" />
+		                                </apex:selectList>&nbsp;&nbsp; 
+		                                <apex:selectList id="selectPlan" value="{!selPlan}" multiselect="false" size="1" onchange="refreshPayments();waitOn();">
+		                                  <apex:selectOptions value="{!planList}" />
+		                                </apex:selectList>
+		                              </div>
+		                              <apex:outputpanel id="paymentsResultTable" layout="block" rendered="{!payments.size>0}" style="width:776px;"> 
+		                                <div class="topTableOther" style="width:100%;margin-left:50px;">
+		                                </div>
+		                                <apex:outputPanel styleclass="sectionTableWrapper" id="sectionTableWrapper" layout="block">
+		                                  <table class="sectionTable commonTable" cellspacing="0px" cellpadding="0px" border="0px" width="100%">
+		                                    <tr class="odd">
+		                                      <td style="text-align:center;">
+		                                        <apex:outputpanel rendered="{!IF(sortBy == 'PlanName',true,false)}">
+		                                          <img  src="{!IF(sortByDesc == true, URLFOR($Resource.XactlySMBResources, 'img/icons/arrowUp.png'), URLFOR($Resource.XactlySMBResources, 'img/icons/arrowDown.png'))}" />
+		                                        </apex:outputpanel>
+		                                        <apex:commandLink id="headPlanName" onclick="waitOn();" styleclass="areaTitle" oncomplete="waitOff();" value="{!$Label.xactlyexpress__PlanName}" action="{!sortList}" rerender="sectionTableWrapper">
+		                                          <apex:param name="sb" value="PlanName"/>
+		                                        </apex:commandLink></td>
+		                                      <td style="text-align:center;">
+		                                        <apex:outputpanel rendered="{!IF(sortBy == 'PaymentName',true,false)}">
+		                                          <img  src="{!IF(sortByDesc == true, URLFOR($Resource.XactlySMBResources, 'img/icons/arrowUp.png'), URLFOR($Resource.XactlySMBResources, 'img/icons/arrowDown.png'))}" />
+		                                        </apex:outputpanel>
+		                                        <apex:commandLink id="headPaymentName" onclick="waitOn();" styleclass="areaTitle" oncomplete="waitOff();" value="{!$Label.xactlyexpress__paymentNameOnly}" action="{!sortList}" rerender="sectionTableWrapper">
+		                                          <apex:param name="sb" value="PaymentName"/>
+		                                        </apex:commandLink></td>
+		                                      <td style="text-align:center;">
+		                                        <apex:outputpanel rendered="{!IF(sortBy == 'PayrollCat',true,false)}">
+		                                          <img  src="{!IF(sortByDesc == true, URLFOR($Resource.XactlySMBResources, 'img/icons/arrowUp.png'), URLFOR($Resource.XactlySMBResources, 'img/icons/arrowDown.png'))}" />
+		                                        </apex:outputpanel>
+		                                        <apex:commandLink id="headPayrollCat" onclick="waitOn();" styleclass="areaTitle" oncomplete="waitOff();" value="{!$Label.xactlyexpress__PayrollCategory}" action="{!sortList}" rerender="sectionTableWrapper">
+		                                          <apex:param name="sb" value="PayrollCat"/>
+		                                        </apex:commandLink></td>
+		                                    </tr>
+		                                    <apex:repeat id="reppayments" value="{!payments}" var="iter">
+		                                      <tr class="{!IF(mod(iter.index,2)!=0,'odd','even')}">
+		                                        <td class="noBorderCell">
+		                                          <apex:outputtext value="{!iter.pay.PlanId__r.name}"/></td><td>
+		                                          <apex:outputtext value="{!iter.pay.name}" /></td><td>
+		                                          <apex:selectList id="payCatList" value="{!iter.pay.XactlyExpress__PayrollCategory__c}" multiselect="false" size="1">
+		                                            <apex:selectOptions value="{!categoryOptions}" />  
+		                                          </apex:selectList></td>
+		                                      </tr>
+		                                    </apex:repeat>
+		                                  </table>
+		                                </apex:outputPanel>
+		                                <div class="bottomTableOther" style="width:100%;margin-left:50px;">
+		                                </div>
+		                              </apex:outputpanel>
+		                              <apex:outputpanel id="paymentsResultTableNoPlan" layout="block" rendered="{!payments.size == 0}" style="width:776px;padding-top:20px;text-align:center;">{!$Label.xactlyexpress__NoPaymentsFilter} 
+		                              </apex:outputpanel>
+		                              </apex:outputpanel> 
+                                </div>    
+                            </div>      
+                            <div class="bm">
+                                <div style="float: left;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/bl.png')}" /></div>
+                                <div style="float: right;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/br.png')}" /></div>
+                            </div>
+                        </div>
+                        
+                        
+                    </div>
+                </apex:outputPanel>
+                <div style="clear:both"></div>
+            </apex:outputPanel>
+            
+            <!-- FOOTER  -->
+            <apex:outputPanel layout="block" styleClass="footer" rendered="{!isAdmin && isActive}" id="pFooter">
+                <apex:outputPanel layout="block" styleClass="previousStepWrapper"  style="max-width:150px;">
+                    <div class="previousStepRight"></div>
+                    <a class="previousStepMiddle" href="{!$Page.XactlySMBSettingsTerminology}" onclick="savePageHandler.disableBottomBar();">
+                        {!$Label.PreviousStep}
+                    </a>
+                    <div class="previousStepLeft"></div>
+                </apex:outputpanel>
+                    
+                <apex:outputPanel layout="block" styleClass="actionButtons">                        
+                    <apex:outputPanel layout="block" styleClass="actionButtonWrapper">
+                        <div class="actionButtonLeft"></div>
+                        <apex:commandLink styleClass="actionButtonMiddle saveBtn" id="saveBtn" action="{!savePayrollCategories}" onclick="storeValues();savePageHandler.disableBottomBar();">
+                            <apex:outputtext escape="false" value="{!$Label.xactlyexpress__SaveChanges}">
+                               <apex:param value="{!URLFOR($Resource.XactlyExpress__XactlySMBResources ,'img/buttons/navigateSaveMiddle.gif')}" />
+                            </apex:outputtext>  
+                        </apex:commandLink>
+                        <div class="actionButtonRight"></div>    
+                    </apex:outputpanel>
+                    
+                    <apex:outputPanel layout="block" styleClass="actionButtonWrapper">
+                        <div class="actionButtonLeft"></div>
+                        <a href="javascript:;" class="actionButtonMiddle" onclick="discardChangesConfirm(window.location.href);">
+                            <apex:outputtext escape="false" value="{!$Label.xactlyexpress__DiscardChanges}">
+                               <apex:param value="{!URLFOR($Resource.XactlyExpress__XactlySMBResources ,'img/buttons/navigateCancelMiddle.gif')}" />
+                            </apex:outputtext>
+                        </a>
+                        <div class="actionButtonRight"></div>    
+                    </apex:outputpanel>
+                </apex:outputPanel>
+            
+                <apex:outputPanel layout="block" styleClass="nextStepWrapper" style="margin-right:100px;">
+                    <div class="nextStepLeft"></div>
+                    <apex:commandLink styleClass="nextStepMiddle" action="{!saveNext}"  onclick="storeValues();savePageHandler.disableBottomBar();">
+                        {!$Label.xactlyexpress__NextStep}
+                    </apex:commandLink>
+                    <div class="nextStepRight"></div>
+                </apex:outputPanel>
+            </apex:outputPanel> 
+            </div>  
+            
+            <apex:outputpanel id="auxPanel" />  
+        </apex:form>
+    </div>
+    
+    <apex:includeScript value="{!URLFOR($Resource.XactlyExpress__CSN, 'jquery.js')}" />
+      <c:XactlySMBFooterScript /> 
+  
+    <script type="text/javascript" language="javascript" src="{!URLFOR($Resource.XactlySMBResources, 'js/XactlySMBJavascript.js')}"></script>
+    <script type="text/javascript" src="{!URLFOR($Resource.XactlySMBResources ,'js/jquery.superbox-min.js')}"></script>
+    <script type="text/javascript">
+        $(function(){
+            $.superbox.settings = {
+                closeTxt: "X",
+                loadTxt: "Loading...",
+                nextTxt: "Next",
+                prevTxt: "Previous"
+            };
+            $.superbox();
+        });
+    </script>
+    <script type="text/javascript" charset="utf-8">
+           
+       var rerenderNoCompare = true;     
+            
+       $(document).ready(function()
+        {
+        
+        	savePageHandler.storeBottomBarOnclickEvents();
+    		savePageHandler.setExtraBottomBarClick();   
+        
+            storeValues();  
+        });
+        
+        var saveBtn = function(){
+					
+	    	savePageHandler.disableBottomBar();			        
+		
+		} 
+        
+       
+        window.onbeforeunload = function(){
+            if(compareValues(true,rerenderNoCompare) != undefined){
+                setTimeout("savePageHandler.enableBottomBar();",1000);
+            }
+            window.onunload = function() {savePageHandler.disableBottomBar();}
+            return compareValues(true,rerenderNoCompare);
+        }           
+        
+    </script>
+    
+    
+</apex:page>

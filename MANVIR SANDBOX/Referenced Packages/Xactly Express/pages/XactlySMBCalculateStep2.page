@@ -1,0 +1,758 @@
+<!-- 
+    Developed by Timba Software Corp. www.timbasoftware.com admin@timbasoftware.com
+    This page lists plans
+    @author Alvaro Scuccimarra <ascuccimarra@timbasoftware.com>
+-->
+    <apex:page id="manageDeals" cache="false" controller="XactlyExpress.XactlySMBCalculateStep2" sidebar="false" showHeader="false" standardStylesheets="true"  action="{!redirectWhenAccessIsDenied}">
+    <c:XactlySMBCursor />
+    <title>{!$Label.Calculate}: {!titleLabel}</title>
+    <link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.XactlySMBResources ,'css/XactlySMBStyles.css')}" />
+    <link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.XactlySMBResources ,'css/XactlySMBCalculateStep3.css')}" />
+    <link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.XactlySMBResources ,'css/XactlySMBNumeratedBox.css')}" />
+  	
+    <apex:includeScript value="{!URLFOR($Resource.XactlyExpress__CSN, 'jquery.js')}" /> 
+	<script type="text/javascript" language="javascript" src="{!URLFOR($Resource.XactlySMBResources, 'js/XactlySMBJavascript.js')}"></script>
+    <script type="text/javascript" language="javascript" src="{!URLFOR($Resource.XactlySMBResources, 'js/jquery.curvycorners.min.js')}"></script>
+    <style>  
+    
+        .importPanel{
+            background-color:#7C7B79;
+            float:left; 
+            margin-left:50px;
+            padding-top:6px;
+        }    
+        
+        .stepPanel{
+            background-color:#EFEFEF;
+            float:left;
+            font-size:12px;
+            margin-left:8px;
+            margin-right:10px;
+            padding-bottom:30px;
+            padding-right:20px;
+            padding-top:4px;
+            widrh:400px;
+        }    
+        
+        .importPanelTitle{
+            margin-left:15px;
+            float:left;
+            color:#ffffff;
+            font-weight:bold;
+            font-size:17px;
+            margin-bottom:4px;
+        }    
+        
+         
+        .importStepNumber{
+            color:#D06522;
+            display:inline;
+            float:left;
+            font-size:18px;
+            font-weight:bold;  
+        } 
+        
+        .importStepLabel{ 
+            color:#53738F;
+            display:inline;
+            font-size:13px;
+            font-weight:bold;
+            margin-left:2px;
+            margin-top:5px; 
+            float:left;
+        }
+  
+        .selectContainer{
+            clear:both;
+            margin-left:30px;
+            padding-top:10px;
+        }
+        
+        .stepSeparator{
+            background-color:#557490;
+            border:0 none;
+            color:#557490;
+            height:2px;
+        }
+        
+        .containerStat{
+            width: 360px;
+            background-color:#A4B8CB;
+            padding-top:3px;
+            padding-left:5px;
+            padding-right:5px;
+            padding-bottom:6px;
+            margin-left:45px;
+            height:240px;
+        }
+        
+        .bottomTble{
+            background:transparent url({!URLFOR($Resource.XactlySMBResources,'img/layout/table_top_1000w_no_title_bar.png')}) no-repeat scroll 0 0;
+            height: 9px;
+            width: 360px;
+        }
+     
+        .topTble{
+            background:transparent url({!URLFOR($Resource.XactlySMBResources,'img/layout/table_top_1000w_no_title_bar.png')}) no-repeat scroll 0 0;
+            height: 9px;
+            width: 360px;
+        } 
+        
+        .errorMsg {           
+            background:none repeat scroll 0 0 #FFFFFF;
+            border:1px solid #CC0000;
+            color:#CC0000;
+        }   
+        
+        .requiredInput .errorMsg{           
+            position:absolute;
+            z-index:1000;
+        }      
+        
+        .SetImportCriteria{
+            display:none;
+        }
+    </style>
+    
+    <c:XactlySMBShadows />
+    
+    
+    <!-- PAGE WRAPPER -->
+    <div class="pageContent" id="pContent">
+                  
+        <apex:form id="theForm1">
+            <!-- HEADER -->
+            <apex:outputPanel layout="block" styleClass="header">
+                <c:XactlySMBHeader isAdmin="{!isAdmin}"  isActive="{!isActive}" nbrSeparator="{!nbrSeparator}" nbrDecimal="{!nbrDecimal}" currentUserOrSlected="{!currentUserOrSlected}" emulatingUserURLAppend="{!emulatingUserURLAppend}" selected="2" wqlabel="{!currentSettings.quotasPlural}" wclabel="{!currentSettings.creditsPlural}" wlabel="{!currentSettings.dealsPluralCap}" stepHelp="CalculateStep2"  hlabel="{!ImportYourLatestDealDataLabel}" step="1" wtype="calculate"/>
+            </apex:outputPanel>           
+        </apex:form>
+        
+        
+        <apex:form id="theForm2">   
+            <div class="error">
+            <!-- INSUFFICIENT PERMISSIONS -->
+                <apex:outputPanel rendered="{!!isAdmin || !isActive}">
+                    <c:XactlySMBErrorMsg error="{!$Label.xactlyexpress__InsufficientPermissions}" />
+                </apex:outputPanel>
+            </div>
+        </apex:form>
+        
+        
+        <apex:outputPanel layout="block" styleclass="additionalContent" rendered="{!isAdmin && isActive}">    
+            <apex:form id="theForm3"> 
+              <c:XactlySMBChatterWall objectId="{!$User.Id}" showHeader="true" showWall="true" currentPage="{!$CurrentPage.Name}" />
+            </apex:form>
+        </apex:outputPanel>
+            
+            
+        <!-- MAIN CONTENT -->
+        <apex:outputPanel layout="block" styleClass="mainContent" id="mainContent" rendered="{!isAdmin && isActive}">
+            
+            <apex:form id="theForm4"> 
+          		
+          		<apex:actionFunction name="changeImportSourceF" action="{!onChangeImportSource}" >
+          			<apex:param name="firstParam" assignTo="{!SelectedImportSource}" value="" />
+          		</apex:actionFunction>    
+                <!-- CONTENT -->
+                <apex:outputPanel layout="block" styleClass="content" id="content" style="width:100%">                           
+              
+                    <apex:outputPanel id="errorMsg" layout="block" styleClass="errorScrollBox" style="width:100%">
+                        <apex:outputPanel layout="block" rendered="{!errorMsg!=''}" style="width:100%">
+                          <apex:outputPanel layout="block" style="margin-right:20px;"><c:XactlySMBErrorMsg error="{!toShowError + errorMsg}" errStyle="background:#FF0000;color:#FFFFFF;font-size:16px;font-weight:bold;overflow:auto;max-height:100px;"/></apex:outputPanel>
+                        </apex:outputPanel>
+                    </apex:outputPanel> 
+                    
+                    <div style="width:840px;margin-left:100px;">
+	                    <div class="box">
+	                        <div class="tm">
+	                            <div style="float: left;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/tl.png')}" /></div>
+	                            <div style="float: right;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/tr.png')}" /></div>
+	                            <div style="clear:both"></div>
+	                        </div>
+	                        <div class="roundedBox">
+	                            <div class="boxHeader">
+	                                <div class="stepActionNumber PNovaBlack60c5">
+	                                 A
+	                                </div>
+	                                <div class="titleWrapper">  
+	                                    <div class="mainTitle PNovaSemiBold17c3">{!$Label.SourceOfImport}</div>
+	                                    <div class="detailedTitle HelveticaRegular12c3">{!$Label.ImportStep1Sub}</div>
+	                                </div>
+	                                <div class="extraTitleStuff"></div>
+	                                <div style="clear:both"></div>
+	                            </div>
+	                            
+	                            <div class="boxContent">
+	                                <div style="float:left;">
+		                                <apex:outputtext escape="false" value="<input id='IS1' type='radio' value='sf' name='ImportSource'  onclick='changeImportSource();' class='{!IF(importSources.size == 0,'disabledOpacityButton','')}' "/><apex:outputtext escape="false" value="{!IF(importSources.size == 0,'disabled','')} {!IF(settings.ImportSource__c != SETTINGS_CSV && importSources.size > 0,'checked','')}" /><apex:outputtext escape="false" value="/>"/>		                                
+	                                    <label for="IS1" class="{!IF(importSources.size == 0,'disabledOpacityButton','')}"><img class="{!IF(importSources.size==0,'disabledOpacityButton','')}" style="vertical-align:middle;" src="{!URLFOR($Resource.XactlySMBResources ,'img/icons/SaleforceImportIcon.png')}"/> {!$Label.Return}</label>
+	                                    
+	                                    <apex:outputtext escape="false" value="<input id='IS2' type='radio' value='{!SETTINGS_CSV}' name='ImportSource'  onclick='changeImportSource();' "/><apex:outputtext escape="false" value="{!IF(settings.ImportSource__c == SETTINGS_CSV || importSources.size == 0,'checked=\"checked\"','')}" /><apex:outputtext escape="false" value="/>"/>	                                    
+	                                    
+	                                    <label for="IS2"><img style="vertical-align:middle;" src="{!URLFOR($Resource.XactlySMBResources ,'img/icons/CSVImportIcon.png')}"/> {!$Label.ExternalCSVfile}</label>
+	                                    <apex:inputHidden value="{!settings.XactlyExpress__ImportSource__c}" id="selectSource"/>
+	                                    <script>
+	                                        var selectSourceId = '{!$Component.selectSource}';
+	                                    </script>
+                                    </div>                                    
+		                            <div style="clear:both"></div>
+	                            </div>    
+	                        </div>      
+	                        <div class="bm">
+	                            <div style="float: left;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/bl.png')}" /></div>
+	                            <div style="float: right;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/br.png')}" /></div>
+	                        </div>
+	                    </div>
+	                    <br/>
+	                    <div class="box">
+	                        <div class="tm">
+	                            <div style="float: left;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/tl.png')}" /></div>
+	                            <div style="float: right;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/tr.png')}" /></div>
+	                            <div style="clear:both"></div>
+	                        </div>
+	                        <div class="roundedBox">
+	                            <div class="boxHeader">
+	                                <div class="stepActionNumber PNovaBlack60c5">
+	                                 B
+	                                </div>
+	                                <div class="titleWrapper">  
+	                                    <div class="mainTitle PNovaSemiBold17c3">{!typeOfDealsImport}</div>
+	                                    <div class="detailedTitle HelveticaRegular12c3 ImportTypeFile" style="display:none;">{!$Label.ImportFileSub}</div>
+	                                    <div class="detailedTitle HelveticaRegular12c3 ImportTypeSalesforce">{!$Label.ImportSalesforceSub}</div>
+	                                </div>
+	                                <div class="extraTitleStuff" style="{!IF(settings.ImportSource__c == SETTINGS_CSV,'display:none;','')}">
+	                                   {!$Label.IsThereAF}&nbsp;
+	                                   <apex:outputpanel layout="none" rendered="{!IF(ImportCriteria == 'formula',true,false)}">
+	                                       <input type="checkbox" checked="checked" onclick="waitOn();if(this.checked == true)$('.SetImportCriteria')[0].value='formula'; else $('.SetImportCriteria')[0].value= $('.opportunityFieldReadyEmptyValue')[0].value;refreshConditionField();" />
+	                                   </apex:outputpanel>
+	                                   <apex:outputpanel layout="none" rendered="{!IF(ImportCriteria == 'formula',false,true)}">
+                                           <input type="checkbox" onclick="waitOn();if(this.checked == true)$('.SetImportCriteria')[0].value='formula'; else $('.SetImportCriteria')[0].value= $('.opportunityFieldReadyEmptyValue')[0].value;refreshConditionField();" />
+                                       </apex:outputpanel>
+	                                </div>
+	                                <div style="clear:both"></div>
+	                            </div>
+	                            
+	                            <div class="boxContent">
+	                                <div class="ImportTypeSalesforce" style="{!IF(settings.ImportSource__c != SETTINGS_CSV,'','display:none')}">
+		                                <div style="float:left;margin-right:30px;">
+	                                        <apex:selectList styleClass="toReSetter" id="salesforceSource" onchange="changeImportSource();" size="1" multiselect="false" value="{!SelectedImportSource}">
+	                                             <apex:selectOptions value="{!importSources}" />
+	                                        </apex:selectList>    
+	                                        <script>
+	                                            var salesforceSourceId = '{!$Component.salesforceSource}';
+	                                        </script>
+	                                    </div>
+	                                    <div style="float:left;margin-right:30px;">
+	                                        <apex:selectList id="oppFildName" size="1" multiselect="false" styleClass="opportunityFieldName" value="{!settings.XactlyExpress__OpportunityFieldReady__c}"  disabled="{!importCriteria == 'formula'}"  onchange="waitOn();refreshConditionField2();$('#' + opportunityFieldReadyValue).value = '';"  >
+	                                            <apex:selectOptions value="{!opportunityFields}" />
+	                                        </apex:selectList>
+	                                    </div>
+	                                    <div style="float:left;margin-right:30px;">   
+	                                        <apex:selectList size="1" id="opportunityFieldReadyEmptyValue" multiselect="false" styleClass="opportunityFieldReadyEmptyValue" disabled="{!importCriteria == 'formula'}" value="{!importCriteria}" onchange="$('.SetImportCriteria')[0].value= this.value;toggleFieldReadyEmpty();">
+	                                          <apex:selectOptions value="{!fieldReadyEmptyValues}" />
+	                                        </apex:selectList>
+	                                        <apex:inputText value="{!importCriteria}" styleClass="SetImportCriteria" id="SetImportCriteria"/>
+	                                        <span id="isnotblank" style="{!IF(settings.XactlyExpress__OpportunityFieldReadyEmptyValue__c,'','display:none;')}">({!$Label.xactlyexpress__EGIsNotBlank})</span>
+                                            <apex:inputField onclick="checkToClickValue(this);" onchange="validateToSelValue(this);" id="OpportunityFieldReadyValue" styleClass="OpportunityFieldReadyValue" value="{!settings.XactlyExpress__OpportunityFieldReadyValue__c}" style="{!IF(importCriteria != 'false','display:none;','')}" />
+	                                        <div style="display:none;"><apex:inputField value="{!dummyDeal.XactlyExpress__DealDate__c}" style="display:none;"></apex:inputField></div>
+	                                    </div>
+	                                    <div style="clear:both;"></div> 
+	                                    <script>
+	                                    
+	                                        var opportunityFieldReadyValue = '{!$Component.OpportunityFieldReadyValue}';
+							                var attrTypes = new Array();
+							                <apex:repeat value="{!attributeTypes}" var="at">        
+							                    attrTypes['{!at.s}'] = '{!at.typ}';        
+							                </apex:repeat>
+						                </script>
+	                                    <div id="criteriasFormula" style="{!if(importCriteria == 'formula','','display:none;')}">
+	                                        <apex:actionFunction name="dummy" action="{!addCriteria}" oncomplete="waitOff();setOperatorSelectValues();introAsTab();criteriasHandler.updateAdvancedFormula();" rerender="fieldSetContainer"/>
+                                            <apex:outputPanel id="fieldSetContainer">
+                                                <div style="margin-top:10px;max-height:265px;overflow:auto" id="tableCrtieriasContainer">
+                                                    <table id="tableCriterias">
+                                                        <tbody id="tableCriteriasBody">
+                                                            <apex:repeat value="{!importCriterias}" id="repImportCriterias" var="c">
+                                                                <tr>
+                                                                    <td> <div class="" style="margin-right:20px;">{!ROUND(c.c.Order__c,0)}</div></td>
+                                                                    <td>
+                                                                        <div class="" style="margin-right:20px;">
+                                                                            <a href="javascript:;" style="color:#CE641B;font-size:7pt;font-weight:bolder;" onclick="criteriasHandler.updateHiddenToSelectedValues();criteriasHandler.removeCriteria('{!$Component.deleteCriteriaKeyInput}','{!FLOOR(c.c.Order__c-1)}', '{!$Component.advancedFormula}');">
+                                                                                <apex:outputText value="{!$Label.xactlyexpress__REMOVE}"/>
+                                                                            </a>    
+                                                                        </div>
+                                                                        
+                                                                    </td>
+                                                                    <td class="dealAttrCell">
+                                                                        <apex:selectList id="selectAttr" style="margin-right:20px;" value="{!c.c.XactlyExpress__ReadyField__c}" multiselect="false" size="1" styleClass="criteriaAttributeSelect" onchange="criteriasHandler.criteriaAttributeChange(document.getElementById(selectAttr{!ROUND(c.c.XactlyExpress__Order__c,0)}),document.getElementById(dataType{!ROUND(c.c.XactlyExpress__Order__c,0)}));$('.errorMsg',$(this).parent().parent()).remove();">
+                                                                            <apex:selectOptions value="{!opportunityFields}" />
+                                                                        </apex:selectList>
+                                                                        <script>
+                                                                            var selectAttr{!ROUND(c.c.XactlyExpress__Order__c,0)} = '{!$Component.selectAttr}';
+                                                                        </script>
+                                                                    </td>
+                                                                    <td class="operatorCell">
+                                                                    	
+                                                                        <apex:selectList value="{!c.c.XactlyExpress__ReadyOperator__c}" multiselect="false" size="1" id="comparatorOptions" styleClass="strOps hiddenOpSelect {!IF(c.dataType == 'String',' displayed',' hidden')}" onchange="criteriasHandler.hiddenOpChange(this);criteriasHandler.toogleValueCell(this);" style="width:75px;margin-right:20px;">
+                                                                            <apex:selectOptions value="{!comparatorOptions}" />
+                                                                        </apex:selectList>
+                                                                        
+                                                                        <apex:selectList value="{!c.c.XactlyExpress__ReadyOperator__c}" multiselect="false" size="1" id="NonStrcomparatorOptions" styleClass="nonStrOps hiddenOpSelect {!IF(c.dataType == 'Decimal' || c.dataType == 'Currency' && c.dataType != 'Date',' displayed',' hidden')}" onchange="criteriasHandler.hiddenOpChange(this);" style="width:75px;margin-right:20px;">
+                                                                            <apex:selectOptions value="{!NonStrcomparatorOptions}" />
+                                                                        </apex:selectList>
+                                                                        
+                                                                        <apex:selectList value="{!c.c.XactlyExpress__ReadyOperator__c}" multiselect="false" size="1" id="lookupComparatorOptions" styleClass="lookupOps hiddenOpSelect{!IF(c.dataType == 'Account' || c.dataType == 'Product' || c.dataType == 'User' || (c.dataType != 'Decimal' && c.dataType != 'Currency'  && c.dataType != 'Date' && c.dataType != 'String' && c.dataType != 'Boolean'),' displayed',' hidden')}" onchange="criteriasHandler.hiddenOpChange(this);criteriasHandler.toogleValueCell(this);" style="width:75px;margin-right:20px;">
+                                                                            <apex:selectOptions value="{!lookupComparatorOptions}" />
+                                                                        </apex:selectList>
+                                                                        
+                                                                        <apex:selectList value="{!c.c.XactlyExpress__ReadyOperator__c}" multiselect="false" size="1" id="comparatorEqualNotEqualOptions" styleClass="equalNotEqualOps hiddenOpSelect{!IF(c.dataType == 'Boolean', ' displayed',' hidden')}" onchange="criteriasHandler.hiddenOpChange(this);criteriasHandler.toogleValueCell(this);" style="width:75px;margin-right:20px;">
+												                            <apex:selectOptions value="{!comparatorEqualNotEqualOptions}" />
+												                        </apex:selectList>
+                                                                        
+                                                                        <apex:selectList value="{!c.c.XactlyExpress__ReadyOperator__c}" multiselect="false" size="1" id="DateComparatorOptions" styleClass="dateByCurrPrdOps hiddenOpSelect{!IF(c.dataType == 'Date',' displayed',' hidden')}" onchange="criteriasHandler.hiddenOpChange(this);criteriasHandler.toogleValueCell(this)" style="margin-right:20px;">
+                                                                            <apex:selectOptions value="{!DateComparatorOptions}" />
+                                                                        </apex:selectList>
+                                                                        
+                                                                        <apex:inputHidden value="{!c.c.XactlyExpress__ReadyOperator__c}" />
+                                                                    </td>
+                                                                    <td class="valueCell">
+                                                                    
+                                                                        <input id="decimalC{!ROUND(c.c.Order__c,0)}" onblur="criteriasHandler.formatNbr(this, document.getElementById(dataType{!ROUND(c.c.Order__c,0)}));criteriasHandler.chkVal(this, document.getElementById(dataType{!ROUND(c.c.Order__c,0)}));criteriasHandler.chkVal(this, document.getElementById(dataType{!ROUND(c.c.Order__c,0)}));$('.masterInput', $(this).parent())[0].value = unformatNumber(this.value);" class="numberInputCriteria {!IF(c.dataType != 'Account' && c.dataType != 'Product' && (c.dataType == 'Decimal' || c.dataType == 'Currency'),' displayed',' hidden')}" value="{!c.c.XactlyExpress__ReadyValue__c}" style="width:100px !important;width:100px;margin-right:20px;"/>
+                                                                        
+                                                                        <input id="dateValue{!ROUND(c.c.Order__c,0)}" onfocus="showCalendar(isDate{!ROUND(c.c.Order__c,0)});" onchange="criteriasHandler.chkVal(this, document.getElementById(dataType{!ROUND(c.c.Order__c,0)}));$('.masterInput', $(this).parent())[0].value = this.value;" class="dateInputCriteria {!IF(c.dataType != 'Account' && c.dataType != 'Product' && c.dataType == 'Date' && c.c.ReadyOperator__c != 'crrPrd' && c.c.ReadyOperator__c != 'blankOrNot',' displayed',' hidden')}"  value="{!c.c.XactlyExpress__ReadyValue__c}" style="width:100px !important;width:100px;margin-right:20px;"/>
+                                                                        
+                                                                        <div id="{!TEXT(ROUND(c.c.Order__c,0)) & '-account'}" style="width:142px;margin-top:-3px;margin-top /*\**/:-5px\9;margin-top:expression('10px');margin-right:20px;" class="accountInputCriteria{!IF(c.dataType == 'Account' && c.c.ReadyOperator__c != 'blankOrNot',' displayed',' hidden')}">
+                                                                            <apex:inputText id="orderInput" styleClass="{!ROUND(c.c.XactlyExpress__Order__c,0)}-accountName accountName" onfocus="this.blur();$(this).attr('readonly', true);" value="{!c.accountName}" style="width:100px !important;width:100px;color:#000000;cursor:default;background-color:#EFEFEF;"/>
+                                                                            <apex:image url="{!URLFOR($Resource.XactlyExpress__XactlySMBResources, 'img/icons/magnifier.png')}" style="cursor:pointer;" onclick="criteriasHandler.clrErr(this);javascript: accountsWindow = window.open('/apex/XactlySMBAccountPopup?index={!ROUND(c.c.XactlyExpress__Order__c,0)}', 'Accounts','location=0,status=0,scrollbars=1,width=700px,height=500px'); accountsWindow.moveTo(100,100);"/>
+                                                                            <input type="text" style="display:none;" class="{!ROUND(c.c.Order__c,0)}-accountId lookupHiddenId" value="{!c.c.XactlyExpress__ReadyValue__c}" />
+                                                                        </div>
+                                                                        
+                                                                        <div id="{!TEXT(ROUND(c.c.Order__c,0)) & '-product'}" style="width:142px;margin-top:-3px;margin-top /*\**/:-5px\9;margin-top:expression('10px');margin-right:20px;" class="productInputCriteria{!IF(c.dataType == 'Product' && c.c.ReadyOperator__c != 'blankOrNot',' displayed',' hidden')}">
+                                                                            <apex:inputText id="orderInput2" styleClass="{!ROUND(c.c.XactlyExpress__Order__c,0)}-productName productName" onfocus="this.blur();$(this).attr('readonly', true);" value="{!c.productName}" style="width:100px !important;width:100px;color:#000000;cursor:default;background-color:#EFEFEF;"/>
+                                                                            <apex:image url="{!URLFOR($Resource.XactlyExpress__XactlySMBResources, 'img/icons/magnifier.png')}" style="cursor:pointer;" onclick="criteriasHandler.clrErr(this);javascript: productsWindow = window.open('/apex/XactlySMBProductPopup?index={!ROUND(c.c.XactlyExpress__Order__c,0)}', 'Products','location=0,status=0,scrollbars=1,width=700px,height=500px'); productsWindow.moveTo(100,100);"/>
+                                                                        </div> 
+                                                                        
+                                                                        <apex:selectList id="booleanOptions" multiselect="false" size="1" value="{!c.c.XactlyExpress__ReadyValue__c}" styleClass="booleanInputCriteria{!IF(c.dataType == 'Boolean',' displayed',' hidden')}" style="margin-right:20px;">
+                                                                            <apex:selectOptions value="{!booleanOptions}" />
+                                                                        </apex:selectList>
+                                                                        
+                                                                        <apex:selectList id="ByCurrentPeriodOptions" onchange="$('.masterInput', $(this).parent())[0].value = this.value;" multiselect="false" size="1" value="{!c.c.XactlyExpress__ReadyValue__c}" styleClass="dateCurrPrdInputCriteria {!IF(c.dataType == 'Date' && c.c.XactlyExpress__ReadyOperator__c == 'crrPrd',' displayed',' hidden')}" style="margin-right:20px;">
+			                                                                <apex:selectOptions value="{!ByCurrentPeriodOptions}" />
+			                                                            </apex:selectList>
+			                                                            
+			                                                            <apex:selectList id="blankNotBlankOptions" multiselect="false" size="1" value="{!c.c.XactlyExpress__ReadyValue__c}" styleClass="blankNotBlankCriteria {!IF((c.dataType == 'String' || c.dataType == 'Date' || c.dataType == 'Account') && c.c.XactlyExpress__ReadyOperator__c == 'blankOrNot',' displayed',' hidden')}" style="margin-right:20px;">
+			                                                                <apex:selectOptions value="{!blankNotBlankOptions}" />
+			                                                            </apex:selectList>
+			                                                            
+                                                                        <div class="salespersonInputCriteria">
+	                                                                        <apex:selectList id="Salespersons" multiselect="false" size="1" value="{!c.c.XactlyExpress__ReadyValue__c}" onchange="jQuery('.masterInput',jQuery(this).parent().parent()).val(this.options[this.selectedIndex].value);" styleClass="salespersonDropdown{!IF(c.dataType == 'User',' displayed',' hidden')}" style="margin-right:20px;">
+	                                                                            <apex:selectOptions value="{!Salespersons}" />
+	                                                                        </apex:selectList>
+	                                                                        <input type="text" style="display:none;" class="HiddenId" value="{!c.c.XactlyExpress__ReadyValue__c}"/>
+                                                                        </div>
+                                                                        <apex:inputText id="strInpCrit" styleClass="stringInputCriteria masterInput {!ROUND(c.c.XactlyExpress__Order__c,0)}-accountId {!ROUND(c.c.XactlyExpress__Order__c,0)}-productId lookupHiddenId inputCriteria{!IF(c.dataType != 'User' && c.dataType != 'Boolean' && c.dataType != 'Account' && c.dataType != 'Product' && c.dataType != 'Decimal' && c.dataType != 'Currency'  && c.dataType != 'Date' && c.c.XactlyExpress__ReadyOperator__c != 'blankOrNot',' displayed',' hidden')}" value="{!c.c.XactlyExpress__ReadyValue__c}" style="width:100px !important;width:100px;margin-right:20px;" onclick="criteriasHandler.clrErr(this);" onblur="isValidValue(this)"/>
+                                                                        
+                                                                        <apex:inputHidden value="{!c.dataType}" id="dataType"/>
+                                                                        
+                                                                        <script>
+                                                                            var dataType{!ROUND(c.c.XactlyExpress__Order__c,0)} = '{!$Component.dataType}';
+                                                                            var isDate{!ROUND(c.c.XactlyExpress__Order__c,0)} = 'dateValue{!ROUND(c.c.XactlyExpress__Order__c,0)}'; 
+                                                                        </script>
+                                                                    </td>
+                                                                    <td>
+                                                                        <apex:selectList id="booleanOperatorOptions" styleClass="operatorSelectClass" multiselect="false" size="1" onchange="criteriasHandler.refreshCriteriaOperator(this, '{!$Component.advancedFormula}');" value="{!c.operator}" style="{!IF(ROUND(c.c.XactlyExpress__Order__c,0)!=importCriterias.size,'','display:none;')}">
+                                                                            <apex:selectOptions value="{!booleanOperatorOptions}" />
+                                                                        </apex:selectList>
+                                                                    </td>
+                                                                </tr>
+                                                            </apex:repeat> 
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                                <br/>
+                                                   <hr style="margin-left:6px;"/>
+                                                   <apex:outputPanel id="addCrit" layout="block" styleClass="actionButtonWrapper" style="margin-top:-1px;">
+                                                       <div class="actionButtonLeft" style="margin:0;"></div>
+                                                           <a class="actionButtonMiddle" style="margin:0;color:#CE641B;" onclick="criteriasHandler.checkErrors();">
+                                                                 {!$Label.AddMoreCriteria}
+                                                           </a>
+                                                       <div class="actionButtonRight" style="margin:0;"></div>
+                                                   </apex:outputPanel>
+                                                <apex:inputText id="deleteCriteriaKeyInput" value="{!deleteCriteriaKey}" style="display:none;" />
+                                                <apex:actionFunction name="deleteCriteriaAction" action="{!removeCriteria}" rerender="fieldSetContainer" oncomplete="criteriasHandler.updateAdvancedFormula();waitOff();setOperatorSelectValues();introAsTab();"/> 
+                                                <div id="isThereContainer" style="clear:both;">
+                                                    {!$Label.xactlyexpress__IsThere}<apex:inputCheckbox value="{!currentImportSource.XactlyExpress__IsAdvancedFormula__c}" id="isAdvFormula" onclick="criteriasHandler.toggleAdvFormulas()" />
+                                                    <br />
+                                                    <apex:inputField id="advancedFormula" styleClass="advancedFormula {!IF(currentImportSource.XactlyExpress__IsAdvancedFormula__c == true,'displayed','hidden')}" value="{!currentImportSource.XactlyExpress__AdvancedFormula__c}" />  
+                                                    <script>
+                                                    var advFormulaId = '{!$Component.advancedFormula}';
+                                                    </script>
+                                                </div>
+                                            </apex:outputPanel>
+	                                    </div>
+	                                </div>
+	                                <div class="ImportTypeFile" style="{!IF(settings.XactlyExpress__ImportSource__c == SETTINGS_CSV,'','display:none')}">
+	                                    <div class="selectContainer"> 
+	                                    	<div style="float:left;">
+	                                    		<apex:selectList id="CSVoptions" multiselect="false" size="1" value="{!selectedCSVoption}" style="margin-right:10px;" onChange="document.getElementById('templatelink').setAttribute('href','{!$Page.XactlyExpress__XactlySMBImportDealsTemplate}?id='+this.value);">
+													<apex:selectOptions value="{!CSVoptions}" />
+												</apex:selectList>
+	                                    	</div>  
+                                            <div style="float:left;">
+                                                <apex:inputFile id="selectFile" onblur="LimitAttach(this,2);" onchange="LimitAttach(this,2);" value="{!document.body}" filename="{!document.name}" contentType="{!document.contentType}"  rendered="{!settings.XactlyExpress__ImportSource__c == SETTINGS_CSV}"/>
+                                            </div>
+                                            <apex:outputPanel id="boldExport" layout="block" style="float:left;margin-left:10px;margin-top:5px;;">
+				                                <a href="{!$Page.XactlyExpress__XactlySMBImportDealsTemplate}?id=" id="templatelink">
+				                                    <apex:outputtext value="{!$Label.xactlyexpress__templateAccess}" escape="false">
+				                                        <apex:param value="{!boldExport}"/>
+				                                    </apex:outputtext> 
+				                                </a> 
+				                            </apex:outputPanel>
+                                            <div style="float:left;">
+	                                            <apex:selectRadio id="haveHeaders" value="{!settings.XactlyExpress__haveHeaders__c}" style="width:515px;">
+	                                                <apex:selectOptions value="{!yesNo}" />
+	                                            </apex:selectRadio>
+                                            </div>
+                                            <div style="clear:both;"></div>                                
+                                        </div>
+	                                </div>
+	                            </div>    
+	                        </div>      
+	                        <div class="bm">
+	                            <div style="float: left;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/bl.png')}" /></div>
+	                            <div style="float: right;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/br.png')}" /></div>
+	                        </div>
+	                    </div>
+	                    <br/>
+	                    <div class="box">
+	                        <div class="tm">
+	                            <div style="float: left;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/tl.png')}" /></div>
+	                            <div style="float: right;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/tr.png')}" /></div>
+	                            <div style="clear:both"></div>
+	                        </div>
+	                        <div class="roundedBox">
+	                            <div class="boxHeader">
+	                                <div class="stepActionNumber PNovaBlack60c5">
+	                                 C
+	                                </div>
+	                                <div class="titleWrapper">  
+	                                    <div class="mainTitle PNovaSemiBold17c3">{!$Label.ProcessImport}</div>
+	                                    <div class="detailedTitle HelveticaRegular12c3">{!ImportStep3Sub}</div>
+	                                </div>
+	                                <div class="extraTitleStuff"></div>
+	                                <div style="clear:both"></div>
+	                            </div>
+	                            
+	                            <div class="boxContent">
+	                                <div style="float:left;margin-right:60px;">
+		                                <apex:selectList id="updateDeals" size="1" value="{!settings.XactlyExpress__UpdateDealOnUpload__c}">
+	                                      <apex:selectOptions value="{!updateDeals}" />
+	                                    </apex:selectList>
+	                                </div>
+	                                <div style="float:left;">
+	                                    <apex:outputPanel id="updateDateBox" layout="block" styleClass="btnAction">
+		                                    <apex:commandLink id="updateDataLink" action="{!importGeneral}" onclick="{!if(importCriteria == 'formula','if(!checkErrorsSave())return false;','')} if(!validateFile()){return false;}$('.middleBtnSilver').removeClass('middleBtnSilver').addClass('middleBtnSilverDisabled');">
+		                                        <div class="rightBtnSilver">
+		                                            <div class="leftBtnSilver">
+		                                                <div class="middleBtnSilver">
+		                                                    <apex:outputtext value="{!$Label.xactlyexpress__UpdateData}">
+		                                                       <apex:param value="{!currentSettings.dealsPluralCap}"/>
+		                                                    </apex:outputtext>
+		                                                </div>
+		                                            </div>
+		                                        </div> 
+		                                    </apex:commandLink>
+	                                    </apex:outputPanel>
+	                                </div>
+                                    <div style="clear:both"></div> 
+	                            </div>    
+	                        </div>      
+	                        <div class="bm">
+	                            <div style="float: left;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/bl.png')}" /></div>
+	                            <div style="float: right;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/br.png')}" /></div>
+	                        </div>
+	                    </div>
+                    </div> 
+                    
+                    <div style="margin-left:130px;margin-top:15px;">
+                       <iframe id="iframeResult" src="{!$Page.XactlySMBImportFromCSV}{!IF(hitImportBtn=true,'?hit=hit','')}" width="780" height="200" frameborder="0" marginheight="0" marginwidth="0" allowtransparency="true"></iframe>  
+                    </div>
+                </apex:outputPanel><!-- END CONTENT -->
+                <apex:actionFunction name="refreshConditionField2" action="{!dummy}" onComplete="waitOff();"/>
+                <apex:actionFunction name="refreshConditionField" action="{!dummy}"/>
+
+            </apex:form>
+            <div style="clear:both"></div>
+        </apex:outputPanel><!-- END CONTENTWRAPPER -->
+         
+        <apex:form id="theForm5">  
+            <!-- FOOTER  -->
+            <apex:outputPanel layout="block" styleClass="footer" rendered="{!isAdmin && isActive}" id="pFooter">
+                <apex:outputPanel layout="block" styleClass="previousStepWrapper">
+                </apex:outputPanel>
+                
+                <apex:outputPanel layout="block" styleClass="actionButtons">
+                </apex:outputPanel>
+                
+                <apex:outputPanel layout="block" styleClass="nextStepWrapper">
+                <div class="nextStepLeft"></div>
+                <a class="nextStepMiddle" href="{!$Page.XactlySMBCalculateStep3}" onclick="savePageHandler.disableBottomBar();">
+                {!$Label.SimpleNextStep}
+                </a>
+                <div class="nextStepRight"></div>
+                </apex:outputPanel> 
+            </apex:outputPanel>
+           
+
+        </apex:form>
+      </div>   
+    <c:XactlySMBFooterScript /> 
+    <script type="text/javascript" language="javascript" src="{!URLFOR($Resource.XactlySMBResources, 'js/XactlySMBJavascript.js')}"></script>
+    <script type="text/javascript" language="javascript" src="{!URLFOR($Resource.XactlySMBResources, 'js/jquery.curvycorners.min.js')}"></script>
+    <script type="text/javascript" src="{!URLFOR($Resource.XactlySMBResources ,'js/jquery.superbox-min.js')}"></script>
+    <apex:includeScript value="{!URLFOR($Resource.XactlyExpress__XactlySMBResources, 'js/importcriteriasHandler.js')}" />
+    
+    <script type="text/javascript">
+        
+        $('.importPanel').corner({
+	        tl: { radius: 5 },
+	        tr: { radius: 5 },
+	        bl: { radius: 5 },
+	        br: { radius: 5 },
+	        antiAlias: true
+	    }); 
+	   
+	    $('.containerStat').corner({
+	        tl: { radius: 5 },
+	        tr: { radius: 5 },
+	        bl: { radius: 5 },
+	        br: { radius: 5 },
+	        antiAlias: true
+	    });        
+	    	    
+	    $(document).ready(function(){	       
+	        if($('[name="ImportSource"]:checked').val()!='sf'){	        	
+	            document.getElementById(selectSourceId).value=$('[name="ImportSource"]:checked').val();
+	        }else{
+	            document.getElementById(selectSourceId).value=document.getElementById(salesforceSourceId).value;
+	        }	 	   
+	        var labelsArr = new Array();
+            labelsArr[0] = '{!$Label.AdvFormulaMissingParenthesis}';
+            labelsArr[1] = '{!$Label.advancedIsEmpty}';
+            labelsArr[2] = '{!$Label.AdvanceFormulaCheckLogicalStatement}';
+            labelsArr[3] = '{!$Label.AdvanceFormulaWrongChar}';
+            labelsArr[4] = '{!$Label.WrongDateFormatJS}';
+            labelsArr[5] = '{!$Label.errorsInCriteria}';
+            labelsArr[6] = '{!$Label.deleteAFilterCriteria}';
+            labelsArr[7] = '{!$Label.CriteriaNumberNotExists}';
+            labelsArr[8] = '{!$Label.CriteriaNegativeNumbers}';
+            labelsArr[9] = '{!$Label.incompleteAdvFmla}';
+            criteriasHandler.init('Product','AccountId','User',labelsArr, '{!dateFirst}', '{!dateSeparator}');
+            reformatNumbers();
+	    });
+	    
+	    function reformatNumbers(){
+	    	
+	    	$.each($('.numberInputCriteria'), function(){
+	    		this.value = formatNumber(this.value);
+	    	});
+	    
+	    }      
+	    
+	    function toggleFieldReadyEmpty(){
+	        var selectedValue = $($('.opportunityFieldReadyEmptyValue')[0]).val();
+	        if(selectedValue == 'formula'){
+	           $('#isnotblank').hide();
+	           $('.OpportunityFieldReadyValue').hide();
+	           $('#criteriasFormula').show();
+	        }else{
+	           $('#criteriasFormula').hide();
+	           if(selectedValue == 'true'){
+	              $('#isnotblank').show();
+	              $('.OpportunityFieldReadyValue').hide();
+	           }else{
+	              $('#isnotblank').hide();
+	              $('.OpportunityFieldReadyValue').show();
+	           }
+	        }
+	    }
+	  
+	    var errorFiles = '';
+	    
+	    function LimitAttach(tField,iType) {
+	        errorFiles='';
+	        file=tField.value;
+	        if (iType==1) {
+	            extArray = new Array(".gif",".jpg",".png");
+	        }
+	        if (iType==2) {
+	            extArray = new Array(".csv");
+	        }
+	        if (iType==3) {
+	            extArray = new Array(".exe",".sit",".zip",".tar",".swf",".mov",".hqx",".ra",".wmf",".mp3",".qt",".med",".et");
+	        }
+	        if (iType==4) {
+	            extArray = new Array(".mov",".ra",".wmf",".mp3",".qt",".med",".et",".wav");
+	        }
+	        if (iType==5) {
+	            extArray = new Array(".html",".htm",".shtml");
+	        }
+	        if (iType==6) {
+	            extArray = new Array(".doc",".xls",".ppt");
+	        }
+	        allowSubmit = false;
+	        if (!file) return;
+	        while (file.indexOf("\\") != -1) file = file.slice(file.indexOf("\\") + 1);
+	        ext = file.slice(file.indexOf(".")).toLowerCase();
+	        for (var i = 0; i < extArray.length; i++) {
+	            if (extArray[i] == ext) {
+	                 allowSubmit = true;
+	                 break;
+	            }
+	        }
+	        if (allowSubmit) {
+	        } else {
+	            errorFiles = "{!$Label.wrongExtension}: " + (extArray.join(" "));
+	        }
+	    }  
+	    
+	    function changeImportSource(){
+	        if($('[name="ImportSource"]:checked').val()!='sf'){	        	
+	            document.getElementById(selectSourceId).value=$('[name="ImportSource"]:checked').val();
+	        }else{
+	            document.getElementById(selectSourceId).value=document.getElementById(salesforceSourceId).value;
+	        }	 	        
+	        waitOn();	               
+	        changeImportSourceF(document.getElementById(selectSourceId).value);
+	    }
+	
+	    function validateFile(){
+	       if(errorFiles != ''){
+	           alert(errorFiles);
+	           return false;
+	       }
+	       else{
+	           return true;
+	       }
+	    }
+    
+        $(function(){
+            $.superbox.settings = {
+                closeTxt: "X",
+                loadTxt: "Loading...",
+                nextTxt: "Next",
+                prevTxt: "Previous"
+            };
+            $.superbox();
+        }); 
+        
+        function checkErrorsSave(){
+            if(criteriasHandler.chkErrors() && criteriasHandler.checkCriterias(advFormulaId, true)){
+                criteriasHandler.updateHiddenToSelectedValues();
+                criteriasHandler.overrideAdvancedFormula();
+                waitOn();
+                return true;
+            }else{ 
+                return false;
+            }
+        }
+        
+        function isValidValue(obj){
+            var object = jQuery(obj);
+            if(isNaN(object.val()) == true && object.next().val() == 'Number'){
+                alert('Invalid Criteria filter. Expecting an integer');
+                object.val('');
+                object.focus();
+            }
+        
+        }   
+        
+        function showCalendar(lnmString){
+            DatePicker.pickDate(true, lnmString, false);
+        }
+          
+       function myJQuery(selector){
+            return $(selector);
+       }
+        
+        
+        
+        function createError(obj, type){
+            var parent = $(obj).parent();
+            $(parent).append('<div class="errorMsg"><strong>Error:</strong> Invalid ' + type + '</div>');
+        }
+        
+        function checkToClickValue(obj){
+            var val = obj.value;
+            var type = attrTypes[$('.opportunityFieldName')[0].value];
+            if(type == 'Date' ){
+                showCalendar(opportunityFieldReadyValue);
+            }
+        }    
+            
+        function validateToSelValue(obj){
+            var val = obj.value;
+            var type = attrTypes[$('.opportunityFieldName')[0].value];
+            if(type == 'Date' ){
+                
+                var dateFirst = '{!dateFirst}';
+                var dateSeparator = '{!dateSeparator}';
+                var dateparts = val.split(dateSeparator);   
+                
+                if (dateparts.length != 3){
+                    createError(obj, type);
+                    return;
+                } 
+           
+                //Pad to 2 digits
+                for(i = 0; i<dateparts.length; i++){
+                    if(dateparts[i].length == 0 || dateparts[i] <= 0){
+                        createError(obj, type);
+                        return;
+                    }
+                    if (dateparts[i].length == 1){
+                        dateparts[i] = '0'+dateparts[i];
+                    }
+                }
+                
+                var day;
+                var month;
+                var year;
+                
+                if (dateFirst == 'day'){
+                    day = parseInt(dateparts[0],10);
+                    month = parseInt(dateparts[1],10);
+                    year = parseInt(dateparts[2],10);
+                }
+                else if (dateFirst == 'month'){
+                    day = parseInt(dateparts[1],10);
+                    month = parseInt(dateparts[0],10);
+                    year = parseInt(dateparts[2],10);
+                }
+                else if (dateFirst == 'year'){                  
+                    day = parseInt(dateparts[2],10);
+                    month = parseInt(dateparts[1],10);
+                    year = parseInt(dateparts[0],10);               
+                }
+                else{
+                    alert('{!$Label.WrongDateFormatJS}');
+                    obj.focus();
+                    return;
+                }
+                
+                if(isNaN(day) || isNaN(month) || isNaN(year) || day < 1 || day > 31 || month < 1 || month > 12 || year < 2000){
+                    obj.value= '';
+                    alert('{!$Label.WrongDateFormatJS}');
+                    return;
+                }   
+                
+            }else if(type=='Decimal'||type=='Currency' || type=='Number'){
+                if (val.toString().search(/^[0-9]+$/) != 0) {
+                    alert('{!$Label.PleaseEnterValidNumber}');
+                    obj.value= 0;
+                }
+            }
+        }
+        
+        
+    </script>
+</apex:page>

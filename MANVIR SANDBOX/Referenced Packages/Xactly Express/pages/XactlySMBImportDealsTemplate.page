@@ -1,0 +1,48 @@
+<apex:page controller="XactlyExpress.XactlySMBImportDealsTemplateController" cache="true" sidebar="false" showHeader="false" standardStylesheets="false" contentType="application/vnd.ms-excel#import_deals_csvtemplate.xls">
+    <table border="0" cellspacing="0">
+            <tr>
+                <td  valign="top"  colspan="2"><font size="4" face="Calibri"><b>{!$Label.Header}:</b></font></td>
+
+                <apex:repeat value="{!usedFields}" var="da">
+                     <td>{!da.XactlyExpress__DisplayName__c}</td>
+                </apex:repeat>
+            </tr>
+            <tr>
+                <apex:repeat value="{!usedFields}" var="da">
+                     <td> </td>
+                </apex:repeat>
+            </tr>
+             
+            <tr>
+                <td colspan="2"><font size="4" face="Calibri"><b>{!$Label.Type}:</b></font></td>
+
+                <apex:repeat value="{!elementExample}" var="da">
+                     <td>{!da.dataType}</td>
+                </apex:repeat>
+            </tr>
+            
+            <tr>
+                <apex:repeat value="{!usedFields}" var="da">
+                     <td> </td>
+                </apex:repeat>
+            </tr>            
+            <tr>
+                <td   valign="top"  colspan="2"><font size="4" face="Calibri"><b>{!$Label.Example}:</b></font></td>
+
+
+                <apex:repeat value="{!elementExample}" var="ee">
+                     <td  valign="top" rowspan="{!maxSize*2}">
+                     <ul>
+                     <apex:repeat value="{!ee.values}" var="ve">
+                        <li>'{!ve}</li> 
+                     </apex:repeat>   
+                     <apex:repeat value="{!dummyList}" var="dm" rows="{!maxSize - ee.values.size}">
+                        <li></li> 
+                     </apex:repeat> 
+                     </ul> 
+                     </td>
+                </apex:repeat> 
+            </tr>
+        </table>        
+
+</apex:page>

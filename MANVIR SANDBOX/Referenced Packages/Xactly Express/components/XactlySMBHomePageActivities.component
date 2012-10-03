@@ -1,0 +1,84 @@
+<apex:component controller="XactlyExpress.XactlySMBHomePageActivitiesController">
+	<apex:attribute name="dealsPlural" description="The Deal Label" type="String" required="false" access="public"/>
+	 
+	<style> 
+		.activitiesBox {
+			font-size:11px;
+			margin: 20px 0 0;
+			width:210px;
+		}
+		.activitiesBox .boxTitle {
+			background:transparent url({!URLFOR($Resource.XactlySMBResources ,'img/layout/table_top_210w.png')}) no-repeat scroll 0 0;
+			font-weight:bold;
+			height:20px;
+			padding:2px 0 0 10px;
+		}
+		.activitiesBox .boxContent {
+			background:white none repeat scroll 0 0;
+			height:230px;
+			overflow-y:auto;
+			padding:4px;
+			border-left: 1px solid #CCCCCC;
+			border-right: 1px solid #CCCCCC;
+		}
+		.activitiesBox .boxBottom {
+			background:transparent url({!URLFOR($Resource.XactlySMBResources ,'img/layout/table_bottom_210w.png')}) no-repeat scroll 0 0;
+			height:15px;
+			width:210px;
+		}
+		.activitiesBox ul.linkList {
+			list-style-type: none;
+			margin: 10px 0px;
+			padding: 0px;	
+		}
+		
+		.activitiesBox ul.linkList li {
+			margin: 0px;
+			padding: 5px 2px;	
+		}
+		
+		.activitiesBox ul.linkList li a {
+			text-decoration: none;
+			color: #003688;
+			font-size: 11px;	
+		}
+		
+		.activitiesBox ul.linkList li span.stepLabel {
+		  font-size: 13px;
+		  color: #E16C1C;
+		  font-weight: bold;
+		}
+		
+		.greyLine {
+		  margin: 15px 10px 4px 10px;
+		  height: 2px;
+		  background-color: #A9A9A9;
+		  position: relative;
+		  overflow: hidden;
+		}
+		
+		.totalCompensation {
+		  padding: 0px;
+		  margin: 6px 10px 0px 10px;
+		}
+	</style>
+	
+	<div class="activitiesBox">
+		<div class="boxTitle" style="font-size: 10px;">
+			{!$Label.Activities}  
+		</div>	
+		<div class="boxContent">
+		<ul class="linkList">
+			<li><span class="stepLabel">{!$Label.Step} 1:</span> <a href="{!$Page.XactlySMBSettingsUsers}">{!$Label.EditSettings}</a></li>
+			<li><span class="stepLabel">{!$Label.Step} 2:</span> <a href="{!$Page.XactlySMBPlanList}">{!$Label.CreatePlans}</a></li>
+			<li><span class="stepLabel">{!$Label.Step} 3:</span> <a href="{!$Page.XactlySMBTermsAndConditions}">{!$Label.WritePlanDocuments}</a></li>
+			<li><span class="stepLabel">{!$Label.Step} 4:</span> <a href="{!$Page.XactlySMBCalculateStep3}">{!AddDeal}</a></li>
+			<li><span class="stepLabel">{!$Label.Step} 5:</span> <a href="{!$Page.XactlySMBCalculateCalculate}">{!$Label.CalculateCommission}</a></li>
+			<li><span class="stepLabel">{!$Label.Step} 6:</span> <a href="{!$Page.XactlySMBCalculatePayroll}">{!$Label.GoToPayroll}</a></li>
+			<li><span class="stepLabel">{!$Label.Step} 7:</span> <a href="javascript:;">{!$Label.ChatterSettings}</a></li>
+		</ul>  
+			
+		</div>
+		<div class="boxBottom"></div>
+	</div>
+</apex:component>

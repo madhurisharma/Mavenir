@@ -1,0 +1,450 @@
+<!--
+Developed by Timba Software Corp. www.timbasoftware.com admin@timbasoftware.com
+ This page defines Settings
+ @author Juan Bessonart <jbessonart@timbasoftware.com>
+-->
+<apex:page id="XactlySMBSettingsUsers" controller="XactlyExpress.XactlySMBSettingsUsersController" sidebar="false" showHeader="false" standardStylesheets="true" action="{!redirectWhenAccessIsDenied}">
+    
+   <!-- Custom Cursor Loader -->
+   <c:XactlySMBCursor />
+   <!-- Custom Cursor Loader -->
+   <title>{!$Label.ChangeMy} : {!$Label.SettingsWhizardStep2}</title>
+   <link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.XactlySMBResources ,'css/XactlySMBStyles.css')}" />
+   <link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.XactlySMBResources ,'modbubble/css/bubble.css')}" />
+   <apex:includeScript value="{!URLFOR($Resource.XactlyExpress__CSN, 'jquery.js')}" />	
+	<style>   
+	
+		.profilesDataTable{
+			margin: 0px;
+			width: 100%;
+			position: relative;
+			overflow: auto;
+		}
+		
+		.userTableWrapper {
+			position: relative;
+			overflow: auto;
+			_height: 410px;
+			max-height: 410px;
+			min-height: 47px;
+			width: 100%;
+		}
+		
+		.tableWrapper {    
+			position: relative;  
+			overflow: visible;
+			margin-top:10px;
+			padding: 0px;
+			width:730px; 
+		}
+		
+		.picklistWrapper {
+			margin: 0px;
+			padding: 0px;
+			width: 200px;
+		}
+		 
+		.cirrusUsersComponentWrapper {
+			margin-top: 30px;
+		}
+		
+		.contentHelp {
+			position: absolute;
+			overflow: hidden;
+			right: 15px;
+			top: 15px;
+		}
+        
+        div.topTable {
+            background: url({!URLFOR($Resource.XactlyExpress__XactlySMBResources ,'img/layout/grayTopTable.png')});
+            height: 8px;
+            /*margin-left:32px;*/
+        }
+        
+        div.bottomTable {
+            background: url({!URLFOR($Resource.XactlyExpress__XactlySMBResources ,'img/layout/grayBottomTable.png')});
+            height: 3px;
+            /*margin-left:32px;*/
+        }
+        
+        .commonTable thead tr th a {
+         color: #3B6080;   
+      }
+      .commonTable thead tr th img {
+         border: 0px;
+         margin: 0px 3px 0px 0px;
+         padding: 0px;
+      }
+      
+      .centerColumn {
+         text-align: center;        
+      }
+      
+      .prevTextContainer {
+          clear:both;
+		  margin-left:26px;
+		  margin-top:-14px;
+		  position:relative;
+	  }    
+		
+      .prevTextContainer img {
+          vertical-align:middle;
+      }		
+		
+      .btnCenter{
+          background:  url({!URLFOR($Resource.XactlyExpress__XactlySMBHome ,'img/buttons/homeButtonBackground.png')}) repeat-x;
+		  padding-bottom:10px;
+		  padding-top:6px;
+		  float:left;
+		  font-size:13px;
+		  font-weight:bold;
+		  padding-bottom:10px;
+		  padding-top:6px;
+		  color: #4888B8;
+      }
+      .btnt{
+          float:left;
+      }
+      
+    </style>
+
+    <c:XactlySMBShadows />
+
+    <!-- PAGE WRAPPER -->
+    <div class="pageContent" id="pContent">
+        <apex:form id="theForm">  
+            <!-- HEADER -->
+            <apex:outputPanel layout="block" styleClass="header">
+                <c:XactlySMBHeader isAdmin="{!isAdmin}"  isActive="{!isActive}" nbrSeparator="{!nbrSeparator}" nbrDecimal="{!nbrDecimal}" currentUserOrSlected="{!currentUserOrSlected}" emulatingUserURLAppend="{!emulatingUserURLAppend}" selected="7" wqlabel="{!currentSettings.quotasPlural}" wclabel="{!currentSettings.creditsPlural}" wlabel="{!currentSettings.dealsPluralCap}" step="2"  wtype="setting" hlabel="{!$Label.xactlyexpress__ActivateIncentUsers}" stepHelp="SettingsUsers" />
+            </apex:outputPanel>   
+            
+            <!-- INSUFFICIENT PERMISSIONS -->
+            <apex:outputPanel rendered="{!!isAdmin}">
+                <c:XactlySMBErrorMsg error="{!$Label.xactlyexpress__InsufficientPermissions}" /> 
+            </apex:outputPanel>
+            
+            <apex:outputPanel layout="block" styleclass="additionalContent" rendered="{!isAdmin && isActive}">    
+                <c:XactlySMBChatterWall objectId="{!$User.Id}" showHeader="true" showWall="true" currentPage="{!$CurrentPage.Name}"/>
+            </apex:outputPanel>
+            
+            <!-- MAIN CONTENT -->
+            <apex:outputPanel id="settingsContent" layout="block" styleClass="mainContent" rendered="{!isAdmin}">
+                <!-- LEFT PANEL -->
+                <apex:outputPanel layout="block" styleClass="leftPanel">
+                    <div style="margin-top:10px;">
+                        <c:XactlySMBCirrusUsers licenseNumber="{!licenseNumber}"/>
+                    </div>    
+                </apex:outputPanel>
+                
+                <!-- CONTENT -->
+                <apex:outputPanel layout="block" styleClass="content" id="content">
+                    <div style="background-color:#A4B8CB;padding:5px;width:730px;margin-left:25px;margin-bottom:70px;" id="mainCornerDiv"> 
+                        <apex:outputpanel layout="block" id="tableWrapper" styleclass="tableWrapper">
+                            <div class="topTable" style="width:100%"></div>
+                            <apex:outputpanel styleClass="userTableWrapper" id="userTableWrapper" layout="block">
+                                <table cellspacing="0" cellpadding="0" border="0" class="profilesDataTable commonTable">
+                                    <thead>
+                                        <tr class="odd">
+                                           <th>
+                                           	 <div class="titles" style="overflow:hidden;">
+                                                <apex:outputpanel style="white-space: nowrap">
+                                                 <apex:outputpanel rendered="{!IF(sortBy == 'FirstName', true, false)}">
+                                                    <img  src="{!IF(sortByDesc == true, URLFOR($Resource.XactlySMBResources, 'img/icons/arrowUp.png'), URLFOR($Resource.XactlySMBResources, 'img/icons/arrowDown.png'))}" />
+                                                 </apex:outputpanel>
+                                                 <apex:commandLink id="headFistName" onclick="waitOn();" oncomplete="waitOff();" value="{!$Label.xactlyexpress__FirstName}" action="{!sortUserList}" rerender="userTableWrapper">
+                                                    <apex:param name="sb" value="FirstName"/>
+                                                 </apex:commandLink>
+                                              </apex:outputpanel>
+                                             </div> 
+                                           </th>
+                                           <th>
+                                           	<div class="titles" style="overflow:hidden;">
+                                               <apex:outputpanel style="white-space: nowrap">
+                                                 <apex:outputpanel rendered="{!IF(sortBy == 'LastName', true, false)}">
+                                                    <img  src="{!IF(sortByDesc == true, URLFOR($Resource.XactlySMBResources, 'img/icons/arrowUp.png'), URLFOR($Resource.XactlySMBResources, 'img/icons/arrowDown.png'))}" />
+                                                 </apex:outputpanel>
+                                                 <apex:commandLink id="headLastName" onclick="waitOn();" oncomplete="waitOff();" value="{!$Label.xactlyexpress__LastName}" action="{!sortUserList}" rerender="userTableWrapper">
+                                                    <apex:param name="sb" value="LastName"/>
+                                                 </apex:commandLink>
+                                              </apex:outputpanel>
+                                             </div> 
+                                           </th>
+                                           
+                                           <th>
+                                            <div class="titles" style="overflow:hidden;">
+                                               <apex:outputpanel style="white-space: nowrap">                                               
+                                                 <apex:outputpanel rendered="{!IF(sortBy == 'ProfileName', true, false)}">
+                                                    <img  src="{!IF(sortByDesc == true, URLFOR($Resource.XactlySMBResources, 'img/icons/arrowUp.png'), URLFOR($Resource.XactlySMBResources, 'img/icons/arrowDown.png'))}" />
+                                                 </apex:outputpanel>
+                                                 <apex:commandLink id="headProfileName" onclick="waitOn();" oncomplete="waitOff();" value="{!$Label.xactlyexpress__profileName}" action="{!sortUserList}" rerender="userTableWrapper">
+                                                    <apex:param name="sb" value="ProfileName"/>
+                                                 </apex:commandLink>
+                                              </apex:outputpanel>
+                                             </div> 
+                                           </th>
+                                           
+                                           <th>
+                                            <div class="titles" style="overflow:hidden;">
+                                               <apex:outputpanel style="white-space: nowrap">
+                                                 <apex:outputpanel rendered="{!IF(sortBy == 'CirrusUser', true, false)}">
+                                                    <img  src="{!IF(sortByDesc == true, URLFOR($Resource.XactlySMBResources, 'img/icons/arrowUp.png'), URLFOR($Resource.XactlySMBResources, 'img/icons/arrowDown.png'))}" />
+                                                 </apex:outputpanel>
+                                                 <apex:commandLink id="headCirrusUser" onclick="waitOn();" oncomplete="waitOff();" value="{!$Label.xactlyexpress__CirrusUser}" action="{!sortUserList}" rerender="userTableWrapper">
+                                                    <apex:param name="sb" value="CirrusUser"/>
+                                                 </apex:commandLink>
+                                              </apex:outputpanel>
+                                             </div> 
+                                           </th>
+                                           <th>
+                                            <div class="titles" style="overflow:hidden;">
+                                               <apex:outputpanel style="white-space: nowrap">
+                                                 <apex:outputpanel rendered="{!IF(sortBy == 'CirrusProfile', true, false)}">
+                                                    <img  src="{!IF(sortByDesc == true, URLFOR($Resource.XactlySMBResources, 'img/icons/arrowUp.png'), URLFOR($Resource.XactlySMBResources, 'img/icons/arrowDown.png'))}" />
+                                                 </apex:outputpanel>
+                                                 <apex:commandLink id="headCirrusProfile" onclick="waitOn();" oncomplete="waitOff();" value="{!$Label.xactlyexpress__CirrusProfile}" action="{!sortUserList}" rerender="userTableWrapper">
+                                                    <apex:param name="sb" value="CirrusProfile"/>
+                                                 </apex:commandLink>
+                                              </apex:outputpanel>
+                                             </div> 
+                                           </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <apex:variable var="rowCount" value="{!0}"/>
+                                            <apex:repeat value="{!userList}" var="iter" id="tableGenerator">
+                                            <tr class="{!IF(rowCount = 0, 'even','odd')}">
+                                               <td class="column centerColumn">
+                                                   {!iter.firstName}&nbsp;
+                                               </td>
+                                               <td class="column centerColumn">
+                                                   {!iter.lastName}&nbsp;
+                                               </td>
+                                               <td class="column centerColumn">
+                                               		<div style="margin:auto;">{!IF(LEN(iter.ProfileName)>23,LEFT(iter.ProfileName,23-1)&'...',iter.ProfileName)}&nbsp;</div>
+                                                   <!--<c:XactlySMBLongTextBubble text="{!iter.ProfileName}" maxLength="23" />&nbsp;-->
+                                               </td>
+                                               <td class="column centerColumn">
+                                                   <apex:inputCheckBox id="profileCheck"  onclick="checkBoxClick(this)" styleclass="cirrusUserCheckBox" value="{!iter.isCirrusUser}" />
+                                               </td>
+                                               <td class="column picklistColumn centerColumn" width="200px">
+                                                   <apex:outputpanel layout="block" styleClass="picklistWrapper" style="{!IF(iter.isCirrusUser, 'display:;', 'display:none;')}">
+                                                        <apex:selectList id="profileSelect" styleclass="userProfile" value="{!iter.cirrusProfile}" size="1" multiselect="false">
+                                                            <apex:selectOptions value="{!cirrusProfiles}" />
+                                                        </apex:selectList>
+                                                   </apex:outputpanel>
+                                               </td>
+                                            </tr>
+                                            <apex:variable var="rowCount" value="{!(rowCount * -1) + 1}"/>
+                                        </apex:repeat>    
+                                    </tbody>
+                                </table>
+                            </apex:outputpanel>
+                            <div class="bottomTable" style="width:100%"></div>
+                        </apex:outputpanel>
+                    </div>    
+                </apex:outputpanel>
+            </apex:outputPanel>
+            
+            <!-- FOOTER  -->
+            <apex:outputPanel layout="block" styleClass="footer" rendered="{!isAdmin}" id="pFooter">
+                <apex:outputPanel layout="block" styleClass="previousStepWrapper" style="max-width:260px;margin-right:150px;">
+                   <apex:outputPanel layout="none" rendered="{!backToPlans}">
+	                   <div class="previousStepRight"></div>
+	                   <a href="{!$Page.XactlySMBPlanCreate}{!if(planId!='','?id='+planId,'')}" class="previousStepMiddle" id="prevBtn" onclick="waitOn();setTimeout('waitOff()',4000);">
+		                  <div class="prevTextContainer">
+		                       <apex:outputtext escape="false" value="{!$Label.xactlyexpress__backToPlan}">
+		                          <apex:param value="{!URLFOR($Resource.XactlyExpress__XactlySMBResources ,'img/buttons/orangeArrow.png')}"/>
+		                       </apex:outputtext>                                         
+		                  </div>
+	                   </a>
+	                   <div class=""></div>
+                   </apex:outputpanel>
+                </apex:outputpanel>
+                
+                <apex:outputPanel layout="block" styleClass="actionButtons">                        
+                    <apex:outputPanel layout="block" styleClass="actionButtonWrapper">
+                        <div class="actionButtonLeft"></div>
+                        <a  href="javascript:;" class="actionButtonMiddle" id="saveBtn" onclick="saveUsers(false);">
+                            <apex:outputtext escape="false" value="{!$Label.xactlyexpress__SaveChanges}">
+                               <apex:param value="{!URLFOR($Resource.XactlyExpress__XactlySMBResources ,'img/buttons/navigateSaveMiddle.gif')}" />
+                            </apex:outputtext>  
+                        </a>
+                        <div class="actionButtonRight"></div>    
+                    </apex:outputpanel>
+                    
+                    <apex:outputPanel layout="block" styleClass="actionButtonWrapper">
+                        <div class="actionButtonLeft"></div>
+                        <a href="javascript:;" class="actionButtonMiddle" onclick="discardChangesConfirm(window.location.href);">
+                            <apex:outputtext escape="false" value="{!$Label.xactlyexpress__DiscardChanges}">
+                               <apex:param value="{!URLFOR($Resource.XactlyExpress__XactlySMBResources ,'img/buttons/navigateCancelMiddle.gif')}" />
+                            </apex:outputtext>
+                        </a>
+                        <div class="actionButtonRight"></div>    
+                    </apex:outputpanel>
+                </apex:outputPanel>
+            
+                <apex:outputPanel layout="block" styleClass="nextStepWrapper" style="margin-right:100px;">
+                    <div class="nextStepLeft"></div>
+                    <a class="nextStepMiddle" id="saveNext" onclick="saveUsers(true);">
+                        {!$Label.NextStep}
+                    </a>
+                    <div class="nextStepRight"></div>
+                </apex:outputPanel>
+            </apex:outputPanel>     
+                        
+            <apex:outputpanel id="auxPanel" />
+            
+            <apex:actionFunction name="saveCirrusUsersFN" action="{!saveCirrusUsers}" ></apex:actionFunction>
+            <apex:actionFunction name="saveNextFN" action="{!saveNext}" ></apex:actionFunction>
+
+            <script>var settingsContentId = '{!$Component.settingsContent}';</script>
+        </apex:form>
+        <div style="clear:both"></div>
+    </div>
+    
+    <div style="display:none;" id="licenseAlert">
+        <div style="background: url('{!URLFOR($Resource.XactlySMBResources ,'img/layout/topOrange.png')}');background-repeat:repeat-x;margin-left:15px;margin-right:11px;">
+            <div style="float: left;margin-left:-15px;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/topLeftOrange.png')}"/></div>
+            <div style="float: right;margin-right:-15px;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/topRightOrange.png')}"/></div>
+            <div style="clear:both"></div>
+        </div> 
+        <div style="float:left;margin-top:-5px;width:100%; height:220px; border-right:2px solid #D49761;border-left:2px solid #D49761;background-color:#FFF;">
+            <div style="float:left;text-align:left;padding-left:20px;padding-right:20px;">
+                <apex:outputText style="color:#FFA24F;font-size:21pt;margin-left:20px;" value="{!$Label.xactlyexpress__licenseManagement}"/><br/><br/>
+                <apex:outputText style="color: #777777;font-size: 13pt;font-weight:normal !important;" escape="false" value="{!$Label.xactlyexpress__addMoreUsersWithoutLicenses}"/>
+            </div>
+            <div class="linkButton" style="float:left;margin-left:247px;margin-top:30px;">
+                <a href="javascript:;" style="margin-left:40px;" onclick="jQuery.superbox.close();">
+                    <img class="btnt" src="{!URLFOR($Resource.XactlySMBHome ,'img/buttons/homeButtonLeft.png')}"/>
+                    <span class="btnCenter"> {!$Label.Close}   </span>
+                    <img class="btnt" src="{!URLFOR($Resource.XactlySMBHome ,'img/buttons/homeButtonRight.png')}"/>
+                </a>
+                <div style="clear:both"></div>
+            </div>
+            <div style="clear:both"></div>
+        </div>
+        <div style="clear:both"></div>
+        <div style="float:left;width:504px;marging-top: -3px; background-image: url('{!URLFOR($Resource.XactlySMBResources ,'img/layout/bottomOrange.png')}');margin-left:15px;margin-right:11px;">
+           <div style="float: left;margin-left:-15px;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/bottomLeftOrange.png')}"/></div>
+           <div style="float: right;margin-right:-15px;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/bottomRightOrange.png')}"/></div>
+           <div style="clear:both"></div>
+        </div> 
+    </div>
+    <a id="licenseAlertLink" rel="superbox[content#licenseAlert.xactlySuperBox #licenseAlert.licenseAlert]" href="#licenseAlert" style="display:none;"></a>
+    
+    <c:XactlySMBFooterScript /> 
+    <script type="text/javascript" language="javascript" src="{!URLFOR($Resource.XactlySMBResources, 'js/XactlySMBJavascript.js')}"></script>
+    <script type="text/javascript" src="{!URLFOR($Resource.XactlySMBResources ,'modbubble/js/jquery.codabubble.mod.js')}"></script>
+    <script type="text/javascript" src="{!URLFOR($Resource.XactlySMBResources ,'js/jquery.superbox-min.js')}"></script>
+    <script type="text/javascript" language="javascript" src="{!URLFOR($Resource.XactlySMBResources, 'js/jquery.curvycorners.min.js')}"></script>
+    <script type="text/javascript" charset="utf-8">
+       var $J = jQuery.noConflict();
+        
+       var rerenderNoCompare = true;
+       
+       function checkLicenseAlert(){
+            if({!LicenseAlert}){
+                $J('#licenseAlertLink').click();                                       
+            }
+       }
+            
+       $J(document).ready(function (){
+       
+           savePageHandler.storeBottomBarOnclickEvents();
+           savePageHandler.setExtraBottomBarClick();
+           checkLicenseAlert();
+           jQuery.superbox.settings = {
+	           closeTxt: "X",
+	           loadTxt: "Loading...",
+	           nextTxt: "Next",
+	           prevTxt: "Previous"
+           };
+           jQuery.superbox();
+           
+           $J('#mainCornerDiv').corner({
+                tl: { radius: 5 },
+                tr: { radius: 5 },
+                bl: { radius: 5 },
+                br: { radius: 5 },
+                antiAlias: true
+            });
+           
+       });
+    
+       var bubbleImagesPath = "{!URLFOR($Resource.XactlySMBResources ,'modbubble/images')}";
+    
+        function saveUsers(isNext) {
+            storeValues();
+            if (checkForSalesAdmins()) {
+                savePageHandler.disableBottomBar();            
+                waitOn();
+                if(isNext){
+                    saveNextFN();
+                }else{
+                    saveCirrusUsersFN();
+                }
+                return true;    
+            }else {
+                return false;    
+            }
+        }
+        
+        
+        
+        function checkForSalesAdmins () {
+            var userProfileSelects = $J('.userProfile');
+            var cirrusUserCheckBox = $J('.cirrusUserCheckBox');
+            var countSalesAdmin = 0;
+            for (var i = 0; i < userProfileSelects.length; i++) {
+                var currentSelect = userProfileSelects[i];
+                var currentSelectValue = currentSelect.value;
+                if (currentSelectValue == 'Sales Administrator Role' && cirrusUserCheckBox[i].checked) {
+                    countSalesAdmin++;    
+                }
+            }    
+            
+            if((countSalesAdmin > 0) == false)
+                alert('{!$Label.AtLeastOneSalesAdmin}');
+            
+            return (countSalesAdmin > 0);
+        }
+        
+        $J(document).ready(function()
+        {
+            storeValues();  
+        }); 
+       
+        window.onbeforeunload = function(){
+            if(compareValues(true,rerenderNoCompare) != undefined){
+                setTimeout("savePageHandler.enableBottomBar();",1000);
+            }
+            window.onunload = function() {savePageHandler.disableBottomBar();}
+            return compareValues(true,rerenderNoCompare);
+        }         
+
+                    
+        function checkBoxClick (checkBox) {
+            var tr = $J(checkBox).parent().parent();
+            var picklist = $J(tr).children('.picklistColumn');
+            var pickListWrapper = $J(picklist).children('.picklistWrapper');
+            if (pickListWrapper[0].style.display == 'none') {
+                pickListWrapper[0].style.display = '';
+            }   
+            else {
+                pickListWrapper[0].style.display = 'none';
+            }
+        }
+        
+    
+        
+        function confirmDiscard(){
+            if (confirm ('{!$Label.AreYouSureDiscard}')){
+                storeValues();
+                //location.href = '{!$Page.XactlySMBSettingsUsers}';
+                window.location.reload();
+                return true;
+            }
+            return false;   
+        }
+    </script>
+</apex:page>

@@ -1,0 +1,23 @@
+<apex:component >
+<style>
+	.standardFooter span{
+		display:block;
+		padding-top: 30px;
+	}
+	.standardFooter{
+		height: 85px;
+		color: #000000;
+		text-align: center;
+		background:url({!URLFOR($Resource.XactlyExpress__XactlySMBHome ,'img/layout/footerBackground.png')}) no-repeat;
+	}
+	.standardFooter span a {
+		color: #000000;
+	}
+</style>
+<div class="standardFooter">
+	<apex:outputText escape="false" value="{!$Label.xactlyexpress__standardFooterText}">
+		<apex:param value="javascript:;"></apex:param>
+		<apex:param value="javascript:;"></apex:param>
+	</apex:outputText>
+</div>
+</apex:component>

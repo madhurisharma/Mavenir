@@ -1,0 +1,237 @@
+<apex:page controller="XactlyExpress.XactlySMBCalculateStep2" sidebar="false" showHeader="false" cache="false" >
+<link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.XactlySMBResources ,'css/XactlySMBFontStyles.css')}" />
+
+<style>
+        
+        td{
+            padding-left:5px;
+        }
+         a, a:hover { 
+            cursor:pointer;
+            text-decoration:none;
+         } 
+         .errorCel{
+            color:#FF0000;
+            font-weight:bold;
+         }
+        
+        .statusDetail{
+            width:100%;
+        }
+
+        .statusImage{
+            border:0;
+            margin-left:14px;
+            float:left;
+            margin-top:-1px;
+        }
+        
+        .resultCell{
+            border-left:1px solid #D49761;
+            border-bottom:1px solid #D49761;
+            padding:2px 2px 2px 10px;
+            font-size:8pt;
+        }
+        
+        .nameCell{
+            border-bottom:1px solid #D49761;
+            font-size:11px;
+            font-weight:bold;
+        }
+        
+        #importResults{
+            border-right:2px solid #D49761; 
+            border-left:2px solid #D49761; 
+            background-color:#fff;
+            width:746px; 
+            height:77px;
+            *height:90px;
+            margin-left:15px;
+        }
+        
+        .importResultsTitle{
+            color:#CE641B;
+            font-size:8pt;
+            font-weight:bolder;
+            margin-left:14px;
+            margin-top:-9px;
+            float:left;
+        }
+        
+        .topCurvyLarge{
+            background: url({!URLFOR($Resource.XactlySMBResources ,'img/layout/topCurvyLarge.gif')}) no-repeat;
+            width:750px;
+            height:22px;
+            margin-left:15px;
+        }
+        
+        .bottomCurvyLarge{
+            background: url({!URLFOR($Resource.XactlySMBResources ,'img/layout/bottomCurvyLarge.gif')}) no-repeat;
+            width:750px;
+            height:15px;
+            margin-left:15px;
+        }
+        .footerSectionText a:hover{
+            color:#0000FF !important;
+        }
+        
+        .resultCell a:hover{
+            color:#0000FF !important;
+        }
+        
+    </style>
+    <body>
+        <apex:form >
+            <apex:outputPanel layout="block"  id="mainStatusPanel" styleClass="statusContenct">
+                <div class="topCurvyLarge"></div>
+                <div id="importResults">
+                    <div class="importResultsTitle">
+                        <div style="margin-top:-8px;">
+				            <div style="float: left;">{!$Label.StatusOfImport}</div>
+				            <apex:image styleClass="statusImage" rendered="{!IF(AND(NOT(ISNULL(lastImportResult)),lastImportResult != ''), true, false)}" url="{!IF(lastImportResult == 'Started' ||lastImportResult == 'Finished',URLFOR($Resource.XactlyExpress__XactlySMBResources, 'img/icons/tickIcon.png'),IF(lastImportResult == 'Failed' || lastImportResult == 'Stopped',URLFOR($Resource.XactlyExpress__XactlySMBResources, 'img/icons/failureIcon.gif'),IF(lastImportResult == 'Running' || lastImportResult == 'Queued' ,URLFOR($Resource.XactlyExpress__XactlySMBResources, 'img/icons/inProgressIcon.png'),'')))}" /> 
+				            <div style="{!IF(hitImportBtn, '','display:none;')}float:right;margin-right:15px;" id="progressBar">
+				                <img src="{!URLFOR($Resource.XactlySMBResources, 'img/icons/progressBar.gif')}"/>
+				            </div> 
+					    </div>
+	                </div>
+	                <div>
+					    <table class="statusDetail" cellspacing="0" cellpadding="0">
+					        <tr>
+					            <td class="nameCell" style="padding-left:15px;">
+					                {!$Label.LastImport}:
+					            </td>
+					            <td class="resultCell">
+					                {!IF(ISNULL(lastImportStartDate) || lastImportStartDate = '','',$Label.StartedAt)} {!lastImportStartDate}
+					            </td>
+					            <td class="nameCell">
+                                    {!$Label.SuccessfulRows}:
+                                </td>
+                                <td class="resultCell">
+                                    <span class="areaTitle">{!successfulRows}</span>
+                                </td>
+					        </tr>
+					        <tr>
+					            <td class="nameCell" style="padding-left:15px;">
+					                {!$Label.ImportSource}:
+					            </td>
+					            <td class="resultCell"> 
+					                {!IF(lastImportSource == SETTINGS_CSV, $Label.ExternalCSVfile , lastImportSource)}
+					            </td>
+					            <td class="nameCell">
+                                    {!$Label.RowsWithErrors}:
+                                </td>
+                                <td class="resultCell">
+                                    <span class="areaTitle">{!rowsWithErrors}</span>
+                                    <input type="hidden" value="{!hitImportBtn}" id="importStatusValue"/>
+                                </td>
+					        </tr>
+					        <tr>
+					            <td class="nameCell" style="padding-left:15px;">
+					                {!$Label.ImportStatus}:
+					            </td>
+					            <td  class="resultCell">
+                                    <apex:outputPanel rendered="{!lastImportSummary != '' || lastImportResult == 'Failed'}" layout="none">
+                                       <a onclick="window.open('{!$Page.XactlySMBImportErrorPopup}?id={!idProccess}', 'importLog','location=0,status=0,scrollbars=1,height=600px,width=760px');" href="javascript:;" class="errorCel">
+                                           <apex:outputText value="{!lastImportSummary}" rendered="{!lastImportSummary != ''}" />  
+		                                    
+		                                   <apex:outputPanel rendered="{!lastImportSummary == ''}">
+		                                        <apex:outputText value="{!$Label.xactlyexpress__Error}" />
+		                                    </apex:outputPanel> 
+                                        </a>
+                                    </apex:outputPanel>
+                                    
+					                <apex:outputPanel rendered="{!lastImportSummary == '' && lastImportResult != 'Failed'}">
+                                        <apex:outputText value="{!$Label.xactlyexpress__InProgress}" rendered="{!lastImportResult == 'Running'}" />
+                                        <apex:outputText value="{!$Label.xactlyexpress__Success}" rendered="{!lastImportResult == 'Finished'}" />
+                                        <apex:outputText value="{!$Label.xactlyexpress__Queued}" rendered="{!lastImportResult == 'Queued'}" />
+                                    </apex:outputPanel> 
+					            </td>
+					            <td class="nameCell">
+                                    Duplicate Rows:
+                                </td>
+                                <td class="resultCell">
+									<apex:outputPanel rendered="{!duplicateRows > 0}" layout="none">
+										<a onclick="window.open('{!$Page.XactlySMBImportLinkToDeals}?id={!idProccess}', 'importLog','location=0,status=0,scrollbars=1,height=600px,width=760px');" href="javascript:;" class="errorCel">
+	                                        {!duplicateRows}
+	                                    </a>
+									</apex:outputPanel>									
+									<apex:outputPanel rendered="{!duplicateRows == 0}" layout="none">
+                                        {!duplicateRows}
+                                    </apex:outputPanel>
+                                </td>
+					        </tr>
+						    <tr>
+						        <td class="nameCell" style="padding-left:15px;">&nbsp;</td>
+						        <td class="resultCell">&nbsp;</td>  
+						        <td class="nameCell">
+						            Total Rows:
+						        </td>
+						        <td class="resultCell">
+						            <span class="areaTitle">{!totalRows}</span>
+						        </td>
+						    </tr>    
+					    </table>
+                    </div>
+                    <div class="footerSectionText">
+                         <a href="javascript:;" style="color:#3B6080;font-size:10pt;font-weight:bold;margin-left:15px;" onclick="window.open('{!$Page.XactlySMBImportLogPopup}', 'importLog','location=0,status=0,scrollbars=1,height=600px,width=760px');">
+                             <b>{!$Label.ViewImportLog}</b>
+                         </a>           
+                     </div>
+                </div>
+                <div class="bottomCurvyLarge"></div>
+            </apex:outputPanel>  
+            <apex:actionFunction name="rerenderPanel" action="{!refreshStatus}" oncomplete="document.getElementById('progressBar').style.display = 'none';onRerenderComplete();refreshPost();" rerender="mainStatusPanel" />
+            <apex:actionFunction name="statusCanvas" action="{!fixLostProcess}"  rerender="mainStatusPanel" oncomplete="rerenderPanel();" />
+
+            <apex:outputPanel id="lastIdContainer">
+                   <input value="{!lastImportId}" type="hidden" id="lastImport"/>
+            </apex:outputPanel>
+            <apex:actionFunction name="lastImportIdRefresh" action="{!dummy}" oncomplete="reloadProccesId();" rerender="lastIdContainer" />
+              
+        </apex:form>
+ 
+    <script language="javascript" type="text/javascript">
+        
+        var lastImportId;
+        var reloadTimeout;
+        if(document.getElementById('lastImport').value==''){
+            lastImportId = '{!JSENCODE(lastImportId)}';
+            lastImportIdRefresh();
+        }else{
+            reloadTimeout = setTimeout('reload();',1500);            
+        }
+        var reloadTimeoutProccesId = setTimeout('lastImportIdRefresh();',1500);
+       
+        function reloadProccesId(){
+            if(lastImportId != document.getElementById('lastImport').value){
+                 lastImportId = document.getElementById('lastImport').value;
+                 reload();
+            }
+            reloadTimeoutProccesId = setTimeout('lastImportIdRefresh();',1500);
+        }         
+       
+        function reload(){
+            document.getElementById('progressBar').style.display = '';
+            statusCanvas();           
+        }
+        
+        function onRerenderComplete(){
+            if(document.getElementById('importStatusValue').value=='true'){ 
+                reloadTimeout = setTimeout('reload();',3000);
+            }else{
+            	parent.refreshPost();
+                document.getElementById('progressBar').style.display = 'none';
+            }
+        }  
+         
+        //document.onmousemove = resetTimeout;
+        
+        function resetTimeout(){
+            clearTimeout(reloadTimeout);
+            
+            reloadTimeout = setTimeout('reload();',3000);
+        };
+        
+    </script> 
+</body>
+</apex:page>

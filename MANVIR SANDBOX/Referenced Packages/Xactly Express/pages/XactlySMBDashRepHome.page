@@ -1,0 +1,1150 @@
+<!--  
+ Developed by Timba Software Corp. www.timbasoftware.com admin@timbasoftware.com
+ This page lists plans
+ @author Guillermo Freire <guillermo.freire@gmail.com>
+\
+-->
+<apex:page id="DashRepHome" controller="XactlyExpress.XactlySMBDashRepHome" sidebar="false" showHeader="false" standardStylesheets="false"  action="{!redirectWhenAccessIsDenied}">
+    <c:XactlySMBCursor />
+    <title>{!$Label.MyHomepage}</title>
+    <link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.XactlySMBResources ,'css/XactlySMBDashboardStyles.css')}" />
+    <link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.XactlySMBResources ,'modbubble/css/bubble.css')}" />
+    <style>
+        /* THIS PAGE SPECIFIC CONTENT */
+        img{ 
+            border: 0; 
+            display:block;
+        }      
+                 
+        .plansIframe{
+            width:100%;
+            height:650px;
+            /*overflow:auto;*/
+            margin-bottom:70px;
+            margin-top:20px; 
+        }
+         
+        .planBox{
+            width:210px;
+            margin-right:1em;
+        }
+        
+        .planBoxTitle{
+            border: none;
+            padding-left:1em;
+            background:transparent url({!URLFOR($Resource.XactlySMBResources ,'img/layout/table_top_210w.png')}) left top no-repeat;
+            height:20px;
+            font-size: 11px;
+            font-weight: bold;
+            padding: 2px 0 0 10px;          
+        }
+        
+        .planBoxFooter{
+            background:transparent url({!URLFOR($Resource.XactlySMBResources ,'img/layout/table_bottom_210w.png')}) left top no-repeat;
+            height:20px;
+            text-align:right;           
+        }
+        
+        .planBoxContent {
+            border: 1px solid rgb(204,204,204);
+            width: 190px;
+            width: expression(document.body.clientWidth > 197? '196px' : 'auto');
+            /*overflow: auto;*/
+            background:transparent url("{!URLFOR($Resource.XactlySMBResources ,'img/layout/Pod_Background.png')}") repeat scroll 0 0;
+            font-size: 12px;
+            padding: 4px 5px 5px 10px;
+            padding-bottom: 0px;
+            height: 345px;
+        }
+        
+        .cornerPodUL{
+            background:transparent url("{!URLFOR($Resource.XactlySMBResources ,'img/layout/cornerPodUl.png')}") no-repeat scroll 0 0;
+            float:left;
+            height:10px;
+            margin-left:0px;
+            margin-top:0x;
+            width:10px;
+        }     
+        
+        .cornerPodULBlack{
+            background:transparent url("{!URLFOR($Resource.XactlySMBResources ,'img/layout/cornerPodUlBlack.png')}") no-repeat scroll 0 0;
+            float:left;
+            height:10px;
+            margin-left:0px;
+            margin-top:0x;
+            width:10px;
+        }     
+        
+        .cornerPodUR{
+            background:transparent url("{!URLFOR($Resource.XactlySMBResources ,'img/layout/cornerPodUr.png')}") no-repeat scroll 0 0;
+            float:right;
+            height:10px;
+            margin-right:3px;
+            margin-top:0px;
+            width:10px;
+        }  
+        
+        .cornerPodURBlack{
+            background:transparent url("{!URLFOR($Resource.XactlySMBResources ,'img/layout/cornerPodUrBlack.png')}") no-repeat scroll 0 0;
+            float:right;
+            height:10px;
+            margin-right:3px;
+            margin-top:0px;
+            width:10px;
+        }  
+        
+        .cornerPodBL{
+            background:transparent url("{!URLFOR($Resource.XactlySMBResources ,'img/layout/cornerPodBl.png')}") no-repeat scroll 0 0;
+            float:left;
+            height:10px;
+            margin-left:0px;
+            margin-top:-10px;
+            width:10px;
+        }     
+        
+        .cornerPodBLBlack{
+            background:transparent url("{!URLFOR($Resource.XactlySMBResources ,'img/layout/cornerPodBlBlack.png')}") no-repeat scroll 0 0;
+            float:left;
+            height:10px;
+            margin-left:0px;
+            margin-top:-10px;
+            width:10px;
+        }     
+        
+        
+        .cornerPodBR{
+            background:transparent url("{!URLFOR($Resource.XactlySMBResources ,'img/layout/cornerPodBr.png')}") no-repeat scroll 0 0;
+            float:right;
+            height:10px;
+            margin-right:3px;
+            margin-top:-10px;
+            width:10px;
+        }  
+        
+        .cornerPodBRBlack{
+            background:transparent url("{!URLFOR($Resource.XactlySMBResources ,'img/layout/cornerPodBrBlack.png')}") no-repeat scroll 0 0;
+            float:right;
+            height:10px;
+            margin-right:3px;
+            margin-top:-10px;
+            width:10px;
+        }  
+                 
+
+        .plansTable tr td{
+            vertical-align:top;
+        }
+        
+        .totalsGraphBox{
+            width:206px;
+            /*for IE*/
+            *width:204px;
+            margin-top:1em;
+            border: solid 1px rgb(0,0,0);
+            
+        }
+        
+        .totalsGraphTitle{
+            border-bottom: solid 1px rgb(0,0,0);
+            padding-left:1em
+        }
+        
+        .totalsGraphContent{
+            margin: 0 2px;
+        }
+        
+        .centered{
+            text-align:center;
+        }
+        
+        div#aboveCenter {
+            font-size: 15px;
+            margin-left: 150px;
+        }
+        
+        div.chartDescription{
+            text-align:center; 
+            font-size:11px; 
+        }
+        
+        .leftPlanBoxContent {
+            border-left: 1px solid rgb(204,204,204);
+            border-right: 1px solid rgb(204,204,204);
+            width: 196px;
+            background: rgb(255,255,255);
+            height: 340px;
+            overflow: auto;
+            font-size: 12px;
+            padding: 4px 5px 5px 6px;
+            *padding-bottom: 0px;
+        
+        }
+        .graphBoxContent {
+            border-left: 1px solid rgb(204,204,204);
+            border-right: 1px solid rgb(204,204,204);
+            width: 196px;
+            xxxxheight: 120px;
+            background: rgb(255,255,255);
+            font-size: 12px;
+            padding: 20px 5px 8px 6px;
+            *padding-bottom: 0px;
+        
+        }
+        .planBox .editBtnWrapper  {
+            position: relative;
+            overflow: hidden;
+            margin-top: 15px;
+        }
+        
+        .planBox .editBtn {
+            float: right;
+        } 
+        
+        .measureTitle {
+            color: #658CA6;
+            font-size: 18px;
+            margin-bottom: 0px;
+            text-align: left;
+        }
+        
+        .measureType{
+            float:left;
+            margin: 6px 0px;
+        }
+        
+        .currPeriodResultVal{
+            color:#658CA6;
+            float:right;
+        }
+        
+        .monthToMonth{
+            color:#658CA6;
+        }
+        
+        .frecuencyResult{
+            border-top:1px solid gray;
+			margin:10px 0;
+			padding-top:10px;			
+        }
+        
+        .frecuencyResult .leftText{
+            float:left;
+            padding-left:20px;
+        }
+        
+        .frecuencyResult .rightText{
+            float:right;
+            color:#658CA6;
+        }
+  		.leftText{
+  		    float:left;
+  		}
+  		.rightText{
+  		}
+        div.bottom10 {
+            margin-bottom: 10px; 
+        }
+        
+       span.bottom10 {
+            margin-bottom: 10px; 
+        }
+        
+        div.productLink {
+            margin-bottom: 5px;
+        }
+        a.blueLink {
+            color: #3B6080;
+            text-decoration: underline;
+        }
+        .floatingRight{
+           float:right; 
+                    
+        }
+        .textRight{
+           text-align:right; 
+        }
+       
+        .insufficientPermissionsMsg {
+            margin: 40px 0px 0px 20px;
+        }
+        
+        .gaugeWrapper {
+            z-index: 0;
+        }
+        
+        .contentHeader {
+            margin: 0px 0px 10px 50px !important;
+            width: 510px !important;
+        }
+        
+        .blackFont{
+            font-size:12px;
+            font-weight:bold;
+            min-height:28px;
+        }
+        
+        .miniblackFont{
+            font-size:9px;
+            font-weight:bold;
+        }
+        
+        .miniFont{
+            font-size:9px;
+            text-align:right;
+        }
+        
+        .collapseArrowDown{
+            padding-left:12px;
+            cursor:pointer;
+            background:url({!URLFOR($Resource.XactlySMBResources,'img/icons/collapseArrowDown.png')}) no-repeat;
+        
+        }
+     
+        .collapseArrowRight{
+            padding-left:12px;
+            cursor:pointer;
+            background:url({!URLFOR($Resource.XactlySMBResources,'img/icons/collapseArrowRight.png')}) no-repeat;
+        }
+        
+        .mainContent .help{
+            position:relative !important;
+            margin-top:-15px !important;
+        }
+        
+        
+        /*   DashNew*/
+        .clear{
+            clear:both;
+        } 
+         
+        .mainContent{
+            margin-top:60px;            
+            border-top:1px solid #DDEAF3;
+        }
+        
+        .mainContent .cornerMainUL{
+            background:url({!URLFOR($Resource.XactlySMBResources,'img/layout/cornerMainContUl.png')}) no-repeat;
+            float:left;
+            width:10px;
+            height:10px;
+            margin-left:-1px;
+            margin-top:-1px;
+        }
+        
+        .mainContent .cornerMainUR{
+            background:url({!URLFOR($Resource.XactlySMBResources,'img/layout/cornerMainContUr.png')}) no-repeat;
+            float:right;
+            width:10px;
+            height:10px;
+            margin-right:-1px;
+            margin-top:-1px;
+        }
+                 
+        .additionalContent{
+            margin-top:46px !important;
+        }
+        
+        #addPod{
+            float:right;
+            width: 15%;
+            height: 25px;
+            margin-top:15px;
+        }
+        
+        #addPod span{
+            float:left;
+            font-weight: bold;
+            font-size: 14px;
+            color: #56839D;
+            padding-right:6px;
+			padding-top:5px;
+        }
+        
+        .imgPod{
+            float:left;
+            height:28px;
+            width:28px;
+            padding-left:10px;
+            background: url({!URLFOR($Resource.XactlySMBResources ,'img/icons/addPod.png')}) no-repeat;
+        }
+        
+        .imgPod:Hover{
+            background: url({!URLFOR($Resource.XactlySMBResources ,'img/icons/addPod.png')}) no-repeat 0 -28px;
+        }
+        
+        .removePod{
+            float:left;
+            height:27px;
+            width:28px;
+            padding-left:10px;
+            background: url({!URLFOR($Resource.XactlySMBResources, 'img/icons/remPod.png')}) no-repeat;
+        }
+        
+        .removePod:hover{
+             background: url({!URLFOR($Resource.XactlySMBResources, 'img/icons/remPod.png')}) no-repeat 0 -28px;
+        }
+        
+                
+        #dragText{
+            float:left;
+            margin:150px auto auto 52px;
+        }
+                
+        #QuotaResult{
+            background: url({!URLFOR($Resource.XactlySMBResources, 'img/icons/quotaResult.png')}) no-repeat !important;
+        	border:none !important;
+        }
+        
+        #SalesResult{
+            background: url({!URLFOR($Resource.XactlySMBResources, 'img/icons/salesResult.png')}) no-repeat !important;
+        	border:none !important;
+        }
+        
+        #TargetPayout{
+            background: url({!URLFOR($Resource.XactlySMBResources, 'img/icons/targetPayout.png')}) no-repeat !important;
+        	border:none !important;
+        }
+        
+        #TotalPayout{
+            background: url({!URLFOR($Resource.XactlySMBResources, 'img/icons/totalPayout.png')}) no-repeat !important;
+        	border:none !important;
+        }
+        
+        /*Dashboard Styles*/
+        .shadowContainer {
+            background:url({!URLFOR($Resource.XactlySMBResources, 'img/layout/backimg.png')}) repeat-y scroll center bottom #FFFFFF;
+            height:100%;
+            left:50%;
+            margin-left:-735px;
+            position:fixed !important;
+            width:1470px;
+            z-index:-10;
+        }
+        
+        .mainContent .content {
+            border-left:2px solid #E1E1E2 !important;
+            width:72% !important;
+            padding-top:47px;
+            margin-top:0 !important;            
+            padding-bottom: 70px; 
+        }
+        
+        img.chartImg{
+            display:block; 
+            width:170px; 
+            text-align:center; 
+            margin:auto;
+            max-height: 210px;
+        }
+           
+        .header{
+            height: 47px !important;
+        }
+        
+       
+        #containerPlans .cornerUL{
+            float:left;
+            width: 10px;
+            height: 10px;
+            background: url( {!URLFOR($Resource.XactlySMBResources, 'img/layout/cornerGrayUL.png')}) no-repeat; 
+            margin-left:-8px;
+        }
+        
+        #containerPlans .cornerUR{
+            float:right;
+            width: 10px;
+            height: 10px;
+            background: url( {!URLFOR($Resource.XactlySMBResources, 'img/layout/cornerGrayUR.png')}) no-repeat;
+            margin-right:-8px;
+        }
+        
+        .podBox{
+            height:50px;
+            margin-top:5px;
+        }
+        
+        .shadowPod{
+            background:url({!URLFOR($Resource.XactlySMBResources, 'img/layout/shadowPod.png')}) repeat-x;
+            height:200px;
+            margin-top:5px;
+            z-index:9999;
+            position: absolute;
+            width: 746px;
+        }
+        
+        .shadowPodSky{
+            background:url({!URLFOR($Resource.XactlySMBResources, 'img/layout/shadowPodSky.png')}) repeat-x;
+            height:200px;
+            margin-top:5px;
+            z-index:9999;
+            position: absolute;
+            width: 746px;
+        }
+        
+        .shadowPod .cornerPodTopLeft{
+            background:url({!URLFOR($Resource.XactlySMBResources, 'img/layout/cornerShadowPods.png')}) no-repeat;
+            float:left;
+            width:10px;
+            height:10px;
+        }
+        
+        .shadowPodSky .cornerPodTopLeft {
+            background:url({!URLFOR($Resource.XactlySMBResources, 'img/layout/cornerShadowPods.png')}) no-repeat scroll 0 -44px transparent;
+            float:left;
+            width:10px;
+            height:10px;
+        }
+        
+        .shadowPod .cornerPodTopRight{
+            background:url({!URLFOR($Resource.XactlySMBResources, 'img/layout/cornerShadowPods.png')}) no-repeat scroll 0 -11px transparent;
+            float:right;
+            width:10px;
+            height:10px;
+        }
+        
+        .shadowPodSky .cornerPodTopRight {
+            background:url({!URLFOR($Resource.XactlySMBResources, 'img/layout/cornerShadowPods.png')}) no-repeat scroll 0 -55px transparent;
+            float:right;
+            width:10px;
+            height:10px;
+        }
+        
+        .shadowPod .cornetPodBLeft{
+            background:url({!URLFOR($Resource.XactlySMBResources, 'img/layout/cornerShadowPods.png')}) no-repeat scroll 0 -33px transparent;
+            float:float;
+            width:10px;
+            height:10px;
+            margin-top:0px;
+        }
+        
+        .shadowPodSky .cornetPodBLeft{
+            background:url({!URLFOR($Resource.XactlySMBResources, 'img/layout/cornerShadowPods.png')}) no-repeat scroll 0 -77px transparent;
+            float:float;
+            width:10px;
+            height:10px;
+            margin-top:0px;
+        }
+        
+        .shadowPod .cornetPodBRight{
+            background:url({!URLFOR($Resource.XactlySMBResources, 'img/layout/cornerShadowPods.png')}) no-repeat scroll 0 -22px transparent;
+            float:right;
+            width:10px;
+            height:10px;
+            margin-top:-10px;
+        }
+        
+        .shadowPodSky .cornetPodBRight{
+            background:url({!URLFOR($Resource.XactlySMBResources, 'img/layout/cornerShadowPods.png')}) no-repeat scroll 0 -66px transparent;
+            float:right;
+            width:10px;
+            height:10px;
+            margin-top:-10px;
+        }
+        
+        .shadowPod ul li{
+            list-style: none;
+        }
+        
+        #savePod{
+            background: url({!URLFOR($Resource.XactlySMBResources, 'img/buttons/backSave.png')}) no-repeat;
+            width:132px;
+            height:32px;
+            float:left;
+            margin-left:10px;
+            text-align:center;
+            padding-top:8px;
+            cursor:pointer;
+            margin:auto;
+        }
+        
+        
+        /*   Drag and Drop*/
+        
+        .draggable { width: 100px; height: 100px; padding: 0.5em; float: left; margin: 10px 10px 10px 0; z-index:9200}
+        .draggable2 { width: 230px; height: 60%%; float: left; margin-bottom: 15px; z-index:9200;list-style:none}
+        .no-draggable2{ 
+	        width: 191px; 
+	        height: 100px; 
+	        padding: 0.5em; 
+	        float: left; 
+	        margin: 10px 10px 10px 0; 
+	        z-index:9200;
+	        list-style:none;
+	    }
+        #droppable { 
+            background: transparent url("{!URLFOR($Resource.XactlySMBResources ,'img/layout/Pod_Background.png')}") repeat scroll 0 0;
+            top:300px;
+			float:left;
+			height:348px;
+			left:766px;
+			position:absolute;
+			width: 205px;
+			z-index:9100;
+			border:1px solid #cccccc !important;
+        }
+        
+        .draggable .cornerCubeTL{
+            background: url({!URLFOR($Resource.XactlySMBResources, 'img/icons/cornerSmallUL.png')}) no-repeat;
+            margin-left:-7px;
+            margin-top:-7px;     
+            height:10px;
+            width: 10px;                                                                                                                                                                                                                   
+        }
+        
+        .draggable .cornerCubeTR{
+            background: url({!URLFOR($Resource.XactlySMBResources, 'img/icons/cornerSmallUR.png')}) no-repeat;
+            margin-right:-7px;
+            margin-top:-10px;
+            height:10px;
+            width: 10px;      
+        }
+        
+        .overlay_back{
+            background: none repeat scroll 0 0 #C4C4C4;
+            display:none;
+            height:100%;
+            left:0;
+            position:fixed;
+            top:0;
+            width:100%;
+            z-index:9000;            
+        }
+        
+        #justDragAndDrop{
+            display:none;
+            float:left;
+            margin-top:15px;
+            margin-left:20px;
+            padding-top: 5px;
+        }  
+        
+        .droppContent{
+            float:left;
+            height: 50px;
+            width: 140px;
+            margin:auto auto 10px;
+        }      
+        
+        .droppableContent{
+            height: 100%;
+        }
+        
+        #defaultScren{
+            color:#BEBEBE;
+            font-size:17px;
+        }
+        
+        #currentScreen{
+            color:#618AA4;
+            font-size:14px;
+            float:left;
+            padding-top: 70px;
+            padding-left:25px;
+            height:77.5%;
+        }
+        
+        #sortable2{
+            height: 100%;     
+            padding-left:10px;   
+        }
+        
+        .actionBtnContainer{
+            background: url({!URLFOR($Resource.XactlySMBResources, 'img/buttons/deletePodButton.png')}) no-repeat scroll 0 -2px;   
+            float:left;
+            height:22px;
+            width:30px;
+        }
+        
+        .actionBtnContainer:hover{
+            background: url({!URLFOR($Resource.XactlySMBResources, 'img/buttons/deletePodButton.png')}) no-repeat scroll 0 -23px;  
+            float:left;
+            height:22px;
+            width:30px;
+            cursor:pointer;
+        }
+        
+        .chartContainer {
+            background:url({!URLFOR($Resource.XactlySMBResources ,'img/layout/SalesPodGrid.png')}) left top no-repeat !important; 
+            background-position:35px -21px !important;   
+        }   
+        
+        .barChart .containerChartsLayout{
+            padding-top:38px;
+        }
+        
+        .currentPeriodResult span .bubbleText{
+            float:left;
+        }
+        
+        .errorPod{
+            float:left;
+			margin-top:60px;
+			color:red;
+        }
+        
+    </style>   
+   
+    <c:XactlySMBShadows />
+    
+    <!-- PAGE WRAPPER -->
+    <div class="pageContent" id="pContent">
+        <apex:form id="theForm" >
+            <!-- HEADER -->
+            <apex:outputPanel layout="block" styleClass="header">
+                <c:XactlySMBSalesRepHeader id="salesRepHeaderComp" lastClosedPeriod="{!lastClosedPeriod}" isEmulatedManager="{!isEmulatedManager}" isManager="{!isManager}" isSalesAdmin="{!isSalesAdmin}" isAdmin="{!isAdmin}"  isActive="{!isActive}" nbrSeparator="{!nbrSeparator}" nbrDecimal="{!nbrDecimal}" currentUserOrSlected="{!currentUserOrSlected}" emulatingUserURLAppend="{!emulatingUserURLAppend}" dealsLabel="{!currentSettings.dealsPluralCap}" selected="1" emulatingUserURLAppend="{!emulatingUserURLAppend}" hlabel="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean ac mi eget est semper feugiat."/>
+            </apex:outputPanel>
+
+            <!-- MAIN CONTENT -->
+            <apex:outputPanel layout="block" styleClass="mainContent" rendered="{!OR(isAdmin, isSalesRep, isManager) && isActive}"> <!-- rendered="{!OR(isAdmin, isSalesRep)}"> -->
+                <div class="cornerMainUL"> </div>
+                <div class="cornerMainUR"> </div>
+
+                <c:XactlySMBDashboardLeftSidebar CisManager="{!isManager}" CcurrentPeriod="{!currentPeriod}" CcurrentProfileId="{!currentProfileId}" CcurrentSettings="{!currentSettings}" ClastClosedPeriod="{!lastClosedPeriod}" CcurrentSttgs="{!currentSttgs}" Csubordinates="{!SubordinateList}" currentSettingsAttach="{!currentSettingsAttach}" CisAdmin="{!isAdmin}"/>
+                
+                <!-- CONTENT -->
+                <apex:outputPanel layout="block" styleClass="content" id="contentPanel">
+                    <!-- TABS HEADER -->
+                    <apex:outputPanel layout="block" styleClass="subHeader">
+                        <c:XactlySMBSalesRepTabsHeader id="salesRepTabComp" lastClosedPeriod="{!lastClosedPeriod}" isEmulatedManager="{!isEmulatedManager}" isManager="{!isManager}" isSalesAdmin="{!isSalesAdmin}" isAdmin="{!isAdmin}"  isActive="{!isActive}" nbrSeparator="{!nbrSeparator}" nbrDecimal="{!nbrDecimal}" currentUserOrSlected="{!currentUserOrSlected}" emulatingUserURLAppend="{!emulatingUserURLAppend}" dealsLabel="{!currentSettings.dealsPluralCap}" selected="1" emulatingUserURLAppend="{!emulatingUserURLAppend}" hlabel="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean ac mi eget est semper feugiat."/>
+                    </apex:outputPanel>
+                
+                    <div id="containerPlans">
+                        <div class="cornerUL"> </div>
+                        <div class="cornerUR"> </div>
+                        <div class="overlay_back"></div>    
+                        <div class="podBox">
+                            <div class="cornerPodTopLeft"></div>
+                            <div class="cornerPodTopRight"></div>
+                            <span id="justDragAndDrop"> {!$Label.justDragAndDrop} </span>
+                            
+                            <div id="addPod">
+                                <span> {!$Label.NewPod} </span> <a href="javascript:;"><div class="imgPod"> </div> </a>
+                            </div> 
+                            <div class="clear"></div>
+                            
+                            <ul style="margin-left:40px;">
+                                <li id="QuotaResult" class="draggable ui-widget-content" style="display:none"><div class="cornerCubeTL"></div><div class="cornerCubeTR"></div> </li>
+                                <li id="SalesResult" class="draggable ui-widget-content" style="display:none"></li>
+                                <li id="TargetPayout" class="draggable ui-widget-content" style="display:none"></li>
+                                <li id="TotalPayout" class="draggable ui-widget-content" style="display:none"></li>
+                            </ul>                                                         
+                            
+                            <div class="clear"> </div>
+                            <div class="cornetPodBLeft"></div>
+                            <div class="cornetPodBRight"></div>
+                        </div>
+                      
+                    <apex:actionFunction name="updateFrequencies" action="{!genFrequencyOptions}" rerender="newPodContent" oncomplete="setterTitle();waitOff();">
+                        <apex:param name="param" assignTo="{!CPSelected}" value="" />
+                    </apex:actionFunction>    
+                    <apex:actionFunction name="UpdateNewPodDropDowns" action="{!UpdateNewPodDropDowns}" rerender="newPodContent" oncomplete="$('#currentScreen').show();setterTitle();waitOff();">
+                        <apex:param name="param" assignTo="{!newPodType}" value="" />
+                    </apex:actionFunction>  
+                    <apex:actionFunction name="changeSelectedSubordinate" action="{!changeSelectedSubordinate}" oncomplete="waitOff();" rerender="contentPanel,leftPanel">
+                    	<apex:param name="param1" assignTo="{!selectedSubordinate}" value="" />  
+                    </apex:actionFunction>
+                    <apex:actionFunction name="changeSelectedPeople" action="{!changeSelectedPeople}" oncomplete="waitOff();" rerender="contentPanel,leftPanel">
+                    	<apex:param name="param1" assignTo="{!selectedPeople}" value="" />     
+                    </apex:actionFunction>                  
+                    <apex:actionFunction name="saveOrdenMeasure" action="{!setOrderMeasureInDashboard}" oncomplete="waitOff();" rerender="content" />
+                    <apex:actionFunction name="savePod" action="{!createPod}" rerender="plansList" oncomplete="dragAndDrop();runGauges();runJitCharts();afterToSave();loadBubbles();waitOff();">
+                    	<apex:param name="param1" assignTo="{!CPSelected}" value="" />
+                    	<apex:param name="param2" assignTo="{!FrecuencySelected}" value="" />
+                    </apex:actionFunction>
+                    <apex:actionFunction name="deletePod" action="{!deletePod}" rerender="plansList" oncomplete="dragAndDrop();runGauges();runJitCharts();loadBubbles();waitOff();">
+                        <apex:param name="param" assignTo="{!podSelectedId}" value="" />
+                    </apex:actionFunction>
+                    <apex:actionFunction name="refreshPods" action="{!genPods}" rerender="plansList" oncomplete="dragAndDrop();runGauges();runJitCharts();loadBubbles();waitOff();"> <!-- rerender="plansList" oncomplete="dragAndDrop();waitOff();"/> -->
+                        <apex:param name="param2" assignTo="{!selectedPeriodId}" value="" />
+                    </apex:actionFunction>
+                    
+                    <apex:actionFunction name="refreshPodsByYear" action="{!genPods}" rerender="plansList" oncomplete="dragAndDrop();runGauges();runJitCharts();loadBubbles();waitOff();"> <!-- rerender="plansList" oncomplete="dragAndDrop();waitOff();"/> -->
+                       <apex:param name="param3" assignTo="{!selectedFiscalYearId}" value="" />
+                       <apex:param name="param4" assignTo="{!selectedPeriodId}" value="" />
+                    </apex:actionFunction>
+                    
+                    <apex:outputPanel rendered="{!IF(fiscalYearOptions.size>0,'false','true')}">
+                        <c:XactlySMBErrorMsg error="{!$Label.xactlyexpress__CreateFiscalYearFirstError}" />
+                    </apex:outputPanel>
+                    
+                    <apex:outputPanel id="plansList" layout="block" styleClass="plansIframe">
+                        <apex:outputPanel layout="block"  id="NoPlansForThisYear" rendered="{!IF(pods.size>0,'false','true')}">
+                            {!$Label.xactlyexpress__NoPods} 
+                        </apex:outputPanel>
+
+                        <ul id="sortable2">
+                            <apex:inputHidden value="{!measuresId}" id="measureIdsInput"/>
+                            <apex:inputHidden value="{!podSelectedId}" id="podSelectedInput"/>
+                            <apex:inputHidden value="{!selectedPeriodId}" id="periodIdInput"/>
+                            <apex:inputHidden value="{!selectedFiscalYearId}" id="fiscalYearInput"/>
+                            
+                            <script>
+                                var NoPlansFTY = '{!$Component.NoPlansForThisYear}'.replace(/:/g,'\\:');
+                                var meaIdsInput = '{!$Component.measureIdsInput}'.replace(/:/g,'\\:');
+                                var periodIdInput = '{!$Component.periodIdInput}'.replace(/:/g,'\\:');
+                                var fiscalYearIdInput = '{!$Component.fiscalYearInput}'.replace(/:/g,'\\:');
+                                var podSelectedId = '{!$Component.podSelectedInput}'.replace(/:/g,'\\:');
+                            </script>
+                            <apex:variable var="iterIndex" value="{!0}"/>
+                            <apex:repeat id="repeatPod" value="{!pods}" var="pod">     
+                                <li id="{!pod.pod.Id}" class="draggable2">
+                                    <div class="positionPod" id="{!iterIndex}" style="display:none;"></div>
+                                    <div class="planBox"> 
+                                        <div class="cornerPodUL"> </div>
+                                        <div class="cornerPodUR"> </div>
+                                            
+                                        <div class="planBoxContent">
+                                            <div class="measureTitle">
+                                                <span class="measureName">
+                                                    <c:XactlySMBLongTextBubble maxLength="16" text="{!pod.pod.CreditRuleId__r.Name}" rendered="{!IF(OR(UPPER(pod.typeDashboard) == 'QUOTARESULT', UPPER(pod.typeDashboard) == 'SALESRESULT'),true,false)}" wrappStyle="float:left;width:81%;"/> 
+                                                    <c:XactlySMBLongTextBubble maxLength="16" text="{!pod.pod.MeasureId__r.Name}" rendered="{!IF(OR(UPPER(pod.typeDashboard) == 'TARGETPAYOUT', UPPER(pod.typeDashboard) == 'TOTALPAYOUT'),true,false)}" wrappStyle="float:left;width:81%;"/>  
+                                                </span>
+                                                <div class="actionBtnContainer" style="float:right" onclick="jQuery(this).hide();if (confirm('{!JSENCODE($Label.QuestionRemovePod)}')){waitOn();deletePod('{!pod.pod.id}');}else{jQuery(this).show();}">
+                                                </div>
+                                                <div style="clear:both;"></div>
+                                                <span class="measureType" style="clear: both;font-size: 9px;">
+                                                    <apex:outputtext value="{!pod.FrequencyLabel}"/>&nbsp;
+                                                    <apex:outputtext value="{!$Label.xactlyexpress__SalesResult}" rendered="{!IF(UPPER(pod.typeDashboard) == 'SALESRESULT',true,false)}" />
+                                                    <apex:outputtext value="{!$Label.xactlyexpress__TotalPayout}" rendered="{!IF(UPPER(pod.typeDashboard) == 'TOTALPAYOUT',true,false)}" />
+                                                    <apex:outputtext value="{!$Label.xactlyexpress__QuotaResult}" rendered="{!IF(UPPER(pod.typeDashboard) == 'QUOTARESULT',true,false)}" />
+                                                    <apex:outputtext value="{!$Label.xactlyexpress__TargetPayout}" rendered="{!IF(UPPER(pod.typeDashboard) == 'TARGETPAYOUT',true,false)}" />
+                                                </span>
+
+                                                <div class="clear"> </div>
+                                            </div>                                             
+                                             
+                                            <apex:outputPanel rendered="{!ISNULL(pod.errorMessage)}">                
+	                                            <div class="currentPeriodResult" style="font-size:15px;">
+	                                                <c:XactlySMBLongTextBubble maxLength="22" text="{!pod.PeriodTypeStr}"/> 													
+		                                            <apex:outputText escape="false" value="{!pod.creditStr}"/>
+		                                            <div class="clear"></div>
+	                                            </div>                                         									
+	                                            <apex:outputPanel layout="block" styleClass="frecuencyResult" rendered="{!IF(UPPER(pod.pod.XactlyExpress__CreditFrequency__c) == 'MONTH TO DATE','true','false')}" >
+                                                    <div class="monthToMonth">
+                                                        <c:XactlySMBLongTextBubble maxLength="27" text="{!pod.periodNameMonth}" wrappStyle="float:left;max-width:95%;"/>    
+	                                                    <div class="clear"></div>
+	                                                </div>	                                                 	                                                                                                                                          
+	                                            </apex:outputPanel>	                                            
+	                                            <apex:outputPanel layout="block" styleClass="frecuencyResult" rendered="{!IF(UPPER(pod.pod.XactlyExpress__CreditFrequency__c) != 'MONTH TO DATE','true','false')}" >
+                                                    <div class="monthToMonth">
+                                                        <apex:outputPanel layout="none" styleClass="frecuencyResult" rendered="{!TRIM(pod.periodNameEnd) == TRIM(pod.periodNameStart)}" >
+                                                               <c:XactlySMBLongTextBubble maxLength="27" text="{!pod.periodNameStart}" wrappStyle="float:left;max-width:95%;"/>
+                                                        </apex:outputPanel>
+                                                        
+                                                        <apex:outputPanel layout="none" styleClass="frecuencyResult" rendered="{!TRIM(pod.periodNameEnd) != TRIM(pod.periodNameStart)}" >
+                                                                <c:XactlySMBLongTextBubble maxLength="27" text="{!pod.periodNameStart} {!$Label.xactlyexpress__to} {!pod.periodNameEnd}" wrappStyle="float:left;max-width:95%;"/>        
+                                                        </apex:outputPanel> 
+                                                        <div class="clear"></div>
+                                                    </div>                                                                                                     
+                                                </apex:outputPanel>
+                                                <!-- QUOTA RESULT -->
+                                                <apex:outputPanel layout="block" styleclass="gaugeWrapper" rendered="{!IF(UPPER(pod.typeDashboard) == 'QUOTARESULT','true','false')}" >
+                                                	<div class="currentPeriodResult"> 
+                                                        &nbsp;<apex:outputText value="{!$Label.xactlyexpress__Credit}" styleClass="leftText"/>
+                                                        <apex:outputText value="{!pod.creditCreditStr}" styleclass="currPeriodResultVal" escape="false"/>  
+                                                    </div>
+                                                    <div class="clear"></div>
+                                                    <apex:outputPanel layout="block" styleClass="currentPeriodResult">&nbsp;
+                                                        <apex:outputText value="{!currentSettings.quotasCap}" styleClass="leftText"/>
+                                                        <apex:outputText value="{!pod.creditQuotaStr}" styleClass="currPeriodResultVal" escape="false"/> 
+                                                    </apex:outputPanel>
+                                                    <c:XactlySMBChart type="Quota Results" cid="{!ROUND(iterIndex,0)}" values="{!pod.gauge}"/> 
+                                                </apex:outputPanel>   
+                                                <!-- TARGET PAYOUT -->                                                                                     
+                                                <apex:outputPanel layout="block" styleclass="gaugeWrapper" rendered="{!IF(UPPER(pod.typeDashboard) == 'TARGETPAYOUT','true','false')}" >
+                                                	<div class="currentPeriodResult"> 
+                                                        &nbsp;<apex:outputText value="{!$Label.xactlyexpress__YTDPayout}" styleClass="leftText"/>
+                                                        <apex:outputText value="{!pod.creditCreditStr}" styleClass="currPeriodResultVal" escape="false"/>  
+                                                    </div>
+                                                    <div class="clear"></div>
+                                                    <apex:outputPanel layout="block" styleClass="currentPeriodResult">
+                                                        &nbsp;<apex:outputText value="{!$Label.xactlyexpress__YTDTargetPayout}" styleClass="leftText"/>
+                                                        <apex:outputText value="{!pod.creditQuotaStr}" styleClass="currPeriodResultVal" escape="false"/> 
+                                                    </apex:outputPanel>                                                	
+                                                    <c:XactlySMBChart type="Target Payout" cid="{!ROUND(iterIndex,0)}" values="{!pod.gauge}"/>
+                                                </apex:outputPanel>
+												<!-- TOTAL PAYOUT -->
+                                                <apex:outputPanel layout="block" styleclass="barChart" rendered="{!IF(UPPER(pod.typeDashboard) == 'TOTALPAYOUT','true','false')}" >
+                                                	<div class="currentPeriodResult"> 
+                                                        &nbsp;<apex:outputText value="{!pod.totalpayoutlabel}" styleClass="leftText"/>
+                                                        <apex:outputText value="{!pod.creditCreditStr}" styleClass="currPeriodResultVal" escape="false"/>  
+                                                    </div>
+                                                    <div class="clear"></div>
+                                                    <apex:outputPanel layout="block" styleClass="currentPeriodResult">                                                        
+                                                    </apex:outputPanel>                                                      
+                                                    <c:XactlySMBChart type="Total Payout" cid="{!ROUND(iterIndex,0)}" values="{!pod.resultChartBar}"/>
+                                                </apex:outputPanel>
+        										<!-- SALES RESULT -->
+                                                <apex:outputPanel layout="block" styleclass="barChart" rendered="{!IF(UPPER(pod.typeDashboard) == 'SALESRESULT','true','false')}" >
+                                                	<div class="currentPeriodResult"> 
+                                                        &nbsp;<apex:outputText value="{!$Label.xactlyexpress__Credit}" styleClass="leftText"/>
+                                                        <apex:outputText value="{!pod.creditCreditStr}" styleClass="currPeriodResultVal" escape="false"/>  
+                                                    </div>
+                                                    <c:XactlySMBChart type="Sales Results" cid="{!ROUND(iterIndex,0)}" values="{!pod.resultChartBar}"/>
+                                                </apex:outputPanel>                                               
+        
+                                                <div class="chartDescription"></div>
+                                            </apex:outputPanel>
+                                            
+                                            <apex:outputpanel rendered="{!NOT(ISNULL(pod.errorMessage))}">
+                                               <span>{!pod.errorMessage}</span>
+                                            </apex:outputpanel>
+                                        </div>
+                                        
+                                        <div class="cornerPodBL"> </div>
+                                        <div class="cornerPodBR"> </div>  
+                                    </div>
+                                </li>
+                                
+                                <apex:variable var="iterIndex" value="{!iterIndex + 1}"/>
+                                
+                            </apex:repeat>
+                            
+                            
+                        </ul>
+                        
+                        <ul>
+	                        <li id="invisbleContent" class="draggable2" style="display:none;width:230px; height:339px;">
+	                                <div class="planBox">
+	                                    <div class="cornerPodUL"> </div>
+	                                    <div class="cornerPodUR"> </div> 
+	                                    <div class="planBoxContent">
+	                                    </div>
+	                                    <div class="cornerPodBL"> </div>
+	                                    <div class="cornerPodBR"> </div>
+	                                </div>
+	                        </li>
+                        </ul>
+                        
+                        <div class="no-draggable2" style="display:none">                       
+	                        <div id="droppable" class="ui-widget-header">
+		                        <div class="cornerPodULBlack" style="margin-left: -1px; margin-top: -1px"> </div>
+	                            <div class="cornerPodURBlack" style="margin-right: -1px; margin-top: -1px;"> </div>  
+	                            <div style="height: 100%;">     
+		                            <div id="defaultScren" class="droppableContent">
+		                                <p id="dragText"> <apex:outputText value="{!$Label.xactlyexpress__DragHere}" /> </p>
+		                            </div>
+		                            
+		                            <div id="currentScreen" class="droppableContent" style="display:none">
+		                            
+		                                    <apex:outputPanel id="newPodContent">                                                                                                                 
+	
+		                                        <apex:outputPanel layout="none" id="contentList" rendered="{!IF(CreditPaymentOptions.size>0,true,false)}">
+			                                        <apex:outputPanel styleClass="droppContent" rendered="{!IF(CreditPaymentOptions.size > 0,true,false)}">   
+			                                            <apex:outputtext styleClass="typeDropDown" value="{!$Label.xactlyexpress__WhatCredit}" rendered="{!IF(OR(newPodType='QuotaResult',newPodType='SalesResult'), true, false)}">
+			                                                <apex:param value="{!currentSettings.creditsCap}" />
+			                                            </apex:outputtext>   
+			                                            <apex:outputtext styleClass="typeDropDown" value="{!$Label.xactlyexpress__WhatPayment}" rendered="{!IF(OR(newPodType='TargetPayout',newPodType='TotalPayout'), true, false)}"/>                                                
+			                                            <div class="clear"></div>
+			                                            <apex:selectList id="listCreditPayment" styleClass="needTitle" style="width:140px" value="{!CPSelected}" size="1" multiSelect="false" onChange="updateFrequenciesjs(this.value);">
+			                                                <apex:selectOptions value="{!CreditPaymentOptions}"/>
+			                                            </apex:selectList><p/>   
+			                                        </apex:outputPanel>       
+			                                        
+			                                        <apex:outputPanel styleClass="droppContent" rendered="{!IF(FrequencyOptions.size > 0,true,false)}">
+			                                            <apex:outputtext value="{!$Label.xactlyexpress__WhatFrecuency}" rendered="{!IF(OR(newPodType='QuotaResult',newPodType='SalesResult', newPodType='TotalPayout'), true, false)}"/>  
+			                                            <div class="clear"></div>
+			                                                <apex:selectList id="listFrecuency" styleClass="needTitle" style="width:140px" value="{!FrecuencySelected}" size="1" multiSelect="false" rendered="{!IF(OR(newPodType='QuotaResult',newPodType='SalesResult', newPodType='TotalPayout'), true, false)}">
+			                                                    <apex:selectOptions value="{!FrequencyOptions}"/>
+			                                                </apex:selectList><p/>                                                  
+			                                        </apex:outputPanel>       
+			                                        <div class="droppContent">
+			                                            <div id="savePod" onclick="createPod();"> <apex:outputtext value="{!$Label.xactlyexpress__Save}"/> </div>
+			                                        </div>           
+		                                        </apex:outputPanel>
+		                                        
+		                                        <apex:outputPanel id="errorPod" styleClass="errorPod" rendered="{!IF(CreditPaymentOptions.size==0,true,false)}">
+	                                                <apex:outputtext value="{!$Label.xactlyexpress__errorOnPod}"/>
+	                                            </apex:outputPanel>                                                          
+		                                    </apex:outputPanel>                                                                                                                                                    
+		                            </div>	
+		                        </div>
+		                        <div class="cornerPodBLBlack" style="margin-left: -1px; margin-top: -10px;"> </div>
+	                            <div class="cornerPodBRBlack" style="margin-right: -1px; margin-top: -10px;"> </div>                                  
+	                        </div>
+	                        
+	                        	                                                       
+	                        <script>                                           
+	                                  var listFrecuency = '{!$Component.listFrecuency}'.replace(/:/g,'\\:');
+	                                  var listCreditPayment = '{!$Component.listCreditPayment}'.replace(/:/g,'\\:');                                         
+	                        </script>
+                         </div>                                                
+                    </apex:outputPanel> 
+                    </div>                                        
+                
+                <c:XactlySMBGauges />
+                <c:XactlySMBJitCharts />
+                
+                </apex:outputPanel>
+                <div style="clear:both"></div>
+            </apex:outputPanel>
+                 
+        </apex:form>
+    </div>  
+
+    <apex:includeScript value="{!URLFOR($Resource.XactlyExpress__CSN, 'jquery.js')}" />
+    <c:XactlySMBFooterScript /> 
+
+    
+    <link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.XactlySMBResources ,'jquery-ui-1.8.9/css/ui-lightness/jquery-ui-1.8.9.custom.css')}" />
+    <script type="text/javascript" language="javascript" src="{!URLFOR($Resource.XactlySMBResources, 'jquery-ui-1.8.9/js/jquery-ui-1.8.9.custom.min.js')}"></script>
+    <script type="text/javascript" language="javascript" src="{!URLFOR($Resource.XactlySMBResources, 'js/XactlySMBJavascript.js')}"></script>
+    <script type="text/javascript" language="javascript" src="{!URLFOR($Resource.XactlySMBResources, 'js/jquery.curvycorners.min.js')}"></script>
+
+    
+    <script type="text/javascript" charset="utf-8">
+    		var bubbleImagesPath = "{!URLFOR($Resource.XactlySMBResources ,'modbubble/images')}";    		
+			jQuery(document).ready(function (){   				
+			     dragAndDrop();
+			     jQuery('#addPod div').click(function(){
+			         if(jQuery(this).hasClass('imgPod')){
+			         	 jQuery('.overlay_back').css("opacity", 0.8).show();			             
+			             jQuery(this).addClass('removePod');
+			             jQuery(this).removeClass('imgPod');
+			             jQuery('.podBox').addClass('shadowPod');
+			             jQuery('.podBox').removeClass('podBox');
+			             jQuery('.draggable').show();       
+			             jQuery('.plansIframe').css('margin-top','210px');
+			             jQuery('#justDragAndDrop').show();  
+			             $('.no-draggable2').show();
+			             if(jQuery('.ui-sortable .draggable2').length  >= 2){
+						    var podCloned=jQuery('#invisbleContent').clone();
+						    podCloned.attr('style', 'display:block');
+						    podCloned.attr('id', 'invisiblePod');
+						    jQuery('.ui-sortable .draggable2').eq(1).after(podCloned); 
+						 }
+			             
+			         }else{			         	
+			             jQuery('.overlay_back').hide();  
+			             jQuery(this).addClass('imgPod');
+			             jQuery(this).removeClass('removePod');
+			             jQuery('.shadowPod').addClass('podBox');
+			             jQuery('.shadowPod').removeClass('shadowPodSky');
+			             jQuery('.shadowPod').removeClass('shadowPod');
+			             jQuery('.draggable').hide();   
+			             jQuery('.plansIframe').css('margin-top','20px'); 
+			             jQuery('#justDragAndDrop').hide();   
+			             $('#defaultScren').show();
+			             $('#currentScreen').hide();
+			             $('#defaultScren').show();
+			             $('.no-draggable2').hide();
+			             
+			             if(jQuery('.ui-sortable .draggable2').length  >= 2){
+                            $('#invisiblePod').remove();
+                         }
+			         }
+			     });
+			
+			     loadBubbles();              
+			});
+			     
+			 function createPod(){
+			     waitOn();                
+			     var frecuency = jQuery('#' + listFrecuency).val();
+			     var creditpayment = jQuery('#' + listCreditPayment).val();                                  
+			     savePod(creditpayment, frecuency);
+			                    
+			 }
+			 
+			 function afterToSave(){
+			  jQuery('#'+ NoPlansFTY).hide();
+			    jQuery('.overlay_back').fadeOut();  
+			       jQuery('.removePod').addClass('imgPod');
+			       jQuery('.removePod').removeClass('removePod');
+			       jQuery('.shadowPod').addClass('podBox');
+			       jQuery('.shadowPod').removeClass('shadowPodSky');
+			       jQuery('.shadowPod').removeClass('shadowPod');
+			       jQuery('.draggable').hide();   
+			       jQuery('.plansIframe').css('margin-top','20px'); 
+			       jQuery('#justDragAndDrop').hide();   
+			       $('#defaultScren').show();
+			       $('#currentScreen').hide();
+			       $('#defaultScren').show();
+			       $('.no-draggable2').hide();
+			 }
+			
+			 function dragAndDrop(){
+			    $(function() {
+			         $("#sortable2").sortable({
+			             revert: true,
+			             stop: function(event, ui) { 
+			                 var podOrder='';
+			                 var lastPodOrder=$('#'+meaIdsInput).val();
+			                 for(var i=0;i<=$('.draggable2').length;i++){
+			                     if($('.draggable2').eq(i).attr('id')!= undefined){
+			                         if(podOrder!=''){
+			                             podOrder = podOrder + ',' + $('.draggable2').eq(i).attr('id');
+			                         }else{
+			                             podOrder = $('.draggable2').eq(i).attr('id');
+			                         }
+			                        
+			                     }                    
+			                 }
+			                 
+			                 $('#'+meaIdsInput).val(podOrder);
+			
+			                 if(lastPodOrder!=podOrder){
+			                     saveOrdenMeasure();  
+			                 }else{
+			                 }
+			            }
+			         });
+			
+			         $( "#sortable2" ).disableSelection();
+			
+			         $( ".draggable" ).draggable({ revert: true });
+			         
+			         $( "#droppable" ).droppable({
+			             drop: function( event, ui ) {
+			             	jQuery('.shadowPod').addClass('shadowPodSky');
+			             	var typeGraph = $('.ui-draggable-dragging').attr('id');                           
+			                 waitOn();                            
+			                 UpdateNewPodDropDowns(typeGraph);  
+			                 setterTitle();                          
+			                 if(!$(this).hasClass('shadowPod')){                               
+			                 	$('#defaultScren').hide();
+			                 }
+			             }
+			         });                         
+			     });
+			 
+			}              
+			function updateFrequenciesjs(CPSelected){             		  		
+				waitOn();           		
+				updateFrequencies(CPSelected);
+			} 
+						
+			function showOrHideAddPod(){
+			    if(jQuery('.categoriesContent')!= "undefined"){ 
+	                if(jQuery('.categoriesContent').size()>0){
+	                    jQuery('#addPod').show();
+					}else{
+	                    jQuery('#addPod').hide();
+					}
+				}
+			}
+        
+			var doIt = false;
+			
+			function toggleCollapseTree(obj){
+			    var className = '.'+$($(obj).parent()).parent().attr('id');
+			    
+			    var childList = $(className);
+			    if($(obj).hasClass('collapseArrowDown')){
+			        $(obj).removeClass('collapseArrowDown').addClass('collapseArrowRight');
+			        childList.hide();
+			    }
+			    else{
+			        $(obj).removeClass('collapseArrowRight').addClass('collapseArrowDown');                
+			        $(className).show();
+			        for(var i=0; i < childList.length; i++){
+			            var div = $($($(childList[i]).children()[0]).children()[0]);
+			            if(div.hasClass('collapseArrowRight')){
+			                div.removeClass('collapseArrowRight').addClass('collapseArrowDown');
+			            }
+			        }			        
+			    }       
+			}
+            
+    </script>
+</apex:page>

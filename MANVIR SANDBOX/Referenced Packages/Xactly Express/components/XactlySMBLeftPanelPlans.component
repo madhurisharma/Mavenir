@@ -1,0 +1,163 @@
+<apex:component controller="XactlyExpress.XactlySMBLeftPanelPlans">
+	<apex:attribute name="fiscalYear" description="the FY" type="Id" required="true" assignTo="{!currentFiscalYear}" />
+	<apex:attribute name="currentPlan" description="Current Plan" type="Id" required="false" assignTo="{!crrntPlan}"/>
+	<apex:attribute name="step" description="Current step" type="String" required="false" assignTo="{!step}"/>
+	<apex:attribute name="havePreviousYear" description="If the drop down has a previous year" type="Boolean" required="false" assignTo="{!havePrevious}"/> 
+	<apex:attribute name="haveNextYear" description="If the drop down has a Next year" type="Boolean" required="false" assignTo="{!haveNext}"/> 
+	<apex:attribute name="namePreviousYear" description="Name previous year" type="String" required="false" assignTo="{!namePreviousYear}"/> 
+    <apex:attribute name="nameNextYear" description="Name Next year" type="String" required="false" assignTo="{!nameNextYear}"/> 
+	
+	 <style>
+	 	.createNew{	 		
+	 		cursor:pointer !important;
+			text-decoration:none !important;
+			font-size:8pt;
+			text-align:right;
+			display:block;
+			margin-right:5px;
+	 	}
+	 	
+	 	.NotCompared{
+			font-family:'ProximaNovaRegular';
+			font-size: 14px;
+			color: #3C6E8E; 
+			float:left;
+			width:220px;
+			margin-top:12px;
+			margin-left:15px;
+			cursor:pointer;
+		}
+		
+	    .planContainer{
+	       margin-left: auto;
+           margin-right: auto;
+           margin-top: 18px;
+           width:244px;
+	    }
+	    .plansDropDown{
+			display:none;
+			z-index:100;
+			position: absolute;
+			margin-top:22px;
+			margin-left:22px;
+			*margin-left:-213px;
+		}
+		.plansDropDownTop{
+			background: url({!URLFOR($Resource.XactlyExpress__XactlySMBResources, 'img/layout/dropDownCustomTopBig.png')}) no-repeat;
+			float: left;
+			height: 24px;
+			margin: -20px;
+			width: 244px;
+		}
+		.plansDropDownBottom{
+			background: url({!URLFOR($Resource.XactlyExpress__XactlySMBResources, 'img/layout/dropDownCustomBottomBig.png')}) no-repeat;
+			height: 16px;
+			margin: 0 -20px -50px;
+			width: 244px;
+		}
+		.plansDropDownBody{
+			background-color: #FFFFFF;
+			border-left: 2px solid #9A9A9A;
+			border-right: 2px solid #9A9A9A;
+			margin: -10px -20px 0;
+			padding: 0 0 0 20px;
+			width: 215px;
+		}
+		
+		.classPlansDropDownItam{
+			color:#757679;
+			height: 25px;
+			padding: 2px 5px 0;
+			cursor: pointer;
+		}
+		.classPlansDropDownItam1{
+			margin-bottom: 10px;
+			margin-left: -9px;
+			font-family:'ProximaNovaRegular';
+            font-size: 14px;
+            color: #3C6E8E; 
+		}
+		.classPlansDropDownItam:HOVER{
+			background: url({!URLFOR($Resource.XactlyExpress__XactlySMBResources, 'img/layout/selItemBack2.png')}) no-repeat;
+			color: #ffffff;
+		}
+		
+		.plansDropDownCont{
+			background: url({!URLFOR($Resource.XactlyExpress__XactlySMBResources ,'img/layout/planDropdown2.png')}) no-repeat center;
+			color: #4F7D99;
+			font-size: 12px;
+			font-weight: bold;
+			text-align: left;
+			height:36px;
+            width:244px;
+		}
+		.opCont{
+		    max-height:200px;
+		    overflow:auto;
+		    margin-left: -15px;
+		}
+		
+		.disableFyscalYear{
+		  color:#D9DADA;
+		}
+		
+		.enableFyscalYear{
+		  cursor:pointer;
+		}
+		
+	</style>
+	
+    <apex:outputPanel layout="block" styleClass="planContainer">
+        <apex:actionFunction name="changeSelectedPlan" action="{!changeSelectedPlan}" />
+		<apex:actionFunction name="changeSelectedPlan" action="{!changeSelectedPlan}" />
+		<apex:inputHidden id="planId2" value="{!planId2}"/>
+        <script> 
+           var planId2 = '#{!$Component.planId2}'.replace(/:/g,'\\:');
+        </script>
+		<div class="plansDropDownCont">
+		    <div class="NotCompared" onclick="showPlansMenu();"><c:XactlySMBLongTextBubble text="{!planName}" maxLength="27" /></div>
+            <div class="plansDropDown">
+				<div class="plansDropDownTop"></div>
+			    <div class="plansDropDownBody">
+			        <div class="classPlansDropDownItam1"><c:XactlySMBLongTextBubble text="{!planName}" maxLength="27" /></div>
+			        <div class="opCont">
+			            <apex:outputPanel layout="block" id="accordionPlans">
+			                <apex:outputPanel layout="block" rendered="{!IF(PlanList2.size>0,false,true)}" style="width:100%;height:30px;"/>
+					        <apex:repeat value="{!PlanList2}" var="iter">
+					            <apex:outputPanel layout="block" styleClass="classPlansDropDownItam" onclick="selectPlanOpt('{!iter.id}',this);" ><c:XactlySMBLongTextBubble text="{!iter.name}" maxLength="30" /></apex:outputPanel>
+					        </apex:repeat>
+                            <div id="previousYear" class="classPlansDropDownItam {!If(havePrevious,'enableFyscalYear','disableFyscalYear')}" onclick="if({!havePrevious}){changeFyscalYear('PreviousFY');jQuery(planId2).val('');waitOn();}else{return false;}"> 
+                                &lt;&lt; {!$Label.PreviousYear} ({!namePreviousYear})
+                            </div>
+                            <div id="nextYear" class="classPlansDropDownItam {!If(haveNext,'enableFyscalYear','disableFyscalYear')}" onclick="if({!haveNext}){changeFyscalYear('NextFY');jQuery(planId2).val('');waitOn();}else{return false;}"> 
+                                {!$Label.NextYear} ({!nameNextYear})&gt;&gt; 
+                            </div>
+				        </apex:outputPanel>
+			        </div>
+			    </div>
+			    <div class="plansDropDownBottom"></div>
+			</div>
+        </div>
+	</apex:outputPanel>
+	<div style="clear:both"></div>
+	<apex:includeScript value="{!URLFOR($Resource.XactlyExpress__CSN, 'jquery.js')}" />
+    <script>
+       jQuery('body').click(function() {
+           if(jQuery('.plansDropDown').css('display')=='block'){
+		       jQuery('.plansDropDown').fadeOut('fast');
+		   }
+		});
+        
+		function showPlansMenu(){
+		    setTimeout("jQuery('.plansDropDown').fadeIn('fast')",100);
+		}
+		function selectPlanOpt(id,obj){
+		    waitOn();
+		    jQuery(planId2).val(id);
+		    jQuery('.plansDropDown').fadeOut();
+		    jQuery('.classPlansDropDownItam1').html(jQuery(obj).text());
+		    jQuery('.NotCompared').html(jQuery(obj).text());
+		    changeSelectedPlan();
+		}
+    </script>
+</apex:component>

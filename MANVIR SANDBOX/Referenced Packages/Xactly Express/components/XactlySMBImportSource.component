@@ -1,0 +1,190 @@
+<apex:component controller="XactlyExpress.XactlySMBImportSources"  allowDML="true">   
+   <style>
+        #ImportSource.xactlySuperBox div.close{
+            display: none;
+        }
+        #ImportSource a div.closeBtn{
+            background: url({!URLFOR($Resource.XactlySMBResources ,'img/layout/closeBtnSearch.png')});
+            display:block;
+            float:right;
+            height:24px;
+            margin-left:-26px;
+            position:relative;
+            width:25px; 
+            top:-35px;
+            left:-5px;
+        }
+                      
+        .marginBtn {
+           display:inline;
+           float:left;
+           margin:5px 5px 0 0;
+           overflow:hidden;
+           padding:0;
+           position:relative;
+        }
+        
+        .newISOnlyNumeric{
+           display:none;
+        }
+        
+        #ImportSource th{
+           text-align: left; 
+           color: #4681A6;
+           padding-left: 20px;
+        }
+        
+
+        #newISButtons{
+            height:30px;
+            margin-top:0px; 
+            float:right;
+            margin-right: 10px;
+        }
+        
+        .newISCheckContainer{
+            float: left; 
+            display: inline;
+            margin: 2px 0 0 11px;
+        }
+    </style>
+        
+        <input type="hidden" class="newISOnlyNumeric" />
+        <div id='ImportSource' style="display:none;height: 200px;margin-top: 100px;">
+	        <apex:outputPanel id="toRefresh">
+	            <div style="background-image: url('{!URLFOR($Resource.XactlySMBResources ,'img/layout/topOrange.png')}');margin-left:15px;margin-right:11px;">
+	                <div style="float: left;margin-left:-15px;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/topLeftOrange.png')}"/></div>
+	                <div style="float: right;margin-right:-15px;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/topRightOrange.png')}"/></div>
+	                <div style="clear:both"></div>
+	            </div> 
+	       
+	            <div style="width:100%;border-right:2px solid #D49761;border-left:2px solid #D49761;background-color:#FFF;">
+	                <div style="clear:both"></div>
+	                <apex:outputPanel id="errorMsgPopIS" layout="block" styleClass="errorScrollBox" style="margin-left:5px;padding-bottom:3px;">
+	                   <c:XactlySMBErrorMsg error="{!errorMsg}"/>
+	                   <script>
+	                        var errorMsgPopIS = '{!errorMsg}';
+	                   </script>
+	                </apex:outputPanel>                      
+	                 <div style="width: 500px;margin:10px;" class="box">
+	                     <div class="tm">
+	                         <div style="float: left;"><img src="{!URLFOR($Resource.XactlySMBResources ,'/img/layout/tl.png')}" /></div>
+	                         <div style="float: right;"><img src="{!URLFOR($Resource.XactlySMBResources ,'/img/layout/tr.png')}" /></div>
+	                         <div style="clear: both;"></div>
+	                     </div>
+	                     <div class="roundedBox" style="height:54px;width:498px;">
+	                         <div style="clear:both"></div>
+	                         <table cellpadding="0" cellspacing="0" style="width: 500px;" class="commonTable">
+	                           <thead>
+	                               <tr>
+	                                   <th style="width: 220px;background-color: #FFFFFF;">{!$Label.PrimaryObject}</th>
+	                                   <th style="background-color: #FFFFFF;">{!$Label.SourceName}</th>
+	                               </tr>
+	                           </thead>
+	                           <tbody>
+	                               <tr class="even" style="background-color: #E6E6E6;">
+	                                   <td>
+		                                   <apex:selectList onchange="showOppOption(this.value);" multiselect="false" size="1"  styleClass="primarySource"  value="{!imSource.XactlyExpress__SourceLabel__c}">
+		                                        <apex:selectOptions value="{!importSources}" />
+		                                   </apex:selectList>
+	                                   </td>
+	                                   <td>
+	                                       <apex:inputText value="{!imSource.Name}" id="sourceNmae" styleClass="toClear importSoureName"  maxlength="20"/>
+	                                   </td>
+	                               </tr>
+	                           </tbody>
+	                         </table>
+	                                    <script>
+	                                                var sourceNmae = '{!$Component.sourceNmae}'.replace(/:/g,'\\:');
+	                                   </script>  
+	                     </div>
+	                     <div>
+	                         <div style="float: left;"><img src="{!URLFOR($Resource.XactlySMBResources ,'/img/layout/bl2.png')}" /></div>
+	                         <div style="float: right;"><img src="{!URLFOR($Resource.XactlySMBResources ,'/img/layout/br2.png')}" /></div>
+	                         <div style="float: left; background-color: rgb(231, 231, 231); width: 486px; height: 6px; border-bottom: 1px solid rgb(191, 191, 191);"></div>
+	                     </div>                  
+	                 </div>
+	                <br/>
+	                <apex:actionFunction name="saveIS" action="{!save}" oncomplete="jQuery.superbox.refreshSuperboxContent();if(errorMsgPopIS==''){$('.importSourceValue').val($('.importSoureName')[0].value);refresISources();jQuery.superbox.close()}else waitOff();" rerender="errorMsgPopIS"/>
+	                <apex:actionFunction name="editImportSource" action="{!editImportSource}" oncomplete="initEdit = true; ImportSourceSetter();waitOff();" rerender="toRefresh"/>
+	                <apex:actionFunction name="refreshOpp" action="{!dummy}" rerender="opportunityEstimator"/>
+                    <apex:actionFunction name="clearImportSource" action="{!clear}" oncomplete="ImportSourceSetter();waitOff();" rerender="toRefresh"/>
+	                
+	                <apex:outputPanel styleClass="newISCheckContainer" id="opportunityEstimator">
+	                    <div class="oppoContainer" style="{!IF(imSource.XactlyExpress__SourceLabel__c == 'Opportunity','display:block;','display:none;')}">
+		                    {!$Label.xactlyexpress__UseForTheOpportunityEstimator}
+		                    <apex:inputCheckbox value="{!imSource.XactlyExpress__useForEstimate__c}" />
+	                    </div>
+	                </apex:outputPanel>       
+	                <div id="newISButtons" class="btnAction" >
+	                    <div class="marginBtn">
+	                        <div class="saveaDD" onclick="waitOn();jQuery.superbox.overrideSourceWithSuperboxContent();saveIS();" style="cursor:pointer;">
+	                            <div class="rightBtnSilver">
+	                                <div class="leftBtnSilver">
+	                                    <div class="middleBtnSilver">
+	                                        {!$Label.Save_Return}
+	                                    </div>
+	                                </div>
+	                            </div>
+	                        </div>
+	                    </div>
+	        
+	                    <div class="marginBtn">
+	                        <div onclick="jQuery.superbox.close();" style="cursor:pointer;">
+	                            <div class="rightBtnSilver">
+	                                <div class="leftBtnSilver">
+	                                    <div class="middleBtnSilver">
+	                                        {!$Label.Cancel}
+	                                    </div>
+	                                </div>
+	                            </div>
+	                        </div>
+	                    </div>
+	                </div>
+	                <div style="clear:both;"></div>
+	            </div>
+	            <div style="background-image: url('{!URLFOR($Resource.XactlySMBResources ,'img/layout/bottomOrange.png')}');margin-left:15px;margin-right:11px;">
+	               <div style="float: left;margin-left:-15px;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/bottomLeftOrange.png')}"/></div>
+	               <div style="float: right;margin-right:-15px;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/bottomRightOrange.png')}"/></div>
+	               <div style="clear:both"></div>
+	            </div> 
+            </apex:outputPanel>
+        </div>  
+        
+        <a id="ImportSourceLink" rel="superbox[content#ImportSource.xactlySuperBox][520][50]" href="#ImportSource" onclick="jQuery('.hiddenResults').hide();" style="display:none"></a>
+        <script>
+            var initEdit = false;
+            function ImportSourceSetter(){
+                jQuery('#ImportSourceLink').trigger('click');
+                setTimeout('clearSourceSetter()',500);
+            }
+            
+            function showOppOption(option){
+                if(option == 'Opportunity'){
+                    $('.oppoContainer').show();
+                }else{
+                    $('.oppoContainer').hide();
+                    $('.oppoContainer input')[0].checked = false;
+                }
+                
+            }
+            
+            /**
+             * clearCreateNewDealAttr is called when the popup is displayed.
+             * It deletes any error msg previously defined
+             */
+            function clearSourceSetter(){
+                var errorMsg = $innerbox.find('.errorMsg');
+                if(errorMsg!=undefined){
+                  errorMsg.html('');
+                }
+                if(initEdit){
+                    $('.primarySource')[1].disabled= true;
+                    initEdit = false;
+                }else{
+                    $('.toClear').val('');
+                    $('.primarySource')[1].disabled= false;
+                }
+            }
+        </script>
+</apex:component>

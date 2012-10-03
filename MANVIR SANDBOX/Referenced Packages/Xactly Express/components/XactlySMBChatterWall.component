@@ -1,0 +1,16 @@
+<!--     
+    @author: mdamonte@timbasoftware.com
+    @date: 2010/01/29
+    last-Modified:  mdamonte@timbasoftware.com
+    last-Modified Date: 2010/08/10 
+-->
+         
+<apex:component controller="XactlyExpress.XactlySMBWallController" allowDML="true">
+<apex:attribute name="objectId" assignTo="{!objectId}" description="to wall in group" type="String" required="true"/>
+<apex:attribute name="showHeader" assignTo="{!showHeader}" description="show or hide the Header" type="Boolean" required="false"/>
+<apex:attribute name="showWall" assignTo="{!showWall}" description="show or hide the wall" type="Boolean" required="false"/>
+<apex:attribute name="wallId" assignTo="{!wallId}" description="to wall in group" type="String" required="false"/>
+<apex:attribute name="currentPage" assignTo="{!currentPage}" description="current page" type="String" required="true"/>
+
+	<!-- CHATTER DISABLED -->
+</apex:component>

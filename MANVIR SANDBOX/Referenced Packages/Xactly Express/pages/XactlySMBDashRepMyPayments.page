@@ -1,0 +1,1489 @@
+<!--
+    Developed by Timba Software Corp. www.timbasoftware.com admin@timbasoftware.com
+    This page lists and manage deals
+    @author Dario Levy <dlevy@timbasoftware.com>
+    -->
+    <apex:page id="XactlySMBCalculateManagePayments" controller="XactlyExpress.XactlySMBCalculateManagePayments" sidebar="false" showHeader="false" standardStylesheets="false" action="{!redirectWhenAccessIsDenied}">
+    <c:XactlySMBCursor />
+    <title>{!$Label.MyPayments}</title>
+    <link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.XactlySMBResources ,'css/XactlySMBStyles.css')}" />
+    <link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.XactlySMBResources ,'css/XactlySMBDashboardStyles.css')}" />
+    <link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.XactlySMBResources ,'modbubble/css/bubble.css')}" />
+    <apex:includeScript value="{!URLFOR($Resource.XactlyExpress__CSN, 'jquery.js')}" />
+    <script type="text/javascript" language="javascript" src="{!URLFOR($Resource.XactlySMBResources, 'js/jquery-ui.min.js')}"></script>
+    <script type="text/javascript" language="javascript" src="{!URLFOR($Resource.XactlySMBResources, 'js/jquery.curvycorners.min.js')}"></script>
+    <style>
+    
+     .collapseArrowDown{
+        padding-left:12px;
+        cursor:pointer;
+        background:url({!URLFOR($Resource.XactlySMBResources,'img/icons/collapseArrowDown.png')}) no-repeat;
+        
+     }
+     
+     .collapseArrowRight{
+        padding-left:12px;
+        cursor:pointer;
+        background:url({!URLFOR($Resource.XactlySMBResources,'img/icons/collapseArrowRight.png')}) no-repeat;
+     }
+     
+     .rightAligned{
+        text-align:right;
+     }
+     .indent1{
+         margin-left:10px;
+     }
+    
+     .indent2{
+         margin-left:30px;
+     }
+           
+        .tableWrapper{
+            margin:23px 0 0 0px;
+            width:98.8%;
+            position:relative;
+        }
+
+        .tableWrapper .tHeader{
+            width:100%; 
+            position:relative;
+        }
+        
+        .tableWrapper .tHeader .headerLeftSide{
+            margin-top:8px;
+            width:40%;
+            float:left;
+        }
+        
+        .tableWrapper .tHeader .headerRightSide{
+            margin-top:8px;
+            width:60%;
+            float:left;
+            text-align:right;
+        }
+        
+        .tableWrapper .tHeader .headerRightSide a{
+            border-right:1px solid #666666;color:#666666;
+            padding-left:5px;
+            padding-right:5px;
+        }
+        
+        .tableWrapper .tContent {
+            border-top:1px solid #EDEDED;
+            border-left:1px solid #EDEDED;
+            border-right:1px solid #EDEDED;
+            width:100%;
+            position:relative;
+        }
+        
+        .tableWrapper .tFooter{
+            width:100%;
+            height:25px;
+            background:transparent url({!URLFOR($Resource.XactlySMBResources,'img/layout/bottomBgTable.png')});
+            border:1px solid #EDEDED;
+            position:relative;
+        }
+        
+        .tableWrapper .tFooter .footerLeftSide {
+            width:40%;
+            float:left;
+            margin-top:3px;
+        }
+        
+        .tableWrapper .tFooter .prevNextWrapp {
+            width:20%;
+            margin-top:3px;
+            float:left;
+        }
+        
+        .tableWrapper .tFooter .footerRightSide {
+            width:40%;
+            float:left;
+            margin-top:3px;
+            text-align:right;
+        }
+        
+        div.tableContainer {
+            overflow: hidden;
+        }
+        div.tableContainer2 {
+            overflow: hidden;
+        }
+        
+        #cellsTable td{
+            border-right:1px solid #C2DFFF;
+            padding:0;
+            margin:0;
+        }
+        #cellsTable2 td{
+            border-right:1px solid #C2DFFF;
+            padding:0;
+            margin:0;
+        }
+        
+        #dealsTable td{
+            border-right:1px solid #C2DFFF;
+        }
+        #dealsTable2 td{
+            border-right:1px solid #C2DFFF;
+        }
+        
+        .rowsTable td{
+            border-right:1px solid #C2DFFF;
+        }
+        .rowsTable2 td{
+            border-right:1px solid #C2DFFF;
+        }
+        
+        #rowsHeaders{
+            border-right:1px solid #C2DFFF;
+        }
+        #rowsHeaders2{
+            border-right:1px solid #C2DFFF;
+        }
+        
+        .FixedCelsTable {  
+            width: 1200px;
+            position: relative;
+            left:0px;
+            *background-position:left;
+            width: 100%;
+        }
+        
+        .FixedCelsTable .tablesHolder .toolbar{
+            height:40px;
+            margin-left:10px;
+            text-align:center;
+        }
+        .FixedCelsTable .tablesHolder .scroller{
+            width:99%;
+            height:100px;
+            overflow:auto;
+            position:absolute;
+        }
+        
+        .FixedCelsTable .tablesHolder .recordsList{
+            width: 97%; 
+            height: 420px;
+            _height: 300px;
+            overflow:hidden;
+        }
+        .FixedCelsTable .tablesHolder .recordsList .rows{
+            float:left;
+            margin-top:-1px;
+            width:100px;
+            margin-left:-1px;
+            position:relative;
+            *margin-top:0px;
+            *margin-left:0px;
+        }
+        .FixedCelsTable .tablesHolder .recordsList .rows .rowsHeader{
+            position:absolute;
+            left:0px;
+            margin-top:0px;
+            height:30px;
+        }
+        .FixedCelsTable .tablesHolder .recordsList .rows .rowsScroll{
+            position:absolute;
+            margin-top: 28px;
+            left: 0px;
+            height:280px;
+            overflow:hidden;
+        }
+        .FixedCelsTable .tablesHolder .recordsList .colsContainer{
+            position:relative;
+            border-top:4px solid #3C7EBF;
+        }       
+        .FixedCelsTable .tablesHolder .recordsList .colsContainer .columns{
+            margin-top:0px !important;
+            overflow: hidden;
+            left:0px;
+            width:700px;
+            position:absolute;
+        }
+        .FixedCelsTable .tablesHolder .recordsList .cellContainer{
+            position:relative;
+        }
+        .FixedCelsTable .tablesHolder .recordsList .cellContainer .cells{
+            margin-top:30px;
+            overflow: hidden;
+            width:700px;
+            position:absolute;
+            height:280px;
+        }   
+        
+        .FixedCelsTable .tablesHolder .recordsList .objectHeaders td{
+            font-weight:bold;
+            text-align: center;
+        } 
+        
+        .FixedCelsTable .tablesHolder .recordsList .objectHeaders td.fixed{
+            font-weight:bold;
+            padding: 5px 0px;
+            text-align: center;
+            border-right: 0px;
+        }
+        
+        .FixedCelsTable .tablesHolder .recordsList .dataRow td{
+            height: 33px;
+            text-align: center;
+            padding: 0px;
+            overflow:hidden;
+        }   
+        .FixedCelsTable .tablesHolder .recordsList .whiteCells td{
+            text-align:left;
+        }
+        
+        .actionBtnContainer {
+            display:block;
+            float:left;
+            height:25px;
+            overflow:hidden;
+            width:25px;
+        }
+        
+        .dateFormat {
+            display:none;
+        }
+        
+        .editablePositive{
+            color:#8BB201;
+            font-weight: bold;
+            text-align:right;
+        }
+        
+        .editableNegative{
+            color:#FF1114;
+            font-weight: bold;
+            text-align:right;
+        }
+        
+        .evenNonEditable td{
+             height:34px;
+             background:#DFBDA7;
+         }
+         
+         .oddNonEditable td{
+             height:34px;
+             background:#F4CEB5;
+         }         
+         
+           /*   DashNew*/
+        .clear{
+            clear:both;
+        } 
+         
+        .mainContent{
+            margin-top:60px;            
+            border-top:1px solid #DDEAF3;
+        }
+        
+        .mainContent .cornerMainUL{
+            background:url({!URLFOR($Resource.XactlySMBResources,'img/layout/cornerMainContUl.png')}) no-repeat;
+            float:left;
+            width:10px;
+            height:10px;
+            margin-left:-1px;
+            margin-top:-1px;
+        }
+        
+        .mainContent .cornerMainUR{
+            background:url({!URLFOR($Resource.XactlySMBResources,'img/layout/cornerMainContUr.png')}) no-repeat;
+            float:right;
+            width:10px;
+            height:10px;
+            margin-right:-1px;
+            margin-top:-1px;
+        }
+                 
+        .additionalContent{
+            margin-top:46px !important;
+        }
+        
+        /*Dashboard Styles*/
+        .shadowContainer {
+            background:url({!URLFOR($Resource.XactlySMBResources, 'img/layout/backimg.png')}) repeat-y scroll center bottom #FFFFFF;
+            height:100%;
+            left:50%;
+            margin-left:-735px;
+            position:fixed !important;
+            width:1470px;
+            z-index:-10;
+        }
+        
+        .mainContent .content {
+            border-left:2px solid #E1E1E2 !important;
+            width:72% !important;
+            padding-top:47px;
+            margin-top:0 !important; 
+            margin-bottom:70px;          
+        }
+        
+        img.chartImg{
+            display:block; 
+            width:170px; 
+            text-align:center; 
+            margin:auto;
+            max-height: 210px;
+        }
+           
+        .header{
+            height: 47px !important;
+        }
+        
+       
+        #containerPlans .cornerUL{
+            float:left;
+            width: 10px;
+            height: 10px;
+            background: url( {!URLFOR($Resource.XactlySMBResources, 'img/layout/cornerGrayUL.png')})no-repeat; 
+            margin-left:-8px;
+        }
+        
+        #containerPlans .cornerUR{
+            float:right;
+            width: 10px;
+            height: 10px;
+            background: url( {!URLFOR($Resource.XactlySMBResources, 'img/layout/cornerGrayUR.png')})no-repeat;
+            margin-right:-8px;
+        }
+        
+        
+        /*Dashboard Mydeals*/
+        .evenHeader{
+            background:none repeat scroll 0 0 #D0D1D3;
+            height:31px;
+        }
+        
+        #datePicker{
+            display:none;
+        }
+         
+    </style>
+    <script type="text/javascript">
+        var ids = new Object();
+    </script>
+    <c:XactlySMBShadows />
+
+
+    <!-- PAGE WRAPPER -->
+    <div class="pageContent" id="pContent">
+
+        <!-- HEADER -->
+    
+        <apex:form id="theForm">
+
+            <apex:actionFunction action="{!dontShowAgainChange}" name="dontShowAgainChange" rerender="errorMsg"/>
+    		<apex:actionFunction name="refreshTableContainer" action="{!refresh}"  rerender="tableContainer" oncomplete="waitOff();fixCelsDimensions();"/>                             
+
+            <apex:outputPanel layout="block" styleClass="header">
+                <c:XactlySMBSalesRepHeader lastClosedPeriod="{!lastClosedPeriod}" isEmulatedManager="{!isEmulatedManager}" isManager="{!isManager}" isSalesAdmin="{!isSalesAdmin}" isAdmin="{!isAdmin}"  isActive="{!isActive}" nbrSeparator="{!nbrSeparator}" nbrDecimal="{!nbrDecimal}" currentUserOrSlected="{!currentUserOrSlected}" emulatingUserURLAppend="{!emulatingUserURLAppend}" dealsLabel="{!currentSettings.dealsPluralCap}" selected="2" emulatingUserURLAppend="{!emulatingUserURLAppend}" hlabel="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean ac mi eget est semper feugiat."/>
+            </apex:outputPanel>
+
+<!--            <apex:outputPanel layout="block" styleclass="AdditionalBoxContent">    -->
+<!--                <c:XactlySMBChatterWall objectId="{!$User.Id}" showHeader="true" showWall="true" currentPage="{!$CurrentPage.Name}"/>-->
+<!--            </apex:outputPanel>-->
+ 
+            <!-- MAIN CONTENT -->
+            <apex:outputPanel layout="block" styleClass="mainContent">
+                <div class="cornerMainUL"> </div>
+                <div class="cornerMainUR"> </div>
+            
+            	<c:XactlySMBDashboardLeftSidebar CisManager="{!isManager}" CcurrentPeriod="{!currentPeriod}" CcurrentProfileId="{!currentProfileId}" CcurrentSettings="{!currentSettings}" ClastClosedPeriod="{!lastClosedPeriod}" CcurrentSttgs="{!currentSttgs}" Csubordinates="{!SubordinateList}" currentSettingsAttach="{!currentSettingsAttach}" CisAdmin="{!isAdmin}"/>
+
+                
+                <!-- CONTENT -->
+                <apex:outputPanel layout="block" styleClass="content">
+
+                    <!-- TABS HEADER -->
+                    <apex:outputPanel layout="block" styleClass="subHeader">
+                        <c:XactlySMBSalesRepTabsHeader lastClosedPeriod="{!lastClosedPeriod}" isEmulatedManager="{!isEmulatedManager}" isManager="{!isManager}" isSalesAdmin="{!isSalesAdmin}" isAdmin="{!isAdmin}"  isActive="{!isActive}" nbrSeparator="{!nbrSeparator}" nbrDecimal="{!nbrDecimal}" currentUserOrSlected="{!currentUserOrSlected}" emulatingUserURLAppend="{!emulatingUserURLAppend}" dealsLabel="{!currentSettings.dealsPluralCap}" selected="4" emulatingUserURLAppend="{!emulatingUserURLAppend}" hlabel="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean ac mi eget est semper feugiat."/>
+                    </apex:outputPanel>
+                
+	                <div id="containerPlans">
+	                    <div class="cornerUL"> </div>
+	                    <div class="cornerUR"> </div>
+                
+                    <apex:outputPanel id="errorMsg" layout="block" styleClass="errorScrollBox" style="width:100%">
+                        <apex:outputPanel layout="block" rendered="{!errorMsg!=''}" style="width:100%">
+                            <apex:outputPanel layout="block" style="margin-right:20px;"><c:XactlySMBErrorMsg error="{!errorMsg}" errStyle="background:#FF0000;color:#FFFFFF;font-size:16px;font-weight:bold;overflow:auto;max-height:100px;"/></apex:outputPanel>
+                        </apex:outputPanel>
+                    </apex:outputPanel>   
+                    <apex:outputPanel layout="block">
+                        <apex:outputPanel layout="block" styleClass="actionButtons" rendered="{!Views.size > 0}">
+                            <apex:outputText styleclass="areaTitle" value="{!$Label.xactlyexpress__selectView}"/>
+                            <apex:selectList id="viewDrpdwn" onclick="checkEditing();" onchange="if(!checkEditing()){return false;};waitOn();window.location.href='{!IF(AND(isAdmin,!emulatingUser),$Page.XactlyExpress__XactlySMBDashRepMyPayments,$Page.XactlyExpress__XactlySMBDashRepMyPayments)}{!IF(LEN(emulatingUserURLAppend)>0,'?'&emulatingUserURLAppend&'&','?')}vwId='+this.value;" value="{!dummyString}" size="1" multiselect="false" style="margin-left:21px;margin-top:20px;">
+                                <apex:selectOptions value="{!Views}"/> 
+                            </apex:selectList>  
+                            <script>
+                                var viewDrpdwn = '{!$Component.viewDrpdwn}';
+                                
+                                function checkEditing(){return true;}                                
+                            </script>
+                        </apex:outputPanel>
+                 
+                        <apex:actionFunction name="doSearch" action="{!doSearch}" rerender="tableWrapper, viewDrpdwn, newDealdiv, FixedCelsTableGrid" onComplete="SearchComplete();"/>                                           
+                        <apex:outputPanel id="searchbutton" layout="block" styleClass="actionButtons" style="float:right;margin: 20px 0px 0px 5px;cursor:pointer;">                                                     
+                            <div id="searchbuttondiv">
+                                <apex:outputText styleClass="searchbuttonText" value="{!$Label.xactlyexpress__Search}"/> 
+                            </div>                           
+                        </apex:outputPanel>
+                        <apex:outputPanel layout="block" styleClass="actionButtons" style="float:right;margin: 20px 0px 0pt 0px;">                 
+                            <apex:inputText value="{!searchstring}" id="theTextInput" style="text-align:right;"/>
+                            <script>
+                                var theTextInput = '{!$Component.theTextInput}'; 
+                                var searchbutton = '{!$Component.searchbutton}'; 
+                                var theTextInputJq = '{!$Component.theTextInput}'.replace(/:/g,'\\:');
+                                var searchbuttonJq = '{!$Component.searchbutton}'.replace(/:/g,'\\:');;  
+                            </script>
+                        </apex:outputPanel>  
+                            <div style="clear:both;"></div>
+                        </apex:outputPanel>
+                        
+                        <apex:outputPanel id="tableWrapper" styleclass="tableWrapper" layout="block">
+                        <script>
+                            function SearchComplete(){
+                                waitOff();
+                                document.getElementById(viewDrpdwn).value='';
+                                jQuery('#'+theTextInputJq).removeClass('dis');
+                                jQuery('#'+theTextInputJq).unbind('click');
+                                jQuery('#searchbuttondiv').css('background-position','top');
+                                jQuery('#searchbuttondiv').css('cursor','pointer');
+                                BindClickSearch();
+                                BindOverSearch();
+                                BindOutSearch();
+                                fixCelsDimensions();
+                            }
+                            function BindClickSearch(){                                                             
+                                jQuery('#'+searchbuttonJq).bind('click',function(){                                 
+                                    if (document.getElementById(theTextInput).value == ''){
+                                        alert('{!$Label.SearchEmpty}');
+                                    }else{
+                                        if(document.getElementById(theTextInput).value.length>50){
+                                            alert('{!$Label.SearchMaxLimit}');
+                                        }else{
+                                            waitOn();
+                                            jQuery('#'+theTextInputJq).addClass('dis');
+                                            jQuery('#'+theTextInputJq).bind('click',function(){
+                                                jQuery(this).blur();
+                                            });
+                                            jQuery(this).unbind('click');
+                                            jQuery(this).unbind('mouseover');
+                                            jQuery(this).unbind('mouseout');
+                                            jQuery('#searchbuttondiv').css('cursor','default');
+                                            jQuery('#searchbuttondiv').css('background-position','bottom');
+                                            doSearch();
+                                        }  
+                                    }                               
+                                });
+                            }
+                            function BindOverSearch(){                              
+                                jQuery('#'+searchbuttonJq).bind('mouseover',function(){
+                                    jQuery('#searchbuttondiv').css('background-position','bottom');                                                      
+                                });
+                            }
+                            function BindOutSearch(){                               
+                                jQuery('#'+searchbuttonJq).bind('mouseout',function(){
+                                    jQuery('#searchbuttondiv').css('background-position','top');                                    
+                                });
+                            }
+                            function doEdit(d){
+                                if(!countEditing()){
+                                    return false;
+                                }else{
+                                    waitOn();
+                                    var str = '';
+                                    if ('{!doingSearch}'){
+                                        str = '&s={!JSENCODE(searchstring)}';
+                                    }
+                                    window.location.href='{!$Page.XactlySMBDealDetails}?id='+d+'&vwId={!JSENCODE(currentView.id)}'+str;
+                                }
+                            }
+                            function checkShowResult(){
+                                  if(!{!showResults} && !{!dontShowAgain}){
+                                    if ({!doingSearch}){
+                                        $('#showLimitsearchAlert').click();
+                                    }else{
+                                        $('#showLimitAlert').click();                                       
+                                    }                         
+                                  }
+                             }  
+
+                        </script>
+                            <div class="tHeader">
+                                <div style="background-image: url('{!URLFOR($Resource.XactlySMBResources ,'img/layout/topBgTable.png')}');margin-left:5px;margin-right:3px;height:36px;">
+                                    <div style="float: left;margin-left:-5px;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/topLeftCurvy.png')}"/></div>
+                                    <div class="headerLeftSide">
+                                    
+                                        <a href="{!$Page.XactlySMBCreateEditViews}?sctn=payments{!IF(LEN(emulatingUserURLAppend)>0,'&'&emulatingUserURLAppend,'')}" onclick="if(!checkEditing()){return false;};"><apex:outputText value="{!$Label.xactlyexpress__createNewView} |"/></a>
+                                        <apex:outputPanel layout="none" rendered="{!AND(!ISNULL(currentView), canEditView)}">
+                                            <a href="{!$Page.XactlySMBCreateEditViews}?sctn=payments&amp;id={!JSENCODE(currentView.id)}{!IF(LEN(emulatingUserURLAppend)>0,'&amp;'&emulatingUserURLAppend,'')}" onclick="if(!checkEditing()){return false;};"><apex:outputText value="{!$Label.xactlyexpress__Edit} |"/></a>
+                                            <apex:commandLink id="deleteViewLink" action="{!deleteView}" onclick="if(confirmDeleteView()){if(!checkEditing()){return false;}}else{return false;};"><apex:outputText value="{!$Label.xactlyexpress__Delete} |"/></apex:commandLink>
+                                            <a href="{!$Page.XactlySMBDashRepMyPayments}?vwId={!JSENCODE(currentView.id)}{!IF(LEN(emulatingUserURLAppend)>0,'&amp;'&emulatingUserURLAppend,'')}" style="font-weight:bold;" onclick="if(!checkEditing()){return false;}"><apex:outputText value="{!$Label.xactlyexpress__Refresh}"/></a>
+                                        </apex:outputPanel>
+                                    
+                                    </div>
+                                    <div style="float: right;margin-right:-5px;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/topRightCurvy.png')}"/></div>
+                                    <div style="clear:both"></div>
+                                </div> 
+                            </div>
+        
+        
+                            <div class="tContent" id="tContent">
+                                <apex:outputPanel rendered="{!IF(paymentRows.size > 0,false,true)}">
+                                    <apex:outputText value="{!noPaymentsForThisViewLabel}"/>
+                                </apex:outputPanel>
+                                <apex:outputPanel id="tableContainerContainer" layout="block">
+                                    <apex:outputPanel rendered="{!IF(paymentRows.size > 0,true,false)}" id="tableContainer" styleClass="tableContainer hideable " layout="block">                                                                
+                                        
+	                                        <apex:inputHidden id="measureResultId" value="{!measureResultId}" />
+	                                        <apex:inputHidden id="planMeasureResultId" value="{!planMeasureResultId}" />
+	                                        <apex:inputHidden id="toCommentMeasureId" value="{!toCommentMeasureId}" />
+	                                        <apex:inputHidden id="selectedPaymentRow" value="{!selectedPaymentRow}" />
+	                                        <apex:inputHidden id="selectedRowAfterRerender" value="{!selectedRowAfterRerender}" />
+	                                        
+	                                           
+	                                        <script>    
+	                                            var hiddenCommentMeasureId = '{!$Component.toCommentMeasureId}'; 
+	                                            var selectedPaymentRowId = '{!$Component.selectedPaymentRow}';
+	                                            var selectedRowAfterRerender = '{!$Component.selectedRowAfterRerender}';
+	                                        </script>
+	                                        <apex:actionFunction name="loadDetailAF" action="{!loadDetail}" rerender="detailBox" oncomplete="showDetails();loadDetailsOnComplete();loadBubbles();adjustSizeOnDrag();"/>                       
+	                                        <apex:actionFunction name="commentMeasureAF" action="{!commentMeasure}" rerender="commentBox" oncomplete="commentMeasureOnComplete();loadBubbles();adjustSizeOnDrag();"/>
+                                        
+                                        <div class="FixedCelsTable">
+                                            <div class="tablesHolder">
+                                                <div id="scroller" class="scroller" onscroll="scrollContent();" style="display: none;"><div id="scrollCont">&nbsp;</div></div>
+                                
+                                                <apex:outputPanel id="FixedCelsTableGrid">
+                                                    <div id="recordsList" class="recordsList">
+                                                        <input type="hidden" id="focusHandler"/>
+        
+                                                        <!-- Top Panel -->
+                                                        <div id="colsContainer" class="colsContainer">
+                                                            <div id="cols"  class="columns">
+                                                                <table id="cellsTable" cellspacing="0" border="0" style="margin-top: 0px;">
+                                                                    <tr class="objectHeaders evenHeader">
+                                                                        <apex:repeat var="iter" value="{!columnList}" id="genHeadersLinks">
+                                                                            <apex:outputpanel rendered="{!IF(iter.display, true, false)}" layout="none">
+	                                                                            <td style="width: {!TEXT(FLOOR(iter.cWidth))}px;">
+	                                                                                 <apex:outputPanel rendered="true" style="display:none" styleClass="cWidth">
+	                                                                                            <apex:outputText value="{!TEXT(FLOOR(iter.cWidth))}"/>          
+	                                                                                 </apex:outputPanel>
+	                                                                                <div class="titles" style="overflow:hidden;width: {!TEXT(FLOOR(iter.cWidth))}px;">
+	                                                                                    <apex:outputPanel rendered="{!sortBy == iter.name}" layout="block" style="float:left;margin-top:3px;">
+	                                                                                        <img  src="{!IF(sortByDesc == true, URLFOR($Resource.XactlySMBResources, 'img/icons/arrowUp.png'), URLFOR($Resource.XactlySMBResources, 'img/icons/arrowDown.png'))}" />
+	                                                                                    </apex:outputPanel>
+	                                                                                    <apex:commandLink id="applyFilterLink" action="{!applyFiltersAndGrouping}" onclick="if(!checkEditing()){return false;};waitOn();" value="{!iter.Name}" style="float: left; margin-left: 2px;color: #3B6080;font-size:11px;font-weight:bold;text-align:center;white-space:nowrap;" rerender="tableWrapper,errorMsg" oncomplete="fixCelsDimensions();introAsTab();">
+	                                                                                        <apex:param value="{!iter.name}" name="sb"/>
+	                                                                                    </apex:commandLink>
+	                                                                                </div>
+	                                                                            </td>
+	                                                                         </apex:outputpanel> 
+                                                                        </apex:repeat>
+                                                                    </tr>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+        
+                                                        <!-- Cells Panel -->
+                                                        <div id="cellContainer" class="cellContainer">
+                                                            <div id="cells" class="cells">
+                                                                <table id="dealsTable" cellspacing="0" border="0">
+                                                                    <apex:variable var="iterIndex" value="{!1}"/>
+                                                                    <apex:variable var="index" value="{!0}"/>     
+                                                                    <apex:repeat var="p" value="{!paymentRows}" id="valuesGenerator">
+                                                                        <tr class="dataRow whiteCells rows{!RIGHT(TEXT(iterIndex),2)} {!IF(ISNULL(p.m.id) && mod(p.i,2)==0,'oddNewDealRow',
+                                                                            IF(ISNULL(p.m.id) && mod(p.i,2)!=0,'evenNewDealRow',
+                                                                            IF(mod(p.i,2)==0,'odd','even')))}">
+                                                                            <apex:repeat var="iter" value="{!p.valueList}">
+
+																				<apex:outputpanel rendered="{!IF(iter.display, true, false)}" layout="none">
+																					<apex:variable var="withDetails" value="{!IF(iter.id =='Payment' || iter.id =='Earned' || iter.id =='Held' || iter.id =='Release' || iter.id =='HoldBalance', true, false)}"/> 
+																					<apex:variable var="catg" value="{!IF(iter.id =='Payment', 'paid', IF(iter.id == 'release', 'released', iter.id))}" />
+		                                                                             <td>
+																						<div style="display:none" class="cWidth">
+																						       <apex:outputText value="{!TEXT(FLOOR(iter.cWidth))}"/>          
+																						</div>
+		                                                                             
+		                                                                             
+																						<div style="width: 100%">
+																							<apex:outputpanel rendered="{!withDetails}" layout="block" >
+																								<a href="javascript: helpWindow = window.open('{!$Page.XactlyExpress__XactlySMBPaymentDetails}?category={!catg}&usrId={!p.m.ProfilePlanID__r.ProfileID__r.XactlyExpress__UserID__c}&plnid={!p.m.ProfilePlanID__r.XactlyExpress__PlanID__c}&mid={!p.m.XactlyExpress__MeasureID__c}&prid={!p.m.XactlyExpress__XCPeriod__c}', 'Help','location=0,status=0,scrollbars=1,width=1020px,height=690px'); helpWindow.moveTo(100,100);">
+																								    <c:XactlySMBLongTextBubble text="{!iter.value}" maxLength="{!ROUND((iter.cWidth / 5.7) - 4, 0)}" />
+																								</a>
+																							</apex:outputpanel>
+																							<apex:outputpanel rendered="{!!withDetails}" layout="block" >
+																							    <c:XactlySMBLongTextBubble text="{!iter.value}" maxLength="{!ROUND((iter.cWidth / 5.7) - 4, 0)}" />
+																							</apex:outputpanel>
+																						</div>
+			                                                                         </td>
+		                                                                        </apex:outputpanel>
+                                                                            <apex:variable var="index" value="{!index + 1}"/>   
+                                                                            </apex:repeat>                                      
+                                                                        </tr>
+                                                                        <apex:variable var="iterIndex" value="{!iterIndex + 1}"/>
+                                                                    </apex:repeat>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </apex:outputPanel>      <!-- close FixedCelsTableGrid -->                                            </div>
+                                        </div>      
+                                    </apex:outputPanel>
+                                </apex:outputPanel> <!-- Close tableContainerContainer -->
+                            </div>
+                            
+                        <apex:actionFunction name="goToPageAF" action="{!goToPage}"/>
+                        <apex:inputHidden id="currentPage" value="{!currentPage}"/>
+                        <script>
+                            var currentPage = '{!$Component.currentPage}'.replace(/:/g,'\\:');
+                        </script>
+                        <div class="tFooter">
+                            <div class="footerLeftSide">                               
+                            </div>
+                            <div class="prevNextWrapp">
+                                <center>
+                                    <apex:outputPanel layout="none" rendered="{!currentPage > 1}">
+                                        <a href="javascript:;" onclick="if(!checkEditing()){return false;};$('#'+currentPage).val(1);waitOn();goToPage()"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/buttons/btnFirstPagebk.png')}"/></a>
+                                        <a href="javascript:;" onclick="if(!checkEditing()){return false;};$('#'+currentPage).val($('#'+currentPage).val()==1?1:parseInt($('#'+currentPage).val())-1);waitOn();goToPage()"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/buttons/btnPrevPagebk.png')}"/>&nbsp;<apex:outputText value="{!$Label.xactlyexpress__Previous}" style="color:#404040;"/></a>&nbsp;
+                                    </apex:outputPanel>
+                                    <apex:outputPanel layout="none" rendered="{!currentPage == 1}">
+                                        <img src="{!URLFOR($Resource.XactlySMBResources ,'img/buttons/btnFirstPage.png')}"/>
+                                        <img src="{!URLFOR($Resource.XactlySMBResources ,'img/buttons/btnPrevPage.png')}"/>&nbsp;<apex:outputText value="{!$Label.xactlyexpress__Previous}" style="color:#A8A8A8;"/>&nbsp;
+                                    </apex:outputPanel>
+                                    <apex:outputPanel layout="none" rendered="{!currentPage < numPages}">
+                                        <a href="javascript:;" onclick="if(!checkEditing()){return false;};$('#'+currentPage).val($('#'+currentPage).val()=={!numPages}?{!numPages}:parseInt($('#'+currentPage).val())+1);waitOn();goToPage()"><apex:outputText value="{!$Label.xactlyexpress__Next}" style="color:#404040;"/>&nbsp;<img src="{!URLFOR($Resource.XactlySMBResources ,'img/buttons/btnNextPagebk.png')}"/></a>
+                                        <a href="javascript:;" onclick="if(!checkEditing()){return false;};$('#'+currentPage).val({!numPages});waitOn();goToPage()"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/buttons/btnLastPagebk.png')}"/></a>
+                                    </apex:outputPanel>
+                                    <apex:outputPanel layout="none" rendered="{!currentPage == numPages}">
+                                        <apex:outputText value="{!$Label.xactlyexpress__Next}" style="color:#A8A8A8;"/>&nbsp;<img src="{!URLFOR($Resource.XactlySMBResources ,'img/buttons/btnNextPage.png')}"/>
+                                        <img src="{!URLFOR($Resource.XactlySMBResources ,'img/buttons/btnLastPage.png')}"/>
+                                    </apex:outputPanel>
+                        
+                                </center>
+                            </div>
+                            <apex:outputPanel styleclass="footerRightSide" id="paginator">                            
+                                <apex:outputText value="{!$Label.xactlyexpress__Page}"/>&nbsp;<input type="Text" value="{!currentPage}" onfocus="checkEditing();" onblur="MoveIfNeeded(this.value);" style="width:16px;"/>&nbsp;<apex:outputText value="{!$Label.xactlyexpress__Of}"/>&nbsp;<apex:outputText value="{!numPages}"/>
+                            </apex:outputPanel>
+                        </div>
+                    </apex:outputPanel>     
+                    
+                                <center>
+                                    <apex:outputPanel layout="block" id="commentBox" style="width: 520px;">
+                              			<script>
+											var commentid = '{!$Component.commentBody}'; 
+											var commentBox = '{!$Component.commentBox}'.replace(/:/g,'\\:');; 
+									    </script> 
+                                        <apex:outputPanel layout="block" rendered="{!!ISNULL(toCommentMeasure)}" styleClass="commentBox"  style="width: 520px;margin-top:5px; margin-bottom:40px;">
+                                            <div class="commentHeader">
+                                                <apex:outputText value="{!commentBoxTitle}" />
+												<!--  <a href="javascript:closeComment();" class="commentBoxBtn" />-->
+                                                
+                                                <apex:actionFunction name="closeCommentAF" action="{!closeComment}"  rerender="leftSidePanel" oncomplete="loadBubbles();fixCelsDimensions();adjustSizeOnDrag();closeCommentOnComplete();" />            
+                                                <apex:actionFunction name="closeComment" action="{!closeComment}"  rerender="leftSidePanel, commentBox, tableContainer" oncomplete="resetDragBar();loadBubbles();fixCelsDimensions();adjustSizeOnDrag();closeCommentOnComplete();introAsTab();" />              
+                                           		<apex:actionFunction name="saveComment" action="{!saveComment}"  rerender="leftSidePanel, commentBox, tableContainer" oncomplete="resetDragBar();loadBubbles();fixCelsDimensions();adjustSizeOnDrag();closeCommentOnComplete();introAsTab();"/>                             
+                                           </div>
+                                           <div>
+                                               <apex:inputTextarea id="commentBody" value="{!toCommentMeasure.XactlyExpress__Comment__c}" styleClass="commentTextArea"  style="width: 517px;height:45px;margin-left:-1px;margin-top:-1px;" onkeyup="document.getElementById(commentid).value = document.getElementById(commentid).value.substring(0,1024);"/>
+                                           	                       
+                                           </div>
+                                            <apex:outputPanel layout="block" styleClass="actionButtonWrapper">
+				                                <div class="actionButtonLeft"></div>
+				                                <a href="javascript:;" id="saveComment" onclick="waitOn();saveComment();" class="actionButtonMiddle">
+				                                    <apex:outputtext escape="false" value="{!$Label.xactlyexpress__Save}">
+				                                       <apex:param value="{!URLFOR($Resource.XactlyExpress__XactlySMBResources ,'img/buttons/navigateSaveMiddle.gif')}" />
+				                                    </apex:outputtext>   
+				                                </a>
+				                                <div class="actionButtonRight"></div>   
+				                            </apex:outputpanel>
+			                           
+				                            <apex:outputPanel layout="block" styleClass="actionButtonWrapper">
+				                                <div class="actionButtonLeft"></div>
+				                                <a href="javascript:;" id="discardComment" onclick="waitOn();closeComment();" class="actionButtonMiddle">
+				                                    <apex:outputtext escape="false" value="{!$Label.xactlyexpress__Cancel}">
+				                                       <apex:param value="{!URLFOR($Resource.XactlyExpress__XactlySMBResources ,'img/buttons/navigateSaveMiddle.gif')}" />
+				                                    </apex:outputtext>  
+				                                </a>
+				                                <div class="actionButtonRight"></div>    
+				                            </apex:outputpanel>
+
+                                        </apex:outputPanel>
+                                    </apex:outputPanel>
+                                 </center>
+                                 
+            
+                    
+                    </div>
+                </apex:outputPanel><!-- END CONTENT -->
+                
+                
+                <div style="width:745px;max-width:745px;position:absolute; top: 340px; right: 35px; display:none" id="dragBar">
+                    <img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/dragToResize.jpg')}" style="border:none" width="630px;float:left;" />
+                    <div class="centeredBox" style="float:right"> 
+                        <div class="btnToCenter btnAction" style="float:right;margin-right:0px">
+                            <div class="separateBtn" style="margin-right:0px">
+                                <a href="javascript:;" onclick="closeDetails();">
+                                    <span class="rightBtnOrange">
+                                        <span class="leftBtnOrange">
+                                            <span style="color: white;" class="middleBtnOrange">
+                                               &gt;&gt;
+                                            </span>
+                                        </span>
+                                    </span>
+                                 </a>
+                            </div>
+                        </div>           
+                        <div style="float:right;margin-top:3px;" class="areaTitle">{!$Label.closeDetails}</div><br/><br/>
+                    </div>
+                </div>
+                <div style="clear:both"></div>
+                
+            </apex:outputPanel><!-- END CONTENTWRAPPER -->
+            
+            
+            <!-- FOOTER  -->
+            <apex:outputPanel layout="block" styleClass="footer" id="pFooter"  >
+                <div style="width:100%;height:100%;z-index:50000;position:absolute;display:none" class="footerGlass">&nbsp;</div>
+                <apex:outputPanel layout="block" styleClass="previousStepWrapper" style="max-width:150px;"  rendered="{!OR(isManager,isEmulatedManager)}">
+                    <div class="previousStepLeft" style="margin-right:-10px;"></div>
+                    <a class="previousStepMiddle" href="{!$Page.XactlySMBDashRepHome}" onclick="savePageHandler.disableBottomBar();" style="background:none;">
+                    {!$Label.PreviousStep}
+                    </a>
+                    <div class="previousStepRight"></div>
+                </apex:outputPanel>	            
+            
+	            <apex:outputPanel layout="block" styleClass="nextStepWrapper" style="margin-right:100px;">
+	                <div class="nextStepLeft"></div>
+	                <a class="nextStepMiddle" href="{!$Page.XactlySMBDashRepMyDeals}?prd={!lastClosedPeriod}{!IF(LEN(currentUserOrSlected.Id) > 0,'&userId='&currentUserOrSlected.Id,'')}" style="background:none;" onclick="savePageHandler.disableBottomBar();">
+	                    {!$Label.SimpleNextStep}
+	                </a>
+	                <div class="nextStepRight" style="margin-left:-10px;"></div>
+	            </apex:outputPanel>
+            </apex:outputPanel>
+    </apex:form>
+</div>
+    <div style="display:none;" id="showLimitsearch">
+        <div style="background: url('{!URLFOR($Resource.XactlySMBResources ,'img/layout/topOrange.png')}');background-repeat:repeat-x;margin-left:15px;margin-right:11px;">
+            <div style="float: left;margin-left:-15px;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/topLeftOrange.png')}"/></div>
+            <div style="float: right;margin-right:-15px;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/topRightOrange.png')}"/></div>
+            <div style="clear:both"></div>
+        </div> 
+        <div style="float:left;margin-top:-3px;width:100%; height:220px; border-right:2px solid #D49761;border-left:2px solid #D49761;background-color:#FFF;">
+            <apex:outputText style="color:#FFA24F;font-size:21pt;margin-left:20px;" value="{!$Label.xactlyexpress__thatIsEmbarassing}"/><br/><br/>
+            <apex:outputText style="color:#777777;font-size:12pt;font-weight:bold;margin-left:20px;" value="{!$Label.xactlyexpress__retrievedTooMuchDate}"/><br/><br/>
+            <apex:outputText style="color:#777777;font-size:7pt;font-weight:bold;margin-left:20px;" value="{!$Label.xactlyexpress__whatHappend}"/><br/>
+            <apex:outputText style="color:#999999;font-size:7pt;margin-left:23px;" value="{!$Label.xactlyexpress__tooMuchDataExplanation}"/><br/><br/>
+            <apex:outputText style="color:#777777;font-size:7pt;font-weight:bold;margin-left:20px;" value="{!$Label.xactlyexpress__whatCanIDo}"/><br/>
+            <apex:outputText style="color:#999999;font-size:7pt;margin-left:23px;" value="{!$Label.xactlyexpress__whatCanIDoExplanationSearch}"/><br/><br/><br/>            
+            <div class="linkButton" style="float:left;margin-left:20px;">
+                <a href="javascript:;" style="margin-left:40px;" onclick="jQuery.superbox.close();">
+                    <img class="btnt" src="{!URLFOR($Resource.XactlySMBHome ,'img/buttons/homeButtonLeft.png')}"></img>
+                    <span class="btnCenter"> {!$Label.viewResultsAsIs}   </span>
+                    <img class="btnt" src="{!URLFOR($Resource.XactlySMBHome ,'img/buttons/homeButtonRight.png')}"></img>
+                </a>
+                <div style="clear:both"></div>
+            </div>
+            <div style="clear:both"></div>
+        </div>
+        <div style="clear:both"></div>
+        <div style="float:left;width:500px;marging-top: -3px; background-image: url('{!URLFOR($Resource.XactlySMBResources ,'img/layout/bottomOrange.png')}');margin-left:15px;margin-right:11px;">
+           <div style="float: left;margin-left:-15px;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/bottomLeftOrange.png')}"/></div>
+           <div style="float: right;margin-right:-15px;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/bottomRightOrange.png')}"/></div>
+           <div style="clear:both"></div>
+        </div> 
+    </div>         
+    <a id="showLimitsearchAlert" rel="superbox[content#showLimitsearch.limitRowAlert]" href="#showLimitsearch" style="display:none;"></a>
+          
+    <div style="display:none;" id="showLimit">
+        <div style="background-image: url('{!URLFOR($Resource.XactlySMBResources ,'img/layout/topOrange.png')}');margin-left:15px;margin-right:11px;">
+            <div style="float: left;margin-left:-15px;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/topLeftOrange.png')}"/></div>
+            <div style="float: right;margin-right:-15px;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/topRightOrange.png')}"/></div>
+            <div style="clear:both"></div>
+        </div> 
+        <div style="width:100%;border-right:2px solid #D49761;border-left:2px solid #D49761;background-color:#FFF;">
+            <apex:outputText style="color:#FFA24F;font-size:21pt;margin-left:20px;" value="{!$Label.xactlyexpress__thatIsEmbarassing}"/><br/><br/>
+            <apex:outputText style="color:#777777;font-size:12pt;font-weight:bold;margin-left:20px;" value="{!$Label.xactlyexpress__retrievedTooMuchDate}"/><br/><br/>
+            <apex:outputText style="color:#777777;font-size:7pt;font-weight:bold;margin-left:20px;" value="{!$Label.xactlyexpress__whatHappend}"/><br/>
+            <apex:outputText style="color:#999999;font-size:7pt;margin-left:23px;" value="{!$Label.xactlyexpress__tooMuchDataExplanation}"/><br/><br/>
+            <apex:outputText style="color:#777777;font-size:7pt;font-weight:bold;margin-left:20px;" value="{!$Label.xactlyexpress__whatCanIDo}"/><br/>
+            <apex:outputText style="color:#999999;font-size:7pt;margin-left:23px;" value="{!$Label.xactlyexpress__whatCanIDoExplanation}"/><br/><br/><br/>
+            <div class="linkButton" style="float:left;margin-left:20px;">
+                <a href="{!$Page.XactlySMBCreateEditViews}?sctn=deals&id={!JSENCODE(currentView.id)}">
+                    <img class="btnt" src="{!URLFOR($Resource.XactlySMBHome ,'img/buttons/homeButtonLeft.png')}"></img>
+                    <span class="btnCenter"> {!$Label.EditView}   </span>
+                    <img class="btnt" src="{!URLFOR($Resource.XactlySMBHome ,'img/buttons/homeButtonRight.png')}"></img>
+                </a>
+                <div style="clear:both"></div>
+            </div>
+            <div class="linkButton" style="float:left;margin-left:20px;">
+                <a href="javascript:;" style="margin-left:40px;" onclick="jQuery.superbox.close();">
+                    <img class="btnt" src="{!URLFOR($Resource.XactlySMBHome ,'img/buttons/homeButtonLeft.png')}"></img>
+                    <span class="btnCenter"> {!$Label.viewResultsAsIs}   </span>
+                    <img class="btnt" src="{!URLFOR($Resource.XactlySMBHome ,'img/buttons/homeButtonRight.png')}"></img>
+                </a>
+                <div style="clear:both"></div>
+            </div>
+            <div style="clear:both"></div>
+        </div>
+        <div style="background-image: url('{!URLFOR($Resource.XactlySMBResources ,'img/layout/bottomOrange.png')}');margin-left:15px;margin-right:11px;">
+           <div style="float: left;margin-left:-15px;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/bottomLeftOrange.png')}"/></div>
+           <div style="float: right;margin-right:-15px;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/bottomRightOrange.png')}"/></div>
+           <div style="clear:both"></div>
+        </div> 
+    </div>         
+    <a id="showLimitAlert" rel="superbox[content#showLimit.limitRowAlert]" href="#showLimit" style="display:none;"></a>
+    <c:XactlySMBFooterScript /> 
+    <script type="text/javascript" language="javascript" src="{!URLFOR($Resource.XactlySMBResources, 'js/XactlySMBJavascript.js')}"></script>
+    <script type="text/javascript" src="{!URLFOR($Resource.XactlySMBResources ,'modbubble/js/jquery.codabubble.mod.js')}"></script>
+    <script type="text/javascript" src="{!URLFOR($Resource.XactlySMBResources ,'js/jquery.superbox-min.js')}"></script>
+    <script>
+        var _maxViewPort;
+        var _minViewPort;
+        var _whiteLocation;
+        var _maxViewPort2;
+        var _minViewPort2;
+        var _whiteLocation2;
+        var maxWidthViews1 = 729;
+        var maxWidthViews2 = 729;
+        var maxHeightViews1 = 400;
+        var maxHeightViews2 = 400;
+        var initPositionBar = 0;
+        var orgTC = 0;
+        var orgRCB = 0;
+        var orgDTC = 0;
+        var maxDrag = 400;
+        var minDrag = 250;
+        
+    	function confirmDeleteView(){
+        	var aux = '{!$Label.deleteCreditQuest}' + '?';
+        	aux = aux.replace("{0}", 'view');
+        	if(confirm(aux)){           
+           		return true;
+        	}else{
+            	return false;
+        	}
+    	}
+        
+        
+        /*
+        $('#detailCornerDiv').corner({
+            tl: { radius: 5 },
+            tr: { radius: 5 },
+            bl: { radius: 5 },
+            br: { radius: 5 },
+            antiAlias: true
+        }); 
+        $('#mainCornerDiv').corner({
+            tl: { radius: 5 },
+            tr: { radius: 5 },
+            bl: { radius: 5 },
+            br: { radius: 5 },
+            antiAlias: true
+        });*/   
+        
+        
+        function adjustBorder(){
+        return;
+            $('#detailCornerDiv').corner({
+                tl: { radius: 5 },
+                tr: { radius: 5 },
+                bl: { radius: 5 },
+                br: { radius: 5 },
+                antiAlias: true
+            }); 
+            /*$('#mainCornerDiv').corner({
+                tl: { radius: 5 },
+                tr: { radius: 5 },
+                bl: { radius: 5 },
+                br: { radius: 5 },
+                antiAlias: true
+            });*/   
+        
+        }
+        
+        
+        function resetDragBar(){
+            initPositionBar = 340;
+            if(_isIE7){
+                initPositionBar = 356;
+            }        
+        }
+        function reloadPage(){
+        	orgTC = 150;
+            orgRCB = 193;
+            orgDTC = 150;
+            resetDragBar();
+            adjustSizeOnDrag();
+            detailsHandler.init();
+            fixCelsDimensions();
+        }
+        $(document).ready(function (){
+            orgTC = 150;
+            orgRCB = 193;
+            orgDTC = 150;
+            resetDragBar();
+            adjustSizeOnDrag();
+            detailsHandler.init();
+            setTimeout('fixCelsDimensions()',500);
+            
+            checkShowResult();
+            
+            BindClickSearch();
+            BindOverSearch();
+            BindOutSearch();
+            
+        });
+        
+        $('#dragBar').draggable();
+        $('#dragBar').draggable('option', 'axis', 'y');
+        
+        
+        $('#dragBar').bind('drag', function(event, ui) {
+              adjustSizeOnDrag();
+        });
+        
+        function scrollContent(){
+            document.getElementById('cells').scrollLeft = document.getElementById('scroller').scrollLeft;
+            document.getElementById('cells').scrollTop = document.getElementById('scroller').scrollTop;
+            document.getElementById('cols').scrollLeft = document.getElementById('scroller').scrollLeft;
+         }
+        
+        function scrollContent2(){
+            document.getElementById('cells2').scrollLeft = document.getElementById('scroller2').scrollLeft;
+            document.getElementById('cells2').scrollTop = document.getElementById('scroller2').scrollTop;
+            document.getElementById('cols2').scrollLeft = document.getElementById('scroller2').scrollLeft;
+        }
+        
+        $('#dragBar').bind('dragstop', function(event, ui) {
+            
+            if(parseInt($('#dragBar').css('top')) < minDrag + 5){
+                $('#dragBar').css('top',minDrag + 5+'px');
+            }
+            if(parseInt($('#dragBar').css('top')) > (maxDrag - 5)){
+                $('#dragBar').css('top',maxDrag - 5+'px');
+            }  
+            adjustSizeOnDrag();
+        });
+        
+        function showDetails(){
+            detailsHandler.switchDivsDisplay(orgTC);
+            $('#mainDiv').css('max-height',orgTC+'px');
+            $('#mainDiv').height(orgTC);
+            $('#dragBar').show();
+            $('#dragBar').css('top',initPositionBar+'px');
+            adjustSizeOnDrag();
+        }
+        
+        function closeDetails(){
+            detailsHandler.switchDivsDisplay();
+            $('#dragBar').css('top',initPositionBar);
+            $('#dragBar').hide();
+            $('#mainDiv').css('max-height',430+'px');
+            $('#mainDiv').css('height','100%');
+            if(selectedRowAfterRerender != null && selectedRowAfterRerender != ''){
+	            if (typeof selectedRowAfterRerender != "undefined" && document.getElementById(selectedRowAfterRerender) != null){
+	                document.getElementById(selectedRowAfterRerender).value = ''; 
+	            }
+	        }
+	        waitOn();
+	        refreshTableContainer();
+	        /*fixCelsDimensions();*/
+        }
+        
+    function fixCelsDimensions(){           
+        if(checkTableDisplayed()){
+            initFixedCelsTable();
+            /*$('td',$('#cellsTable')).width(0);
+            $('td',$('#dealsTable')).width(0);*/
+            $('#cellsTable').width(0);
+            $('#dealsTable').width(0);
+            var headersCels = $('#cellsTable')[0].getElementsByTagName('td');
+            
+            var cellsTable = document.getElementById('cellsTable');
+            var cellsEle = document.getElementById('dealsTable');
+            var TablesWidth = 0;
+           
+            for (var i=0; i < headersCels.length; i++) {
+                var iterHeaderCel = headersCels[i];
+                var oneCel = cellsEle.getElementsByTagName('td')[i];                       
+                var newWidth = $(iterHeaderCel).width();   
+                iterHeaderCel.style.width = newWidth + 'px';
+                $(oneCel).width(newWidth);
+                $('.titles',$(iterHeaderCel)).width(newWidth-2);
+                TablesWidth += newWidth;   
+            }
+            $('#cellsTable').width(TablesWidth);
+            $('#dealsTable').width(TablesWidth);
+            var TableHeight = jQuery('#colls').height() + jQuery('#dealsTable').height();
+            $('#colsContainer').css('width', TablesWidth + 'px');
+            $('#recordsList').css('width', TablesWidth + 'px');
+            $('#scrollCont').css('width', TablesWidth + 'px');
+            $('#cells').css('width', TablesWidth + 'px');
+            $('#cols').css('width', TablesWidth + 'px');
+            $('#cols').css('max-width', maxWidthViews1 + 'px');
+            $('#scroller').css('width', TablesWidth + 'px');
+            $('#scroller').css('max-width', maxWidthViews1 + 'px');
+            $('.topTable').css('width', TablesWidth + 96 + 'px');
+            $('.bottomTable').css('width', TablesWidth + 96 + 'px');
+            $('.rowsScroll').css('height', TableHeight + 'px');
+            $('#rows').css('height', TableHeight + 'px');
+            $('#scroller').css('height', TableHeight + 41 + 'px');
+            $('.tableContainer').css('height', TableHeight + 41 + 'px');
+            $('#recordsList').css('height', TableHeight + 25 +'px'); 
+            $('#cells').css('height', TableHeight + 'px');
+            $('#cells').css('max-width', maxWidthViews1 + 'px');
+            $('#scrollCont').css('height', TableHeight + 23 + 'px');
+            $('#FixedCelsTable').css('height', TableHeight + 60 + 'px');
+            $('#noEditable').height($('#scroller').height()-$('#cols').height()-4);
+            $('#noEditable').width($('#scroller').width()-17);
+            $('#noEditable').css('margin-top',$('#cols').height()-12);
+            
+            if ($.browser.msie && parseInt($.browser.version) == 7){
+                $('#colsContainer').css('margin-left', '100px');
+                $('#cellContainer').css('margin-left', '100px');
+            }
+            waitOff();
+        }
+    }
+    
+    function checkTableDisplayed(){
+        var elm = $('.FixedCelsTable');
+        return elm.length > 0;
+    }
+    function checkTableDisplayed2(){
+        var elm = $('#FixedCelsTable2');
+        return elm.length > 0;
+    }
+    
+    function initFixedCelsTable(){
+        adjustCells();
+        scrollFixedCelsTable();
+        document.getElementById('scroller').style.display = '';
+    }
+        
+    function adjustCells(){
+        _maxViewPort = document.getElementById('recordsList').offsetWidth;
+        _minViewPort = document.getElementById('recordsList').offsetWidth;
+        if(_minViewPort > 0){
+            document.getElementById('cells').style.width = _minViewPort + 'px';
+            document.getElementById('cols').style.width = _minViewPort + 'px';
+        }  
+    }
+    
+    function scrollFixedCelsTable(){
+        if(document.getElementById(_whiteLocation) != null){
+            var theElement = document.getElementById(_whiteLocation);
+            var selectedPosX = 0;
+            var selectedPosY = 0;
+              
+            while(theElement != null){
+              selectedPosX += theElement.offsetLeft;
+              selectedPosY += theElement.offsetTop;
+              theElement = theElement.offsetParent;
+              window.scrollTo(0,selectedPosY);
+            }
+        }
+    }
+                 
+        
+        function adjustSizeOnDrag(){
+        	var heightFix = 52;
+            if($('#dragBar').is(':visible')){
+                if(parseInt($('#dragBar').css('top')) > minDrag && parseInt($('#dragBar').css('top'))<maxDrag){
+                    var height1 = initPositionBar - parseInt($('#dragBar').css('top'));
+                    var height2 = parseInt($('#dragBar').css('top')) - initPositionBar;
+                    if(parseInt($('#dragBar').css('top')) >= initPositionBar){
+                        $('#mainDiv').css('max-height',orgTC+height2+'px');
+                        $('#mainDiv').height(orgTC+height2);
+                        $('.detailCornerDiv').height(orgRCB-height2);
+                        $('#downTableCont').height(orgDTC-height2);   
+                        
+                        $('#scroller').css('height', orgTC+height2 + 16 + 'px');
+                        $('#scroller').css('max-height', orgTC+height2+ 'px');     
+                        $('.tableContainer').css('height', orgTC+height2 + 16 + 'px');
+                        $('.tableContainer').css('max-height', orgTC+height2 + 'px');
+                        $('#recordsList').css('height', orgTC+height2 +'px'); 
+                        $('#cells').css('height', orgTC+height2 - heightFix + 'px');
+                        $('#cells').css('max-height', orgTC+height2 - heightFix + 'px');
+                        $('.FixedCelsTable').css('height', orgTC+height2 + 'px');
+                        if(_isIE8){
+                            $('#scroller').css('height', orgTC+height2 + 'px');
+                        }
+                        $('#scroller2').css('height', orgDTC-height2 + 16 + 'px');
+                        $('#scroller2').css('max-height', orgDTC-height2 + 'px');     
+                        $('.tableContainer2').css('height', orgDTC-height2 + 16 + 'px');
+                        $('.tableContainer2').css('max-height', orgDTC-height2 + 'px');
+                        $('#recordsList2').css('height', orgDTC-height2 +'px'); 
+                        $('#cells2').css('height', orgDTC-height2 - heightFix + 'px');
+                        $('#FixedCelsTable2').css('height', orgDTC-height2 + 'px');
+                        if(_isIE8){
+                            $('#scroller2').css('height', orgDTC-height2 + 'px');
+                        }
+                    }else{
+                        $('#mainDiv').css('max-height',orgTC-height1+'px');
+                        $('#mainDiv').height(orgTC-height1);
+                        $('.detailCornerDiv').height(orgRCB+height1);
+                        $('#downTableCont').height(orgDTC+height1);
+                        
+                        $('#scroller').css('height', orgTC-height1 + 16 + 'px');
+                        $('#scroller').css('max-height', orgTC-height1+ 'px');     
+                        $('.tableContainer').css('height', orgTC-height1 + 16 + 'px');
+                        $('.tableContainer').css('max-height', orgTC-height1 + 'px');
+                        $('#recordsList').css('height', orgTC-height1 +'px'); 
+                        $('#cells').css('height', orgTC-height1 - heightFix + 'px');
+                        $('#cells').css('max-height', orgTC-height1 - heightFix + 'px');
+                        $('.FixedCelsTable').css('height', orgTC-height1 + 'px');
+                        if(_isIE8){
+                            $('#scroller').css('height', orgTC-height1 + 'px');
+                        }
+                        
+                        $('#scroller2').css('height', orgDTC+height1 + 16 + 'px');
+                        $('#scroller2').css('max-height', orgDTC+height1 + 'px');     
+                        $('.tableContainer2').css('height', orgDTC+height1 + 16 + 'px');
+                        $('.tableContainer2').css('max-height', orgDTC+height1 + 'px');
+                        $('#recordsList2').css('height', orgDTC+height1 +'px'); 
+                        $('#cells2').css('height', orgDTC+height1 - heightFix + 'px');
+                        $('#FixedCelsTable2').css('height', orgDTC+height1 + 'px');
+                        if(_isIE8){
+                            $('#scroller2').css('height', orgDTC+height1 + 'px');
+                        }
+                    }    
+                }
+            }
+        }
+        
+        var bubbleImagesPath = "{!URLFOR($Resource.XactlySMBResources ,'modbubble/images')}";
+        
+        function toggleCollapseTree(obj){
+            var className = '.'+$($(obj).parent()).parent().attr('id');
+            
+            var childList = $(className);
+            if($(obj).hasClass('collapseArrowDown')){
+                $(obj).removeClass('collapseArrowDown').addClass('collapseArrowRight');
+                childList.hide();
+            }
+            else{
+                $(obj).removeClass('collapseArrowRight').addClass('collapseArrowDown');                
+                $(className).show();
+                for(var i=0; i < childList.length; i++){
+                    var div = $($($(childList[i]).children()[0]).children()[0]);
+                    if(div.hasClass('collapseArrowRight')){
+                        div.removeClass('collapseArrowRight').addClass('collapseArrowDown');
+                    }
+                }
+                
+            }     
+            reColourTableRows();    
+            $('#scrollCont2').css('height', $('#cols2').height() + $('#dealsTable2').height() + 'px');  
+            /*fixCelsDimensions2(); */
+            /*adjustSizeOnDrag();*/
+        }
+        
+        function reColourTableRows(){
+            var rows = $('tr', $('#dealsTable2 tbody'));
+            var j=0;
+            for(var i=0; i < rows.length; i++){
+                if($(rows[i]).is(':visible') && rows[i].style.display!='none'){ 
+                    $(rows[i]).removeClass('odd').removeClass('even').addClass(j%2 == 0 ? 'odd' : 'even');
+                    j++;
+                }
+            }
+        }
+        
+        function openPopup(mid){
+            if(mid == ''){return;}
+            if(_isChrome){
+                var adjustWindow = window.open('{!$Page.XactlySMBCalculateAdjustPayPopup}?mid=' + mid, 'adjustmentPopup','location=0,status=0,scrollbars=1,width=700px,height=710px');
+            }
+            else{
+                var adjustWindow = window.open('{!$Page.XactlySMBCalculateAdjustPayPopup}?mid=' + mid, 'adjustmentPopup','location=0,status=0,scrollbars=1,width=700px,height=660px');
+            }
+            adjustWindow.document.title = "{!$Label.CalculateWizardStep5}: {!$Label.AdjustPayment}";
+            adjustWindow.moveTo(100,100);
+        }
+        
+        var currentRowId = '';
+       
+        function loadDetail(cell,measureId,obj,planMeasureId, obj2){        
+            var row = $($(cell).parent());
+            document.getElementById(selectedPaymentRowId).value = row.get(0).id.substring(12); 
+            document.getElementById(selectedRowAfterRerender).value = row.get(0).id.substring(12); 
+            row.siblings().removeClass('selectedRowTable');
+            row.addClass('selectedRowTable');        
+            currentRowId = row.get(0).id;
+            document.getElementById(obj).value = measureId;
+            document.getElementById(obj2).value = planMeasureId;
+            waitOn();
+            loadDetailAF();              
+        }
+        
+        function loadDetailsOnComplete(){
+            waitOff();
+            reColourTableRows();
+            //fixCelsDimensions2();
+        }
+        
+        function commentMeasure(measureId){
+            document.getElementById(hiddenCommentMeasureId).value = measureId -1;
+            waitOn();
+            commentMeasureAF();
+        }
+        
+        function commentMeasureOnComplete(){
+            waitOff();
+            initPositionBar = 355;
+            minDrag = 200;
+            if(_isIE7){
+                minDrag = 230;
+            }
+            $('#dragBar').css('top',parseInt($('#dragBar').css('top'))+85+'px');
+            $('#'+commentBox).height(110);
+            adjustSizeOnDrag();
+        }
+        
+        function closeCommentOnComplete(){
+            waitOff();
+            initPositionBar = 240;
+            minDrag = 150;
+            if(_isIE7){
+                initPositionBar = 256;
+            }
+            $('#dragBar').css('top',parseInt($('#dragBar').css('top'))-85+'px');
+            $('#'+commentBox).height(0);
+            adjustSizeOnDrag();
+        }
+        
+        
+        function toggleShowFilter(){
+            var obj = $('#filterScreen');
+            if(obj.is(':visible')){ 
+                obj.hide();
+            }
+            else{
+                obj.show();
+            }   
+        }
+        
+        function changeFilterField(obj){
+           var valueCell = $($(obj).parent().parent());
+           var select = $('.selectValue', valueCell);
+           var input = $('.inputValue', valueCell);
+           if(obj.value == 'XCPeriod__c'){
+               select.show();
+               input.hide();
+           }
+           else{
+               select.hide();
+               input.show();
+               input.val('');
+           }
+           selectOperatorReload(obj.value);
+       }
+ 
+        function copyFilterValues(){
+            var inputs = $('#filtersTable input');
+            for(var i = 0; i < inputs.length; i++){
+                var parent = $(inputs[i]).parent();
+                var select = $($(inputs[i]).parent().children()[0]);
+                if(select.is(':visible')){
+                    var val = select.get(0).options[select.get(0).selectedIndex].value;
+                    inputs[i].value = val;
+                }
+            }
+        }
+        
+        function goToPage(){
+            waitOn();
+            goToPageAF(); 
+        }  
+        
+         function MoveIfNeeded(v){           
+	        if(v != $('#'+currentPage).val()){              
+	            if (!isNaN(v) &&  (1 <= v) && (v <= {!numPages})){                  
+	                $('#'+currentPage).val(v);
+	                waitOn();
+	                goToPage();
+	            }
+	         }
+	    }   
+  
+        function selectCurrent(){
+            var selec = $('.needSelected');
+            $('.selectedRowTable').removeClass('selectedRowTable');
+            for(var i = 0; i < selec.length; i++){
+                selec.addClass('selectedRowTable');      
+            } 
+        }          
+         
+        window.onload=function(){
+            reColourTableRows();
+        }       
+        
+      
+    function fixCelsDimensions2 () {
+        if(checkTableDisplayed2()){
+            initFixedCelsTable2();
+            $('td',$('#cellsTable2')).width(0);
+            $('td',$('#dealsTable2')).width(0);
+            $('#cellsTable2').width(0);
+            $('#dealsTable2').width(0);
+            var headersCels = $('#cellsTable2')[0].getElementsByTagName('td');
+            
+            var cellsTable = document.getElementById('cellsTable2');
+            var cellsEle = document.getElementById('dealsTable2');
+            var TablesWidth = 0;
+           
+            for (var i=0; i < headersCels.length; i++) {
+                var iterHeaderCel = headersCels[i];
+                var oneCel = cellsEle.getElementsByTagName('td')[i];
+	            var iterHeaderCel = headersCels[i];
+                var oneCel = cellsEle.getElementsByTagName('td')[i];                       
+                var newWidth = $(iterHeaderCel).width();   
+                iterHeaderCel.style.width = newWidth + 'px';
+                $(oneCel).width(newWidth);
+            }
+            $('#cellsTable2').width(TablesWidth);
+            $('#dealsTable2').width(TablesWidth);
+            var TableHeight = jQuery('#colls2').height() + jQuery('#dealsTable2').height() + 5;
+            $('#colsContainer2').css('width', TablesWidth + 'px');
+            $('#recordsList2').css('width', TablesWidth + 'px');
+            $('#scrollCont2').css('width', TablesWidth + 'px');
+            $('#cells2').css('width', TablesWidth + 'px');
+            $('#cols2').css('width', TablesWidth + 'px');
+            $('#cols2').css('max-width', maxWidthViews2 + 'px');
+            $('#scroller2').css('width', TablesWidth + 'px');
+            $('#scroller2').css('max-width', maxWidthViews2 + 18 + 'px');
+            $('.topTable').css('width', TablesWidth + 96 + 'px');
+            $('.bottomTable').css('width', TablesWidth + 96 + 'px');
+            $('.rowsScroll').css('height', TableHeight + 'px');
+            $('#rows2').css('height', TableHeight + 'px');
+            $('#scroller2').css('height', TableHeight + 41 + 'px');
+            $('.tableContainer').css('height', TableHeight + 41 + 'px');
+            $('#recordsList2').css('height', TableHeight + 25 +'px'); 
+            $('#cells2').css('height', (TableHeight - 5) + 'px');
+            $('#cells2').css('max-width', maxWidthViews2 + 'px');
+            $('#scrollCont2').css('height', TableHeight + 23 + 'px');
+            $('#FixedCelsTable2').css('height', TableHeight + 80 + 'px');
+            $('#noEditable2').height($('#scroller2').height()-$('#cols2').height()-4);
+            $('#noEditable2').width($('#scroller2').width()-17);
+            $('#noEditable2').css('margin-top',$('#cols2').height()-12);
+            waitOff();
+        }
+    }
+    
+        function fixCelsDimensions2_() {
+            initFixedCelsTable2();
+            var headersCels = $('#tcont2')[0].getElementsByTagName('td');
+            
+            var tcont = document.getElementById('tcont2');
+            var cellsEle = document.getElementById('paymentsTable2');
+            var TablesWidth = 0;
+           
+            $('#tcont2').width(1);
+            $('#paymentsTable2').width(1);
+            for (var i=0; i < headersCels.length; i++) {
+                var iterHeaderCel = headersCels[i];
+                var oneCel = cellsEle.getElementsByTagName('td')[i];
+                iterHeaderCel.style.width = '1px';
+                oneCel.style.width = '1px';
+                var newWidth = Math.max($(oneCel).outerWidth(),$(headersCels[i]).outerWidth()) - 3;
+                iterHeaderCel.style.width = newWidth + 'px';
+                oneCel.style.width = newWidth + 'px';
+                $('div', $(iterHeaderCel)).width(newWidth);
+                $('div', $(oneCel)).width(newWidth);
+                TablesWidth += newWidth; 
+            }
+            
+            if(TablesWidth < 963){
+                TablesWidth = 963;
+            }
+
+            
+            $('#tcont2').width(TablesWidth);
+            $('#paymentsTable2').width(TablesWidth);
+            
+            var TableHeight = $('#cols2').height() + $('#paymentsTable2').height();
+            $('#colsContainer2').css('width', TablesWidth + 'px');
+            $('#recordsList2').css('width', TablesWidth + 'px');
+            $('#scrollCont2').css('width', TablesWidth + 'px');
+            $('#cells2').css('width', TablesWidth + 'px');
+            $('#cols2').css('width', TablesWidth + 'px');
+            $('#cols2').css('max-width', '963px');
+            $('#scroller2').css('width', TablesWidth + 97 + 'px');
+            $('#scroller2').css('max-width', '980px');
+            $('#scroller2').css('height', TableHeight + 16 + 'px');
+            $('#scroller2').css('max-height', '150px');     
+            $('.tableContainer2').css('height', TableHeight + 16 + 'px');
+            $('.tableContainer2').css('max-height', '150px');
+            $('#recordsList2').css('height', TableHeight + 'px'); 
+            $('#cells2').css('height', TableHeight + 'px');
+            $('#cells2').css('max-width', '963px');
+            $('#scrollCont2').css('height', TableHeight + 'px');
+            $('.FixedCelsTable2').css('height', TableHeight + 16 + 'px');
+        }
+            
+        function adjustCells2(){
+            _maxViewPort2 = document.getElementById('recordsList2').offsetWidth;
+            _minViewPort2 = document.getElementById('recordsList2').offsetWidth;
+            if(_minViewPort > 0){
+                document.getElementById('cells2').style.width = _minViewPort2 + 'px';
+                document.getElementById('cols2').style.width = _minViewPort2 + 'px';
+            }   
+        }
+      
+        function scrollFixedCelsTable2(){
+            if(document.getElementById(_whiteLocation2) != null){
+                var theElement = document.getElementById(_whiteLocation2);
+                var selectedPosX = 0;
+                var selectedPosY = 0;
+                  
+                while(theElement != null){
+                  selectedPosX += theElement.offsetLeft;
+                  selectedPosY += theElement.offsetTop;
+                  theElement = theElement.offsetParent;
+                  window.scrollTo(0,selectedPosY);
+                }
+            }
+        }
+        
+        function initFixedCelsTable(){
+            adjustCells();
+            scrollFixedCelsTable();
+            if(document.getElementById('scroller')!=null){
+                document.getElementById('scroller').style.display = '';
+            }
+        }
+        
+        function initFixedCelsTable2(){
+            adjustCells2();
+            scrollFixedCelsTable2();
+            if(document.getElementById('scroller2')!=null){
+                document.getElementById('scroller2').style.display = '';
+            }
+        }
+        function verifyFils(){
+       		var inputs = $('#filtersTable input');
+       		var cont = true;
+            for(var i=0; i<inputs.length; i++){
+	           	var val = inputs[i].value;
+	           	if(val == ''){
+	           		$('#filterErrorMsg').attr('innerHTML', "{!$Label.FilterValueCantBeEmpty}");
+	           		$('#filterErrorMsg').css('color','#FF0000');
+	           		$('#filterErrorMsg').css('display','block');
+	           		waitOff();
+	          		cont = false;
+	          		inputs[i].focus();
+	           	}
+            }
+			if(cont){
+	          	closeDetails();
+	          	copyFilterValues();
+	          	waitOn();
+	          	applyFiltersAF();
+	        }
+        }
+    
+        
+    </script>
+</apex:page>

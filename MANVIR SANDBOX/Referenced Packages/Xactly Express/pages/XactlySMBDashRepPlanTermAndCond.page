@@ -1,0 +1,419 @@
+<!--
+Developed by Timba Software Corp. www.timbasoftware.com admin@timbasoftware.com
+ This page defines Settings
+ @author Juan Bessonart <jbessonart@timbasoftware.com>
+-->
+<apex:page id="XactlySMBDashRepPlanTermAndCond" controller="XactlyExpress.XactlySMBPlanDetailTermAndCondController" sidebar="false" showHeader="false" standardStylesheets="false" action="{!redirectWhenAccessIsDenied}">
+    <c:XactlySMBCursor />
+    <title>{!$Label.PlanDetail}</title>
+    <link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.XactlySMBResources ,'css/XactlySMBDashboardStyles.css')}" />
+    
+    <style>
+    
+        .leftSummaryBox {
+            margin: 20px 0px 10px 34px;
+        }
+        
+        .leftSummaryBox .SummaryBox{
+            width:210px;
+            margin-right:1em;
+        }
+         
+        .leftSummaryBox .SummaryBoxTitle{
+            border: none;
+            padding-left:1em;
+            background:transparent url({!URLFOR($Resource.XactlySMBResources ,'img/layout/table_top_210w.png')}) left top no-repeat;
+            height:20px;
+            font-size: 11px;
+            font-weight: bold;
+            padding: 2px 0 0 10px;          
+        }
+        
+        .leftSummaryBox .SummaryBoxFooter{
+            background:transparent url({!URLFOR($Resource.XactlySMBResources ,'img/layout/table_bottom_210w.png')}) left top no-repeat;
+            height:20px;
+            text-align:right;           
+        }
+        
+        .leftSummaryBox .SummaryBoxContent {
+            border-left: 1px solid rgb(204,204,204);
+            border-right: 1px solid rgb(204,204,204);
+            width: 187px;
+            background: rgb(255,255,255);
+            font-size: 12px;
+            padding: 10px 10px 15px 10px;
+            *padding-bottom: 0px;
+        }
+                
+        img.chartImg{
+            display:block; 
+            width:170px; 
+            text-align:center; 
+            margin:auto;
+            max-height: 210px;
+        }
+        
+        img{ 
+            border: 0;
+            display:block;
+        }
+        
+        div.chartDescription{
+            text-align:center; 
+            font-size:11px; 
+        }
+        
+        .planDetailDates {
+            font-weight: bold;  
+            margin: 20px 0px 40px 40px;
+        }
+        
+        .planDetailName {
+            color:#BD5C19;
+            font-size:15px;
+            font-weight:bold;
+            margin:10px 0 30px 20px;
+        }
+        
+        .planDetailContent {
+            margin: 20px 0px 40px 40px;
+        }
+        
+        .planDetailContent .planDetailSectionHeader {
+            font-size: 13px;
+            font-weight: bold;  
+            margin-bottom: 10px;
+        }
+        
+        .planDetailContent .planDetailSectionContent {
+            position: relative;
+            overflow: hidden;
+            margin-left: 20px;
+        }
+        
+        .planDetailContent .planDetailSectionContent .component {
+            position: relative;
+            overflow: hidden;
+            margin: 5px 10px;
+        }
+        
+        .planDetailContent .planDetailSectionContent .component .name {
+            width: 200px;
+            float: left;
+            display: inline;
+        }
+        
+        .planDetailContent .planDetailSectionContent .component .dates {
+            width: 190px;
+            float: left;
+            display: inline;
+        }
+        
+        .planDetailContent .planDetailSectionContent .component .link {
+            width: 150px;
+            float: left;
+            display: inline;
+        }
+
+        .mainSummaryBox {
+            margin: 20px 0px 70px 15px;
+            width: 710px;
+        }
+        
+        .mainSummaryBox .SummaryBox{
+            margin-right:1em;
+        }
+         
+        .mainSummaryBox .SummaryBoxTitle{
+            border: none;
+            padding-left:1em;
+            background:transparent url({!URLFOR($Resource.XactlySMBResources ,'img/layout/table_top_710w_with_title.png')}) left top no-repeat;
+            height:20px;
+            font-size: 11px;
+            font-weight: bold;
+            padding: 2px 0 0 10px;          
+        }
+        
+        .mainSummaryBox .SummaryBoxFooter{
+            background:transparent url({!URLFOR($Resource.XactlySMBResources ,'img/layout/table_bottom_710w_with_title.png')}) left top no-repeat;
+            height:20px;
+            text-align:right;           
+        }
+        
+        .mainSummaryBox .SummaryBoxContent {
+            border-left: 1px solid rgb(204,204,204);
+            border-right: 1px solid rgb(204,204,204);
+            background: rgb(255,255,255);
+            font-size: 12px;
+            padding: 10px 10px 40px 10px;
+            height: 455px;
+            width: 687px;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }   
+        
+        .SummaryTabs {
+            height: 34px;
+            padding-left: 20px;
+            padding-top: 5px;
+            margin: 0px;
+            border-bottom: 2px solid #BD5C19;
+        }
+        
+        .SummaryTabs ul {
+            margin:0;
+            list-style:none;
+            padding: 0;
+            margin-bottom: 30px;
+        }
+        
+        .SummaryTabs li {
+            background:url({!URLFOR($Resource.XactlySMBResources ,'img/layout/left_on.gif')}) no-repeat left top;
+            float:left;
+            height: 34px;
+            margin-right: 3px;
+            margin-left: 0px;
+            padding-left: 9px;
+        }
+        .SummaryTabs li a {
+            background:url({!URLFOR($Resource.XactlySMBResources ,'img/layout/right_on.gif')}) no-repeat right top;
+            color: black;
+            display:block;
+            float:left;
+            font-size: 12px;
+            height: 18px;
+            padding:11px 10px 5px 0px;
+            text-decoration:none;
+            
+        }
+        
+        .SummaryTabs li.selected {
+            background-image:url({!URLFOR($Resource.XactlySMBResources ,'img/layout/left_on_orange.gif')});
+        }
+        
+        .SummaryTabs li.selected a {
+            background-image:url({!URLFOR($Resource.XactlySMBResources ,'img/layout/right_on_orange.gif')});
+            color:#ffffff;
+            padding-bottom:5px;
+        }
+        
+        .viewPlanDocLink {
+            border-left:1px solid #CCCCCC;
+            border-right:1px solid #CCCCCC;
+            position: inherit;
+            text-align: center;
+            bottom: 10px;
+            left: 0px;
+            width: 707px;
+        }
+        
+        .termsAndCondContent {
+            margin: 20px 0 40px 40px;
+        }
+        
+        .additionalContent .help{
+            position:relative;
+            float:right;
+            margin-right:58px;
+        }
+            
+        /*   DashNew*/
+        .clear{
+            clear:both;
+        } 
+         
+        .mainContent{
+            margin-top:60px;            
+            border-top:1px solid #DDEAF3;
+        }
+        
+        .mainContent .cornerMainUL{
+            background:url({!URLFOR($Resource.XactlySMBResources,'img/layout/cornerMainContUl.png')}) no-repeat;
+            float:left;
+            width:10px;
+            height:10px;
+            margin-left:-1px;
+            margin-top:-1px;
+        }
+        
+        .mainContent .cornerMainUR{
+            background:url({!URLFOR($Resource.XactlySMBResources,'img/layout/cornerMainContUr.png')}) no-repeat;
+            float:right;
+            width:10px;
+            height:10px;
+            margin-right:-1px;
+            margin-top:-1px;
+        }
+                 
+        .additionalContent{
+            margin-top:46px !important;
+        }
+        
+        /*Dashboard Styles*/
+        .shadowContainer {
+            background:url({!URLFOR($Resource.XactlySMBResources, 'img/layout/backimg.png')}) repeat-y scroll center bottom #FFFFFF;
+            height:100%;
+            left:50%;
+            margin-left:-735px;
+            position:fixed !important;
+            width:1470px;
+            z-index:-10;
+        }
+        
+        .mainContent .content {
+            border-left:2px solid #E1E1E2 !important;
+            width:72% !important;
+            padding-top:47px;
+            margin-top:0 !important;            
+        }
+        
+        img.chartImg{
+            display:block; 
+            width:170px; 
+            text-align:center; 
+            margin:auto;
+            max-height: 210px;
+        }
+           
+        .header{
+            height: 47px !important;
+        }
+        
+       
+        #containerPlans .cornerUL{
+            float:left;
+            width: 10px;
+            height: 10px;
+            background: url( {!URLFOR($Resource.XactlySMBResources, 'img/layout/cornerGrayUL.png')})no-repeat; 
+            margin-left:-8px;
+        }
+        
+        #containerPlans .cornerUR{
+            float:right;
+            width: 10px;
+            height: 10px;
+            background: url( {!URLFOR($Resource.XactlySMBResources, 'img/layout/cornerGrayUR.png')})no-repeat;
+            margin-right:-8px;
+        }    
+            
+    </style>
+    
+    <c:XactlySMBShadows />
+    
+    <!-- PAGE WRAPPER -->  
+    <div class="pageContent" id="pContent">
+        <apex:form >
+            <!-- HEADER -->
+            <apex:outputPanel layout="block" styleClass="header">
+                <c:XactlySMBSalesRepHeader lastClosedPeriod="{!lastClosedPeriod}" isEmulatedManager="{!isEmulatedManager}" isManager="{!isManager}" isSalesAdmin="{!isSalesAdmin}" isAdmin="{!isAdmin}"  isActive="{!isActive}" nbrSeparator="{!nbrSeparator}" nbrDecimal="{!nbrDecimal}" currentUserOrSlected="{!currentUserOrSlected}" emulatingUserURLAppend="{!emulatingUserURLAppend}" dealsLabel="{!currentSettings.dealsPluralCap}" selected="3" emulatingUserURLAppend="{!emulatingUserURLAppend}"  hlabel="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean ac mi eget est semper feugiat."/>  
+            </apex:outputPanel>
+            
+<!--            <apex:outputPanel layout="block" styleclass="additionalContent">    -->
+<!--                <c:XactlySMBChatterWall objectId="{!$User.Id}" showHeader="true" showWall="true" currentPage="{!$CurrentPage.Name}"/>-->
+<!--            </apex:outputPanel>-->
+
+             <!-- INSUFFICIENT PERMISSIONS -->
+            <!-- 
+            <apex:outputPanel rendered="{!!isAdmin && !isSalesRep}">
+                <c:XactlySMBErrorMsg error="{!$Label.InsufficientPermissions}" />
+            </apex:outputPanel>
+              -->
+            <!-- MAIN CONTENT -->
+            <apex:outputPanel layout="block" styleClass="mainContent"> <!-- rendered="{!isAdmin}"> -->
+                <div class="cornerMainUL"> </div>
+                <div class="cornerMainUR"> </div>
+
+                <c:XactlySMBDashboardLeftSidebar CisManager="{!isManager}" CcurrentPeriod="{!currentPeriod}" CcurrentProfileId="{!currentProfileId}" CcurrentSettings="{!currentSettings}" ClastClosedPeriod="{!lastClosedPeriod}" CcurrentSttgs="{!currentSttgs}" Csubordinates="{!SubordinateList}" currentSettingsAttach="{!currentSettingsAttach}" CisAdmin="{!isAdmin}"/>
+                <!-- CONTENT -->
+                <apex:outputPanel layout="block" styleClass="content" id="contentPanel">
+                    <!-- TABS HEADER -->
+                    <apex:outputPanel layout="block" styleClass="subHeader">
+                        <c:XactlySMBSalesRepTabsHeader lastClosedPeriod="{!lastClosedPeriod}" isEmulatedManager="{!isEmulatedManager}" isManager="{!isManager}" isSalesAdmin="{!isSalesAdmin}" isAdmin="{!isAdmin}"  isActive="{!isActive}" nbrSeparator="{!nbrSeparator}" nbrDecimal="{!nbrDecimal}" currentUserOrSlected="{!currentUserOrSlected}" emulatingUserURLAppend="{!emulatingUserURLAppend}" dealsLabel="{!currentSettings.dealsPluralCap}" selected="3" emulatingUserURLAppend="{!emulatingUserURLAppend}" hlabel="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean ac mi eget est semper feugiat."/>
+                    </apex:outputPanel>
+                
+                    <div id="containerPlans">
+						<div class="cornerUL"> </div>
+						<div class="cornerUR"> </div>
+                    
+						<div class="contentHeader areaTitle" style="margin-top:28px;width:600px;">
+						     <apex:actionFunction name="changeFY" action="{!changeFY}" />
+						     <apex:actionFunction name="changeSelectedSubordinate" action="{!changeSelectedSubordinate}" />
+						      
+						     <!-- Sales Manager Part -->
+						     <apex:outputpanel rendered="{!isManager}">
+						         <apex:outputLabel value="{!$Label.xactlyexpress__ViewPlanFor} " for="periodSelect" />
+						         <apex:selectList value="{!selectedSubordinate}" multiselect="false" size="1" onchange="changeSelectedSubordinate();">
+						             <apex:selectOptions value="{!managerSubordinates}" />
+						         </apex:selectList>
+						         <apex:outputLabel value="{!$Label.xactlyexpress__In} " for="fyselect" />
+						     </apex:outputpanel>
+						     
+						     <apex:outputpanel rendered="{!NOT(isManager)}">
+						         <apex:outputLabel id="fiscalYearTitleLabel" value="{!$Label.xactlyexpress__ViewingMyPlans}: " for="fyselect" />
+						     </apex:outputpanel>
+						     
+						     <apex:selectList id="fyselect" value="{!selectedFiscalYear}" multiselect="false" size="1" onchange="changeFY();">
+						         <apex:selectOptions value="{!fiscalyearoptions}" />
+						     </apex:selectList>
+						 </div>
+	                    
+	                    
+	                    <apex:outputPanel layout="block" styleClass="mainSummaryBox" rendered="{!!ISNULL(currentPlan)}">
+	                        <div class="SummaryBoxTitle">
+	                            {!currentPlan.p.Name}
+	                        </div>
+	                        <div class="SummaryBoxContent">                                             
+	                            <div class="SummaryTabs">
+	                                <ul>
+	                                    <li class="unselected"><a href="{!$Page.XactlyExpress__XactlySMBDashRepPlanDetails}?id={!currentPlan.p.id}{!IF(LEN(emulatingUserURLAppend)>0,'&'&emulatingUserURLAppend,'')}" onclick="waitOn();">{!$Label.xactlyexpress__General}</a></li>
+	                                    <li class="unselected"><a href="{!$Page.XactlyExpress__XactlySMBDashRepPlanCompDetail}?id={!currentPlan.p.id}{!IF(LEN(emulatingUserURLAppend)>0,'&'&emulatingUserURLAppend,'')}" onclick="waitOn();">{!planCompDetailsLabel}</a></li> 
+	                                    <li class="selected"><a href="{!$Page.XactlyExpress__XactlySMBDashRepPlanTermAndCond}?id={!currentPlan.p.id}{!IF(LEN(emulatingUserURLAppend)>0,'&'&emulatingUserURLAppend,'')}" onclick="waitOn();">{!$Label.xactlyexpress__TermsAndCond}</a></li>        
+	                                </ul>
+	                            </div>
+	                            
+	                            <div class="termsAndCondContent">
+	                                <apex:outputtext value="{!currentPlan.p.TermsAndConditions__r.XactlyExpress__TermsAndConditions__c}" escape="false" />
+	                            </div>
+	                            
+	
+	                        </div>
+	                            <div class="viewPlanDocLink">
+	                                <a href="{!$Page.XactlySMBExportPlanDocuments}?pId={!currentPlan.p.id}&cFy={!selectedFiscalYear}{!IF(OR(userId == null, userId == ''), '', '&userId=' + userId)}" class="smallBlueLink">{!$Label.ViewPlanDoc}</a>
+	                            </div>                      
+	                        <div class="SummaryBoxFooter"></div>
+	                    </apex:outputPanel>
+	                    <apex:outputPanel layout="block" rendered="{!ISNULL(currentPlan)}">
+	                        {!$Label.xactlyexpress__NoPlansForThisYearOrPerson}
+	                    </apex:outputPanel>
+                    </div>
+                </apex:outputPanel>
+                <div style="clear:both"></div>
+            </apex:outputPanel>
+            
+            <!-- FOOTER  -->
+            <apex:outputPanel layout="block" styleClass="footer" id="pFooter">
+                <apex:outputPanel layout="block" styleClass="previousStepWrapper" style="max-width:150px;">
+                    <div class="previousStepLeft"></div>
+                    <a class="previousStepMiddle" href="{!$Page.XactlySMBDashRepMyDeals}{!IF(LEN(emulatingUserURLAppend)>0,'?'&emulatingUserURLAppend,'')}" onclick="savePageHandler.disableBottomBar();">
+                        {!$Label.PreviousStep}
+                    </a>
+                    <div class="previousStepRight"></div>
+                </apex:outputpanel>
+                <div class="btnToRight btnAction">
+                    <a href="{!$Page.XactlyExpress__XactlySMBUnderConstruction}">
+                        <div class="rightBtnOrange">
+                            <div class="leftBtnOrange">
+                                <div class="middleBtnOrange">
+                                   {!$Label.xactlyexpress__ExportSummary}
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </apex:outputPanel>         
+        </apex:form>
+    </div>  
+    <apex:includeScript value="{!URLFOR($Resource.XactlyExpress__CSN, 'jquery.js')}" />
+    <c:XactlySMBFooterScript /> 
+    <script type="text/javascript" language="javascript" src="{!URLFOR($Resource.XactlySMBResources, 'js/XactlySMBJavascript.js')}"></script>
+</apex:page>

@@ -1,0 +1,259 @@
+<apex:page id="importLog" controller="XactlyExpress.XactlySMBImportLinkToDealsController" sidebar="false" showHeader="false" standardStylesheets="true"  action="{!redirectWhenAccessIsDenied}">
+    <c:XactlySMBCursor />
+    <link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.XactlySMBResources ,'css/XactlySMBFontStyles.css')}" /> 
+    <style>
+          
+        body {font-family: 'Helvetica', Arial, sans-serif !important;}
+        body td{font-family: 'Helvetica', Arial, sans-serif !important;}
+        body .x-btn button, body .btn, body .btnImportant, body .btnDisabled, body .btnCancel, body .menuButton .menuButtonButton, body .menuButton .menuButtonMenu a, body .menuButton .menuButtonMenu input.theOption, h1, h2, h3, h4, h5, h6 {font-family: 'Helvetica', Arial, sans-serif !important;}
+        
+         table{
+            border-collapse: collapse;
+         }
+         
+         table tr th{
+            padding:5px;
+            border-right:1px solid #C2DFFF;
+         }
+         table thead tr{
+            color: #3B6080;
+         } 
+         
+         table tr td{
+            padding:5px;
+            text-align:left;
+            border-right:1px solid #C2DFFF;
+         }
+         
+         table tr td div{
+            white-space:nowrap;
+         }
+         
+         a, a:hover { 
+            cursor:pointer;
+            text-decoration:none;
+            color:#446076;
+         } 
+         
+         .leftSidePanel{
+            width:715px;
+            margin:20px;
+            padding-left: 6px;
+            padding-right: 6px;
+         }
+                 
+        .tableContainer{
+            clear:both;
+            padding-left:30px;
+            padding-top:10px;
+            padding-right:30px;
+        }   
+        .tableBottonsContiner{
+           width:215px;
+           float:right;
+           padding-top:5px;
+        }
+         
+         table td{
+            border-right: none;
+         }  
+         
+         table th{
+            border-right: none;
+         }
+         
+         table tr.odd{
+            background-color: #FFFFFF;
+            height:30px;
+         }
+         
+         table tr.even{
+            background-color: #E7E7E7;
+            height:30px;
+         }
+         
+         .selected{
+            background-color: #CECECE;
+         }   
+         
+         .topTble{
+            background:transparent url({!URLFOR($Resource.XactlySMBResources,'img/layout/table_top_1000w_no_title_bar.png')}) no-repeat scroll 0 0;
+            height: 9px;
+            width: 510px;
+            margin-top:1px;
+         }
+         
+         .errorCel{
+            color:#FF0000;
+            font-weight:bold;
+         }
+         .bottomTble{
+            background:transparent url({!URLFOR($Resource.XactlySMBResources,'img/layout/table_top_1000w_no_title_bar.png')}) no-repeat scroll 0 0;
+            height: 9px;
+            width: 510px;
+         }   
+         
+  
+        .filtersDetails{
+            float:left;
+            margin-left:136px;
+            margin-top:10px;
+            overflow:hidden;
+            position:relative;
+            width:350px;
+        }     
+        
+        .xactlyLogoContainer {
+            height: 59px;
+            width: 720px;
+            margin: 0px;
+            padding: 0px;
+            bottom: 10px;
+            right: 20px;
+            position: absolute;
+        }     
+        .xactlyLogo{
+            background: url({!URLFOR($Resource.XactlySMBResources, 'img/layout/SearchXactlyLogo.png')}) white no-repeat right bottom;
+            border-top:  3px solid #D5D7D8;
+            margin-left:10px;
+            height: 59px;
+            position: relative;
+            
+        }
+        
+        .importPanelTitle{
+            font-family: 'ProximaNovaSemiBold' !important;
+            float:left;
+            color:#ffffff;
+            font-weight:bold;
+            font-size:15px;
+            margin-bottom:4px;
+            float:left;
+        }
+        
+        .editablePositive{
+            color:#8BB201;
+            font-weight: bold;
+            text-align:right;
+        }                
+    </style>
+    <apex:form id="theImportForm"> 
+        <div class="leftSidePanel">
+           <div style="background-color:#A4B8CB;padding:5px;" id="roundedCornerBlue">
+              <div class="importPanelTitle">
+                <a href="{!$Page.XactlySMBImportLogPopup}" style="color:#ffffff;">{!$Label.ImportLog}</a> -&gt; 
+                {!$Label.DuplicatedDeals}
+              </div>
+
+              <div style="clear:both;"></div>
+              <div>      
+             <center>
+             <div class="topTble" style="width:100%"></div>
+                <div style="width:700px;height:400px;overflow:auto;background-color:#FFFFFF" id="tableCont">                 
+                    <table style="width:100%;">
+                        <thead style="height: 30px;">
+                            <tr class="even">
+                            <apex:repeat var="h" value="{!attrs}"> 
+                                <th>                                                                           
+                                    <apex:outputText value="{!IF(h.Name == 'Product Id',$Label.xactlyexpress__Product,IF(h.Name == 'Account Id',$Label.xactlyexpress__Account,h.Name))}{!IF(h.XactlyExpress__IsRequired__c, '*','')}" />
+                                </th> 
+                            </apex:repeat>
+                           </tr> 
+                          </thead> 
+                          <tbody>
+	                          <apex:variable var="rowCount" value="{!0}"/>
+	                          <apex:variable var="iterIndex" value="{!1}"/>
+							  <apex:repeat var="d" value="{!dealsObjList}">
+                                <tr style="cursor:pointer;" class="{!IF(rowCount = 0, 'odd','even')}"  onclick="window.opener.parent.location='XactlySMBDealDetails?Id={!d.d.Id}';window.close();">
+                                    <apex:repeat value="{!d.attrs}" var="y">
+                                        <td>
+                                            
+                                            <apex:outputPanel styleclass="rowShow{!RIGHT(TEXT(iterIndex),2)}" rendered="{!LEFT(y.field,7) == 'Boolean'}" layout="block">
+                                                <apex:outputText value="{!y.value}"/>&nbsp;
+                                            </apex:outputPanel>
+                                            
+                                            <apex:outputPanel styleclass="rowShow{!RIGHT(TEXT(iterIndex),2)}" rendered="{!y.field == 'ProfileId__c'}" layout="block">
+                                                <apex:outputText value="{!d.Salesperson}"/>&nbsp;
+                                            </apex:outputPanel>
+                                            
+                                            <apex:outputPanel styleclass="rowShow{!RIGHT(TEXT(iterIndex),2)}" rendered="{!y.field == 'ProductId__c'}" layout="block" style="white-space:nowrap;">
+                                                <apex:outputText value="{!d.ProductName}"/>&nbsp;
+                                            </apex:outputPanel>
+                                              
+                                            <apex:outputPanel styleclass="rowShow{!RIGHT(TEXT(iterIndex),2)}" rendered="{!y.field == 'AccountId__c'}" layout="block" style="white-space:nowrap;">
+                                                <apex:outputText value="{!d.AccountName}"/>&nbsp;
+                                            </apex:outputPanel>
+                                            
+                                            <apex:outputPanel styleclass="rowShow{!RIGHT(TEXT(iterIndex),2)}" rendered="{!y.field == 'DealId__c'}" layout="block">
+                                                <apex:outputText value="{!d.d.XactlyExpress__DealID__c}"/>&nbsp;
+                                            </apex:outputPanel>
+                                            
+                                            <apex:outputPanel styleclass="rowShow{!RIGHT(TEXT(iterIndex),2)}" rendered="{!y.field == 'DealDate__c'}" layout="block">
+                                                <apex:outputText id="dealdate" value="{!d.dateFormat}"/>&nbsp;
+                                            </apex:outputPanel>
+                                            
+                                            <apex:outputPanel styleclass="rowShow{!RIGHT(TEXT(iterIndex),2)}" rendered="{!AND(y.field != 'DealDate__c', y.datatype=='date')}" layout="block">
+                                                <apex:outputText value="{!y.value}"/>&nbsp;
+                                            </apex:outputPanel>
+                                            
+                                            <apex:outputPanel styleclass="rowShow{!RIGHT(TEXT(iterIndex),2)} {!IF(OR(y.datatype == 'currency', y.datatype == 'decimal'),IF(NOT(CONTAINS(y.value,'-')),'editablePositive','editableNegative'),'')}" rendered="{!AND(y.field != 'ProductId__c', y.field != 'AccountId__c', y.field != 'DealId__c', y.field != 'ProfileId__c', y.field != 'DealDate__c', y.field != 'ProfileId__r.UserId__c',y.datatype!='date', LEFT(y.field,7) != 'Boolean')}" layout="block">
+                                                <apex:outputText value="{!y.value}"/>&nbsp;
+                                            </apex:outputPanel> 
+                                                                                    
+                                        </td>
+                                    </apex:repeat>						 
+							    </tr>     
+							    <apex:variable var="iterIndex" value="{!iterIndex + 1}"/>
+							    <apex:variable var="rowCount" value="{!(rowCount * -1) + 1}"/>                         
+							</apex:repeat>
+                            <apex:repeat var="v" value="{!dealsRemoveIds}">
+                                <tr class="{!IF(rowCount = 0, 'odd','even')}">
+                                    <td colspan="{!attrs.size}" align="center">
+                                        <apex:outputText value="{!$Label.xactlyexpress__removeDuplicatedDeal}" style="margin-left:20px;color:red;">
+                                            <apex:param value="{!v}"></apex:param>
+                                        </apex:outputText>
+                                    </td>
+                                </tr>     
+                                <apex:variable var="rowCount" value="{!(rowCount * -1) + 1}"/>                         
+                            </apex:repeat>
+                          </tbody>
+                      </table>
+                    </div>
+                <div class="bottomTble" style="width:100%"></div>
+           </center>
+        </div>
+    </div>
+    </div>
+    
+    <apex:outputPanel rendered="{!maximumLogExceeded}" layout="block" style="color: red; padding-left: 25px; font-weight: bold;">
+       Maximum log exceeded.
+    </apex:outputPanel>
+    
+    <div class="xactlyLogoContainer"><div class="xactlyLogo"></div></div>
+    
+    </apex:form>
+    <apex:includeScript value="{!URLFOR($Resource.XactlyExpress__CSN, 'jquery.js')}" />
+    <c:XactlySMBFooterScript /> 
+    <script type="text/javascript" language="javascript" src="{!URLFOR($Resource.XactlySMBResources, 'js/XactlySMBJavascript.js')}"></script>
+    <script type="text/javascript" language="javascript" src="{!URLFOR($Resource.XactlySMBResources, 'js/jquery.curvycorners.min.js')}"></script>
+    <script type="text/javascript">
+        $('#roundedCornerBlue').corner({
+            tl: { radius: 5 },
+            tr: { radius: 5 },
+            bl: { radius: 5 },
+            br: { radius: 5 },
+            antiAlias: true
+        });    
+        
+ 
+        $(document).ready(function(){
+    
+        });
+              
+    
+        function goToPage(){
+           waitOn();
+           goToPageAF();
+        }
+    </script>
+</apex:page>

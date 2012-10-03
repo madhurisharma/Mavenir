@@ -1,0 +1,95 @@
+<apex:component id="salesRepHeaderComp" controller="XactlyExpress.XactlySMBHeaderController" >
+    <apex:attribute name="CurrentUserOrSlected" description="The Current User" type="User" required="false" />
+    <apex:attribute name="emulatingUserURLAppend" description="The Emulated User" type="String" required="false" />
+    <apex:attribute name="nbrSeparator" description="To Determinate the number format" type="String" required="false" />
+    <apex:attribute name="nbrDecimal" description="To Determinate the number format" type="String" required="false" />
+    <apex:attribute name="isActive" description="Derminate if the user is active" type="Boolean" required="false" />
+    <apex:attribute name="isAdmin" description="Derminate if the user is admin" type="Boolean" required="false" />
+    <apex:attribute name="isSalesAdmin" description="Derminate if the user is sales admin" type="Boolean" required="false" />
+    <apex:attribute name="isManager" description="Derminate if the user is manager" type="Boolean" required="false" />
+    <apex:attribute name="isEmulatedManager" description="Derminate if the user is emulated manager" type="Boolean" required="false" />
+    <apex:attribute name="lastClosedPeriod" description="lastClosedPeriod" type="XactlyExpress__XCPeriod__c" required="false" />
+    
+    <apex:attribute name="selected" description="The selected tab" type="Integer" required="false" />
+    <apex:attribute name="hlabel" description="The label bottom of wizard" type="String" required="false" />
+    <apex:attribute name="dealsLabel" description="The Deal Label" type="String" required="false" />
+    <apex:attribute name="emulatingUserURLAppend" description="The userId append to the links" type="String" required="true" />    
+    <apex:attribute name="stepHelp" description="The parameter to help page" type="String" required="false" />
+	<apex:includeScript value="{!URLFOR($Resource.XactlyExpress__CSN, 'jquery.js')}" />
+	
+    <link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.XactlySMBResources ,'css/XactlySMBFontStyles.css')}" />
+    <link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.XactlySMBResources ,'css/XactlySMBHeader.css')}" /> 
+    <style>
+        
+    	.botHeader{
+    		color:#FFFFFF;
+    		margin-left: 9px;
+    	}
+    	
+        .headerComponentInfo {
+            position: relative;
+            overflow: visible;
+            float: left;
+            margin: 2px 0px 0px 0px;
+        }
+        
+        .headerComponentDropdown {
+            position: relative;
+            overflow: visible;
+            float: left;
+            margin: -5px 0px 0px 15px;
+            width:136px;
+        }
+        
+        .headerComponentCont {
+            position: relative; 
+            overflow:visible; 
+            z-index:2002;    
+        }   
+        
+        div#XactlySMBHeader {
+		    background: url("{!URLFOR($Resource.XactlySMBResources ,'img/layout/XacltySliderBack.png')}") no-repeat scroll left 5px transparent;
+		    clear: both;
+		    height: 39px;
+		    margin-right: 70px;
+		    position: relative;
+		    width: 100%;
+		} 	
+    </style>
+    <div  class="topHeader">
+        <div class="HeaderText headerComponentCont">
+            <div class="headerComponentInfo">
+                <div style="position:relative;overflow:hidden;">
+                <div class="HeaderTextElement HelveticaRegular10"><apex:outputText value="{!CrrntPeriod}"/>&nbsp;<apex:outputText value="{!CrrntYear}" /></div>
+                <a href="/_ui/core/userprofile/UserProfilePage?u={!$User.Id}" class="HeaderTextElement HelveticaRegular10">
+                    <apex:outputText value="{!$Label.xactlyexpress__NameAndLastName}">
+                        <apex:param value="{!$User.FirstName}" />
+                        <apex:param value="{!$User.LastName}" />
+                    </apex:outputText>
+                </a>   
+                <a href="{!$Page.XactlySMBHelpAndInformation}" class="HeaderTextElement HelveticaRegular10"><apex:outputText value="{!$Label.xactlyexpress__Help}" /></a>
+                </div>
+                <div style="position:relative;overflow:hidden;">
+                <apex:outputPanel layout="block"  style="float:left;margin-top:-4px;position:relative;overflow:hidden;" rendered="{!isAdmin}"> 
+	                <div class="HeaderTextElement HelveticaRegular10"><apex:outputText value="{!$Label.xactlyexpress__CurrentlyLoggedIn}"/></div>
+	                <a href="/_ui/core/userprofile/UserProfilePage?u={!CurrentUserOrSlected.Id}" class="HeaderTextElement HelveticaRegular10">
+	                    <apex:outputText value="{!$Label.xactlyexpress__NameAndLastName}">
+	                        <apex:param value="{!CurrentUserOrSlected.FirstName}"/>
+	                        <apex:param value="{!CurrentUserOrSlected.LastName}"/>
+	                    </apex:outputText>
+	                </a>
+                </apex:outputPanel>
+                </div>
+            </div>
+            <div class="headerComponentDropdown">
+                <c:XactlySMBExpressDropdown fullLogout="{!IF(NOT(isAdmin), true, false)}"/>
+            </div>
+        </div>
+    </div>  
+  
+    <script>
+       var nbrSeparator = "{!nbrSeparator}";
+       var nbrDecimal = "{!nbrDecimal}";
+       var ChangesWillNotBeSaved = "{!$Label.xactlyexpress__ChangesWillNotBeSaved}";
+    </script>
+</apex:component>

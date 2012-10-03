@@ -1,0 +1,239 @@
+<!-- 
+Page:addrevenuetype
+Created Date : 21 Aug 2012
+Description : Add Revenue Type in Opportunity
+Requested By:
+ -->
+<apex:page controller="RTAddController" tabStyle="Revenue_Type__c" action="{!addAction}">  
+<style>
+    .bPageBlock .detailList .dataCol .pbSubsection .detailList .labelCol
+    {
+        width: 30%;
+    }
+</style> 
+<script>
+
+// create as many regular expressions here as you need:
+var digitsOnly = /[1234567890.]/g;
+var integerOnly = /[0-9\.]/g;
+var alphaOnly = /[A-Z]/g;
+
+function restrictCharacters(myfield, e, restrictionType) {
+    if (!e) var e = window.event
+    if (e.keyCode) code = e.keyCode;
+    else if (e.which) code = e.which;
+    var character = String.fromCharCode(code);
+
+    // if they pressed esc... remove focus from field...
+    if (code==27) { this.blur(); return false; }
+    
+    // ignore if they are press other keys
+    // strange because code: 39 is the down key AND ' key...
+    // and DEL also equals .
+    if (!e.ctrlKey && code!=9 && code!=8 && code!=36 && code!=37 && code!=38 && (code!=39 || (code==39 && character=="'")) && code!=40) {
+        if (character.match(restrictionType)) {
+            return true;
+        } else {
+            return false;
+        }
+        
+    }
+}
+function hasValue(v)
+    {
+        v = v +'';
+        if(v && v!=null && v.replace(/^\s*([\S\s]*?)\s*$/, '$1')!='')
+            return true;
+        else
+            return false;   
+    }
+    function checkforSupport(){
+    	
+    	var lc = document.getElementById('{!$Component.fr.pg.bookvalues.bk.pbsb.bk1.lic}').value;
+    	var pd = document.getElementById('{!$Component.fr:pg:bookvalues:bk:pbsb:bk2:ps}').value;
+    	var cd = document.getElementById('{!$Component.fr:pg:bookvalues:bk:pbsb:bk3:cd}').value;
+    	var tp = document.getElementById('{!$Component.fr:pg:bookvalues:bk:pbsb:bk4:tp}').value;
+    	var tpVAS = document.getElementById('{!$Component.fr:pg:bookvalues:bk:pbsb:bk5:tpVAS}').value;
+    	var sup = document.getElementById('{!$Component.fr:pg:bookvalues:bk:pbsb:bk6:sup}').value;
+    	
+    	var msg = 'You have selected support only. Is the support start date and duration correct?';
+    	
+    	if(hasValue(sup) && !hasValue(lc) && !hasValue(pd) && !hasValue(cd) && !hasValue(tp) && !hasValue(tpVAS) && window.confirm(msg))
+    		return true;
+    	else if(hasValue(lc) || hasValue(pd) || hasValue(cd) | hasValue(tp) || hasValue(tpVAS))
+    		return true;
+    	
+    }
+    
+    function removeDecimal(v)
+    {
+    	if(v.indexOf('.')>-1)
+    		return v.substring(0,v.indexOf('.'));
+    	else
+    		return v;	
+    	
+    }
+</script>
+    <apex:sectionHeader title="Add Revenue Type" subtitle="{!opportunity.Name}" />
+    <apex:form id="fr" >
+    <apex:pageMessages id="messages1"/>   
+        <apex:pageBlock id="pg">
+            
+             <apex:pageBlockSection columns="2" title="" collapsible="false" id="pgs0"> 
+                   
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="Product"/>
+                         <apex:outputPanel layout="block" id="rtproduct">
+                        <apex:actionRegion >
+                            <apex:inputField value="{!rtObject.Product__c}" required="true">
+                                <apex:actionSupport event="onchange" rerender="rtproduct, family" action="{!populateProductFamily}"/> 
+                            </apex:inputField>
+                        </apex:actionRegion>
+                        </apex:outputPanel>
+                    </apex:pageBlockSectionItem>
+                 
+                    <apex:pageBlockSectionItem id="currentbook">                    
+                        <apex:outputLabel value="Book(Current Product)"/> 
+                        <apex:outputPanel id="curbook">                             
+                                   <apex:outputField value="{!tOpportunity.Cash_collected__c}" id="occ"/>  
+                                   <script>
+                            			if(hasValue(document.getElementById("{!$Component.occ}").innerHTML))
+                            				document.getElementById("{!$Component.occ}").innerHTML = removeDecimal(document.getElementById("{!$Component.occ}").innerHTML);
+                            </script>                               
+                         </apex:outputPanel>                         
+                    </apex:pageBlockSectionItem>
+                   
+                    
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="Product Family"/>
+                         <apex:outputPanel layout="block" id="family">
+                            <apex:outputField value="{!rtObject.Product_Family__c}" />
+                         </apex:outputPanel>    
+                     </apex:pageBlockSectionItem>
+                                        
+                         <apex:pageBlockSectionItem id="pgs32">
+                            <apex:outputLabel value="Book(Opportunity)"/> 
+                            <apex:outputPanel id="book1">
+                                <apex:outputField value="{!tOpportunity.Amount}" id="oa"/> 
+                                 <script>
+                            	if(hasValue(document.getElementById("{!$Component.oa}").innerHTML))
+                            		document.getElementById("{!$Component.oa}").innerHTML = removeDecimal(document.getElementById("{!$Component.oa}").innerHTML);
+                            </script>
+                                
+                            </apex:outputPanel>
+                        </apex:pageBlockSectionItem>                   
+                    <apex:inputField value="{!opportunity.CloseDate}" required="true"/>            
+             
+             			<script>
+             				if(document.getElementById('{!$Component.pb1.pbs3.sdm}').value)
+                                            document.getElementById('{!$Component.pb1.pbs3.sdm}').value = parseInt(document.getElementById('{!$Component.pb1.pbs3.sdm}').value);
+             			</script>
+             
+             
+             </apex:pageBlockSection> 
+           
+           
+             <apex:pageBlockSection columns="2" id="bookvalues">
+                  <apex:pageBlockSectionItem id="bk">
+                     <apex:pageBlockSection columns="1" title="Book Value ($)" collapsible="false" id="pbsb">
+                         <apex:pageBlockSectionItem id="bk1">
+                            <apex:outputLabel value="License"/>  
+                            <apex:outputPanel id="op">
+                                <apex:inputText id="lic" size="20"  maxlength="9" value="{!license}" onkeypress="return restrictCharacters(this, event, digitsOnly);"/>  
+                                <apex:inputField value="{!rtObject.License_Type__c}"></apex:inputField>
+                            </apex:outputPanel>
+                        </apex:pageBlockSectionItem>
+                                            
+                          <apex:pageBlockSectionItem id="bk2">
+                            <apex:outputLabel value="Professional services"/>
+                            <apex:inputText id="ps" size="20"  maxlength="9"  value="{!professionalServices}" onkeypress="return restrictCharacters(this, event, digitsOnly);"/>
+                          </apex:pageBlockSectionItem>
+                      
+                        
+                       <apex:pageBlockSectionItem id="bk3">                  
+                           <apex:outputLabel value="Custom Development"/>
+                           <apex:inputText id="cd" size="20"  maxlength="9"  value="{!customDevelopment}" onkeypress="return restrictCharacters(this, event, digitsOnly);"/>
+                       </apex:pageBlockSectionItem> 
+                       
+                        <apex:pageBlockSectionItem id="bk4">                  
+                           <apex:outputLabel value="3rd Party"/>
+                            <apex:inputText id="tp" size="20"  maxlength="9"  value="{!thirdParty}" onkeypress="return restrictCharacters(this, event, digitsOnly);"/> 
+                       </apex:pageBlockSectionItem> 
+                       
+                                 
+                        <apex:pageBlockSectionItem id="bk5">                  
+                           <apex:outputLabel value="3rd Party VAS"/>
+                            <apex:inputText id="tpVAS" size="20"  maxlength="9"  value="{!thirdPartyVAS}" onkeypress="return restrictCharacters(this, event, digitsOnly);"/> 
+                       </apex:pageBlockSectionItem>
+                       
+                       <apex:pageBlockSectionItem id="bk6">                  
+                           <apex:outputLabel value="Support"/>
+                            <apex:outputPanel >
+                                <apex:inputText id="sup" size="20"  maxlength="9"  value="{!support}" onkeypress="return restrictCharacters(this, event, digitsOnly);"/>
+                                <apex:inputField value="{!rtObject.Support_Type__c}"/>
+                            </apex:outputPanel>
+                       </apex:pageBlockSectionItem>
+                       
+                     </apex:pageBlockSection>
+                     
+                  </apex:pageBlockSectionItem>
+                  
+                  <apex:actionRegion >
+                      <apex:pageBlockSectionItem >
+                        <apex:outputPanel id="resetvalues">
+                            <apex:pageBlockSection id="pb1" columns="1" title="Revenue Recognition Forecast Data" collapsible="false">
+                               
+                                 <apex:pageBlockSectionItem > 
+                                    <apex:outputLabel value=""/>
+                                    <apex:commandButton value="Reset Defaults" action="{!resetDefaultValues}" rerender="resetvalues"/>
+                                 </apex:pageBlockSectionItem>
+                                                          
+                                  <apex:pageBlockSectionItem id="pbs1">                  
+                                      <apex:outputLabel value="Project Start Lag Days"/>
+                                      <apex:inputText size="20" value="{!opportunity.Project_Start_Lag_Days__c}" id="lagdays"  onkeypress="return restrictCharacters(this, event, digitsOnly);" maxlength="2"/>                                      
+                                    </apex:pageBlockSectionItem> 
+                                                                       
+                                   <apex:pageBlockSectionItem id="pbs2">                  
+                                       <apex:outputLabel value="Delivery Duration Months" />
+                                       <apex:inputText size="20"  maxlength="2"  value="{!opportunity.Delivery_Duration_Months__c}" id="ddm"  onkeypress="return restrictCharacters(this, event, digitsOnly);"/>
+                                   </apex:pageBlockSectionItem> 
+                                   
+                                   <apex:pageBlockSectionItem >                  
+                                       <apex:outputLabel value="Support Start Date"/>
+                                         <apex:inputField value="{!opportunity.Support_Start_Date__c}"/>
+                                   </apex:pageBlockSectionItem>
+                                   
+                                    <apex:pageBlockSectionItem id="pbs3">                   
+                                       <apex:outputLabel value="Support Duration Months" />
+                                        <apex:inputText size="20"  maxlength="2" value="{!opportunity.Support_Duration_Months__c}" id="sdm"  onkeypress="return restrictCharacters(this, event, digitsOnly);"/>
+                                   </apex:pageBlockSectionItem>
+                                    <script>
+                                        if(document.getElementById('{!$Component.pb1.pbs1.lagdays}').value)
+                                            document.getElementById('{!$Component.pb1.pbs1.lagdays}').value = parseInt(document.getElementById('{!$Component.pb1.pbs1.lagdays}').value);
+                                                                                
+                                        if(document.getElementById('{!$Component.pb1.pbs2.ddm}').value)
+                                            document.getElementById('{!$Component.pb1.pbs2.ddm}').value = parseInt(document.getElementById('{!$Component.pb1.pbs2.ddm}').value);
+                                        
+                                        if(document.getElementById('{!$Component.pb1.pbs3.sdm}').value)
+                                            document.getElementById('{!$Component.pb1.pbs3.sdm}').value = parseInt(document.getElementById('{!$Component.pb1.pbs3.sdm}').value);
+                                    </script>   
+                                
+                            </apex:pageBlockSection>
+                        </apex:outputPanel>
+                      </apex:pageBlockSectionItem>           
+                 </apex:actionRegion>     
+                     
+             </apex:pageBlockSection> 
+           <apex:pageBlockButtons >
+                <apex:commandButton value="Save" action="{!goSaveAdd}" onclick="if(!checkforSupport()) return false;"/>
+                <apex:commandButton value="Save and Add Product" action="{!goSaveAndAddProduct}" onclick="if(!checkforSupport()) return false;"/>
+                <apex:commandButton value="Calculate"  action="{!goCalculateCurrentBookValue}" rerender="bookvalues, curbook, book1,messages1"/>
+                <apex:commandButton value="Cancel" action="{!cancel}" immediate="true"/>
+            </apex:pageBlockButtons>
+            
+             
+            
+        </apex:pageBlock>
+    </apex:form>
+   
+</apex:page>

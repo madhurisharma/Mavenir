@@ -1,0 +1,36 @@
+<apex:component >
+    
+
+    <style> 
+    
+    .orangeLi{
+       color:#BD5C19;
+       font-weight: bold;
+    }
+    
+    </style>
+    
+	<link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.XactlySMBResources ,'css/XactlySMBMeasureList.css')}" />
+	<apex:attribute name="ctl" description="The parent controller" type="XactlyExpress.XactlySMBPlanController" required="true" access="public"/>
+	<apex:attribute name="compLabel" description="The Component Label" type="String" access="public"/>
+	
+	<apex:outputPanel id="editMeasuresContainer" layout="block">
+		<div id="measuresContainer">
+			<div class="measuresTitle">
+				<apex:outputtext value="{!$Label.xactlyexpress__EditAMeasure}">
+					<apex:param value="{!compLabel}" />
+				</apex:outputtext>
+			</div>	
+			<div class="measuresContent">
+				<apex:repeat value="{!ctl.pqm.quotas}" var="quota">
+					<apex:commandLink value="{!quota.Name}" action="{!ctl.pqm.changeCurrentQuota}" styleClass="{!IF(quota.name==ctl.pqm.currentQuota.name,'orangeLi','measuresListLinks')}">
+						<apex:param value="{!quota.Id}" name="quotaId"/>
+					</apex:commandLink><br />
+				</apex:repeat>
+			</div>
+			<div class="measuresBottom">
+			
+			</div>
+		</div>	 
+	</apex:outputPanel>
+</apex:component>

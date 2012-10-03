@@ -1,0 +1,141 @@
+<!--
+Developed by Timba Software Corp. www.timbasoftware.com admin@timbasoftware.com
+ This component displays a custom left panel with contextual help and actions
+ @author Juan Bessonart <jbessonart@timbasoftware.com>
+-->
+<apex:component controller="XactlyExpress.XactlySMBLeftPlanListController">
+	<apex:attribute name="plan" description="The Plan" type="sObject" assignTo="{!currentPlan2}" access="public"/>
+	<apex:attribute name="emulatingUserURLAppend" description="The userId append to the links" type="String" required="true" />
+	<style>
+		div#planListContainer {
+			font-size: 11px;
+			margin-left: 34px;
+			width: 210px;
+		}
+		
+		div.planListTitle {
+			background: url({!URLFOR($Resource.XactlyExpress__XactlySMBResources, 'img/layout/table_top_210w.png')}) no-repeat;
+			font-weight: bold;
+			height: 20px;
+			padding: 2px 0px 0px 10px;
+		}
+		
+		div.planListContent {
+			background: white;
+			max-height: 235px;
+			height: expression(this.scrollHeight > 236? "235px": "auto");
+			_width:193px;
+			_height: 235px;
+			overflow-y: auto;
+			padding: 4px 4px 40px 10px;
+			position: relative;
+			overflow: auto;
+			border-left: 1px solid #CCCCCC;
+			border-right: 1px solid #CCCCCC;
+		}
+		
+		div.planListBottom {
+			background: url({!URLFOR($Resource.XactlyExpress__XactlySMBResources, 'img/layout/table_bottom_210w.png')}) no-repeat;
+			height: 15px;
+			width: 210px;
+		}
+		
+		.planListContent .section {
+			margin: 10px 0px;
+			position: relative;
+			overflow: hidden;
+		}
+		
+		.planListContent .section .sectionHeader {
+			text-decoration: underline;
+			font-size: 12px;
+			font-weight: bold;
+			margin-bottom: 4px;
+			position: relative;
+			overflow: hidden;
+		}
+		
+		.planListContent .section .sectionValues {
+			position: relative;
+			overflow: hidden;
+		}
+		
+		.planListContent .section .sectionValues .label {
+			float: left;
+			display: inline;
+		}
+		
+		.planListContent .section .sectionValues .value {
+			float: right;
+			display: inline;
+		}
+		
+		.planListContent .totalPaySection {
+			margin: 0px;
+			width: 195px;
+		}
+		
+		.planListContent .section .totalPay {
+			position: relative;
+			overflow: hidden;
+			color: #BD5C19;
+			font-size: 14px;
+			font-weight: bold;
+		}
+		
+		.planListContent .section .totalPay .label {
+			float: left;
+			display: inline;
+		}
+		
+		.planListContent .section .totalPay .value {
+			float: right;
+			display: inline;
+		}
+		
+	</style>
+	
+	
+	<div id="planListContainer">
+		<div class="planListTitle">
+			{!$Label.xactlyexpress__SelectAPlan}
+		</div>	
+		<div class="planListContent">
+			
+			<apex:outputPanel layout="block" rendered="{!!ISNULL(plan)}">
+				<apex:repeat value="{!YTDPay}" var="iter">
+					<div class="section">
+						<div class="sectionHeader">
+							<a href="{!$Page.XactlyExpress__XactlySMBDashRepPlanDetails}?id={!iter.planId}{!IF(LEN(emulatingUserURLAppend)>0,'&'&emulatingUserURLAppend,'')}">{!iter.Name}</a>
+						</div>
+						<div class="sectionValues">
+							<div class="label">
+								{!$Label.xactlyexpress__YTDPay}:
+							</div>
+							<div class="value">
+								<apex:outputPanel layout="none" rendered="{!IF(iter.manualAdjustment > 0,true,false)}"><span style="color:#ff0000;">* </span></apex:outputPanel>{!iter.ytdPlusManualAdj}
+							</div>
+						</div>
+					</div>
+					<div style="clear: both;"></div>
+				</apex:repeat>
+				<div class="section totalPaySection">
+                <div class="totalPay">
+                    <div class="label">
+                        {!$Label.xactlyexpress__YTDPay}
+                    </div>
+                    <div class="value">
+                        <apex:outputtext value="{!StotalYTDPay}" />
+                    </div>
+                </div>
+            </div>
+			</apex:outputPanel>
+			<apex:outputPanel layout="block" rendered="{!ISNULL(plan)}">
+				{!$Label.xactlyexpress__NoPlansForThisYearOrPerson}
+			</apex:outputPanel>
+		</div>
+		<div class="planListBottom">
+		
+		</div>
+	</div>
+</apex:component>

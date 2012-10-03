@@ -1,0 +1,7 @@
+<!-- 
+Developed by Timba Software Corp. www.timbasoftware.com admin@timbasoftware.com
+ This page defines plans
+ @author Alvaro Scuccimarra <ascuccimarra@timbasoftware.com>
+-->
+<apex:page sidebar="false" showHeader="false" standardStylesheets="true"> 
+</apex:page>

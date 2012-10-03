@@ -1,0 +1,770 @@
+<apex:component id="releaseRuleBox" controller="XactlyExpress.XactlySMBReleaseRulesController" allowDML="true">
+    <apex:attribute name="planId" description="Assign plan id" assignTo="{!planId}" type="String" required="false" />
+    <style>
+
+        
+        .contentRR {
+            font-size: 11px;
+            padding: 0px;
+            position:relative;
+            overflow: hidden;
+            float:left;
+            margin-top:10px;
+        }  
+        
+        a {
+            text-decoration: none;
+        }
+     
+        
+        .btnAction {
+            /*position: relative;*/
+            overflow: hidden;
+        }
+        
+        .btnAction input {
+            float: left;
+        }
+        
+        .btnAction .leftBtnSilverRR {
+            background: url({!URLFOR($Resource.XactlyExpress__XactlySMBResources, 'img/layout/sch_bottomSilvRight.png')}) transparent no-repeat scroll right center;
+            float: left;
+            height:19px;
+            padding:0px 0px 0px 5px;
+            width:auto;
+        }
+        .btnAction .middleBtnSilverRR {
+            color: white;
+            height:19px;
+            text-transform: lowercase;
+            font-size: 11px;
+            padding:2px 25px 0 0;
+            float:left;
+        }
+        .btnAction .rightBtnSilverRR {
+            background: url({!URLFOR($Resource.XactlyExpress__XactlySMBResources, 'img/layout/sch_bottomSilvLeft.png')}) transparent no-repeat scroll left center;
+            float:left;
+            height:19px;
+            width:auto;
+            margin-top: 1px;
+            margin-left: 5px;
+            padding-left:22px;
+        }         
+        
+        .btnAction .leftBtnOrangeRR {
+            background: url({!URLFOR($Resource.XactlyExpress__XactlySMBResources, 'img/layout/sch_bottomRight.png')}) transparent no-repeat scroll right center;
+            float: left;
+            height:19px;
+            padding:0px 0px 0px 5px;
+            width:auto;
+        }
+        .btnAction .middleBtnOrangeRR {
+            color: white;
+            height:19px;
+            text-transform: lowercase;
+            font-size: 11px;
+            padding:2px 25px 0 0;
+            float:left;
+        }
+        .btnAction .rightBtnOrangeRR {
+            background: url({!URLFOR($Resource.XactlyExpress__XactlySMBResources, 'img/layout/sch_bottomLeft.png')}) transparent no-repeat scroll left center;
+            float:left;
+            height:19px;
+            width:auto;
+            margin-top: 1px;
+            margin-left: 5px;
+            padding-left:22px;
+        }  
+        
+
+        
+        .topBorder {
+            background: url({!URLFOR($Resource.XactlyExpress__XactlySMBResources, 'img/layout/SearchBackgroundTopBorder.jpg')}) white repeat-x;
+            height: 9px;
+            margin: 0px;
+            padding: 0px;
+        }
+        
+        .bottomBorder {
+            background: url({!URLFOR($Resource.XactlyExpress__XactlySMBResources, 'img/layout/SearchBackgroundBottomBorder.jpg')}) white repeat-x;
+            height: 4px;
+            padding: 0px;
+            bottom: 69px;
+            right: 20px;
+            left: 20px;
+        }
+        
+        .superboxRRFooter {
+            float:left;
+            background: url({!URLFOR($Resource.XactlyExpress__XactlySMBResources, 'img/layout/sch_winBot.png')}) transparent no-repeat right bottom;
+            height: 52px;
+            width: 100%;
+            margin: 0px;
+        }
+        
+        .resultPanel {
+            float:left;
+            height:400px;
+            overflow:auto;
+            margin: 0px 0px 0px 10px;
+        }
+        
+        .titleLabel { 
+            color:#3b6f8e; 
+            font-size:24px;
+        }
+        
+        .saveAndCancel {
+            float:right;
+            padding:12px 0 0 40px;
+            width:610px;
+        }
+        
+        .importCategory {
+            font-weight: bold;
+            font-size: 14px;
+            color: #3B6080;
+        }
+        
+        .importCategoryOptions {
+            
+        }
+        
+        .optionsContainer {
+            border: 1px solid black; 
+            margin: 5px 20px;
+            padding: 20px;
+        }
+        
+        /*************** footer button styles ***************/
+        
+
+        .displayNone{
+            display:none;
+            
+        }
+        
+        #releaseRule .close{
+            display:none;
+        }
+        
+        .btnAction .middleBtnSilver, .btnAction .middleBtnSilverDisabled {
+            font-size: 10px;
+            font-weight: bold;
+            padding: 3px 5px;
+            width: auto;
+        }
+        
+        .saveAsPanel{
+            overflow: visible; 
+            float: left;
+            margin:10px 0 0 20px;
+        }
+        
+
+        .btnAction .leftBtnSilver {
+            background:url({!URLFOR($Resource.XactlyExpress__XactlySMBResources, 'img/buttons/silver_button_left.gif')}) transparent  no-repeat scroll top left;
+            float: left;
+            height:19px;
+            padding:0px 0px 0px 5px;
+            width:auto;
+        }
+
+        .btnAction .rightBtnSilver {
+            background: url({!URLFOR($Resource.XactlyExpress__XactlySMBResources, 'img/buttons/silver_button_right.gif')}) transparent no-repeat scroll right top;
+            /*background: url(../img/buttons/silver_button_right.png) transparent no-repeat scroll right top;*/
+            float:left;
+            height:19px;
+            padding:0px 5px 0px 0px;
+            width:auto;
+            margin-left: 5px;           
+        }
+        
+        /*************** end of footer button styles ***************/
+        
+        #adjustIcon{
+            float:left;
+            margin-left:10px;
+            width:57px;
+            height:57px;
+            background: url({!URLFOR($Resource.XactlyExpress__XactlySMBResources, 'img/icons/adjustPaymentBigIcon.png')}) no-repeat;
+        }
+        
+        .releaseRuleDetailsWrapper {
+            /*margin-top: 20px;*/
+        }
+
+        .releaseRuleDetailsWrapper table img {
+            border: 0px;
+        }
+        
+        .releaseRuleDetailsWrapper table td{
+            border-right: 1px solid #888888;
+            padding:5px;
+         }
+         
+         .releaseRuleDetailsWrapper table th{
+            border-right: 1px solid #888888;
+            color:#3B6F8E;
+            font-size:11px;
+            font-weight:normal;
+            height:21px;
+            padding:3px 12px 7px;
+          }
+         
+         .releaseRuleDetailsWrapper table tr.odd{
+            background-color: #FFFFFF;
+         }
+         
+         .releaseRuleDetailsWrapper table tr.even{
+            background-color: #E7E7E7;
+         }
+         
+         .releaseRuleDetailsWrapper table thead tr{
+            background-color: #CECECE;
+            color: #426E83;
+            border-bottom: 1px solid #000000;
+         }
+         
+        .percentInp {
+            width:97px;
+            text-align: right;    
+        }
+        
+        .eventNameInput {
+           width: 180px;
+           float: right;
+        }
+        
+        .eventDescInput {
+           width: 200px;
+        }
+        
+        .errorsPanel {
+           color: red;
+           font-weight: bold;
+           font-size: 12px;
+        }
+        
+        .superboxRRBody{
+            background-color:#FFFFFF;
+            border-left:3px solid #A7A9AC;
+            border-right:3px solid #A7A9AC;
+            margin-left:5px;
+            width:989px;
+        }
+        .superboxRRTop{
+            background: url({!URLFOR($Resource.XactlyExpress__XactlySMBResources, 'img/layout/sch_winTop.png')}) no-repeat;
+            height:25px;
+            margin-left:5px;
+            width:996px;
+        }
+        
+        .titleBoxContainer{
+            float:left;
+            margin-top:20px;
+            margin-left: 20px;
+        }
+        
+        .tableRRHeader{
+            background: url({!URLFOR($Resource.XactlyExpress__XactlySMBResources, 'img/layout/sch_tableHeader.png')}) repeat-x;
+        }
+        .tablePayment{
+            border:1px solid #D6D6D7;
+        }
+        
+        .independentRow{
+            background: url({!URLFOR($Resource.XactlyExpress__XactlySMBResources, 'img/layout/sch_tableTitle.png')}) repeat-x;
+        }
+        
+        .oddRemove{
+            background: url({!URLFOR($Resource.XactlyExpress__XactlySMBResources, 'img/buttons/delete_small.png')}) no-repeat;
+            width:18px;
+            height:18px;
+            float:left;
+        }
+        
+    </style>
+    <div id="releaseRule" style="display:none;">
+        <div class="contentRR"> 
+            <apex:form id="ruleForm">
+               <apex:inputText value="{!selectedQualifierID}" style="display:none;" styleclass="selectedQualifierIDInput" />
+               <apex:inputText value="{!forLastAdded}" style="display:none;" styleclass="forLastAdded" />
+               
+               <apex:outputpanel styleclass="defineRuleIframe" id="QualifierPopupIframe" style="display:none;">
+                   <iframe id="relQalifIframe" allowtransparency="allowtransparency" frameborder="0" style="border:none;width:1000px;height:1000px" src="{!$Page.XactlySMBReleaseQualifierRule}?sct=schQual&qualifier={!selectedQualifierID}&id={!currentReleaseRule.id}" />
+               </apex:outputpanel>
+               <div class="mainPopupEditRule">
+	               <div class="superboxRRTop"></div>
+	               <div class="superboxRRBody">
+	                    <div style="clear:both;"></div>
+	                    <apex:actionFunction name="initRR" action="{!initRR}" rerender="header, ruleTypesOptions, resultPanel, superboxRRFooter"  oncomplete="setReleaseType();showReleaseRule();waitOff();" />
+	                    <apex:actionFunction name="refreshDetails" action="{!refreshDetails}"  rerender="releaseRuleDetails"  oncomplete="setReleaseType();jQuery.superbox.refreshSuperboxContent();refreshAllTotals();waitOff();" />
+	                    
+	                    <apex:actionFunction name="addReleaseQualifier" action="{!addReleaseQualifier}"  rerender="releaseRuleDetails"  oncomplete="setReleaseType();jQuery.superbox.refreshSuperboxContent();refreshAllTotals();waitOff();" />
+	                    
+	                    <apex:actionFunction name="saveReleaseRule" action="{!saveReleaseRule}" oncomplete="jQuery.superbox.refreshSuperboxContent();validateSave();waitOff();" rerender="errorPanel"/>     
+	                    <apex:actionFunction name="saveReleaseRuleClone" action="{!saveAsReleaseRuleClone}" oncomplete="jQuery.superbox.refreshSuperboxContent();saveAndCloseRR();waitOff();" rerender="errorPanel"  />
+	                    
+	                    <apex:actionFunction name="addNewQR" rerender="QualifierPopupIframe" oncomplete="changePopupCont();" action="{!editQualifierRule}"/>
+	                    <apex:actionFunction name="dummyRefrshRR" action="{!dummy}"  rerender="releaseRuleDetails"  oncomplete="jQuery.superbox.refreshSuperboxContent();refreshAllTotals();changePopupCont2();" />
+	        
+	                    <apex:outputpanel layout="block" style="position:relative; overflow: hidden;" id="header">
+	                        <div class="titleBoxContainer">
+	                            <apex:outputtext styleclass="titleLabel" value="{!$Label.xactlyexpress__StaggeredPaymentName}" /> &nbsp;
+	                            <apex:inputText id="releaseName" value="{!currentReleaseRule.name}" />
+	                        </div>
+	                    </apex:outputpanel>
+	                    <apex:inputText value="{!releaseRuleId}" id="rrId" style="display:none;"/>
+	                    <apex:inputText value="{!measureId}" id="mrId" style="display:none;"/>
+	                    <script>
+	                        var measureId = '{!$Component.mrId}'.replace(/:/g,'\\:');
+	                        var releaseRuleId = '{!$Component.rrId}'.replace(/:/g,'\\:');
+	                        
+	                    </script>
+	                    
+	                                                        
+	                    <div class="box" style="margin: 30px 15px 15px 15px;">
+	                          <div class="tm">
+	                              <div style="float: left;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/tl.png')}" /></div>
+	                              <div style="float: right;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/tr.png')}" /></div>
+	                              <div style="clear:both;"></div>
+	                          </div> 
+	                          <div class="roundedBox">
+	                              <div class="boxHeader">
+	                                  <div class="titleWrapper" style="padding-left:15px">  
+	                                      <div class="mainTitle" style="font-weight:normal;color:#3B6F8E;font-size:18px;">{!$Label.SelectTypeOfRule}</div>
+	                                      <div class="detailedTitle" style="color:#6d6e71;font-size:12px;">{!$Label.RRTypesDescription}</div>
+	                                  </div>
+	                              </div>
+	                              <div class="boxContent" style="padding: 5px 0pt 0pt 20px;"> 
+	                                   <div style="clear:both"></div>
+	                                    <apex:selectRadio id="ruleTypesOptions" style="display:inline;float:left;" value="{!currentReleaseRule.XactlyExpress__Type__c}" onclick="refreshReleseRuleDetails(this);">
+	                                        <apex:selectOptions value="{!releaseRuleTypes}" />
+	                                    </apex:selectRadio>
+	                                    <div style="clear:both"></div>
+	                                    <script>
+	                                      var ruleTypesOptions = '{!$Component.ruleTypesOptions}'.replace(/:/g,'\\:');;
+	                                   </script>  
+	                              </div>    
+	                          </div>         
+	                          <div class="bm">
+	                              <div style="float: left;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/bl.png')}" /></div>
+	                              <div style="float: right;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/br.png')}" /></div>
+	                          </div> 
+	                    </div>
+	                    
+	                    <div style="clear:both"></div>
+	                    
+	                    <apex:outputpanel styleclass="resultPanel" layout="block" id="resultPanel">
+	                        <apex:outputpanel layout="block" id="errorPanel" styleclass="errorsPanel">
+	                            <apex:repeat value="{!errors}" var="err">
+	                                <apex:outputtext value="{!err}" /><br />
+	                            </apex:repeat>
+	                            <script>
+	                                var errorNumber = {!errors.size};
+	                            </script>
+	                        </apex:outputpanel>
+	                        
+	                        
+	                                   
+	                        <apex:outputpanel layout="block" id="releaseRuleDetails" styleclass="releaseRuleDetailsWrapper">
+	                            <input type="hidden" value="{!ReleaseQualifiersList.size}" class="ReleaseQualifiersListSize"/>
+	                            <div style="overflow:auto;max-width:957px;max-height: 400px;max-height /*\**/:380px\9;*height:400px;margin-left:6px;">
+	                                <table cellpadding="0" cellspacing="0" class="tablePayment">
+	                                  <thead>
+	                                      <tr class="tableRRHeader">
+	                                          <th style="width: 220px;"><apex:outputtext value="{!$Label.xactlyexpress__EventName}" /></th>
+	                                          <th style="width: 220px;"><apex:outputtext value="{!$Label.xactlyexpress__Description}" /></th>
+	                                          <apex:variable var="index" value="{!0}"/>
+	                                          <apex:repeat id="repsReleaseQualifiersList" value="{!ReleaseQualifiersList}" var="p">
+	                                              <th style="width: 220px;"><apex:outputtext style="float:left" value="{!$Label.xactlyexpress__Percent}" />
+	                                                  <span style="float:right">
+	                                                       <apex:commandLink styleclass="deleteLink{!ROUND(index,0)}" style="display:none" action="{!removeQulifierLink}" onclick="jQuery.superbox.overrideSourceWithSuperboxContent();waitOn();" value="" rerender="releaseRuleDetails" oncomplete="setReleaseType();jQuery.superbox.refreshSuperboxContent();refreshAllTotals();waitOff();">
+	                                                           <apex:param name="qlLknIdx" value="{!ROUND(index,0)}"/>
+	                                                       </apex:commandLink>
+	                                                       <a href="javascript:;" onclick="jQuery('.deleteLink{!ROUND(index,0)}').click();"> 
+	                                                           <apex:image url="{!URLFOR($Resource.XactlyExpress__XactlySMBResources, 'img/buttons/delete_small.png')}" alt="{!$Label.xactlyexpress__Delete}"/>
+	                                                       </a>
+	                                                  </span>
+	                                              </th>
+	                                              <apex:variable var="index" value="{!index+1}"/>
+	                                          </apex:repeat>
+	                                          <th style="width: 220px;">
+	                                              <apex:outputtext style="float:left" value="{!$Label.xactlyexpress__Percent}" />
+	                                              <div class="btnToLeft btnAction" style="position:inherit;">
+	                                                  <apex:outputPanel style="float:right;cursor:pointer;" onclick="jQuery.superbox.overrideSourceWithSuperboxContent();waitOn();addReleaseQualifier();"> 
+	                                                      <span class="rightBtnSilverRR" >
+	                                                          <span class="leftBtnSilverRR">
+	                                                              <span class="middleBtnSilverRR">
+	                                                                  <apex:outputtext value="{!$Label.xactlyexpress__addQualifier}">
+	                                                                    <apex:param value="{!currentSettings.qualifier}"/>
+	                                                                  </apex:outputtext>
+	                                                              </span>
+	                                                          </span>
+	                                                      </span>
+	                                                  </apex:outputPanel>
+	                                              </div>
+	                                          </th>
+	                                      </tr>
+	                                  </thead>
+	                                  <tbody>
+	                                     <apex:repeat id="repreleaseRuleDetail" value="{!releaseRuleDetail}" var="iter">
+	                                      <tr class="{!IF(mod(iter.rDetail.ReleaseRuleEventID__r.XactlyExpress__Order__c,2)=0,'odd',IF(currentReleaseRule.XactlyExpress__Type__c == RELEASE_RULE_TYPE_SCHEDULE && iter.rDetail.ReleaseRuleEventID__r.XactlyExpress__Order__c == 1, 'independentRow','even'))}">
+	                                          <td>       
+	                                              <div style="width: 210px;">    
+	                                                  <apex:outputpanel rendered="{!IF(iter.rDetail.ReleaseRuleEventID__r.XactlyExpress__Order__c == 1 && currentReleaseRule.XactlyExpress__Type__c == RELEASE_RULE_TYPE_SCHEDULE, true, false)}">
+	                                                      <apex:outputText style="margin-left: 15px;" value="{!$Label.xactlyexpress__PaidOnFirstEvent}" />
+	                                                  </apex:outputpanel>                           
+	                                                  <apex:outputpanel rendered="{!IF(AND(NOT(currentReleaseRule.XactlyExpress__Type__c == RELEASE_RULE_TYPE_PRORATE), NOT(iter.rDetail.ReleaseRuleEventID__r.XactlyExpress__Order__c == 1), NOT(iter.rDetail.ReleaseRuleEventID__r.XactlyExpress__Order__c == releaseRuleDetail.size) || currentReleaseRule.XactlyExpress__Type__c == RELEASE_RULE_TYPE_SCHEDULE), true, false)}" style="margin-left:6px;margin-top:3px;float:left;">
+	                                                      <apex:commandLink styleClass="oddRemove" action="{!deleteEvent}" rerender="releaseRuleDetails" onclick="waitOn();jQuery.superbox.overrideSourceWithSuperboxContent();" oncomplete="jQuery.superbox.refreshSuperboxContent();refreshAllTotals();waitOff();">
+	                                                          <apex:param name="delOrder" value="{!iter.rDetail.ReleaseRuleEventID__r.XactlyExpress__Order__c}" />
+	                                                      </apex:commandLink>    
+	                                                  </apex:outputpanel>
+	                                                  <div style="float:right;">
+	                                                      <apex:inputText id="eventNameInput" styleclass="eventNameInput" value="{!iter.rDetail.ReleaseRuleEventID__r.XactlyExpress__EventName__c}"  rendered="{!currentReleaseRule.XactlyExpress__Type__c != RELEASE_RULE_TYPE_SCHEDULE}" style="{!IF(AND(NOT(currentReleaseRule.XactlyExpress__Type__c == RELEASE_RULE_TYPE_PRORATE), NOT(iter.rDetail.ReleaseRuleEventID__r.XactlyExpress__Order__c == 1), NOT(iter.rDetail.ReleaseRuleEventID__r.XactlyExpress__Order__c == releaseRuleDetail.size)), 'width: 150px;', 'width: 203px;')}" />
+	                                                      <apex:selectList size="1"  id="ruleTypesOptions" styleclass="eventNameInput" value="{!iter.rDetail.ReleaseRuleEventID__r.XactlyExpress__PeriodOffset__c}" rendered="{!currentReleaseRule.Type__c == RELEASE_RULE_TYPE_SCHEDULE && iter.rDetail.ReleaseRuleEventID__r.Order__c > 1}">
+	                                                          <apex:selectOptions value="{!periodsOptions}" />
+	                                                      </apex:selectList>
+	                                                  </div>
+	                                                  <div style="clear:both;"></div>
+	                                              </div>    
+	                                          </td>  
+	                                          <td>
+	                                              <apex:outputpanel rendered="{!IF(OR(ROUND(iter.rDetail.ReleaseRuleEventID__r.XactlyExpress__Order__c,0) == 1, currentReleaseRule.XactlyExpress__Type__c == RELEASE_RULE_TYPE_PRORATE) && currentReleaseRule.XactlyExpress__Type__c != RELEASE_RULE_TYPE_SCHEDULE, false, true)}">
+	                                                  <apex:inputText id="eventDescInput" styleclass="eventDescInput" value="{!iter.rDetail.ReleaseRuleEventID__r.XactlyExpress__EventDescription__c}" />
+	                                              </apex:outputpanel>
+	                                              <apex:outputpanel rendered="{!IF(OR(ROUND(iter.rDetail.ReleaseRuleEventID__r.XactlyExpress__Order__c,0) == 1, currentReleaseRule.XactlyExpress__Type__c == RELEASE_RULE_TYPE_PRORATE) && currentReleaseRule.XactlyExpress__Type__c != RELEASE_RULE_TYPE_SCHEDULE, true, false)}">
+	                                                  <apex:outputText value="{!iter.rDetail.ReleaseRuleEventID__r.XactlyExpress__EventDescription__c}" />
+	                                              </apex:outputpanel>
+	                                          </td>
+	                                         <apex:variable var="index3" value="{!0}"/>
+	                                         <apex:repeat id="repReleaseQualifiersList" value="{!ReleaseQualifiersList}" var="p">
+	                                              <apex:repeat id="repReleaseRuleDetails" value="{!p.ReleaseRuleDetails}" var="t">
+	                                                 <apex:outputPanel layout="none" rendered="{!iter.index == t.index}"> 
+	                                                     <td>
+	                                                         <div  style="width: 180px;">
+	                                                            <div style="float:left;width:120px;">
+	                                                                <apex:outputpanel layout="none" rendered="{!IF(ROUND(t.index,0) == p.ReleaseRuleDetails.size -1, false, true)}">
+	                                                                    <apex:inputField id="percentInp" style="float:left;" styleclass="percentInp percentInput{!ROUND(index3,0)}" onBlur="jQuery.superbox.overrideSourceWithSuperboxContent();refreshRunningTotal({!ROUND(index3,0)});" value="{!t.rDetail.XactlyExpress__ReleasePct__c}"/>  <div style="float:right;;margin-top:4px;">%</div>
+	                                                                </apex:outputpanel>
+	                                                                <apex:outputpanel layout="none" rendered="{!IF(ROUND(t.index,0) == p.ReleaseRuleDetails.size -1, true, false)}">
+	                                                                    <apex:outputText value="{!$Label.xactlyexpress__RemainingBalance}"/>   
+	                                                                </apex:outputpanel>
+	                                                            </div>
+	                                                            <div style="float:right;margin-top:4px;">
+	                                                                <apex:outputpanel layout="none" rendered="{!IF(ROUND(t.index,0) == p.ReleaseRuleDetails.size -1, false, true)}">
+	                                                                    <span class="runningTotalOutput{!ROUND(index3,0)}"></span>
+	                                                                </apex:outputpanel>
+	                                                                <apex:outputpanel rendered="{!IF(ROUND(t.index,0) == p.ReleaseRuleDetails.size -1, true, false)}">
+	                                                                    100% 
+	                                                                </apex:outputpanel>
+	                                                            </div>
+	                                                            <div style="clear:both"></div>
+	                                                         </div>   
+	                                                     </td>
+	                                                 </apex:outputPanel>
+	                                              </apex:repeat>
+	                                              <apex:variable var="index3" value="{!index3+1}"/>
+	                                         </apex:repeat>
+	                                         <td>
+	                                             <div  style="width: 180px;">
+	                                                <div style="float:left;width:120px;">
+	                                                    <apex:outputpanel rendered="{!IF(ROUND(iter.rDetail.ReleaseRuleEventID__r.XactlyExpress__Order__c,0) == releaseRuleDetail.size, false, true)}">
+	                                                        <apex:inputText id="percentInput" style="float:left;" styleclass="percentInp percentInput" onBlur="jQuery.superbox.overrideSourceWithSuperboxContent();refreshRunningTotal();" value="{!iter.rDetail.XactlyExpress__ReleasePct__c}" />  <div style="float:right;;margin-top:4px;">%</div>
+	                                                    </apex:outputpanel>
+	                                                    <apex:outputpanel rendered="{!IF(ROUND(iter.rDetail.ReleaseRuleEventID__r.XactlyExpress__Order__c,0) == releaseRuleDetail.size, true, false)}">
+	                                                        <apex:outputText value="{!$Label.xactlyexpress__RemainingBalance}"/>   
+	                                                    </apex:outputpanel>
+	                                                </div>
+	                                                    <apex:outputpanel rendered="{!IF(ROUND(iter.rDetail.ReleaseRuleEventID__r.XactlyExpress__Order__c,0) == releaseRuleDetail.size, false, true)}" style="float: right; margin-top: 4px;">
+	                                                        <span class="runningTotalOutput"></span>
+	                                                    </apex:outputpanel>
+	                                                    <apex:outputpanel rendered="{!IF(ROUND(iter.rDetail.ReleaseRuleEventID__r.XactlyExpress__Order__c,0) == releaseRuleDetail.size, true, false)}">
+	                                                        100% 
+	                                                    </apex:outputpanel>
+	                                                <div style="clear:both"></div>
+	                                             </div>
+	                                         </td>
+	                                      </tr>
+	                                    </apex:repeat>
+	                                    
+	                                    <tr class="independentRow">
+	                                       <td>
+	                                           <apex:outputpanel layout="none" rendered="{!IF(currentReleaseRule.XactlyExpress__Type__c == RELEASE_RULE_TYPE_PRORATE, false, true)}">
+	                                              <div class="btnToLeft btnAction" style="position:inherit;float:left;">
+	                                                  <apex:commandLink action="{!addEvent}" onclick="waitOn();jQuery.superbox.overrideSourceWithSuperboxContent();" rerender="releaseRuleDetails" oncomplete="jQuery.superbox.refreshSuperboxContent();refreshAllTotals();waitOff();">
+	                                                      <span class="rightBtnSilverRR" >
+	                                                          <span class="leftBtnSilverRR">
+	                                                              <span class="middleBtnSilverRR">
+	                                                                  {!$Label.AddRow}
+	                                                              </span>
+	                                                          </span>
+	                                                      </span>
+	                                                  </apex:commandLink>
+	                                              </div>
+	                                          </apex:outputpanel>
+	                                          <apex:inputText id="rowsNumb" rendered="{!IF(currentReleaseRule.XactlyExpress__Type__c == RELEASE_RULE_TYPE_PRORATE, false, true)}" value="{!addQuantity}" onBlur="contentControl(this);" style="width:25px;float:left;margin-left:10px;"/>
+	                                       </td>
+	                                       <td>
+	                                          <apex:outputtext value="{!$Label.xactlyexpress__qualifierLeftRight}">
+	                                            <apex:param value="{!currentSettings.qualifierPluralCap}"/>
+	                                          </apex:outputtext>
+	                                       </td>
+	                                       <apex:variable var="index" value="{!0}"/>
+	                                       <apex:repeat id="repReleaseQualifiersList" value="{!ReleaseQualifiersList}" var="p">
+	                                           <td>
+	                                              <div>
+	                                                  <div style="float:left;">
+			                                              <apex:selectList id="qualifDrpdwn" styleclass="qualifDrpdwn" size="1" value="{!p.ReleaseRuleLink.XactlyExpress__ReleaseQualifierID__c}" onchange="jQuery.superbox.overrideSourceWithSuperboxContent();if(jQuery(this).val()=='a00000000000000'){waitOn();jQuery('.selectedQualifierIDInput').val('a00000000000000');jQuery('.forLastAddded').val('{!index}');addNewQR();}" >
+			                                                  <apex:selectOptions value="{!ReleaseRulesList}" />
+			                                              </apex:selectList>
+		                                              </div>
+		                                              <div class="btnToLeft btnAction" style="position:inherit;float:left;">
+		                                                  <apex:commandLink rerender="QualifierPopupIframe" oncomplete="changePopupCont();" onclick="jQuery.superbox.overrideSourceWithSuperboxContent();waitOn();javascript: jQuery('.selectedQualifierIDInput').val(jQuery('.qualifDrpdwn',jQuery(this).parent().parent()).val());jQuery('.forLastAddded').val('{!index}');" action="{!editQualifierRule}" style="float:right;cursor:pointer;" > 
+		                                                      <span class="rightBtnSilverRR" >
+		                                                          <span class="leftBtnSilverRR">
+		                                                              <span class="middleBtnSilverRR">
+		                                                                  <apex:outputtext value="{!$Label.xactlyexpress__EditRule}"/>
+		                                                              </span>
+		                                                          </span>
+		                                                      </span>
+		                                                  </apex:commandLink>
+		                                              </div>
+		                                              <div style="clear:both;"></div>
+	                                              </div>
+	                                           </td>
+	                                           <apex:variable var="index" value="{!index + 1}"/>
+	                                       </apex:repeat>
+	                                       
+	                                       
+	                                       
+	                                       <td style="border-right:0px none;">
+	                                          <apex:outputtext value="{!$Label.xactlyexpress__noQualifier}">
+	                                            <apex:param value="{!currentSettings.qualifierPluralCap}"/>
+	                                          </apex:outputtext>
+	                                       </td>
+	                                    </tr>
+	                                  </tbody>
+	                                </table>   
+	                            </div>
+	                        </apex:outputpanel>
+	                    </apex:outputpanel>
+	
+	                    <div style="clear:both;"></div>
+	                </div>
+	                <apex:outputpanel layout="block" id="superboxRRFooter" styleClass="superboxRRFooter">
+	                    <apex:outputpanel rendered="{!IF(ISNULL(currentReleaseRule.Id), false, true)}"> 
+	                        <div class="btnAction saveAsPanel">                                          
+	                            <apex:outputLink value="javascript:;" styleClass="saveAsBtn" id="saveAsBtn" onclick="saveAsRR();">
+	                                <apex:outputPanel styleClass="rightBtnOrangeRR">
+	                                     <apex:outputPanel styleClass="leftBtnOrangeRR">
+	                                         <apex:outputPanel styleClass="middleBtnOrangeRR" style="color: white;">
+	                                             {!$Label.xactlyexpress__SaveAs}
+	                                        </apex:outputPanel>
+	                                    </apex:outputPanel>     
+	                                 </apex:outputPanel>   
+	                                 <apex:outputPanel styleClass="rightBtnSilver displayNone">
+	                                     <apex:outputPanel styleClass="leftBtnSilver">
+	                                         <apex:outputPanel styleClass="middleBtnSilver">
+	                                             {!$Label.xactlyexpress__SaveAs}
+	                                         </apex:outputPanel>
+	                                     </apex:outputPanel> 
+	                                 </apex:outputPanel>
+	                            </apex:outputLink>
+	                        </div> 
+	                    </apex:outputpanel>
+	                    <div class="btnToCenter btnAction saveAndCancel">
+	                     <apex:outputLink value="javascript:;" disabled="{!!isEditable}" onclick="waitOn();saveRR();">
+	                         <apex:outputPanel styleClass="rightBtnOrangeRR">  
+	                              <apex:outputPanel styleClass="leftBtnOrangeRR">
+	                                  <apex:outputPanel styleClass="middleBtnOrangeRR" style="color: white;">
+	                                      {!$Label.xactlyexpress__Save}
+	                                 </apex:outputPanel>
+	                             </apex:outputPanel>     
+	                          </apex:outputPanel>   
+	                          <apex:outputPanel styleClass="rightBtnSilver displayNone">
+	                              <apex:outputPanel styleClass="leftBtnSilver">
+	                                  <apex:outputPanel styleClass="middleBtnSilver">
+	                                      {!$Label.xactlyexpress__Save}
+	                                  </apex:outputPanel>
+	                              </apex:outputPanel>
+	                          </apex:outputPanel>
+	                     </apex:outputLink>
+	                     
+	                     <apex:outputLink styleClass="discardChanges" value="javascript:;" onclick="jQuery.superbox.overrideSourceWithSuperboxContent();jQuery.superbox.close();">                         
+	                          <apex:outputPanel styleClass="rightBtnOrangeRR">
+	                              <apex:outputPanel styleClass="leftBtnOrangeRR">
+	                                  <apex:outputPanel styleClass="middleBtnOrangeRR" style="color: white;">
+	                                      {!$Label.xactlyexpress__Cancel}
+	                                 </apex:outputPanel>
+	                             </apex:outputPanel>
+	                          </apex:outputPanel>   
+	                          <apex:outputPanel styleClass="rightBtnSilver displayNone">
+	                              <apex:outputPanel styleClass="leftBtnSilver">
+	                                  <apex:outputPanel styleClass="middleBtnSilver">
+	                                      {!$Label.xactlyexpress__Cancel}
+	                                  </apex:outputPanel>
+	                              </apex:outputPanel>
+	                          </apex:outputPanel>       
+	                      </apex:outputLink>
+	                  </div>
+	                      <c:XactlySMBFooterScript /> 
+	                 
+               </apex:outputpanel>
+                </div>
+            </apex:form>
+        </div>
+    </div>
+    
+    <a id="releaseRuleLink" rel="superbox[content#releaseRule.xactlySuperBox][1000][700]" href="#releaseRule" onclick="jQuery('.hiddenResults').hide();" style="display:none"></a>
+    <script>
+         
+         var nbrSeparator = '{!nbrSeparator}';
+         var nbrDecimal = '{!nbrDecimal}';
+         
+         function changePopupCont(){
+            jQuery.superbox.refreshSuperboxContent();
+            setTimeout("jQuery('.defineRuleIframe').show();jQuery('.mainPopupEditRule').hide();waitOff();",3000);
+         }
+         
+         function changePopupCont2(){
+            jQuery('.defineRuleIframe').hide();
+            jQuery('.mainPopupEditRule').show();
+            waitOff();
+         }
+                 
+         jQuery(document).ready(function() {
+            setReleaseType();
+        });
+
+         function showReleaseRule(){
+             jQuery('#releaseRuleLink').trigger('click');
+             setTimeout('clearReleaseRule()',500);
+         }
+         var checkSelected='';
+         function setReleaseType(){
+             if(jQuery('#'+ruleTypesOptions+' input').eq(0).is(':checked')){
+                checkSelected='prorated';
+             }else if(jQuery('#'+ruleTypesOptions+' input').eq(1).is(':checked')){
+                checkSelected='percent';
+             }else{
+                checkSelected='schedule';
+             }
+         }         
+
+         
+         /**
+          * clearReleaseRule is called when the popup is displayed.
+          * It deletes any error msg previously defined
+          */
+         function clearReleaseRule(){
+           refreshAllTotals();
+           var errorMsg = $innerbox.find('.errorMsg');
+             if(errorMsg!=undefined){
+               errorMsg.html('');
+             }
+         }     
+         
+        function contentControl(obj){
+            var objVal = jQuery(obj).val();
+            var valFixed = parseFloat(systemFormatNumber(objVal)).toFixed(0);
+            result = valFixed > 10?10:valFixed;
+            jQuery(obj).val(result);
+        }
+        
+        function saveAndCloseRR () {
+            jQuery.superbox.overrideSourceWithSuperboxContent();
+            if (errorNumber == 0) {
+                waitOn();
+                refreshReleaseRuleSelect();
+                jQuery.superbox.close();
+            } 
+        }    
+              
+          
+        function saveRR () {
+            jQuery.superbox.overrideSourceWithSuperboxContent();
+            var hasMeasure = {!hasMeasure};
+            if (!(hasMeasure)) {
+                saveReleaseRule();
+            } else {  
+                if (confirm("{!$Label.otherPlanRRAlert}")) {
+                   saveReleaseRule(); 
+                }
+            }
+        }              
+        
+        function saveAsRR () {
+            waitOn();
+            jQuery.superbox.overrideSourceWithSuperboxContent();
+            saveReleaseRuleClone(); 
+        }  
+        
+        function clearInputRR (){
+           jQuery('.contentRR:input').val('');
+        }
+
+        function refreshReleseRuleDetails(obj) {
+            if ( confirm("{!$Label.valuesRRWillBeReseted}")) {
+                waitOn();
+                jQuery.superbox.overrideSourceWithSuperboxContent();
+                refreshDetails();
+            } else {
+                if(checkSelected=='prorated'){
+                    jQuery('#superbox-innerbox #'+ruleTypesOptions+' input').eq(0).attr('checked',true);
+                }else if(checkSelected=='percent'){
+                    jQuery('#superbox-innerbox #'+ruleTypesOptions+' input').eq(1).attr('checked',true);
+                }else{
+                    jQuery('#superbox-innerbox #'+ruleTypesOptions+' input').eq(2).attr('checked',true);
+                }
+            }
+        }
+        
+        function IsNumericFloat(obj) {   
+            var value = obj.value;
+            if (value.toString().search(/^[0-9]*(\.[0-9]+)?$/) != 0) {
+                obj.value = 1; 
+                setTimeout('refreshAllTotals()',1);
+                alert('{!$Label.PleaseEnterValidNumber}');
+                return false;
+            }
+            return true
+        }
+        
+        function refreshAllTotals(){
+            refreshRunningTotal();
+            for(var i = 0; i < jQuery('.ReleaseQualifiersListSize').val();i++){
+                refreshRunningTotal(i);
+            }
+        }  
+       
+        function refreshRunningTotal(classNbr) {
+            if(classNbr == undefined){
+                classNbr = '';
+            }
+            var percentInputs = $innerbox.find('.percentInput' + classNbr);
+            var runningTotalOutputs = $innerbox.find('.runningTotalOutput' + classNbr);
+            var tempRunningTotal = 0; 
+            for (var i=0; i < percentInputs.length; i++) {
+                iterInput = percentInputs[i];
+                iterTotalOutput = runningTotalOutputs[i];
+                if (iterInput.value != null && iterInput.value != '' && iterInput.value != undefined &&  IsNumericFloat(iterInput)) {
+                    tempRunningTotal += parseFloat(iterInput.value);
+                }
+                if(iterTotalOutput != undefined){
+                    iterTotalOutput.innerHTML = formatNumber(tempRunningTotal.toFixed(2)) + '%';
+                }
+            }
+        }
+       
+           
+        function validateSave () {
+            if (errorNumber == 0) {
+                jQuery.superbox.overrideSourceWithSuperboxContent();
+                saveAndCloseRR();
+            }
+        }      
+                           
+    </script>
+</apex:component>

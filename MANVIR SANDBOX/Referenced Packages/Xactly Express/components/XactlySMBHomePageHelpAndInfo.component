@@ -1,0 +1,62 @@
+<apex:component >
+	<style> 
+		.helpAndInfoBox {
+			font-size:11px;
+			margin:50px 0 0;
+			width:210px;
+		}
+		.helpAndInfoBox .boxTitle {
+			background:transparent url({!URLFOR($Resource.XactlySMBResources ,'img/layout/table_top_210w.png')}) no-repeat scroll 0 0;
+			font-weight:bold;
+			height:20px;
+			padding:2px 0 0 10px;
+		}
+		.helpAndInfoBox .boxContent {
+			background:white none repeat scroll 0 0;
+			height:121px;
+			overflow-y:auto;
+			padding:6px;
+			border-left: 1px solid #CCCCCC;
+			border-right: 1px solid #CCCCCC;
+		}
+		
+		.helpAndInfoBox .boxBottom {
+			background:transparent url({!URLFOR($Resource.XactlySMBResources ,'img/layout/table_bottom_210w.png')}) no-repeat scroll 0 0;
+			height:15px;
+			width:210px;
+		}
+		
+		.helpAndInfoBox ul.linkList {
+			list-style-type: none;
+			margin: 0px 0px;
+			padding: 0px;
+		}
+		
+		.helpAndInfoBox ul.linkList li {
+			margin: 0px;
+			padding: 3px;	
+		}
+		
+		.helpAndInfoBox ul.linkList li a {
+			text-decoration:none;
+			color: blue;
+		}
+	</style>
+	
+	<div class="helpAndInfoBox">
+		<div class="boxTitle">
+			{!$Label.HelpAndInfo}  
+		</div>	
+		<div class="boxContent">
+		<ul class="linkList">
+			<li><a href="http://www.xactlyCorp.com">{!$Label.InformationAboutXactly}</a></li>
+			<br />
+			<li><a href="http://www.spmcoe.com">{!$Label.SpmCenterOfExcellence}</a></li>
+			<br />
+			
+			<li><a href="{!$Page.XactlySMBHelpAndInformation}">{!$Label.Help}</a></li>
+		</ul>
+		</div>
+		<div class="boxBottom"></div>
+	</div>
+</apex:component>

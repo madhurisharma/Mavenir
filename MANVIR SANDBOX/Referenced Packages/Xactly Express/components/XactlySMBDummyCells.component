@@ -1,0 +1,10 @@
+<apex:component >
+<apex:attribute name="ctl" description="the ctl" type="XactlyExpress.XactlySMBCommStmtController" required="true"/>
+<apex:attribute name="max" description="max" type="Integer" required="true"/>
+<apex:attribute name="color" description="htmlcolor" type="String" required="false"/>
+<apex:outputPanel rendered="{!max>0}">
+<apex:repeat value="{!ctl.dummyCells}" var="v" rows="{!max}">
+    <td bgcolor="{!IF(color == null, '#FFFFFF', color)}"></td>
+</apex:repeat>
+</apex:outputPanel>
+</apex:component>

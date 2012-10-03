@@ -1,0 +1,64 @@
+<apex:component controller="XactlyExpress.XactlySMBACLController">
+  <apex:outputPanel layout="none" rendered="{!isReadOnlyAdmin}">
+        <script>
+            
+              function readOnlyFixes(){
+                  jQuery('.saveaDD').addClass('disabledOpacityButton');
+                  jQuery('.saveaDD').attr("onclick", "javascript:;");            
+                  jQuery('.actionButtons').addClass('disabledOpacityButton');
+                  jQuery('.actionButtons a').attr("onclick", "javascript:;");
+                  
+                  jQuery('.saveAsBtn').addClass('disabledOpacityButton');
+                  jQuery('.saveBtn').addClass('disabledOpacityButton');
+                  jQuery('.saveBtn').attr("onclick", "javascript:;");              
+                  jQuery('.saveAsBtn').attr("onclick", "javascript:;"); 
+                               
+                  if(jQuery('.nextStepWrapper') != undefined){
+                     setNextStep();
+                  }
+              }
+              
+              function setNextStep(){
+              
+                  var linkValue = '';
+                  if(jQuery('.wizardBtn .middleWizardBtnActive1')[0] != undefined){
+                      linkValue = jQuery('a',jQuery(jQuery('.wizardContainer .wizardBtn')[1])).attr("href");
+                  }else if(jQuery('.wizardBtn .middleWizardBtnActive2')[0] != undefined){
+                      linkValue = jQuery('a',jQuery(jQuery('.wizardContainer .wizardBtn')[2])).attr("href");
+                  }else if(jQuery('.wizardBtn .middleWizardBtnActive3')[0] != undefined){
+                      linkValue = jQuery('a',jQuery(jQuery('.wizardContainer .wizardBtn')[3])).attr("href");
+                  }else if(jQuery('.wizardBtn .middleWizardBtnActive4')[0] != undefined){
+                      linkValue = jQuery('a',jQuery(jQuery('.wizardContainer .wizardBtn')[4])).attr("href");
+                  }else if(jQuery('.wizardBtn .middleWizardBtnActive5')[0] != undefined){
+                      linkValue = jQuery('a',jQuery(jQuery('.wizardContainer .wizardBtn')[5])).attr("href");
+                  }else if(jQuery('.wizardBtn .middleWizardBtnActive6')[0] != undefined){
+                      linkValue = jQuery('a',jQuery(jQuery('.wizardContainer .wizardBtn')[6])).attr("href");
+                  }
+
+                  jQuery('.nextStepWrapper .nextStepMiddle').attr("onclick", "");
+                  jQuery('.nextStepWrapper .nextStepMiddle').attr("href", linkValue);
+                  jQuery('.nextStepMiddle').html('{!$Label.xactlyexpress__SimpleNextStep}');
+              
+              }
+              readOnlyFixes();
+
+        </script>
+    </apex:outputPanel>      
+    <script>
+                    
+              function discardChangesConfirm(url){
+                  
+                  if(confirm('{!$Label.xactlyexpress__confirmDiscChanges}')){
+                    if(rerenderNoCompare  != undefined){
+                        rerenderNoCompare = false;
+                    }                    
+                    window.location.href = url;
+                  }else{
+                    if(rerenderNoCompare  != undefined){
+                        rerenderNoCompare = true;
+                    }
+                  }
+               }
+
+    </script>
+</apex:component>

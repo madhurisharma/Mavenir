@@ -1,0 +1,78 @@
+<apex:page controller="XactlyExpress.XactlySMBHandleInactiveUsersController" sidebar="false" showHeader="false" standardStylesheets="true">
+    <c:XactlySMBCursor />
+    <title>Inactive User Detected</title>
+    <link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.XactlySMBResources ,'css/XactlySMBDashboardStyles.css')}" />
+
+    
+    <c:XactlySMBShadows />
+    
+    <!-- PAGE WRAPPER -->  
+    <div class="pageContent" id="pContent">
+        <apex:form >
+            <!-- HEADER -->
+            <apex:outputPanel layout="block" styleClass="header">
+                <c:XactlySMBHeader isAdmin="{!isAdmin}"  isActive="{!isActive}" nbrSeparator="{!nbrSeparator}" nbrDecimal="{!nbrDecimal}" currentUserOrSlected="{!currentUserOrSlected}" wqlabel="{!currentSettings.quotasPlural}" wclabel="{!currentSettings.creditsPlural}" wlabel="{!currentSettings.dealsPluralCap}" emulatingUserURLAppend="{!emulatingUserURLAppend}" selected="1" />  
+            </apex:outputPanel>
+            
+            
+            
+            <!-- MAIN CONTENT -->
+            <apex:outputPanel layout="block" styleClass="mainContent" rendered="{!isActive}">
+                <div style="width: 510px; margin: 150px auto auto auto; padding-top: 60px; color: red;">
+	                <apex:outputtext value="{!$Label.xactlyexpress__InactiveUsersDetected}" />
+			        <br /><br />
+			        <apex:repeat value="{!toDeactivateProfiles}" var="iter">
+			             <a target="_blank" href="{!iter.UserId__c}">{!iter.UserId__r.Name}</a><br />
+			        </apex:repeat>
+			        
+			        <div style="width: 100px; margin: auto; padding-top: 20px;">
+				        <div class="btnToLeft btnAction newLeftPanel">
+		                     <div class="rightSide" style="white-space:nowrap; padding-right:9px">
+		                         <apex:commandLink styleclass="areaTitle actionButton newActionbutton"  action="{!removeInactiveUsers}">
+		                             <div class="rightBtnOrange">
+		                                 <div class="leftBtnOrange">
+		                                     <div class="middleBtnOrange">
+		                                         {!$Label.xactlyexpress__yes}
+		                                     </div>
+		                                 </div>
+		                             </div>
+		                         </apex:commandLink>
+		                     </div>
+		                 </div>
+		                 <div class="btnToLeft btnAction newLeftPanel">
+		                     <div class="rightSide" style="white-space:nowrap; padding-right:9px">
+		                         <apex:commandLink styleclass="areaTitle actionButton newActionbutton"  action="{!skipInactiveUsers}">
+		                             <div class="rightBtnOrange">
+		                                 <div class="leftBtnOrange">
+		                                     <div class="middleBtnOrange">
+		                                         {!$Label.xactlyexpress__No}
+		                                     </div>
+		                                 </div>
+		                             </div>
+		                         </apex:commandLink>
+		                     </div>
+		                 </div>   
+	                 </div> 
+	           </div>  
+            </apex:outputPanel>
+            <apex:outputPanel layout="block" styleClass="mainContent" rendered="{!!isActive}">
+                <div style="margin-top:200px;color:#FF0000;font-size:20pt;font-weight:bolder;">
+                   {!$Label.xactlyexpress__inactiveUserMessage}
+                </div>
+                <div style="margin-top:30px;color:#660000;font-size:15pt;font-weight:bolder;">
+                    <apex:repeat value="{!SysAdminUsers}" var="iter">
+                        <a href="../{!iter.XactlyExpress__UserID__c}"><apex:outputText value="{!iter.UserId__r.name}"/></a><br/>
+                    </apex:repeat>
+                </div>
+            </apex:outputPanel>
+            <!-- FOOTER  -->
+            <apex:outputPanel layout="block" styleClass="footer" rendered="{!isAdmin}" id="pFooter">
+                
+            </apex:outputPanel>         
+        </apex:form>
+    </div>
+    <apex:includeScript value="{!URLFOR($Resource.XactlyExpress__CSN, 'jquery.js')}" />
+    <c:XactlySMBFooterScript /> 
+    <script type="text/javascript" language="javascript" src="{!URLFOR($Resource.XactlySMBResources, 'js/XactlySMBJavascript.js')}"></script>
+ 
+</apex:page>

@@ -1,0 +1,303 @@
+<!--
+Developed by Timba Software Corp. www.timbasoftware.com admin@timbasoftware.com
+This page lists the columns to show on manage payments
+@author Fabian Rey <frey@timbasoftware.com>
+-->
+<apex:page controller="XactlyExpress.XactlySMBColsPaysPopupController" showHeader="false" sidebar="false" action="{!redirectWhenAccessIsDenied}">
+
+    <link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.XactlySMBResources ,'css/XactlySMBFontStyles.css')}" />
+	<link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.XactlySMBResources ,'css/slider.css')}" />
+
+	<style>
+        
+		body{
+			margin: 0px !important;
+			padding: 0px !important;
+		}
+        .content {
+            font-size: 11px;
+            padding: 0px;
+            margin: 20px;
+            position:relative;
+            overflow: hidden;
+        }
+        a {
+            text-decoration: none;
+        }
+		.header {
+            background: url({!URLFOR($Resource.XactlySMBResources, 'img/layout/SearchBackgroundHeader.jpg')}) white repeat-x;
+            height: 28px;
+            margin: 0px;
+            padding: 0px;
+        }
+        .titleLabel { 
+            color: #E26E1B;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        .titleTip {
+            margin-top: 3px;
+            font-size: 12px;    
+        }
+        .topBorder {
+            background: url({!URLFOR($Resource.XactlySMBResources, 'img/layout/SearchBackgroundTopBorder.jpg')}) white repeat-x;
+            height: 9px;
+            margin: 0px;
+            padding: 0px;
+        }
+        .bottomBorder {
+            background: url({!URLFOR($Resource.XactlySMBResources, 'img/layout/SearchBackgroundBottomBorder.jpg')}) white repeat-x;
+            height: 4px;
+            padding: 0px;
+            bottom: 69px;
+            right: 20px;
+            left: 20px;
+        }
+        .xactlyLogo {
+            background: url({!URLFOR($Resource.XactlySMBResources, 'img/layout/SearchXactlyLogo.png')}) white no-repeat right bottom;
+            height: 59px;
+            width: 100%;
+            margin: 0px;
+            padding: 0px;
+            bottom: 10px;
+            right: 20px;
+        }
+        .saveAndCancel {
+            padding: 20px 0px 0px 40px;
+            width: 200px;
+        }
+        .btnAction .leftBtnOrange {
+            background:url({!URLFOR($Resource.XactlySMBResources, 'img/buttons/orange_button_left.png')}) transparent  no-repeat scroll 0 0;
+            float: left;
+            height:19px;
+            padding:0px 0px 0px 5px;
+            width:auto;
+        }
+        .btnAction .middleBtnOrange {
+            color: white;
+            font-size: 10px;
+            font-weight: bold;
+            padding: 3px 5px;
+            width: auto;
+        }
+        .btnAction .rightBtnOrange {
+            background: url({!URLFOR($Resource.XactlySMBResources, 'img/buttons/orange_button_right.png')}) transparent no-repeat scroll right center;
+            float:left;
+            height:19px;
+            padding:0px 5px 0px 0px;
+            width:auto;
+            margin-top: 1px;
+            margin-left: 5px;
+            cursor: pointer;
+        }
+        .btnAction .middleBtnSilver, .btnAction .middleBtnSilverDisabled {
+			font-size: 10px;
+			font-weight: bold;
+			padding: 3px 5px;
+			width: auto;
+		}
+		.btnAction .leftBtnSilver {
+			/*background:url(../img/buttons/silver_button_left.png) transparent  no-repeat scroll top left;*/
+			background:url({!URLFOR($Resource.XactlySMBResources, 'img/buttons/silver_button_left.gif')}) transparent  no-repeat scroll top left;
+			float: left;
+			height:19px;
+			padding:0px 0px 0px 5px;
+			width:auto;
+		}
+		.btnAction .rightBtnSilver {
+			background: url({!URLFOR($Resource.XactlySMBResources, 'img/buttons/silver_button_right.gif')}) transparent no-repeat scroll right top;
+			/*background: url(../img/buttons/silver_button_right.png) transparent no-repeat scroll right top;*/
+			float:left;
+			height:19px;
+			padding:0px 5px 0px 0px;
+			width:auto;
+			margin-left: 5px;			
+		}
+		div.displayNone{
+			display:none;
+		}
+		#colList li img.handle2 {
+            margin-right: 20px;
+        }
+        #colList li {
+            display: block;
+            padding: 4px 10px; 
+            margin-bottom: 3px;
+            background-color: #efefef;
+            cursor: move;
+            border: 1px solid white;
+        }
+        #colList {
+            list-style: none;
+            margin: 0px;
+            padding: 0px;
+        }
+        .dragSliderWrapper {
+			overflow:hidden;
+		}
+        .dragSliderWrapper .leftDragger {
+			float:left;
+			overflow:hidden;
+		}
+        .dragSliderWrapper .rightSlider {
+			float:right;
+			overflow:hidden;
+			width:130px;
+			height:20px;
+			padding-top:2px;
+		}
+		.dragSliderWrapper .rightSlider span{
+			margin-right:10px;
+			font-size:12px;
+			font-weight:bold;
+		}
+	</style>
+	
+	
+	
+	<div class="header"></div>
+    <div class="content">
+    	<apex:form >
+    		<apex:outputpanel layout="block">
+                <div class="titleLabel">
+                    <apex:outputtext value="{!$Label.xactlyexpress__whichDealAttrDisplay}" />
+                </div>
+                <br/>
+                <div class="titleTip">
+                    <apex:outputtext value="{!$Label.xactlyexpress__dragAndDropDisplay}" />
+                </div>
+            </apex:outputpanel>
+            <br/>
+            <div class="topBorder"></div>
+            
+            <apex:outputpanel styleclass="resultPanel" layout="block" id="resultPanel" style="position:relative;">
+            	<ul id="colList">
+	            	<apex:repeat value="{!columnsToList}" var="iter">
+	            		<li class="handle toOrder" onmouseover="dragAndDropMe(this, true, false);" onmouseout="dragAndDropMe(this, false, false);" onMouseUp="fixWidthCustIE();">
+	            			<div class="dragSliderWrapper">
+	            			 	<div class="leftDragger">
+	            			 		<img src="{!URLFOR($Resource.XactlySMBResources, 'img/icons/move.png')}" alt="move" class="handle2" />
+	            			 		<apex:outputtext value="{!iter.name}"/>
+		                        	<apex:inputText styleclass="colPosition" value="{!iter.position}" style="display: none;"/>
+	            			 	</div>
+	            			 	<div class="rightSlider">
+	            			 		<span>{!$Label.xactlyexpress__Displayed}</span>
+	            			 		<apex:inputCheckbox value="{!iter.display}" selected="{!iter.display}"/>
+	            			 	</div>
+	            			</div>
+	            		</li>
+	            	</apex:repeat>
+	            </ul>
+	            <apex:inputText value="{!newOrder}" styleclass="newOrderInputHidden" style="display: none;"/>
+            </apex:outputpanel>
+            
+            
+            
+            <div class="bottomBorder"></div>
+            <div class="xactlyLogo">
+                <div class="btnToCenter btnAction saveAndCancel">
+                   <div class="separateBtn">
+                       <apex:commandLink styleClass="saveBtn" id="saveBtn" onclick="waitOn();updateTabOrder();" action="{!saveNewOrder}" oncomplete="waitOff();refreshMainPage();savePageHandler.enableBottomBar();">
+                           <apex:outputPanel layout="block" styleClass="rightBtnOrange">
+	                    		<apex:outputPanel layout="block" styleClass="leftBtnOrange">
+		                       		<apex:outputPanel layout="block" styleClass="middleBtnOrange" style="color: white;">
+		                           		{!$Label.xactlyexpress__Save}
+		                           </apex:outputPanel>
+	                           </apex:outputPanel>
+							</apex:outputPanel>   
+							<apex:outputPanel layout="block" styleClass="rightBtnSilver displayNone">
+								<apex:outputPanel layout="block" styleClass="leftBtnSilver">
+									<apex:outputPanel layout="block" styleClass="middleBtnSilver">
+										{!$Label.xactlyexpress__Save}
+									</apex:outputPanel>
+								</apex:outputPanel>
+							</apex:outputPanel>
+                       </apex:commandLink>
+                   </div> 
+                   <div class="separateBtn">
+                       <apex:outputLink styleClass="discardChanges" value="javascript:;" onclick="window.close();">							
+	                    	<apex:outputPanel layout="block" styleClass="rightBtnOrange">
+	                    		<apex:outputPanel layout="block" styleClass="leftBtnOrange">
+		                       		<apex:outputPanel layout="block" styleClass="middleBtnOrange" style="color: white;">
+		                           		{!$Label.xactlyexpress__Cancel}
+		                           </apex:outputPanel>
+	                           </apex:outputPanel>
+							</apex:outputPanel>   
+							<apex:outputPanel layout="block" styleClass="rightBtnSilver displayNone">
+								<apex:outputPanel layout="block" styleClass="leftBtnSilver">
+									<apex:outputPanel layout="block" styleClass="middleBtnSilver">
+										{!$Label.xactlyexpress__Cancel}
+									</apex:outputPanel>
+								</apex:outputPanel>
+							</apex:outputPanel>       
+						</apex:outputLink>
+                   </div>
+               </div>
+            </div>
+    	</apex:form>
+    </div>
+	
+	<apex:includeScript value="{!URLFOR($Resource.XactlyExpress__CSN, 'jquery.js')}" />
+    <c:XactlySMBFooterScript /> 
+    <script type="text/javascript" src="{!URLFOR($Resource.XactlySMBResources, 'js/jquery-ui.min.js')}"></script>
+    <script type="text/javascript" language="javascript" src="{!URLFOR($Resource.XactlySMBResources, 'js/XactlySMBJavascript.js')}"></script>
+	
+	<script>
+		$(document).ready(function() {
+        	savePageHandler.setClassContainer('xactlyLogo2');
+        	savePageHandler.storeBottomBarOnclickEvents();
+    		savePageHandler.setExtraBottomBarClick(); 
+        
+            makeListSortable();
+        });
+        function makeListSortable () {   
+            $("#colList").sortable({ cancel: '.slider-range-min' });
+            $(".slider-range-min").each(function() {
+                var value = parseInt($(".widthAmount",$(this).parent()).val());
+                $(this).slider({
+                    range: "min",
+                    value: value,
+                    min: 90,
+                    max: 200,
+                    slide: function(event, ui) {
+                        $(".widthAmount",$(this).parent()).val(ui.value);
+                    }
+                });
+            });
+        }
+        var saveBtn = function(){
+	    	savePageHandler.disableBottomBar();			        
+		}
+		function dragAndDropMe (ele, isOn, isRed) {
+          if (isOn) {
+            ele.style.color = '#E26E1B';
+            ele.style.border = '1px solid #AAAAAA';
+          }
+          else {
+            if (isRed) {
+                ele.style.color = 'red';
+            }
+            else {
+                ele.style.color = 'black';
+            }
+            ele.style.border = '1px solid white';
+          }
+        }
+        function fixWidthCustIE(){
+            if(_isIE7){
+                setTimeout("$('.toFix').css('margin-top','-23px').css('margin-top','-24px')",100);
+            }
+        }
+        function refreshMainPage () {
+            window.opener.refreshAll();
+            window.opener.waitOn();
+            window.close();
+        }
+        function updateTabOrder(){
+			var colsNames = $('.toOrder');
+			for (var i=0; i < colsNames.length; i++) {
+		        $('.colPosition',$(colsNames[i])).val(i);
+		    }
+		}
+	</script>
+</apex:page>

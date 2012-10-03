@@ -1,0 +1,45 @@
+<apex:component controller="XactlyExpress.XactlySMBLeftSelectAPlanController">
+	<style>
+.orangeLi {
+	color: #BD5C19;
+	font-weight: bold;
+}
+</style>
+
+	<link rel="stylesheet" type="text/css"
+		href="{!URLFOR($Resource.XactlySMBResources ,'css/XactlySMBMeasureList.css')}" />
+	<apex:attribute name="ctl" description="The parent controller"
+		type="XactlyExpress.XactlySMBPlanController" required="false" access="public" />
+	<apex:attribute name="currentFiscalYear"
+		description="The Current Fiscal Year" type="String" access="public"
+		assignTo="{!currentFiscalYear}" />
+	<apex:attribute name="currentUserId" description="The Current User"
+		type="String" access="public" assignTo="{!currentUserId}" />
+	<apex:attribute name="currentPlanId" description="The Current Plan"
+		type="String" access="public" assignTo="{!currentPlanId}" />
+	<apex:attribute name="currentFiscalYearName"
+		description="The Current FYS Name" type="String" access="public"
+		assignTo="{!currentFiscalYearName}" />
+	<apex:attribute name="myPage" description="The actual page"
+		type="String" access="public" assignTo="{!myPage}" />
+	<apex:outputPanel id="editMeasuresContainer" layout="block">
+		<div id="measuresContainer">
+			<div class="topTable"></div>
+			<div class="measuresContent">
+                <apex:outputPanel layout="block" rendered="{!IF(!ISNULL(currentFiscalYearName),true,false)}"><apex:outputtext value="{!currentFiscalYearName}" styleClass="areaTitle PNovaRegular14c1"/><br/></apex:outputPanel>
+	            <apex:outputpanel rendered="{!IF(planList.size == 0, false, true)}">
+	                <apex:outputpanel >
+					    <apex:repeat value="{!planList}" var="iter">
+						   <a href="{!$Page.XactlySMBPlanCreate}?id={!iter.id}" class="{!IF(iter.id==currentPlanId,'orangeLi','measuresListLinks')}">{!iter.name}</a><br />
+					    </apex:repeat>
+				    </apex:outputpanel>
+			    </apex:outputpanel> 
+			
+				<apex:outputpanel rendered="{!IF(planList.size == 0, true, false)}">
+					<apex:outputtext value="{!$Label.xactlyexpress__NoPlansForThisYear}" />
+				</apex:outputpanel>
+		    </div>
+		    <div class="bottomTable"></div>
+		</div>
+	</apex:outputPanel>
+</apex:component>

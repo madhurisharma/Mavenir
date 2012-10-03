@@ -1,0 +1,132 @@
+<apex:page id="XactlySMBDashRepReports" sidebar="false" showHeader="false" standardStylesheets="true" controller="XactlyExpress.XactlySMBACLController" action="{!redirectWhenAccessIsDenied}">
+	<c:XactlySMBCursor />
+	<title>{!$Label.PlanDetail}</title>
+	<link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.XactlySMBResources ,'css/XactlySMBDashboardStyles.css')}" />
+	
+	<style>
+	 
+		.leftSummaryBox {
+			margin: 20px 0px 10px 34px;
+		}
+		
+		.SummaryBox{
+		    width:210px;
+		    margin-right:1em;
+		}
+		 
+		.SummaryBoxTitle{
+		    border: none;
+		    padding-left:1em;
+		    background:transparent url({!URLFOR($Resource.XactlySMBResources ,'img/layout/table_top_210w.png')}) left top no-repeat;
+		    height:20px;
+		    font-size: 11px;
+		    font-weight: bold;
+		    padding: 2px 0 0 10px;		    
+		}
+		
+		.SummaryBoxFooter{
+			background:transparent url({!URLFOR($Resource.XactlySMBResources ,'img/layout/table_bottom_210w.png')}) left top no-repeat;
+		    height:20px;
+		    text-align:right;		    
+		}
+		
+		.SummaryBoxContent {
+		    border-left: 1px solid rgb(204,204,204);
+		    border-right: 1px solid rgb(204,204,204);
+		    width: 187px;
+		    background: rgb(255,255,255);
+		    font-size: 12px;
+		    padding: 10px 10px 15px 10px;
+		    *padding-bottom: 0px;
+		}
+				
+		img.chartImg{
+			display:block; 
+			width:170px; 
+			text-align:center; 
+			margin:auto;
+			max-height: 210px;
+		}
+		
+		img{ 
+	 		border: 0;
+	 		display:block;
+	 	}
+	 	
+	 	div.chartDescription{
+			text-align:center; 
+			font-size:11px; 
+		}
+	</style>
+	
+	<c:XactlySMBShadows />
+	
+    <!-- PAGE WRAPPER -->  
+    <div class="pageContent" id="pContent">
+        <apex:form >
+            <!-- HEADER -->
+            <apex:outputPanel layout="block" styleClass="header">
+            	<c:XactlySMBSalesRepHeader lastClosedPeriod="{!lastClosedPeriod}" isEmulatedManager="{!isEmulatedManager}" isManager="{!isManager}" isSalesAdmin="{!isSalesAdmin}" isAdmin="{!isAdmin}"  isActive="{!isActive}" nbrSeparator="{!nbrSeparator}" nbrDecimal="{!nbrDecimal}" currentUserOrSlected="{!currentUserOrSlected}" emulatingUserURLAppend="{!emulatingUserURLAppend}" dealsLabel="{!currentSettings.dealsPluralCap}" selected="4" emulatingUserURLAppend="{!emulatingUserURLAppend}"  hlabel="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean ac mi eget est semper feugiat."/>  
+            </apex:outputPanel>
+            
+            
+            <!-- INSUFFICIENT PERMISSIONS 
+            <apex:outputPanel rendered="{!!isAdmin}">
+                <c:XactlySMBErrorMsg error="{!$Label.InsufficientPermissions}" />
+            </apex:outputPanel>
+             -->
+             
+            <!-- MAIN CONTENT -->
+            <apex:outputPanel layout="block" styleClass="mainContent">
+                
+                <div class="help">
+                    <a style="float:left; margin-top: 10px;"href="javascript: helpWindow = window.open('{!$Page.XactlySMBHelp}?page=DashRepReports', 'Help','location=0,status=0,scrollbars=1,width=700px,height=500px'); helpWindow.moveTo(100,100);" class="orangeLink">
+                    {!$Label.HowDoesThisPageWork}
+                    </a>
+                    <a href="javascript: helpWindow = window.open('{!$Page.XactlySMBHelp}?page=DashRepReports', 'Help','location=0,status=0,scrollbars=1,width=700px,height=500px'); helpWindow.moveTo(100,100);"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/icons/help_button.png')}"/>
+                    </a>
+                </div>
+                <!-- LEFT PANEL -->
+                <apex:outputPanel layout="block" styleClass="leftPanel">
+                    <div class="leftSummaryBox">
+						<div class="SummaryBoxTitle">
+							
+						</div>
+						<div class="SummaryBoxContent">												
+							<apex:outputpanel layout="none" rendered="{!IF(currentSettingsAttach == null, true, false)}">
+                                <img src="{!URLFOR($Resource.XactlySMBResources, 'img/layout/FillerImageForSalesReps.jpg')}" alt="" class="chartImg" />
+                            </apex:outputpanel>
+                            <apex:outputpanel layout="none" rendered="{!IF(currentSettingsAttach == null, false, true)}">
+                                <img src="/servlet/servlet.FileDownload?file={!currentSettingsAttach}" alt="" class="chartImg" />
+                            </apex:outputpanel>
+						</div>
+						<div class="SummaryBoxFooter"></div>
+					</div>
+                </apex:outputPanel>
+                
+                <!-- CONTENT -->
+                <apex:outputPanel layout="block" styleClass="content">
+					
+				</apex:outputPanel>
+			</apex:outputPanel>
+			
+			<!-- FOOTER  -->
+			<apex:outputPanel layout="block" styleClass="footer" id="pFooter">
+				<div class="btnToRight btnAction">
+                    <a href="{!$Page.XactlyExpress__XactlySMBUnderConstruction}">
+                        <div class="rightBtnOrange">
+                            <div class="leftBtnOrange">
+                                <div class="middleBtnOrange">
+                                   {!$Label.xactlyexpress__ExportSummary}
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+			</apex:outputPanel>			
+		</apex:form>
+	</div>	
+	<apex:includeScript value="{!URLFOR($Resource.XactlyExpress__CSN, 'jquery.js')}" />
+    <c:XactlySMBFooterScript /> 
+	<script type="text/javascript" language="javascript" src="{!URLFOR($Resource.XactlySMBResources, 'js/XactlySMBJavascript.js')}"></script>
+</apex:page>

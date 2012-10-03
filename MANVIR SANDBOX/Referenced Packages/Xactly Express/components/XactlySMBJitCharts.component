@@ -1,0 +1,288 @@
+<!--
+Developed by Timba Software Corp. www.timbasoftware.com admin@timbasoftware.com
+ This component add functionality for Bat Charts based on Jit Charts.
+ @author Julio Viera <jviera@timbasoftware.com>
+
+HOW TO USE IT:
+ 
+ Bar charts are displaying into a div tag with the class chartContainer.
+ Just add this class to a div to activate bar chats on it.
+ Data is placed on rel attribute for that div, it must be with this 
+ notation: "column_name:#:value:#:label_for_tooltip;#;"
+ There will be create just a one column for a column_name. Each value
+ with the same column_name will be placed over with a new color... column
+ will be a stack of values. ";#;" separate each data, you must assign just
+ one value for each ";#;".
+ BE SURE of assign a diferent ID for every div that use this bar charts.
+-->  
+<apex:component >
+ 
+	<style>
+
+
+
+
+		/*TOOLTIPS*/
+		.tip {
+    		color: #111;
+    		width: 90px;
+    		background-color: white;
+    		border:1px solid #ccc;
+    		-moz-box-shadow:#555 2px 2px 8px;
+    		-webkit-box-shadow:#555 2px 2px 8px;
+    		-o-box-shadow:#555 2px 2px 8px;
+    		box-shadow:#555 2px 2px 8px;
+    		opacity:0.9;
+    		filter:alpha(opacity=90);
+    		font-size:10px;
+    		font-family:Verdana, Geneva, Arial, Helvetica, sans-serif;
+    		padding:7px;
+		}	
+		
+
+		.chartContainer {
+			background:url({!URLFOR($Resource.XactlySMBResources ,'img/layout/background_bar_chart2.png')}) left top no-repeat;
+    		position:relative;
+    		width:162px;
+    		height:165px;
+    		margin:auto;    
+    		z-index:19;		
+		}		
+		.chartContainerScale {
+			background:none;
+    		position:relative;
+    		float:left;
+    		width:40px;
+    		height:110px;
+    		margin-right:-40px;
+    		padding-top:23px;
+    		z-index:999;    		
+		}		
+		.divScaleText{
+			position:relative;
+			width:40px;
+			color:#000000;
+			font-size:8px;
+			font-family:Helvetica;
+			text-align:right;
+		}
+		.chartWrapper {
+            display:block; 
+            width:180px; 
+            height:auto;
+        }
+        		
+ 	</style>
+   
+    <script type="text/javascript" language="javascript" src="{!URLFOR($Resource.XactlySMBResources, 'js/excanvas.js')}"></script> 
+   
+    <script type="text/javascript" language="javascript" src="{!URLFOR($Resource.XactlySMBResources, 'js/jit.js')}"></script>    
+   
+    <div style="display:none">
+    <img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/background_bar_chart2.png')}" />
+    </div>
+
+    <script>
+   
+    	
+    	var chartslist = new Array(0);
+    	var json = {};
+    	var i = 0;	  
+       	var labelType, useGradients, nativeTextSupport, animate;
+    	var colsValPlus = new Array(0);
+    	
+
+		(function() {
+  			var ua = navigator.userAgent,
+      		iStuff = ua.match(/iPhone/i) || ua.match(/iPad/i),
+      		typeOfCanvas = typeof HTMLCanvasElement,
+      		nativeCanvasSupport = (typeOfCanvas == 'object' || typeOfCanvas == 'function'),
+      		textSupport = nativeCanvasSupport 
+        	&& (typeof document.createElement('canvas').getContext('2d').fillText == 'function');
+	  		labelType = (!nativeCanvasSupport || (textSupport && !iStuff))? 'Native' : 'HTML';
+  			nativeTextSupport = labelType == 'Native';
+  			useGradients = nativeCanvasSupport;
+  			animate = !(iStuff || !nativeCanvasSupport);
+		})();
+              
+		function roundScale(scl, rnd){
+			scl = Number(scl);
+			rnd = Number(rnd);
+			if(scl > rnd){
+	    		scl += rnd - (scl % rnd);
+    		}
+    		else{
+    			scl = rnd;
+    		}
+    		return scl;		
+		}
+		
+		function runJitCharts(){
+		
+		   
+		
+           i = 0;
+			
+           $.each($('.chartContainer'), function(){
+           		
+           		var str = $(this).attr('rel');
+           		var typeAttr =  $(this).attr('name');
+           		var rel = str.split(';#;');
+           		var j = 0;
+           		var names = [];
+           		var keys = [];
+           		var maxs = [];
+           		var tmp = [];
+           		var k = 0;
+           		var max = 0;
+           		var bars_right = 0;
+           		var bars_left = 45;
+           		var bars_offset = 0;
+           		
+           	if(typeof(rel) == 'object' && rel.length){
+           		
+           		
+           		if(rel.length){
+           			for(j=0;j<rel.length;j++){
+           				rel[j] = String(rel[j]).split(':#:');
+           				
+           				var isIn = false;
+           				var isKey = false;
+           				
+           				for(k=0;k<names.length;k++){
+           					if(names[k] == rel[j][2]){isIn = true;}
+           				}
+           				if(!isIn){names[names.length] = rel[j][2];}
+           				for(k=0;k<keys.length;k++){
+           					if(keys[k] == rel[j][0]){
+           						maxs[k] += Number(rel[j][1]);
+           						isKey = true;
+           						break;
+           					}
+           				}
+           				if(isKey){
+           					for(k=0;k<tmp.length;k++){
+           						if(tmp[k]['label'] == rel[j][0]){
+           							tmp[k]['values'][tmp[k]['values'].length] = Number(rel[j][1]).toFixed(2);
+           						}
+           					}
+           				}
+           				else{
+           					keys[keys.length] = rel[j][0];
+           					maxs[maxs.length] = Number(rel[j][1]);
+           					tmp[tmp.length] = {'label':rel[j][0], 'values':[Number(rel[j][1]).toFixed(2)]};
+           				}
+           			}
+           		}
+           		if(tmp.length){
+           			json = {'label':names, 'values':[]};
+           			for(k=0;k<tmp.length;k++){
+           				json['values'][k] = {'label':tmp[k]['label'], 'values':tmp[k]['values']};
+						
+						var sum = 0;
+						for(var u = 0; u < tmp[k].values.length; u++){
+							sum += Number(tmp[k].values[u]);
+						}
+						for(var u = 0; u < tmp[k].values.length; u++){
+							colsValPlus[colsValPlus.length] = {'key':(tmp[k]['label'] + String(names[u]) + String(tmp[k].values[u])), 'val':sum};
+						}
+
+           			}
+           			json['values'][k] = {'label':'', 'values':[]};
+           		}
+           		for(k=0;k<maxs.length;k++){
+           			if(maxs[k] > max){
+           				max = maxs[k];
+           			}
+           		}
+           		if(maxs.length == 3){
+           			bars_right = -8;
+           			bars_offset = 10;
+           		}
+           		else if(maxs.length == 2){
+           			bars_right = -25;
+           			bars_offset = 10;
+           		}
+           		else if(maxs.length == 1){
+           			bars_right = -62;
+           			bars_offset = 1;
+           		}
+           		else{
+           			bars_right = -8;
+           			bars_offset = 10;           		
+           		}
+           		chartslist[i] = new $jit.BarChart({
+	 				injectInto: this.id,
+				    animate: true,
+					orientation: 'vertical',
+      				barsOffset: bars_offset,
+      				Margin: {top:(82 - (82 * (max / roundScale(max, (max < 100 ? (max + (10 - (max % 10))) : 100))))), left: bars_left, right: bars_right, bottom:34},
+      				labelOffset: 9,
+      				type:useGradients? 'stacked:gradient' : 'stacked:gradient',
+      				showAggregates:false,
+      				showLabels:true,
+      				Label: {type: labelType, size: 10, family: 'helvetica', color: 'black'},
+      				Tips: {enable: true, onShow: function(tip, elem) {
+							if (typeAttr == 'Sales Results') {
+							 tip.innerHTML = "<b>Credit</b>: " + elem.value;
+							}
+							else if (typeAttr == 'Total Payout') {
+							 tip.innerHTML = "<b>Payout</b>: " + elem.value;
+							}
+							else {
+							 tip.innerHTML = "<b>" + elem.name + "</b>: " + elem.value;
+							 tip.innerHTML += "<br /><b>TIC</b>: " + (getColTic(elem.label + elem.name + elem.value));
+							}
+        				}
+      				}
+    			});
+ 				chartslist[i].loadJSON(json);
+ 				buildScale(this.id, max);
+           		i++;
+           		
+           	}
+           	
+           });		
+           
+		}
+    	
+    	function getColTic(key){
+    	
+    		for(var i=0;i < colsValPlus.length; i++){
+    			if(colsValPlus[i].key == key){
+    				return Number(colsValPlus[i].val).toFixed(2);
+    			}
+    		}
+    		
+    		return -1;
+    	}
+    	
+    	function buildScale(_id, _max){
+    		
+    		var cont = document.getElementById('scale_' + _id);
+    		var i = 0;
+    		var fac = 0;
+    		var alt = 9;
+			
+			_max = roundScale(_max, (_max < 100 ? (_max + (10 - (_max % 10))) : 100));
+			_max = parseInt(_max);
+			
+    		cont.innerHTML = "";
+    		for(i=0;i<5;i++){
+    		
+    			fac = parseInt(_max - ((_max / 5) * i));
+    			cont.innerHTML = cont.innerHTML + '<div class=\"divScaleText\" style=\"top:' + (i * alt) + 'px;\">' + fac + '</div>';
+    		
+    		}    		
+    		cont.innerHTML = cont.innerHTML + '<div class=\"divScaleText\" style=\"top:' + (i * alt) + 'px;\">0</div>';
+    	
+    	}
+    	
+       jQuery(document).ready(function (){
+       
+			setTimeout('runJitCharts()', 40);
+
+       });              
+
+    </script>
+</apex:component>

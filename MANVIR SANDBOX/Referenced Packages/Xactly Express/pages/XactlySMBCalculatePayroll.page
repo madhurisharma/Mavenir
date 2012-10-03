@@ -1,0 +1,835 @@
+<apex:page id="manageDeals" controller="XactlyExpress.XactlySMBCalculatePayroll" sidebar="false" showHeader="false" standardStylesheets="true" action="{!redirectWhenAccessIsDenied}">
+    <c:XactlySMBCursor />
+    <title>{!$Label.Calculate}: {!$Label.CalculateWizardStep6}</title>
+    <link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.XactlySMBResources ,'css/XactlySMBStyles.css')}" />
+    <link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.XactlySMBResources ,'css/XactlySMBNumeratedBox.css')}" /> 
+  	
+  	<script type="text/javascript" language="javascript" src="{!URLFOR($Resource.XactlySMBResources, 'js/XactlySMBJavascript.js')}"></script>
+  	<apex:includeScript value="{!URLFOR($Resource.XactlyExpress__CSN, 'jquery.js')}" /> 
+    <style> 
+        hr {
+            background-color:#E8C9AE;
+            border:0 none;
+            color:#E8C9AE;
+            height:1px;
+            margin:0;
+        }    
+    
+    
+        #centerContainer{
+            margin-left:auto;
+            margin-top:auto;            
+        }
+
+        #spaceMenu{
+            background-color:#FFFFFF;
+            border-left:2px solid #D49761;
+            border-right:2px solid #D49761;
+            margin-left:5px;
+            min-height:23px;
+            width:236px;
+        }    
+        .leftPanelTitle{
+            color:#CE641B;
+            float:left;
+            font-size:10pt;
+            font-weight:bolder;
+            margin-left:0;
+            margin-top:2px;
+        }
+        
+        .leftPanelCreateNew{
+            float:right;
+            font-size:8pt;
+            margin-right:4px;
+            margin-top:-8px;
+        }
+        
+        .leftPanelContainer{
+            float:left;
+            margin-left:26px;
+            margin-top:10px;
+            height:210px;
+            overflow:auto;
+            width:210px;
+        }
+        
+        .leftPanelMenuItem{
+            margin-bottom:16px;
+        }
+        
+        .topCurvy{
+            background: url({!URLFOR($Resource.XactlyExpress__XactlySMBResources ,'img/layout/topCurvy2.gif')}) no-repeat;
+            width:240px;
+            height:15px;
+            margin-left:5px; 
+        }
+        
+        .bottomCurvy{
+            background: url({!URLFOR($Resource.XactlyExpress__XactlySMBResources ,'img/layout/bottomCurvy.gif')}) no-repeat;
+            width:240px;
+            height:15px;
+            margin-left:5px;
+        }
+        
+        .flechader {
+            border-color:transparent transparent transparent #E8E8E8;
+            border-style:solid;
+            border-width:8px 9px;
+            width:0;
+        }
+        
+        .itemLink{
+            color:#000000;
+            width:300px;
+        }
+        
+        .leftTitle{
+            color:#000000;
+            display:inline;
+            float:left;
+            font-size:11px;
+            font-weight:bold;
+            margin-left:7px;
+        }
+        
+        .leftSelect{
+            float:left;
+            margin-left:15px;
+            margin-top:-4px;
+        }
+        
+        .periodsTable{
+           clear:both;
+           margin-left:4px;
+           margin-top:10px;
+           margin-right:4px;       
+        }
+        .periodsTableHeaders{
+            color:#D07732;
+            font-size: 14px;
+            font-weight:bold;
+        }
+        .periodsTableBody{
+            font-size:11px;
+            font-weight:bold;         
+        }  
+        .periodsNormalCell{
+            border-bottom:1px solid #F6DFCF;
+            color:#AAAAAA;
+            padding-left:4px;
+            padding-right:4px;
+            padding-top:3px;
+        }
+        
+        .periodsHeaderCell{
+            border-bottom:1px solid #D97530;
+            padding-left:4px;
+            padding-right:4px;
+            padding-top:3px;
+        }
+        
+        .periodsNotRightCell{
+            border-right:1px solid #F6DFCF;    
+        }
+            
+        .periodsTable tr{
+           margin:0px;
+           padding:0px;
+        }
+        
+        .periodsTable th{
+           width: 30%;
+        }
+        
+        .periodUltimateRow{
+           font-size:4px;
+           height:10px;
+           overflow:hidden;
+        }
+
+        .flechader {
+            border-color:transparent transparent transparent #E8E8E8;
+            border-style:solid;
+            border-width:8px 9px;
+            width:0;
+            font-size: 0pt;
+        }
+        .leftPeriodsPanel {
+            float:left;
+            margin-left:18px;
+            margin-top:13px;
+        }
+        
+        .descriptionButtomText{
+            float:left;
+            margin-left:20px;  
+            margin-top:2px;             
+        }
+        
+        .periodsExportLink{
+            color:#AAAAAA;
+        }
+        
+        .stepBoxAdd{
+            margin-right: 15px; 
+            margin-bottom: 15px; 
+            margin-left: 15px;
+        }
+        
+        
+        .openItemsDescription{
+            color:#123D4B;
+            float:left;
+            font-size:12px;
+            font-weight:bold;
+        }
+        .openItemsNumber{
+            color:#000000;
+            float:left;
+            font-size:12px;
+            font-weight:bold;
+            margin-left:5px;
+        }
+        .processTable{
+            width: 600px;
+            margin-top:30px;
+            margin-left:40px;
+        }
+        
+    
+        .processHeaderCell{
+            border-bottom:1px solid #D8742F;
+            color:#3F617E;
+            font-size:12px;
+            font-weight:bold;
+            padding:3px;
+            text-transform: uppercase;
+        }
+         
+        .processNotRightCell{
+            border-right:1px solid #F5D9C3;    
+        }
+        
+        .processNormalCell{
+            border-bottom:1px solid #F6DFCF;
+            color:#000000;
+            font-size:11px;
+            padding-left:7px;
+            padding-right:7px;
+            padding-top:6px
+        }
+        
+        .proccessCheckElementCell{
+            color:#000000;
+            font-size:11px;
+            padding-left:7px;
+            padding-right:7px;
+            padding-top:6px        
+        }
+        
+        .errorScrollBox{
+            margin-left: 20px; 
+            margin-bottom: 10px;
+        }
+        
+        .checkDate{
+            float:right;
+            margin-right:20px;
+        }
+        
+        td{
+            padding:0px;
+        }
+    </style>   
+    <c:XactlySMBShadows />
+    
+    <!-- PAGE WRAPPER -->
+    <div class="pageContent" id="pContent">
+        <apex:form id="theForm">
+            <!-- HEADER -->
+            <apex:outputPanel layout="block" styleClass="header">
+                <c:XactlySMBHeader isAdmin="{!isAdmin}"  isActive="{!isActive}" nbrSeparator="{!nbrSeparator}" nbrDecimal="{!nbrDecimal}" currentUserOrSlected="{!currentUserOrSlected}" emulatingUserURLAppend="{!emulatingUserURLAppend}" selected="2" wqlabel="{!currentSettings.quotasPlural}" wclabel="{!currentSettings.creditsPlural}" wlabel="{!currentSettings.dealsPluralCap}" wtype="calculate" step="6"  hlabel="{!$Label.xactlyexpress__ManageFieldsInPayroll}" stepHelp="CalculatePayroll"/>
+            </apex:outputPanel>
+ 
+            <apex:actionFunction name="reloadPeriods" action="{!periodsRefresh}"/>
+            <apex:actionFunction name="save" action="{!save}" rerender="step1, errorMsg2" oncomplete="storeValues();rerenderNoCompare = true;waitOff();refeshNumberOpenElement();savePageHandler.enableBottomBar();"/>
+            <apex:actionFunction name="refresh" action="{!refresh}"/>
+            <apex:actionFunction name="refreshPeriods" action="{!periodsRefresh}" rerender="periodsTable" oncomplete="rerenderNoCompare = true;waitOff();storeValues();" />
+            <apex:actionFunction name="addCheckElementFN" action="{!addCheckElement}" rerender="step1" oncomplete="rerenderNoCompare = true;refeshNumberOpenElement();waitOff();" />
+                 
+            
+            <div  class="error">
+            <!-- INSUFFICIENT PERMISSIONS -->
+                <apex:outputPanel rendered="{!!isAdmin || !isActive}">
+                    <c:XactlySMBErrorMsg error="{!$Label.xactlyexpress__InsufficientPermissions}" />
+                </apex:outputPanel>
+            </div> 
+            
+            <apex:outputPanel layout="block" styleclass="additionalContent" rendered="{!isAdmin && isActive}">    
+                <c:XactlySMBChatterWall objectId="{!$User.Id}" showHeader="true" showWall="true" currentPage="{!$CurrentPage.Name}"/>
+            </apex:outputPanel>
+            
+            <!-- MAIN CONTENT -->
+            <apex:outputPanel layout="block" styleClass="mainContent" rendered="{!isAdmin && isActive}">
+                <!-- LEFT PANEL -->
+                <div class="leftPeriodsPanel">
+                    <div class="topCurvy"></div>
+                    <div id="spaceMenu"> 
+                     
+                        <div class="leftTitle">{!$Label.SelectYear}:</div>  
+                        <apex:selectList styleClass="leftSelect" value="{!selectedFiscalYear}" multiselect="false" size="1" onchange="waitOn();refreshPeriods();">
+                            <apex:selectOptions value="{!fiscalYearOptions}" />
+                        </apex:selectList>
+                        <apex:outputPanel id="periodsTable">
+                         <table class="periodsTable" cellspacing="0" cellpadding="0">
+                             <thead class="periodsTableHeaders">
+                                 <tr>
+                                     <th class="periodsHeaderCell periodsNotRightCell">{!$Label.Period}</th>
+                                     <th class="periodsHeaderCell periodsNotRightCell">{!$Label.Status}</th>
+                                     <th class="periodsHeaderCell" colspan="2">{!$Label.Payroll}</th> 
+                                 </tr>
+                             </thead>
+                             <tbody  class="periodsTableBody">
+                                 <tr class="periodUltimateRow">
+                                     <td class="periodsNotRightCell">&nbsp;</td>
+                                     <td class="periodsNotRightCell">&nbsp;</td>
+                                     <td>&nbsp;</td>
+                                     <td>&nbsp;</td>
+                                 </tr>                                
+                                 <apex:repeat value="{!periods}" var="per" id="periodGenerator">
+                                  <tr>
+                                      <td onclick="{!IF(per.prd.StartDate__c < initialPeriod.StartDate__c,'return false;','')} document.location.href='{!$Page.XactlySMBCalculatePayroll}?pid={!per.prd.Id}&yid={!selectedFiscalYear}';" class="periodsNormalCell periodsNotRightCell {!IF(per.prd.StartDate__c < initialPeriod.StartDate__c,'disabledOpacityButton','')}" style="{!IF(selectedPeriodId = per.prd.Id,'background-color:#E8E8E8;','')} {!IF(per.prd.StartDate__c < initialPeriod.StartDate__c,'','cursor:pointer;')}">{!per.PeriodName}</td>
+                                      <td onclick="{!IF(per.prd.StartDate__c < initialPeriod.StartDate__c,'return false;','')} document.location.href='{!$Page.XactlySMBCalculatePayroll}?pid={!per.prd.Id}&yid={!selectedFiscalYear}';" class="periodsNormalCell periodsNotRightCell {!IF(per.prd.StartDate__c < initialPeriod.StartDate__c,'disabledOpacityButton','')}" style="{!IF(selectedPeriodId = per.prd.Id,'background-color:#E8E8E8;','')} {!IF(per.prd.StartDate__c < initialPeriod.StartDate__c,'','cursor:pointer;')}">
+                                        <apex:outputPanel layout="none" rendered="{!per.prd.XactlyExpress__StartDate__c>=initialPeriod.XactlyExpress__StartDate__c}">
+                                            {!per.status}
+                                        </apex:outputPanel>
+                                        <apex:outputPanel layout="none" rendered="{!per.prd.XactlyExpress__StartDate__c < initialPeriod.XactlyExpress__StartDate__c}">
+                                            {!$Label.xactlyexpress__NotApplies}
+                                        </apex:outputPanel> 
+                                      </td>
+                                      <td class="periodsNormalCell {!IF(per.prd.XactlyExpress__StartDate__c < initialPeriod.XactlyExpress__StartDate__c,'disabledOpacityButton','')}" style="{!IF(selectedPeriodId = per.prd.Id,'background-color:#E8E8E8;','')}" valign="center">
+                                             <apex:outputPanel styleClass="periodsExportLink"  rendered="{!IF(AND(per.status=='Open',per.prd.XactlyExpress__StartDate__c!=currentPeriod.XactlyExpress__StartDate__c), true, false)}">
+                                                &nbsp;
+                                             </apex:outputPanel>
+                                             <apex:outputLink styleClass="periodsExportLink" value="{!$Page.XactlyExpress__XactlySMBPayrollFileExport}?pId={!per.prd.id}" onclick="{!IF(per.prd.XactlyExpress__StartDate__c==currentPeriod.XactlyExpress__StartDate__c,'alrtwrng();','')}" rendered="{!IF(AND(OR(per.status!='Open',per.prd.XactlyExpress__StartDate__c==currentPeriod.XactlyExpress__StartDate__c),per.prd.XactlyExpress__StartDate__c>=initialPeriod.XactlyExpress__StartDate__c), true, false)}">
+                                                 {!$Label.xactlyexpress__Export}
+                                             </apex:outputLink>
+                                      </td>
+                                      <td class=" {!IF(selectedPeriodId = per.prd.Id,'flechader','')} "><div style="font-size:0px;">&nbsp;</div></td>
+                                  </tr>  
+                                </apex:repeat>   
+                                 <tr class="periodUltimateRow">
+                                     <td class="periodsNotRightCell">&nbsp;</td>
+                                     <td class="periodsNotRightCell">&nbsp;</td>
+                                     <td>&nbsp;</td>
+                                     <td>&nbsp;</td>
+                                 </tr>                                             
+                             </tbody>                                     
+                         </table>    
+                    </apex:outputpanel>                       
+                    </div>
+                    <div class="bottomCurvy"></div>
+                    <br/>
+                    <br/>
+                    <apex:outputPanel styleClass="btnToLeft btnAction" rendered="{!IF(LiaSize > 0,true,false)}">
+                        <a href="javascript:;" onclick="window.open('{!$Page.XactlyExpress__XactlySMBLiabilitiesDetails}', '','location=0,status=0,scrollbars=1,width=550px,height=500px');">
+                            <div class="rightBtnOrange">
+                                <div class="leftBtnOrange">
+                                    <div class="middleBtnOrange">
+                                        <apex:outputText value="{!$Label.xactlyexpress__liabilityDetails}">
+                                            <apex:param value="{!currentSettings.liabilityCap}"/>
+                                        </apex:outputText>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </apex:outputPanel>
+                </div>
+                
+                <!-- CONTENT -->   
+                <apex:outputPanel layout="block" styleClass="content">
+ 
+                   <!--  Errors --> 
+                   <apex:outputPanel id="errorMsg" layout="block" styleClass="errorScrollBox">
+                      <apex:outputpanel rendered="{!If(LEN(plansRecalculated)>0,true,false)}">
+                          <c:XactlySMBErrorMsg error="{!$Label.xactlyexpress__plansRecalculated}"/>
+                          <span class="btnToLeft btnAction" style="margin-left:430px;margin-top:-15px;position:absolute;">
+                              <a href="javascript:;" onclick="javascript: errorToShow = window.open('/apex/XactlySMBClosePeriodErrorDetails', 'Errors','location=0,status=0,scrollbars=1,width=570px,height=500px');errorToShow.error='{!plansRecalculated}';">
+                                  <span class="rightBtnOrange">
+                                      <span class="leftBtnOrange">
+                                          <span class="middleBtnOrange">
+                                              {!$Label.xactlyexpress__viewDetails}
+                                          </span>
+                                      </span>
+                                  </span> 
+                              </a>
+                          </span>
+                      </apex:outputpanel>
+                      <input value="{!IF(errorMsg != '', 'Error',syncImpl.Status)}" type="hidden" id="closeStatus"/>
+                  </apex:outputpanel>
+                   <apex:outputPanel id="errorMsg2" layout="block">
+                        <div style="{!if(errorMsg == '','display:none;','')}margin-left: 20px; margin-bottom: 5px;background-color:#FF0000; color: #FFFFFF; font-size: 16px; font-weight: bold; overflow: auto; max-height: 100px; width: 757px; padding: 4px;">
+                            <apex:outputText escape="false" styleClass="errorScrollBox"  value="{!errorMsg}"/>
+                        </div>
+                   </apex:outputPanel>
+                  <!--  STEP 1 -->
+                  <apex:actionFunction name="removeCheckElementFN" action="{!removeCheckElement}" rerender="step1" oncomplete="rerenderNoCompare = true;refeshNumberOpenElement();waitOff();" />
+
+                  <apex:inputHidden value="{!indexElementToRemove}" id="elementToRemove"/>
+                  <script>
+                        var idRemoveInput='{!$Component.elementToRemove}';
+                  </script>
+                  <apex:outputPanel layout="block" styleClass="box stepBoxAdd" id="step1">
+                       <div class="tm">
+                          <div style="float: left;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/tl.png')}" /></div>
+                          <div style="float: right;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/tr.png')}" /></div>
+                          <div style="clear:both"></div>
+                       </div> 
+                       <div class="roundedBox">
+                          <div class="boxHeader">
+                              <div class="stepActionNumber PNovaBlack60c5">
+                               A
+                              </div>
+                              <div class="titleWrapper">  
+                                  <div class="mainTitle PNovaSemiBold17c3">{!$Label.CheckList}</div>
+                                  <div class="detailedTitle HelveticaRegular12c3">{!$Label.CheckListDesc}</div>
+                              </div>
+                              <div style="clear:both"></div>
+                          </div>
+                          <div class="boxContent"> 
+                            <div class="openItemsDescription">{!$Label.OpenItems}:</div> <div class="openItemsNumber">{!$Label.WaitLoading}</div>
+                            <div style="clear:both;"></div>            
+                            <div id="checkList">        
+                                 <table class="processTable" cellspacing="0" cellpadding="0">
+                                     <thead class="processTableHeaders">
+                                         <tr>
+                                             <th class="processHeaderCell processNotRightCell">{!$Label.Process}</th>
+                                             <th class="processHeaderCell processNotRightCell" style="width: 300px;">{!$Label.Status}</th>
+                                             <th class="processHeaderCell">&nbsp;</th>
+                                         </tr>
+                                     </thead>
+                                     <tbody  class="processTableBody"> 
+                                         <tr>   
+                                             <td class="processNormalCell processNotRightCell">{!$Label.CreditsProcessedAllPlans}</td>
+                                             <td class="processNormalCell processNotRightCell"> 
+                                                   <span style="{!IF(recalculateCreditProccess, 'color:red;font-weight:bold;', '')}"> 
+                                                        {!IF(ISNULL(LastCreditProccess), $Label.NeverRun, IF(lastCreditAnyProccess.Status__c != 'Finished',lastCreditAnyProccess.Status__c  , IF(recalculateCreditProccess, $Label.NeedToRunAgain, IF(LastCreditProccess.ProcessID__c == lastCreditAnyProccess.Id, $Label.Done,$Label.NeedToRunAgain))))}
+                                                   </span>
+                                                   <apex:outputpanel layout="none" rendered="{!recalculateCreditProccess}">
+                                                      <input class="checkSelElement" type="checkbox" value="1"  style="display:none;"/>   
+                                                   </apex:outputpanel>
+                                                   <apex:outputpanel layout="none" rendered="{!NOT(recalculateCreditProccess)}">
+                                                      <input class="checkSelElement" type="checkbox" value="1" checked="checked" style="display:none;"/>   
+                                                   </apex:outputpanel>                                               
+                                                   <div class="checkDate">
+                                                       <apex:outputText value="
+                                                                 {0,date,MM/dd/yyyy HH:mm a}">
+                                                                 <apex:param value="{!LastCreditProccess.CreatedDate}" />
+                                                       </apex:outputText> 
+                                                   </div>
+                                             </td>
+                                             <td class="processNormalCell">&nbsp;                                                    
+                                             </td>
+
+                                         </tr>         
+                                         <tr>
+                                             <td class="processNormalCell processNotRightCell">{!$Label.CalculateProcessedAllPlans}</td>
+                                             <td class="processNormalCell processNotRightCell">
+                                                   <span style="{!IF(recalculateProccess, 'color:red;font-weight:bold;', '')}">
+                                                        {!IF(ISNULL(LastCalcualteProccess), $Label.NeverRun, IF(lastCalcualteAnyProccess.Status__c != 'Finished',lastCalcualteAnyProccess.Status__c  , IF(recalculateProccess, $Label.NeedToRunAgain, IF(LastCalcualteProccess.ProcessID__c == lastCalcualteAnyProccess.Id, $Label.Done,$Label.NeedToRunAgain))))}
+                                                   </span>
+                                                                                                     
+                                                   <apex:outputpanel layout="none" rendered="{!recalculateProccess}">
+                                                      <input class="checkSelElement" type="checkbox" value="1" style="display:none;" />   
+                                                   </apex:outputpanel>
+                                                   <apex:outputpanel layout="none" rendered="{!NOT(recalculateCreditProccess)}">
+                                                      <input class="checkSelElement" type="checkbox" value="1" checked="checked" style="display:none;" />   
+                                                   </apex:outputpanel>
+                                                   <div class="checkDate">
+                                                       <apex:outputText value="
+                                                                 {0,date,MM/dd/yyyy HH:mm a}">
+                                                                 <apex:param value="{!LastCalcualteProccess.CreatedDate}" />
+                                                       </apex:outputText>
+                                                   </div>
+                                             </td>
+                                             <td class="processNormalCell">&nbsp;
+                                             </td>
+                                         </tr>                                           
+                                         <apex:variable var="checkCount" value="{!1}"/>
+                                         <apex:repeat value="{!checkList}" var="cl" id="checklistGenrerator">
+                                             <tr class="{!If(checkList.size=checkCount,'processUltimateRow','')}">
+                                                 <td class="proccessCheckElementCell {!If(checkList.size=checkCount,'','processNormalCell')} processNotRightCell">
+                                                    <apex:outputPanel layout="none" rendered="{!If(checkCount=1,'true','false')}" > 
+                                                        {!$Label.xactlyexpress__PaymentsReviewed}
+                                                    </apex:outputPanel>
+                                                    <apex:outputPanel layout="none" rendered="{!If(checkCount=1,'false','true')}" > 
+                                                        <apex:inputField id="elementName" value="{!cl.pcl.Name}" styleClass="checkNameElement" />
+                                                    </apex:outputPanel>
+                                                 </td> 
+                                                 <td class="proccessCheckElementCell {!If(checkList.size=checkCount,'','processNormalCell')} processNotRightCell">
+                                                    <apex:inputCheckbox id="elmChck" value="{!cl.check}"  onclick="refeshNumberOpenElement();" styleClass="checkSelElement" />
+                                                    &nbsp;  
+                                                    <div class="checkDate">
+                                                        <apex:outputText value="
+                                                              {0,date,MM/dd/yyyy HH:mm a}">
+                                                              <apex:param value="{!cl.checkedDate}" />
+                                                        </apex:outputText>
+                                                    </div>
+                                                 </td>
+                                                 <td class="{!If(checkList.size=checkCount,'','processNormalCell')}" align="center" valign="middle">
+                                                    <apex:outputPanel layout="none" rendered="{!If(checkCount=1,'false','true')}" > 
+                                                        <div class="inputCriteria" style="margin-right:20px;">
+                                                            <a href="javascript:;" style="color:#CE641B;font-size:7pt;font-weight:bolder;" onclick="rerenderNoCompare = false;removeItemOfList({!checkCount - 1});">
+                                                                <apex:outputText value="{!$Label.xactlyexpress__REMOVE}"/>
+                                                            </a> 
+                                                        </div>  
+                                                   </apex:outputPanel>        
+                                                 </td>
+                                             </tr> 
+                                             <apex:variable var="checkCount" value="{!checkCount + 1}"/>
+                                         </apex:repeat>
+                                         <tr>
+                                             <td colspan="3" style="padding-top:10px;">
+                                                 <hr style="margin-left:6px;"/>
+                                                 <apex:outputPanel layout="block" styleClass="actionButtonWrapper" style="margin-top:-1px;">
+                                                     <div class="actionButtonLeft" style="margin:0;"></div>
+                                                     <a class="actionButtonMiddle" href="javascript:;" style="margin:0;color:#CE641B;" onclick="rerenderNoCompare = false;addCheckListElement();">
+                                                           {!$Label.AddMoreItems}
+                                                     </a> 
+                                                     <div class="actionButtonRight" style="margin:0;"></div>
+                                                 </apex:outputPanel> 
+                                             </td>
+                                         </tr>
+                                     </tbody>                                   
+                                 </table> 
+                            </div>     
+                            <div>
+                                <a href="javascript:;" onclick="hideShowList();">
+                                    <span class="buttonCurvy" style="margin-left:-12px;margin-top:10px;" onmouseover="jQuery(this).css('background-position','bottom');"  onmouseout="jQuery(this).css('background-position','top');">
+                                       <apex:outputText escape="false" style="padding-top:5px; text-align:center; width:100%;float: left;" styleClass="textToChange" value="{!$Label.HideList} &gt;&gt;"/>
+                                    </span>
+                                </a>
+                            </div>
+                            <div style="clear:both;"></div>
+                          </div>    
+                       </div>         
+                       <div class="bm">
+                          <div style="float: left;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/bl.png')}" /></div>
+                          <div style="float: right;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/br.png')}" /></div>
+                       </div> 
+                  </apex:outputPanel>
+                
+                  <!--  STEP 2 -->
+                  <apex:outputPanel layout="block" styleClass="box stepBoxAdd" >
+                      <div class="tm">
+                          <div style="float: left;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/tl.png')}" /></div>
+                          <div style="float: right;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/tr.png')}" /></div>
+                          <div style="clear:both"></div>
+                      </div> 
+                      <div class="roundedBox">
+                          <div class="boxHeader">
+                              <div class="stepActionNumber PNovaBlack60c5">
+                               B
+                              </div>
+                              <div class="titleWrapper">  
+                                  <div class="mainTitle PNovaSemiBold17c3">{!$Label.ClosePeriod}</div>
+                                  <div class="detailedTitle HelveticaRegular12c3">{!$Label.closePeriodDesc}</div>
+                              </div>
+                              <div class="extraTitleStuff">
+                              </div>
+                              <div style="clear:both"></div>
+                          </div>
+                          <div class="boxContent"> 
+                                <apex:actionFunction name="closePeriod" action="{!closePeriod}" rerender="errorMsg" oncomplete="closePeriodRefresh();showAll('false');checkLiabilities();" />
+                                <div class="btnToLeft btnAction {!IF(selectedPeriod.StartDate__c == currentPeriod.StartDate__c, '', 'disabledOpacityButton')}" style="margin-top:2px;">
+                                    <div onclick="{!IF(selectedPeriod.StartDate__c == currentPeriod.StartDate__c, 'confClosePeriod();', '')}" style="cursor:pointer;{!IF(selectedPeriod.StartDate__c == currentPeriod.StartDate__c, '', 'cursor:default;')}">
+                                        <div class="rightBtnOrange">
+                                            <div class="leftBtnOrange">
+                                                <div class="middleBtnOrange">
+                                                    {!$Label.closeCurrentPeriod}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="descriptionButtomText"  style="margin-top:4px;">[{!$Label.ClosePeriodInfo}]</div>
+                                <div class="progressBar">
+                                   <img id="progressBar" style="display: none;" src="{!URLFOR($Resource.XactlySMBResources, 'img/icons/progressBar.gif')}" />
+                                </div>
+                                <div style="clear:both;"></div>
+                          </div>    
+                      </div>         
+                      <div class="bm">
+                          <div style="float: left;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/bl.png')}" /></div>
+                          <div style="float: right;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/br.png')}" /></div>
+                      </div> 
+                  </apex:outputPanel>
+                
+                  <!--  STEP 3 -->
+                  <apex:outputPanel layout="block" styleClass="box stepBoxAdd" style="margin-bottom: 80px;">
+                      <div class="tm">
+                          <div style="float: left;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/tl.png')}" /></div>
+                          <div style="float: right;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/tr.png')}" /></div>
+                          <div style="clear:both"></div>
+                      </div> 
+                      <div class="roundedBox">
+                          <div class="boxHeader">
+                              <div class="stepActionNumber PNovaBlack60c5">
+                               C
+                              </div>
+                              <div class="titleWrapper">  
+                                  <div class="mainTitle PNovaSemiBold17c3">{!$Label.ExportPayrollFile}</div>
+                                  <div class="detailedTitle HelveticaRegular12c3">{!$Label.ExportPayrollFileDesc}</div>
+                              </div>
+                              <div class="extraTitleStuff">
+                              </div>
+                              <div style="clear:both"></div>
+                          </div>
+                          <div class="boxContent"> 
+                               <div class="btnToLeft btnAction {!IF(selectedPeriod.StartDate__c <= currentPeriod.StartDate__c, '', 'disabledOpacityButton')}" style="float:left;margin-top:5px;">
+                                    <a href="{!IF(selectedPeriod.XactlyExpress__StartDate__c <= currentPeriod.XactlyExpress__StartDate__c, $Page.XactlyExpress__XactlySMBPayrollFileExport + '?pId=' + selectedPeriodId, 'javascript:;')}"  onclick="{!IF(selectedPeriod.XactlyExpress__StartDate__c==currentPeriod.XactlyExpress__StartDate__c,'alrtwrng();','')}"  style="{!IF(selectedPeriod.StartDate__c <= currentPeriod.StartDate__c, '', 'cursor:default;')}">
+                                        <div class="rightBtnOrange">
+                                            <div class="leftBtnOrange">
+                                                <div class="middleBtnOrange">
+                                                    {!$Label.ExportPayrollFile}
+                                                </div>
+                                            </div>
+                                        </div> 
+                                    </a>
+                               </div> 
+                               <apex:outputLink styleClass="descriptionButtomText {!IF(selectedPeriod.XactlyExpress__StartDate__c <= currentPeriod.XactlyExpress__StartDate__c, '', 'disabledOpacityButton')}"  value="{!IF(selectedPeriod.XactlyExpress__StartDate__c <= currentPeriod.XactlyExpress__StartDate__c, $Page.XactlyExpress__XactlySMBPayrollFileExport + '?pId=' + selectedPeriodId, 'javascript:;')}" onclick="{!IF(selectedPeriod.XactlyExpress__StartDate__c==currentPeriod.XactlyExpress__StartDate__c,'alrtwrng();','')}" style="{!IF(selectedPeriod.XactlyExpress__StartDate__c <= currentPeriod.XactlyExpress__StartDate__c, '', 'cursor:default !important;')}">
+                                   <apex:image url="{!URLFOR($Resource.XactlyExpress__XactlySMBResources, 'img/icons/excelIcon.png')}" />
+                               </apex:outputLink>
+                               <div style="clear:both;"></div>
+                          </div>    
+                      </div>         
+                      <div class="bm">
+                          <div style="float: left;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/bl.png')}" /></div>
+                          <div style="float: right;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/br.png')}" /></div>
+                      </div> 
+                  </apex:outputPanel>    
+                                
+                </apex:outputPanel>                                
+                <div style="clear:both"></div>
+            </apex:outputPanel><!-- END CONTENTWRAPPER -->
+            
+            <!-- FOOTER  --> 
+            <apex:outputPanel layout="block" styleClass="footer" rendered="{!isAdmin && isActive}" id="pFooter">
+                <apex:outputPanel layout="block" styleClass="previousStepWrapper" style="max-width:150px;">
+                    <div class="previousStepRight"></div>
+                    <a class="previousStepMiddle" href="{!$Page.XactlySMBCalculateManagePayments}" onclick="savePageHandler.disableBottomBar();">
+                        {!$Label.PreviousStep}
+                    </a>
+                    <div class="previousStepLeft"></div>
+                </apex:outputpanel>
+                    
+                <apex:outputPanel layout="block" styleClass="actionButtons">                        
+                    <apex:outputPanel layout="block" styleClass="actionButtonWrapper">
+                        <div class="actionButtonLeft"></div>
+                        <a href="javascript:;" onclick="storeValues();saveWithCheck();" class="actionButtonMiddle">
+                            <apex:outputtext escape="false" value="{!$Label.xactlyexpress__SaveChanges}"> 
+                                <apex:param value="{!URLFOR($Resource.XactlyExpress__XactlySMBResources ,'img/buttons/navigateSaveMiddle.gif')}" />
+                            </apex:outputtext>   
+                        </a> 
+                        <div class="actionButtonRight"></div>    
+                    </apex:outputpanel>
+                 
+                    <apex:outputPanel layout="block" styleClass="actionButtonWrapper">
+                        <div class="actionButtonLeft"></div>
+                        <a href="javascript:;" class="actionButtonMiddle" onclick="discardChangesConfirm(window.location.href);">
+                            <apex:outputtext escape="false" value="{!$Label.xactlyexpress__DiscardChanges}">
+                               <apex:param value="{!URLFOR($Resource.XactlyExpress__XactlySMBResources ,'img/buttons/navigateCancelMiddle.gif')}" />
+                            </apex:outputtext>
+                        </a>
+                        <div class="actionButtonRight"></div>    
+                    </apex:outputpanel>            
+                
+                </apex:outputPanel>
+            
+                <apex:outputPanel layout="block" styleClass="nextStepWrapper" style="margin-right:100px;">
+                </apex:outputPanel> 
+            </apex:outputPanel>
+        </apex:form>
+    </div> 
+        
+    <a href="javascript:;" id="openPopup"></a>
+
+    <div style="display: none;">
+        <div id="fooPopup_px" class="jqpopup_cross"></div>
+        <div class="jqpopup_header" id="fooPopup_ph"></div>
+        <div id="fooPopup_pm" class="jqpopup_message"></div>
+        <div id="'fooPopup'_pc" class="jqpopup_content"></div>
+        <div id="fooPopup_pf" class="jqpopup_footer"></div>
+        <div id="fooPopup_ps" class="jqpopup_resize"></div>
+        <div id="fooPopup_pl" class="jqpopup_center"></div>
+    </div>
+      
+    <c:XactlySMBFooterScript /> 
+
+    
+    <script language="javascript" >
+       var openElements = 0;
+       var rerenderNoCompare = true;
+       if(showAll == undefined){
+            var showAll = function(){};
+       }
+       function checkListNames(){
+            var areChecked = true;
+            $('.checkNameElement').each(function(){
+                if(this.value == '' || jQuery.trim(this.value) == ''){
+                    areChecked = false;
+                }
+            });            
+            return areChecked; 
+       }
+
+       function closePeriodRefresh(){ 
+           if(document.getElementById('closeStatus').value == 'Error'){
+               waitOff();
+           }else if(document.getElementById('closeStatus').value == 'Done'){
+               waitOff();
+               alert('{!$Label.ClosedPeriodSuccessfully}');
+               refresh();
+           }else{     
+               waitOn();
+               closePeriod();
+           }
+       }
+       
+       function refeshNumberOpenElement(){
+            openElements = 0;
+            $('.checkSelElement').each(function(){
+                if(this.checked == false){
+                    openElements++;
+                }
+            }); 
+            $('.openItemsNumber').each(function(){
+                this.innerHTML = openElements;
+            });
+       } 
+
+       function addCheckListElement(){
+            waitOn();
+            addCheckElementFN();
+       }
+       
+       function removeItemOfList(index){
+            waitOn();
+            document.getElementById(idRemoveInput).value = index;
+            removeCheckElementFN();
+       } 
+        
+
+       function alrtwrng(){
+           alert('{!$Label.opnPrdWarning}');
+       }   
+
+   
+       function confClosePeriod(){
+           var creRun=$('.processTableBody tr td').eq(1).children('span').html().replace(/^(\s|\ )*|(\s|\ )*$/g,"");	
+       	   var calRun=$('.processTableBody tr td').eq(4).children('span').html().replace(/^(\s|\ )*|(\s|\ )*$/g,"");
+           var canClose = true;
+            
+       	   if(creRun=='Done' && calRun=='Done'){
+       	   	   if(compareValues(true,rerenderNoCompare)){
+	               canClose = false;
+	               if(confirm('{!$Label.saveDataBeforeclosePeriod}')){
+	                   saveWithCheck();
+	               }
+           		}
+	           if(canClose){
+	               if(openElements>0){
+	                   canClose = false;
+	                   if(confirm('{!$Label.itemsOpenBeforeClosePeriod}')){
+	                        canClose= true;
+	                   }
+	               }
+	               if(canClose){
+	                   waitOn();
+	                   closePeriod();
+	                   showProgressBar();
+	               }
+	           }
+       	   
+       	   }else{
+       	   		var _msg = '';
+       	   		if(creRun == '{!$Label.Queued}' || calRun == '{!$Label.Queued}'){
+       	   			_msg += '{!$Label.CantClosePeriodStillCalcRunning}';       	   		
+       	   		}
+       	   		else if(creRun == '{!$Label.NeverRun}' || calRun == '{!$Label.NeverRun}'){
+       	   			_msg += '{!$Label.CantClosePeriodNoCalc}';       	   		
+       	   		}
+       	   		else{
+       	   			_msg += '{!$Label.CantClosePeriodReCalcNeeded}';
+       	   		}
+       	   		
+       	   		alert(_msg);
+       	   }
+       }
+
+       
+       function showProgressBar () {
+           var progressBar = document.getElementById('progressBar');
+           progressBar.style.visibility = "visible";
+       }       
+
+       function saveWithCheck() {
+            if(checkListNames()){
+                waitOn();
+                savePageHandler.disableBottomBar();
+                rerenderNoCompare = false;
+                save();
+            }else{
+                alert('{!$Label.needItemsNames}');
+            } 
+       }    
+
+       function hideShowList() {
+            if($('#checkList')[0].style.display != 'none'){
+                $('#checkList')[0].style.display = 'none';
+                $('.textToChange')[0].innerHTML = '{!$Label.ShowList} &gt;&gt;';
+            }else{
+                $('#checkList')[0].style.display = 'block';
+                $('.textToChange')[0].innerHTML = '{!$Label.HideList} &gt;&gt;';
+            }
+       }
+         
+       $(document).ready(function() {
+            savePageHandler.storeBottomBarOnclickEvents();
+            savePageHandler.setExtraBottomBarClick();
+            refeshNumberOpenElement();
+            storeValues(); 
+            checkLiabilities()
+       });     
+       
+       function checkLiabilities(){
+           var checkPeriod = {!if(newPeriod!=null,true,false)};
+           var liabilities = {!if(LiaSize > 0,true,false)}
+           if(checkPeriod){
+               if(liabilities){
+                   alert('<apex:outputText value="{!$Label.xactlyexpress__CurrentLiabilityManual}"><apex:param value="{!currentSettings.liabilityPlural}"/></apex:outputText>');
+               }
+               document.location.href = '{!JSENCODE($Page.XactlySMBHomePage)}';
+           }
+       }  
+               
+       window.onbeforeunload = function(){return compareValues(true,rerenderNoCompare);};
+    </script>
+    <script type="text/javascript" src="{!URLFOR($Resource.XactlySMBResources, 'popup/js/jqDnR.min.js')}"></script>
+    <script type="text/javascript" src="{!URLFOR($Resource.XactlySMBResources, 'popup/js/jquery.jqpopup.min.js')}"></script>
+    <script type="text/javascript" src="{!URLFOR($Resource.XactlySMBResources ,'js/jquery.superbox-min.js')}"></script>
+    <script type="text/javascript">
+        $(function(){
+            $.superbox.settings = {
+                closeTxt: "X",
+                loadTxt: "Loading...",
+                nextTxt: "Next",
+                prevTxt: "Previous"
+            };
+            $.superbox();
+        });
+    </script>
+    
+    
+</apex:page>

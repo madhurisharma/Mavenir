@@ -1,0 +1,62 @@
+<!-- 
+Developed by Timba Software Corp. www.timbasoftware.com admin@timbasoftware.com
+ This page defines Settings
+ @author Dario Levy <dlevy@timbasoftware.com>
+--> 
+<apex:page id="XactlySMBProcessPayments" controller="XactlyExpress.XactlySMBACLController" title="" sidebar="false" showHeader="false" standardStylesheets="true">
+    
+   <!-- Custom Cursor Loader -->
+   <c:XactlySMBCursor />
+   <!-- Custom Cursor Loader -->
+    <title>TEST</title>
+    <link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.XactlySMBResources ,'css/XactlySMBStyles.css')}" />
+    <link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.XactlySMBResources ,'css/XactlySMBPlanCreate.css')}" />
+    <link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.XactlySMBResources ,'popup/css/jqpopup.css')}"/>
+    
+    <style>
+        
+    </style>
+    
+    <c:XactlySMBShadows />
+    
+    <!-- PAGE WRAPPER -->  
+  
+    <div class="pageContent" id="pContent">
+        <!-- HEADER -->
+        <apex:form id="settingsForm" >
+            <apex:outputPanel layout="block" styleClass="header">
+                <c:XactlySMBHeader isAdmin="{!isAdmin}"  isActive="{!isActive}" nbrSeparator="{!nbrSeparator}" nbrDecimal="{!nbrDecimal}" currentUserOrSlected="{!currentUserOrSlected}" emulatingUserURLAppend="{!emulatingUserURLAppend}" selected="99" wqlabel="{!currentSettings.quotasPlural}" wclabel="{!currentSettings.creditsPlural}" wlabel="{!currentSettings.dealsPluralCap}" step="3" wtype="setting" hlabel="TEST"  stepHelp="SettingsDeals"/>
+            </apex:outputPanel>     
+        
+        
+            <apex:outputPanel layout="block" styleclass="additionalContent" rendered="{!isAdmin && isActive}">    
+                <c:XactlySMBChatterWall objectId="{!$User.Id}" showHeader="true" showWall="true" currentPage="{!$CurrentPage.Name}"/>
+            </apex:outputPanel>
+            
+            <!-- MAIN CONTENT -->
+            <apex:outputPanel layout="block" styleClass="mainContent" rendered="{!isAdmin && isActive}">
+                <iframe width="900px" allowtransparency="true" height="800px" src="http://ppxctytest-developer-edition.na7.force.com/checkout/checkout?orgId=PONERORGID" frameborder="0">
+                    Wrong Browser
+                </iframe>
+            </apex:outputPanel>
+            <!-- FOOTER  -->
+            <apex:outputPanel layout="block" styleClass="footer" rendered="{!isAdmin && isActive}" id="pFooter">
+                
+                    
+                <apex:outputPanel layout="block" styleClass="actionButtons">                        
+                    <apex:outputPanel layout="block" styleClass="actionButtonWrapper">
+                    </apex:outputpanel>
+                    
+                    <apex:outputPanel layout="block" styleClass="actionButtonWrapper">
+                    </apex:outputpanel>
+                </apex:outputPanel>
+            
+            </apex:outputPanel> 
+            
+        </apex:form>
+    </div>    
+    
+    <apex:includeScript value="{!URLFOR($Resource.XactlyExpress__CSN, 'jquery.js')}" />
+    <c:XactlySMBFooterScript /> 
+    <script type="text/javascript" src="{!URLFOR($Resource.XactlySMBResources, 'js/XactlySMBJavascript.js')}"></script>
+</apex:page>

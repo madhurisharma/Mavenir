@@ -1,0 +1,459 @@
+<apex:page standardController="Opportunity" Extensions="XactlyExpress.OpportunityExt" >
+   <c:XactlySMBGauges />
+    <apex:includeScript value="{!URLFOR($Resource.XactlyExpress__CSN, 'jquery.js')}" />
+    <link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.XactlySMBResources ,'modbubble/css/bubble.css')}" />
+    <style>
+        body{
+            overflow:visible;
+        }
+    
+        .smtmMainContainer {
+            /*background: url({!URLFOR($Resource.ShowMeTheMoney, 'lineHorizontal.jpg')}) repeat-x top left;*/
+            background: url({!URLFOR($Resource.ShowMeTheMoney, 'showMeTheMoneyBG.png')}) repeat-x top left;
+            background-position:bottom;
+            height: 150px;
+            padding-top: 5px;
+            margin: 0px;
+            position: relative;
+            overflow: hidden;
+            min-width:1090px;
+        }
+        
+        .smtmEstimateResult {
+            font-size: 18px;
+            font-weight: bold;
+            color:#517E9F;
+            margin-top: 17px;
+            float:right;
+        }
+        
+        .smtmXactlyLogo {
+            position: relative;
+            overflow: hidden;
+            float: left;
+        }
+        
+        .smtmXactlyLogo .mainButtonLeft {
+            background: url({!URLFOR($Resource.ShowMeTheMoney, 'mainButtonLeft.jpg')}) no-repeat top left;
+            height: 61px;
+            width: 25px;
+            padding: 0px;
+            margin: 0px;  
+            float: left;      
+        }
+        
+        .smtmXactlyLogo .mainButtonMiddle {
+            background: url({!URLFOR($Resource.ShowMeTheMoney, 'mainButtonMiddle.jpg')}) repeat-x top left;
+            height: 61px;
+            padding: 0px;
+            margin: 0px;   
+            float: left;  
+        }
+        
+        .smtmXactlyLogo .mainButtonMiddle img {
+            margin-top: 11px;
+        }
+        
+        .smtmXactlyLogo .mainButtonRight {
+            background: url({!URLFOR($Resource.ShowMeTheMoney, 'mainButtonRight.jpg')}) no-repeat top left;
+            height: 61px;
+            width: 23px;
+            padding: 0px;
+            margin: 0px; 
+            float: left;    
+        }
+        
+        .smtmSection {
+            position: relative;
+            overflow: hidden;
+            float: left;
+            margin: 14px 10px 0px 13px;
+        }
+        
+        .smtmButton {
+            text-decoration: none;
+        }
+        
+        .smtmButton .buttonLeft {
+            background: url({!URLFOR($Resource.ShowMeTheMoney, 'buttonLeft.jpg')}) no-repeat top left;
+            height: 25px;
+            width: 12px;
+            padding: 0px;
+            margin: 0px;  
+            float: left;      
+        }
+        
+        .smtmButton .buttonMiddle {
+            background: url({!URLFOR($Resource.ShowMeTheMoney, 'buttonMiddle.jpg')}) repeat-x top left;
+            height: 25px;
+            padding: 0px;
+            margin: 0px;   
+            float: left;  
+            color: #5296C6;
+            font-weight: bold;
+            padding-top: 2px;
+        }
+        
+        .smtmButton .buttonRight {
+            background: url({!URLFOR($Resource.ShowMeTheMoney, 'buttonRight.jpg')}) no-repeat top left;
+            height: 25px;
+            width: 13px;
+            padding: 0px;
+            margin: 0px; 
+            float: left;    
+        }
+        
+        .smtmSeparateLine {
+            background: url({!URLFOR($Resource.ShowMeTheMoney, 'lineVertical.jpg')}) repeat-y top left;
+            height: 62px;
+            width: 9px;
+            float: left;
+            margin: 0px;
+            padding: 0px;    
+        }
+        
+        .topCurvy{
+            background: url({!URLFOR($Resource.ShowMeTheMoney, 'topBorderCurv.png')}) top left;
+            height:10px;
+            width:10px;
+            float:left;
+        }
+        
+        .topCurvyR{
+            background: url({!URLFOR($Resource.ShowMeTheMoney, 'topBorderCurvR.png')}) top left;
+            height:10px;
+            width:10px;
+            float:left;
+        }
+        
+        .bottomCurvyBL{
+            background: url({!URLFOR($Resource.ShowMeTheMoney, 'bottomBorderCurvBL.png')}) top left;
+            height:10px;
+            width:10px;
+            float:left;
+        }
+        
+        .bottomCurvyBR{
+            background: url({!URLFOR($Resource.ShowMeTheMoney, 'bottomBorderCurvBR.png')}) top left;
+            height:10px;
+            width:10px;
+            float:left;
+        }
+        
+        .topBorder{
+            background: url({!URLFOR($Resource.ShowMeTheMoney, 'topBorder.png')}) repeat-x;
+            height:10px;
+            width:95%;
+            margin-left:10px;
+        }
+        
+        .bottomBorder{
+            background: url({!URLFOR($Resource.ShowMeTheMoney, 'bottomBorder.png')}) repeat-x;
+            height:10px;
+            width:95%;
+            margin-left:10px;
+        }
+        
+        .btnAction .leftBtnOrange {
+            background:url({!URLFOR($Resource.XactlySMBResources ,'img/buttons/orange_button_left.png')}) transparent  no-repeat scroll 0 0;
+            float: left;
+            height:19px;
+            padding:0px 0px 0px 5px;
+            width:auto;
+        }
+        
+        
+        .btnAction .middleBtnOrange {
+            color: white !important;
+            font-size: 10px;
+            font-weight: bold;
+            padding: 3px 5px;
+            width: auto;
+            float:left;
+        }
+        
+        .btnAction .middleBtnOrange A:link {color: white !important;}
+        .btnAction .middleBtnOrange A:visited {color: white !important;}
+        .btnAction .middleBtnOrange A:active {color: white !important;}
+        .btnAction .middleBtnOrange A:hover {color: white !important;}
+        
+        .btnAction .rightBtnOrange {
+            background: url({!URLFOR($Resource.XactlySMBResources ,'img/buttons/orange_button_right.png')}) transparent no-repeat scroll right center;
+            //background: url({!URLFOR($Resource.XactlySMBResources ,'img/layout/collapsebarHorizontal.jpg')}) no-repeat;
+            float:left;
+            height:19px;
+            padding:0px 5px 0px 0px;
+            width:auto;
+        }
+        
+        .xactlyButtonUp{
+            background: url({!URLFOR($Resource.ShowMeTheMoney, 'ButtonUp.png')}) no-repeat;
+            width:100px;
+            height:100px;
+            margin-left:15px;
+            margin-right:15px;
+            cursor:pointer;
+        }
+        
+        .xactlyButtonDown{
+            background: url({!URLFOR($Resource.ShowMeTheMoney, 'ButtonDown.png')}) no-repeat;
+            width:100px;
+            height:100px;
+            margin-left:15px;
+            margin-right:15px;
+            cursor:pointer;
+        }
+        
+        .earningsWrapper{
+            background: url({!URLFOR($Resource.ShowMeTheMoney, 'earningsWrapper.png')}) no-repeat;
+            width:174px;
+            height:40px;
+        }
+        
+        .creditWrapper{
+            background: url({!URLFOR($Resource.ShowMeTheMoney, 'creditWrapper.png')}) no-repeat;
+            width:89px;
+            height:28px;
+            padding-top:3px;
+            text-align:right;
+        }
+        
+        .quotaWrapper{
+            background: url({!URLFOR($Resource.ShowMeTheMoney, 'quotaWrapper.png')}) no-repeat;
+            width:69px;
+            height:28px;
+            padding-top:3px;
+            text-align:right;
+        }
+    </style>
+
+    <apex:form >
+        <apex:actionFunction name="reloadInd" action="{!preLoadValues}"/>
+        <div class="smtmMainContainer">
+            <apex:outputpanel styleclass="smtmSection" rendered="{!hasMessages}">
+                <apex:pageMessages />
+            </apex:outputpanel>
+            
+            <apex:outputpanel layout="none" rendered="{!NOT(hasMessages)}">
+                <apex:actionFunction name="runEstimates" action="{!showEarnings}"/>
+                <div style="float:left;width:375px;height:100%;overflow:hidden;">
+                    <table width="100%" height="100%" cellspacing="0" cellpadding="0">
+                        <tr>
+                            <td style="border-right:2px solid #BABABA;">
+                                <div class="xactlyButtonUp" onmousedown="$(this).removeClass('xactlyButtonUp').addClass('xactlyButtonDown');" onmouseup="$(this).removeClass('xactlyButtonDown').addClass('xactlyButtonUp');runEstimates();"></div>
+                                <div class="xactlyButtonDown" style="position:absolute;margin-top:-500px;"></div><!-- Preload Image -->
+                            </td>
+                            <td style="border-right:2px solid #BABABA;border-bottom:2px solid #BABABA">
+                                <center>
+                                    <apex:outputText value="{!$Label.xactlyexpress__totalEaringsOpp}" escape="false" style="color:#9A9A9A;font-size:10pt;font-weight:bolder;"/><br/><br/>
+                                </center>
+                                <center>
+                                    <apex:outputtext value="{!$Label.xactlyexpress__noEstimateRun}" rendered="{!ISNULL(earningsEstimateS)}" style="font-size:18pt;font-weight:bolder;color:#517E9F;"/>
+                                    <apex:outputPanel styleClass="earningsWrapper" layout="block" rendered="{!NOT(ISNULL(earningsEstimateS))}">
+                                        <apex:outputtext value="$" rendered="{!NOT(ISNULL(earningsEstimateS))}"  style="font-size:25pt;font-weight:bolder;color:#3A9C3A;"/>
+                                        <apex:outputtext value="{!earningsEstimateS}"  style="font-size:25pt;font-weight:bolder;color:#3A9C3A;"/>
+                                    </apex:outputPanel>
+                                </center>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div style="float:left;width:555px;height:84px;margin-top:32px;margin-left:40px">
+                    <div>
+                        <div class="topCurvy"></div>
+                        <div class="topBorder" style="float:left;width:506px;margin-left:0px;"></div>
+                        <div class="topCurvyR"></div>
+                        <div style="clear:both;"></div>
+                    </div>
+                    <div style="background-color:#fff;border-left:2px solid #BABABA;border-right:2px solid #BABABA;height:74px;width:522px;">
+                        <table style="width:100%;height:100%;" border="0" cellpadding="0" cellspacing="0">
+                            <tr>
+                                <td colspan="3" style="border-bottom:2px solid #BABABA;height:39%">
+                                    <div style="margin-top:-7px;">
+                                        <apex:outputText value="{!$Label.xactlyexpress__selectAPayment}:" style="color:#9A9A9A;font-size:10pt;font-weight:bolder;margin-left:5px;margin-right:15px;"/>
+                                        <apex:selectList multiselect="false" size="1" value="{!currentPayment}" onchange="reloadInd();">
+                                            <apex:selectOptions value="{!Payments}" /> 
+                                        </apex:selectList>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <apex:outputPanel layout="none" rendered="{!chkCalcs}">
+                                    <td style="border-right:2px solid #BABABA;">
+                                        <div style="float:left;margin-left:3px;">
+                                            <apex:outputText value="{!$Label.xactlyexpress__totalMonthly}" style="color:#9A9A9A;font-size:7pt;"/><br/>
+                                            <apex:outputText value="{!$Label.xactlyexpress__Earnings}:" style="color:#F8981D;font-size:10pt;font-weight:bolder;"/>
+                                        </div>
+                                        <div class="smtmEstimateResult">
+                                            <apex:outputPanel styleClass="creditWrapper" layout="block">
+                                                <span style="margin-right:5px;cursor:default;" class="{!IF(afterEstimate == true,'trigger','')}">
+                                                    <apex:outputtext value="$" rendered="{!NOT(ISNULL(earningsIndS))}" />
+                                                    <apex:outputtext value="{!earningsIndS}" />
+                                                </span>
+                                            </apex:outputPanel>
+                                        </div>
+                                        <apex:outputPanel layout="block" rendered="{!afterEstimate}" styleClass="bubble_html" style="display:none">
+                                            <div style="color:#9A9A9A;font-size:7pt;">{!$Label.originalValue} ${!earningsIndSPrevEst}</div>
+                                            <div style="color:#9A9A9A;font-size:7pt;">{!$Label.Additional}    <span style="color:#00AA00;font-weight:bolder;font-size:8pt;float:right;"> +${!earningsIndAddition}</span></div>
+                                        </apex:outputPanel>
+                                    </td>
+                                    <td style="border-right:2px solid #BABABA">
+                                        <div style="float:left;margin-left:3px;">
+                                            <apex:outputText value="{!PayFrequency}" style="color:#9A9A9A;font-size:7pt;"/><br/>
+                                            <apex:outputText value="{!currentSettings.creditsCap}:" style="color:#F8981D;font-size:10pt;font-weight:bolder;"/>
+                                        </div>
+                                        <div class="smtmEstimateResult">
+                                            <apex:outputPanel styleClass="creditWrapper" layout="block">
+                                                <span style="margin-right:5px;cursor:default;" class="{!IF(afterEstimate == true,'trigger','')}">
+                                                    <apex:outputtext value="$" rendered="{!NOT(ISNULL(creditIndS))}" />
+                                                    <apex:outputtext value="{!creditIndS}" />
+                                                </span>
+                                            </apex:outputPanel>
+                                        </div>
+                                        <apex:outputPanel layout="block" rendered="{!afterEstimate}" styleClass="bubble_html" style="display:none">
+                                            <div style="color:#9A9A9A;font-size:7pt;">{!$Label.originalValue} ${!creditIndSPrevEst}</div>
+                                            <div style="color:#9A9A9A;font-size:7pt;">{!$Label.Additional}    <span style="color:#00AA00;font-weight:bolder;font-size:8pt;float:right;"> +${!creditIndAddition}</span></div>
+                                        </apex:outputPanel>
+                                    </td>
+                                    <td>
+                                        <div style="float:left;margin-left:3px;">
+                                            <apex:outputText value="{!PayFrequency}" style="color:#9A9A9A;font-size:7pt;"/><br/>
+                                            <apex:outputText value="{!currentSettings.quotasCap}:" escape="false" style="color:#F8981D;font-size:10pt;font-weight:bolder;"/>
+                                        </div>
+                                        <div class="smtmEstimateResult">
+                                            <apex:outputPanel styleClass="quotaWrapper" layout="block">
+                                                <span style="margin-right:5px;cursor:default;" class="{!IF(afterEstimate == true,'trigger','')}">
+                                                    <apex:outputtext value="{!quotaIndS}" />
+                                                    <apex:outputtext value="%" />
+                                                </span>
+                                            </apex:outputPanel>
+                                        </div>
+                                        <apex:outputPanel layout="block" rendered="{!afterEstimate}" styleClass="bubble_html" style="display:none">
+                                            <div style="color:#9A9A9A;font-size:7pt;">{!$Label.originalValue} {!quotaIndSPrevEst}% </div>
+                                            <div style="color:#9A9A9A;font-size:7pt;">{!$Label.Additional}    <span style="color:#00AA00;font-weight:bolder;font-size:8pt;float:right;"> +{!quotaIndAddition}%</span></div>
+                                        </apex:outputPanel>
+                                    </td>
+                                </apex:outputPanel>
+                                <apex:outputPanel layout="none" rendered="{!!chkCalcs}"><td><div style="width:450px;color:#9A9A9A;margin-top:5px;margin-left:10px;">{!$Label.xactlyexpress__runCalcsBeforEstimates}</div></td></apex:outputPanel>
+                            </tr>
+                        </table>
+                        <apex:outputPanel rendered="{!chkCalcs}" layout="block" style="position:absolute;margin-left:524px;margin-top:-105px;">
+                            
+                            <c:XactlySMBChart values="{!quotaInd}" cid="gaugeEmbed" type="showMeTheMoney" />
+                            
+                            <!-- 
+                            <object>
+                               <param name="wmode" value="transparent"/>
+                               <embed 
+                                wmode="transparent"
+                                id="gaugeEmbed" 
+                                width="146" 
+                                height="140"
+                                align="middle" 
+                                type="application/x-shockwave-flash" 
+                                src="{!$Resource.Gauge}" 
+                                pluginspage="http://www.adobe.com/go/getflashplayer" 
+                                play="true" 
+                                name="FlexSalesforce" 
+                                loop="false" 
+                                flashvars="gaugeValue={!quotaInd}" 
+                                allowscriptaccess="always"
+                               />
+                            </object>
+                             -->
+                        </apex:outputPanel>
+                        
+                    </div>
+                    <div>
+                        <div class="bottomCurvyBL"></div>
+                        <div class="bottomBorder" style="float:left;width:506px;margin-left:0px;"></div>
+                        <div class="bottomCurvyBR"></div>
+                        <div style="clear:both;"></div>
+                    </div>
+                </div>
+            </apex:outputpanel>
+        </div>
+        <div><apex:outputText value="{!$Label.xactlyexpress__pressXactlyButton}" escape="false" style="color:#9A9A9A;font-size:7pt;margin-left:23px;"/><apex:outputText value="{!currentSettings.estimatorDisclaimer}" style="color:#9A9A9A;font-size:7pt;margin-left:110px;"/></div>
+
+        <script>
+        
+            var bubbleImagesPath = "{!URLFOR($Resource.XactlySMBResources ,'modbubble/images')}";
+            
+            $(document).ready(function (){
+                jQuery('body').append('<table class="popupBub generaltable" cellspacing="0" cellpadding="0"><tr class="generaltable"><td class="generaltable"/><td class="generaltable"/><td class="generaltable"/></tr><tr class="generaltable"><td class="corner topleft generaltable"/><td class="top generaltable"/><td class="corner topright generaltable"/></tr><tr class="generaltable"><td class="left generaltable"/><td class="bubble_content generaltable"><div class="cont"style="border:0;">test</div></td><td class="right generaltable"/></tr><tr class="generaltable"><td class="corner bottomleft generaltable"/><td class="bottom generaltable"><center><div class="imgBubTail" style="height:29px;width:29px;">&nbsp</div></center></td><td class="corner bottomright generaltable"/></tr></table>');
+                loadBubbles();
+            });
+            
+
+            function IEBubbleFix(){
+                if(jQuery.browser.msie){
+                    jQuery('.popupBub td.topleft').css('background-image', 'url(' + bubbleImagesPath + '/bubble-1.gif)');
+                    jQuery('.popupBub td.top').css('background-image', 'url(' + bubbleImagesPath + '/bubble-2.gif)');
+                    jQuery('.popupBub td.topright').css('background-image', 'url(' + bubbleImagesPath + '/bubble-3.gif)');
+                    jQuery('.popupBub td.left').css('background-image', 'url(' + bubbleImagesPath + '/bubble-4.gif)');
+                    jQuery('.popupBub td.right').css('background-image', 'url(' + bubbleImagesPath + '/bubble-5.gif)');
+                    jQuery('.popupBub td.bottomleft').css('background-image', 'url(' + bubbleImagesPath + '/bubble-6.gif)');
+                    jQuery('.popupBub td.bottom').css('background-image', 'url(' + bubbleImagesPath + '/bubble-7.gif)');
+                    jQuery('.popupBub td.bottomright').css('background-image', 'url(' + bubbleImagesPath + '/bubble-8.gif)');
+                    jQuery('.imgBubTail').css('background-image', 'url(' + bubbleImagesPath + '/bubble-tail2.gif)');
+                }
+            }
+
+            function loadBubbles(){
+                setTimeout('IEBubbleFix()',100);
+                var hideDelayTimer = null;
+                var hideDelay = 0;
+                var distance = 00;
+                var time = 50;
+                var beingShown = false;
+                var shown = false;
+
+
+                jQuery('.trigger').mouseover(function (e) {
+                    var newCont = jQuery('.bubble_html', jQuery(this).parent().parent().parent()).val();
+                    if(newCont.length <=0){
+                           newCont = jQuery('.bubble_html', jQuery(this).parent().parent().parent()).html();
+                    }
+                    if (hideDelayTimer) clearTimeout(hideDelayTimer);
+                    if (beingShown || shown) {
+                        return;
+                    } else {
+                        beingShown = true;
+                        jQuery('.cont').html(newCont);
+                        jQuery('.popupBub').css({
+                            top: (e.pageY+distance-80)+'px',
+                            left: (e.pageX-jQuery('.popupBub').width()/2)+'px',
+                            display: 'block',
+                            position: 'absolute',
+                            'z-index': 3
+                        }).animate({
+                            top: '-=' + distance + 'px',
+                            opacity: 1
+                        },
+                        time, 'swing', function () {
+                            beingShown = false;
+                            shown = true;
+                        });
+                    }
+                });
+                
+                jQuery('.trigger').mouseout(function () {
+                    if (hideDelayTimer) clearTimeout(hideDelayTimer);
+                    hideDelayTimer = setTimeout(function () {
+                        hideDelayTimer = null;
+                        jQuery('.popupBub').animate({
+                            top: '-=' + distance + 'px',
+                            opacity: 0
+                        },
+                        time, 'swing', function () {
+                            jQuery('.popupBub').hide();
+                            shown = false;
+                        });
+                    },
+                    hideDelay);
+                });
+
+            }
+        </script>
+    </apex:form>
+</apex:page>

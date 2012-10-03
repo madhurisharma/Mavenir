@@ -1,0 +1,350 @@
+<!--
+ Developed by Timba Software Corp. www.timbasoftware.com admin@timbasoftware.com
+ This page lists plans
+ @author Guillermo Freire <guillermo.freire@gmail.com>
+-->
+<apex:page id="ExportDocument" controller="XactlyExpress.XactlySMBPlanDocumentController" sidebar="false" showHeader="false" standardStylesheets="true" action="{!redirectWhenAccessIsDenied}">
+   <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" />
+   <!--[if lt IE 8]><script src="http://ie7-js.googlecode.com/svn/version/2.0(beta3)/IE8.js" type="text/javascript"></script><![endif]-->
+   
+   <!-- Custom Cursor Loader -->
+   <c:XactlySMBCursor />
+   <!-- Custom Cursor Loader -->
+    <title>{!$Label.ManagePlanDocument} : {!$Label.PlanDocument}</title>
+    <link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.XactlySMBResources ,'css/XactlySMBStyles.css')}" />
+    <link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.XactlySMBResources ,'css/XactlySMBPlanDocuments.css')}" /> 
+    <style>
+        div.topTable {
+            background: url({!URLFOR($Resource.XactlySMBResources ,'img/layout/table_top_710w_no_title_bar.png')}) no-repeat;
+            height: 9px;
+            width:600px;
+            margin-left:180px;
+        }
+        
+        div.bottomTable {
+            background: url({!URLFOR($Resource.XactlySMBResources ,'img/layout/table_bottom_710w.png')}) no-repeat;
+            height: 9px;
+            width:600px;
+            margin-left:180px;
+        }
+        
+        .mainContent {
+            padding: 10px 0;
+        }
+        
+    </style>
+    
+    <c:XactlySMBShadows />
+    
+    <!-- PAGE WRAPPER --> 
+    <div class="pageContent" id="pContent" style="min-height:840px;">
+        <apex:form id="ExpDocForm">
+            <!-- HEADER -->
+            <apex:outputPanel layout="block" styleClass="header">
+                <c:XactlySMBHeader isAdmin="{!isAdmin}"  isActive="{!isActive}" nbrSeparator="{!nbrSeparator}" nbrDecimal="{!nbrDecimal}" currentUserOrSlected="{!currentUserOrSlected}" emulatingUserURLAppend="{!emulatingUserURLAppend}" selected="3" step="2" wtype="terms" wlabel="{!currentSettings.dealsPlural}" wqlabel="{!currentSettings.quotasPlural}" wclabel="{!currentSettings.creditsPlural}" hlabel="{!$Label.xactlyexpress__ExportPlanTitle}" stepHelp="ExpDoc" />
+            </apex:outputPanel>
+
+            <!-- INSUFFICIENT PERMISSIONS -->
+            <div  class="error">
+                <apex:outputPanel rendered="{!!isAdmin || !isActive}">
+                    <c:XactlySMBErrorMsg error="{!$Label.xactlyexpress__InsufficientPermissions}" />
+                </apex:outputPanel>
+            </div>
+            <!-- MAIN CONTENT -->
+            <apex:outputPanel layout="block" styleClass="mainContent" rendered="{!isAdmin && isActive}">
+               <c:XactlySMBChatterWall objectId="{!$User.Id}" showHeader="true" showWall="true" currentPage="{!$CurrentPage.Name}"/> 
+       		
+                <!-- CONTENT -->
+                <apex:outputPanel layout="block" styleClass="content" style="width:750px !important;">
+                    <div id="ExpDocContainer">
+                    <apex:outputPanel layout="block" id="dropdownsFilter" styleclass="dropdownsFilter">
+                    <apex:actionFunction name="reloadDropDownsFiscalYear" action="{!reloadDropDownsFiscalYear}" oncomplete="waitOff();" rerender="dropdownsFilter,alphabeticalBox"/>
+                    <apex:actionFunction name="reloadDropDownsPlan" action="{!reloadDropDownsPlan}" oncomplete="waitOff();" rerender="dropdownsFilter,alphabeticalBox"/>
+                        <div id="errorMsg">
+                            <c:XactlySMBErrorMsg error="{!errorMsg}"/>
+                        </div>
+                        <div class="subSection">
+                            <apex:selectList id="fiscalyearselect" value="{!currentFiscalYearId}" multiselect="false" size="1" required="false" onchange="waitOn();ReloadYear(this.value);">
+                                <apex:selectOptions value="{!fiscalYearOptions}"/>
+                            </apex:selectList>&nbsp;
+                            <apex:selectList id="planselect" value="{!currentPlanId}" multiselect="false" size="1" required="false" onchange="waitOn();ReloadPlan(this.value);">
+                                <apex:selectOptions value="{!planOptions}"/>
+                            </apex:selectList>
+                        </div>
+                    </apex:outputPanel>
+                    <script>
+                        var selectedIndexHidden = document.getElementById('{!$Component.selectedIndexHidden}');
+                    </script>
+                    <apex:inputHidden id="selectedIndexHidden" value="{!selectedIndex}" />
+
+                    <!-- TABLE -->
+                    <div class="topTable">
+                    </div>   
+                    <apex:outputPanel id="alphabeticalBox" styleClass="tableContainer" layout="block">                                 
+                        <apex:dataTable id="profilesTable" styleClass="commonTable" style="width:600px" value="{!planList}" rowClasses="even,odd" var="p" headerClass="odd">
+                        <!-- Comment -->
+                            <apex:column >
+                                <apex:facet name="header">
+                                    <div style="width:10px;">&nbsp;</div>
+                                </apex:facet>
+                                <apex:actionFunction name="submitComment" action="{!setComment}" rerender="commentBox" oncomplete="waitOff();" />
+                                <a class="{!IF(p.pp.Comment__c=='','addCommentLink','editCommentLink')}" style="{!IF(p.pp.Comment__c=='','cursor:default','')}" href="javascript:{!'addComment('+ TEXT(p.index) +')'}"></a>
+                            </apex:column>
+                        <!-- Year -->
+                            <apex:column >
+                                <apex:facet name="header">
+                                    <apex:outputpanel >
+                                        <apex:outputText value="{!$Label.xactlyexpress__Year}"/>
+                                    </apex:outputpanel>
+                                </apex:facet>
+                                {!FiscalYearName}&nbsp;
+                            </apex:column> 
+                         <!-- FirstName -->
+                            <apex:column >
+                                <apex:facet name="header">
+                                    <apex:outputpanel >
+                                        <apex:outputText value="{!$Label.xactlyexpress__FirstName}"/>
+                                    </apex:outputpanel>
+                                </apex:facet>
+                                {!p.pp.ProfileId__r.UserId__r.FirstName}&nbsp;
+                            </apex:column>
+                         <!-- LastName -->
+                            <apex:column >
+                                <apex:facet name="header">
+                                    <apex:outputpanel >
+                                        <apex:outputText value="{!$Label.xactlyexpress__LastName}"/>
+                                    </apex:outputpanel>
+                                </apex:facet>
+                                {!p.pp.ProfileId__r.UserId__r.LastName}&nbsp;
+                            </apex:column> 
+                         <!-- PlanName -->   
+                            <apex:column >
+                                <apex:facet name="header">
+                                    <apex:outputpanel >
+                                        <apex:outputText value="{!$Label.xactlyexpress__PlanName}"/>
+                                    </apex:outputpanel>
+                                </apex:facet>
+                                {!p.pp.PlanID__r.Name}&nbsp;
+                            </apex:column>  
+                         <!-- Select --> 
+                            <apex:column style="text-align: center;">
+                                <apex:facet name="header">
+                                    <apex:outputpanel >
+                                        <apex:outputText value="{!$Label.xactlyexpress__Select}"/>
+                                        <input type="checkbox" checked="checked" id="selectAllCheckbox" onclick="toggleSelectAll();" />
+                                    </apex:outputpanel>                                                                        
+                                </apex:facet>
+                                <apex:inputCheckbox value="{!p.selected}" onchange="uncheckSelectAll();" styleClass="selectPeopleCheckbox" />
+                            </apex:column>       
+                        </apex:dataTable>
+                    </apex:outputPanel>
+                    <div class="bottomTable">
+                    </div> 
+                    <!-- COMMENT  BOX --> 
+                    <apex:outputPanel layout="block" id="commentBox" style="margin-left:180px;margin-top:5px;">
+                        <apex:outputPanel layout="block" rendered="{!IF(ISNULL(toCommentProfile),'false','true')}" styleClass="commentBox">
+                            <div class="commentHeader" style="width:586px">
+                                <apex:outputText value="{!$Label.xactlyexpress__UsersComments}">
+                                    <apex:param value="{!toCommentProfile.pp.ProfileId__r.UserId__r.Name}" />
+                                     <apex:param value="'" />
+                                </apex:outputText>
+                                <apex:commandLink action="{!closeComment}"  styleClass="commentBoxBtn" rerender="commentBox" onclick="waitOn();" oncomplete="waitOff();" />                
+                            </div>
+                            <div>
+                                <apex:inputTextarea value="{!toCommentProfile.pp.XactlyExpress__Comment__c}" styleClass="commentTextArea" style="width:597px;" disabled="true"/>
+                            </div>
+                        </apex:outputPanel>
+                    </apex:outputPanel>
+                    </div>      
+                </apex:outputPanel>
+                <div style="clear:both;"></div>
+            </apex:outputPanel>
+            
+            <!-- FOOTER  -->
+            <apex:outputPanel layout="block" styleClass="footer" rendered="{!isAdmin && isActive}" id="pFooter">
+                <apex:outputPanel layout="block" styleClass="previousStepWrapper" onclick="savePageHandler.disableBottomBar();">
+                    <div class="previousStepRight"></div>
+                    <a class="previousStepMiddle" href="{!$Page.XactlySMBTermsAndConditions}">
+                        {!$Label.PreviousStep}
+                    </a>
+                    <div class="previousStepLeft"></div>
+                </apex:outputpanel>
+                    
+                <apex:outputPanel layout="block" styleClass="actionButtons">                        
+                    <apex:outputPanel layout="block" styleClass="actionButtonWrapper">
+                        <div class="actionButtonLeft"></div>
+                        <a class="actionButtonMiddle" href="javascript:;" onclick="multiExportFile();" >
+                            <apex:outputtext escape="false" value="{!$Label.xactlyexpress__Export}" />
+                        </a>
+                        <div class="actionButtonRight"></div>    
+                    </apex:outputpanel>
+                </apex:outputPanel>
+            
+                <apex:outputPanel layout="block" styleClass="nextStepWrapper">
+                </apex:outputPanel>  
+            </apex:outputPanel> 
+            
+            <apex:outputpanel id="actionWrapper">
+                <apex:actionFunction name="multiExportFile" action="{!multiExportFile}" rerender="actionWrapper" oncomplete="setTimeout(callMultiExportFile(), 500);" />
+                
+                <script>
+                    function callMultiExportFile () {
+                    	var tempLinks = '{!JSENCODE(tempLink)}';
+                       	if (tempLinks.indexOf('?pId=') != -1) {
+                       		var is_chrome= navigator.userAgent.toLowerCase().indexOf('chrome/') > -1;  
+							if(is_chrome){	
+                       			window.open(tempLinks);
+                       		}else{
+                       			window.location.href = tempLinks;
+                       		}
+                       		
+                  			multiExportFile();
+                  		}
+                  		else {
+                  			window.location.href = tempLinks;
+                  		}
+                    }
+                    
+                    function addComment(id){
+				      document.getElementById('{!$Component.selectedIndexHidden}').value = id;
+				      submitComment();
+				      waitOn();
+				    }
+                     
+                </script>
+            </apex:outputpanel>        
+        </apex:form>
+    </div>  
+   
+       
+    <apex:includeScript value="{!URLFOR($Resource.XactlyExpress__CSN, 'jquery.js')}" />
+    <c:XactlySMBFooterScript /> 
+    <script type="text/javascript" language="javascript" src="{!URLFOR($Resource.XactlySMBResources, 'js/XactlySMBJavascript.js')}"></script>
+    <script type="text/javascript" language="javascript" src="{!URLFOR($Resource.XactlySMBResources, 'js/XactlySMBPlanCreate.js')}"></script>
+    <script type="text/javascript" src="{!URLFOR($Resource.XactlySMBResources ,'js/jquery.superbox-min.js')}"></script>
+    <script type="text/javascript">
+        $(function(){
+            $.superbox.settings = {
+                closeTxt: "X",
+                loadTxt: "Loading...",
+                nextTxt: "Next",
+                prevTxt: "Previous"
+            };
+            $.superbox();
+        });
+    </script>
+    <script>
+
+      /*function addComment(id){
+	      selectedIndexHidden.value = id;
+	      submitComment();
+	      waitOn();
+	  }*/
+	  
+	  function ReloadPlan(planid){	  
+	  	var str = document.location.href;
+	  	if (str.indexOf('pId=') == -1){
+	  		if (str.indexOf('?') == -1){
+	  			str = str + '?pId='+ planid;
+	  		}else{
+	  			str = str + '&pId='+ planid;
+	  		}
+	  	}else{
+	  		var start = str.indexOf('pId=');
+	  		var end = str.indexOf('&');
+	  		if (end == -1){
+	  			str = str.substr(0, start+ 4);
+	  			str = str + planid;
+	  		}else{
+	  			str = str.replace(str.substr(start, end), 'pId='+ planid);
+	  		}
+	  	}
+	  	if (planid == ''){
+	  		if (str.indexOf('?pId') == '-1'){
+	  			start = str.indexOf('&pId');
+	  			end = str.indexOf('&');
+	  			if (end == -1){
+	  				str = str.substr(0, start);
+	  			}else{
+	  				str = str.replace(str.substr(start, end), '');
+	  			}	  	
+	  		}else{
+	  			start = str.indexOf('?pId');
+	  			end = str.indexOf('&');
+	  			if (end == -1){
+	  				str = str.substr(0, start);
+	  			}else{
+	  				str = str.replace(str.substr(start, end+1), '?');
+	  			}	  				  		
+	  		}
+	  	}
+	  	window.location.href = str;
+	  }
+	  function ReloadYear(yearid){
+	  	var start = '';
+	  	var end = '';
+	  	var str = document.location.href;
+	  	if (str.indexOf('cFy=') == -1){
+	  		if (str.indexOf('?pId=') !== -1){
+	  			start = str.indexOf('?pId=');
+	  			end = str.indexOf('&', start);
+	  			if (end == -1){
+	  				str = str.substr(0, start);
+	  			}else{
+	  				str = str.replace(str.substr(start, end), '');
+	  			}
+	  		}
+	  		if (str.indexOf('&pId=') !== -1){
+	  			start = str.indexOf('&pId=');
+	  			end = str.indexOf('&', start);
+	  			if (end == -1){
+	  				str = str.substr(0, start);
+	  			}else{
+	  				str = str.replace(str.substr(start, end), '');
+	  			}
+	  		}
+	  		if (str.indexOf('?') == -1){
+	  			str = str + '?cFy='+ yearid;
+	  		}else{
+	  			str = str + '&cFy='+ yearid;
+	  		}
+	  	}else{
+	  		start = str.indexOf('cFy=');
+	  		end = str.indexOf('&', start);
+	  		if (end == -1){
+	  			str = str.substr(0, start+ 4);
+	  			str = str + yearid;
+	  		}else{
+	  			str = str.replace(str.substr(start, end), 'cFy='+ yearid);
+	  		}
+	  	}
+	  	if (yearid == ''){
+	  		if (str.indexOf('?cFy') == '-1'){
+	  			start = str.indexOf('&cFy');
+	  			end = str.indexOf('&');
+	  			if (end == -1){
+	  				str = str.substr(0, start);
+	  			}else{
+	  				str = str.replace(str.substr(start, end), '');
+	  			}	  	
+	  		}else{
+	  			start = str.indexOf('?cFy');
+	  			end = str.indexOf('&');
+	  			if (end == -1){
+	  				str = str.substr(0, start);
+	  			}else{
+	  				str = str.replace(str.substr(start, end+1), '?');
+	  			}	  				  		
+	  		}
+	  	}
+	  	window.location.href = str;
+	  }
+	  function toggleSelectAll(){
+	       $('.selectPeopleCheckbox').attr('checked', $('#selectAllCheckbox').is(':checked'));	  
+	  }
+	  
+	  function uncheckSelectAll(){
+	       $('#selectAllCheckbox').attr('checked', false);
+	  }
+    </script>
+</apex:page>

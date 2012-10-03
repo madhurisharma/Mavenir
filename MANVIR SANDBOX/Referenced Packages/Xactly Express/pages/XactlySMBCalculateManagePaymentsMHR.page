@@ -1,0 +1,1757 @@
+<!--
+Developed by Timba Software Corp. www.timbasoftware.com admin@timbasoftware.com
+This page Manage Holds and Releases 
+@author Marcos Guerra <mguerra@timbasoftware.com>
+-->  
+<apex:page id="manageHoldsReleases"  controller="XactlyExpress.XactlySMBCalculateManagePaymentsMHR" sidebar="false" showHeader="false" standardStylesheets="true" action="{!redirectWhenAccessIsDenied}">
+
+    <c:XactlySMBCursor />
+    <title>{!$Label.Calculate}: {!$Label.CalculateWizardStep5} - {!$Label.manageHoldsandReleases}</title>
+
+
+    <link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.XactlySMBResources ,'css/XactlySMBStyles.css')}" />
+    <link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.XactlySMBResources ,'modbubble/css/bubble.css')}" />
+    <link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.XactlySMBResources ,'css/XactlySMBNumeratedBox.css')}" />
+    <link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.XactlySMBResources ,'modbubble/css/bubble.css')}" />
+    <style>
+    .bubble_html{
+        display:none;
+    }
+    .dis{
+    		background-color: #dcdcdc;
+    		border: #3532ff 1px solid;
+    		color: #000000;
+    		cursor: default; 
+    }
+    .centeredBox{
+            width:1000px; 
+            margin-left:auto;
+            margin-right: auto;
+            margin-top:0px;
+        }
+     a, a:hover { 
+        cursor:pointer;
+        text-decoration:none;
+        color:#446076;
+     }  
+      body{
+        font-size:10pt;
+     }    
+
+     .grlTable tr td{
+        padding:5px;
+        text-align:left;
+     }
+     
+     .grlTable tr th{
+        padding:5px;
+     }
+  
+    .progressBar {
+        float:right;
+        height:15px;
+        margin-left:0;
+        margin-top:10px;
+        overflow:hidden;
+        position:relative;
+        width:130px;
+    }
+     
+
+     
+     .grlTable{
+        border-collapse: collapse;
+     }
+     
+
+     
+     .leftSidePanel table thead tr{
+        background-color: #F4F8FB;
+        color: #426E83;
+        border-bottom: 1px solid #000000;
+     }
+     
+     .inleftSidePanel{
+        font-size: 10pt;
+     }
+     
+     .leftSidePanel table td{
+        border-right: 1px solid #888888;
+     }  
+     
+     .leftSidePanel table th{
+        border-right: 1px solid #888888;
+     }
+     
+     .leftSidePanel table tr.even{
+        background-color: #F4F8FB;
+        height:30px;
+     }
+     
+     .leftSidePanel table tr.odd{
+        background-color: #FFFFFF;
+        height:30px;
+     }
+     
+     .leftSidePanel table tr.selected{
+        background-color: #CECECE;
+     }
+
+     .topTble{
+        background:transparent url({!URLFOR($Resource.XactlySMBResources,'img/layout/table_top_1000w_no_title_bar.png')}) no-repeat scroll 0 0;
+        height: 9px;
+        width: 510px;
+        margin-top:1px;
+     }
+     
+     .bottomTble{
+        background:transparent url({!URLFOR($Resource.XactlySMBResources,'img/layout/table_top_1000w_no_title_bar.png')}) no-repeat scroll 0 0;
+        height: 9px;
+        width: 510px;
+     }
+    .titleLabel {
+        color:#C96C2B;
+        font-size:24px;
+        font-weight:bold;
+    }
+    hr {
+        background-color:#D5D7D8;
+        border:0 none;
+        color:#D5D7D8;
+        height:2px;
+    }
+    .stepLeft{
+        font-size:11px;
+        margin-top:20px;
+        width:500px;
+    }
+    .leftTextOfStep{
+       float:left;
+    }
+    .selectTab{
+        float:left;
+        height:34px;
+        margin-left:0;
+        margin-right:3px;
+        padding-left:9px;
+        background:url({!URLFOR($Resource.XactlySMBResources ,'img/layout/left_on_orange.gif')}) no-repeat ;
+    }
+    .ulElements{
+        list-style:none outside none;
+        margin:0;
+        padding:0;
+        float:left;
+        position: absolute;
+        bottom:0px;
+        left: 0px;
+    }
+    .selectTab a{
+        background:url({!URLFOR($Resource.XactlySMBResources ,'/img/layout/right_on_orange.gif')}) no-repeat scroll right top ;
+        color:#FFFFFF;
+        padding-bottom:5px;
+        display:block;
+        float:left;
+        font-size:12px;
+        height:18px;
+        padding:11px 10px 5px 0;
+        text-decoration:none;
+    }
+    .btnAction a{
+        color:#323232;
+     }
+    .errorCel{
+        color:#FF0000;
+        font-weight:bold;
+    }
+    .tableContainer{
+        clear:both;
+        padding-left:30px;
+        padding-top:10px;
+        padding-right:30px;
+    }   
+    .tableBottonsContiner{
+       width:190px;
+       float:right;
+       padding-top:5px;
+    }
+    
+    .filtersDetailsContainer{
+        float: left; 
+        width: 100%; 
+        position: relative;
+        overflow:visible;
+        min-height:35px;
+    }    
+    .filtersDetails{
+        float:left;
+        margin-left:136px;
+        margin-top:10px;
+        overflow:hidden;
+        position:relative;
+        
+    }
+    .dateFormat{
+        display:none;
+    }
+    .mainContent{
+        margin-top:0px;
+    }
+    
+    
+    .innerOcultar a {
+        font-size:0.85em !important;
+    }    
+    
+    .tableWrapper{
+        margin-left:21px;
+        width:1032px;
+        position:relative;
+    }
+    
+    .tableWrapper .tHeader{
+        width:100%;
+        position:relative;
+    }
+    
+    .tableWrapper .tHeader .headerLeftSide{
+        margin-top:8px;
+        width:35%;
+        float:left;
+    }
+    
+    .tableWrapper .tHeader .headerRightSide{
+        margin-top:8px;
+        width:65%;
+        float:left;
+        text-align:right;
+    }
+    
+    .tableWrapper .tHeader .headerRightSide a{
+        border-right:1px solid #666666;color:#666666;
+        padding-left:5px;
+        padding-right:5px;
+    }
+    
+    .tableWrapper .tContent {
+        border-top:1px solid #EDEDED;
+        border-left:1px solid #EDEDED;
+        border-right:1px solid #EDEDED;
+        width:100%;
+        position:relative;
+    }
+    
+    .tableWrapper .tFooter{
+        width:100%;
+        height:25px;
+        background:transparent url({!URLFOR($Resource.XactlySMBResources,'img/layout/bottomBgTable.png')});
+        border:1px solid #EDEDED;
+        position:relative;
+    }
+    
+    .tableWrapper .tFooter .footerLeftSide {
+        width:40%;
+        float:left;
+        margin-top:3px;
+    }
+    
+    .tableWrapper .tFooter .prevNextWrapp {
+        width:20%;
+        margin-top:3px;
+        float:left;
+    }
+    
+    .tableWrapper .tFooter .footerRightSide {
+        width:40%;
+        float:left;
+        margin-top:3px;
+        text-align:right;
+    }
+    
+    div.tableContainer2 {
+        overflow: hidden;
+    }
+    
+    #cellsTable td{
+        border-right:1px solid #C2DFFF;
+        padding:0;
+        margin:0;
+    }
+    
+    #dealsTable td{
+        border-right:1px solid #C2DFFF;
+    }
+    
+    .rowsTable td{
+        border-right:1px solid #C2DFFF;
+    }
+    
+    #rowsHeaders{
+        border-right:1px solid #C2DFFF;
+    }
+    
+    .FixedCelsTable {  
+        width: 1200px;
+        position: relative;
+        left:0px;
+        *background-position:left;
+        width: 100%;
+    }
+    
+    .FixedCelsTable .tablesHolder .toolbar{
+        height:40px;
+        margin-left:10px;
+        text-align:center;
+    }
+    .FixedCelsTable .tablesHolder .scroller{
+        width:99%;
+        height:100px;
+        overflow:auto;
+        position:absolute;
+    }
+    
+    .FixedCelsTable .tablesHolder .recordsList{
+        width: 97%; 
+        height: 420px;
+        _height: 300px;
+        overflow:hidden;
+    }
+    .FixedCelsTable .tablesHolder .recordsList .rows{
+        float:left;
+        margin-top:-1px;
+        width:300px;
+        margin-left:-1px;
+        position:relative;
+        *margin-top:0px;
+        *margin-left:0px;
+    }
+    .FixedCelsTable .tablesHolder .recordsList .rows .rowsHeader{
+        position:absolute;
+        left:0px;
+        margin-top:-5px;
+        height:30px;
+    }
+    .FixedCelsTable .tablesHolder .recordsList .rows .rowsScroll{
+        position:absolute;
+        margin-top: 25px;
+        left: 0px;
+        height:280px;
+        overflow:hidden;
+    }
+    .FixedCelsTable .tablesHolder .recordsList .colsContainer{
+        position:relative;
+    }       
+    .FixedCelsTable .tablesHolder .recordsList .colsContainer .columns{
+        margin-left: 300px;
+        margin-top:-6px !important;
+        overflow: hidden;
+        left:0px;
+        width:700px;
+        position:absolute;
+        *margin-left: 0px;          
+        *margin-top: 0px;
+    }
+    .FixedCelsTable .tablesHolder .recordsList .cellContainer{
+        position:relative;
+    }
+    .FixedCelsTable .tablesHolder .recordsList .cellContainer .cells{
+        margin-left:300px;
+        margin-top:24px;
+        overflow: hidden;
+        width:700px;
+        position:absolute;
+        height:280px;
+        *margin-left:0px;
+        *margin-top:25px;          
+    }   
+    
+    .FixedCelsTable .tablesHolder .recordsList .objectHeaders td{
+        font-weight:bold;
+        text-align: center;
+    } 
+    
+    .FixedCelsTable .tablesHolder .recordsList .objectHeaders td.fixed{
+        font-weight:bold;
+        padding: 5px 0px;
+        text-align: center;
+        border-right: 0px;
+    }
+    
+    .FixedCelsTable .tablesHolder .recordsList .dataRow td{
+        height: 33px;
+        text-align: center;
+        padding: 0px;
+        overflow:hidden;
+    }   
+    .FixedCelsTable .tablesHolder .recordsList .whiteCells td{
+        text-align:left;
+    }
+    
+    .actionBtnContainer {
+        display:block;
+        float:left;
+        height:25px;
+        overflow:hidden;
+        width:25px;
+    }
+    
+    .editablePositive{
+        color:#8BB201;
+        font-weight: bold;
+        text-align:right;
+    }
+    
+    .editableNegative{
+        color:#FF1114;
+        font-weight: bold;
+        text-align:right;
+    }
+    
+    .btnCenter{
+        background:  url({!URLFOR($Resource.XactlySMBHome ,'img/buttons/homeButtonBackground.png')}) repeat-x;
+        padding-bottom:10px;
+        padding-top:6px;
+        float:left;
+        font-size:13px;
+        font-weight:bold;
+        padding-bottom:10px;
+        padding-top:6px;
+        color: #4888B8;
+    }
+    .btnt{
+        float:left;
+    }
+ 
+    </style>
+    <c:XactlySMBShadows />
+    
+    <!-- PAGE WRAPPER -->
+    <div class="pageContent" id="pContent" style="overflow: visible; ">
+        <apex:form >
+            <!-- HEADER --> 
+            <apex:outputPanel layout="block" styleClass="header">
+                <c:XactlySMBHeader isAdmin="{!isAdmin}"  isActive="{!isActive}" nbrSeparator="{!nbrSeparator}" nbrDecimal="{!nbrDecimal}" currentUserOrSlected="{!currentUserOrSlected}" emulatingUserURLAppend="{!emulatingUserURLAppend}" selected="2" wqlabel="{!currentSettings.quotasPlural}" wclabel="{!currentSettings.creditsPlural}" wlabel="{!currentSettings.dealsPluralCap}" wtype="calculate" step="5"   hlabel="{!$Label.xactlyexpress__ReviewEditPaymentsDrill}" stepHelp="CalculateManagePayments" />
+            </apex:outputPanel>         
+        </apex:form>   
+            <!-- WIZARD -->
+            <div class="error">
+            <!-- INSUFFICIENT PERMISSIONS -->
+                <apex:outputPanel rendered="{!!isAdmin || !isActive}">
+                    <c:XactlySMBErrorMsg error="{!$Label.xactlyexpress__InsufficientPermissions}" />
+                </apex:outputPanel> 
+            </div> 
+            
+            <apex:outputPanel layout="block" styleclass="additionalContent" rendered="{!isAdmin && isActive}">    
+                <apex:form id="chatterForm">
+                    <c:XactlySMBChatterWall objectId="{!$User.Id}" showHeader="true" showWall="true" currentPage="{!$CurrentPage.Name}"/> 
+                </apex:form> 
+            </apex:outputPanel>
+            
+            <!-- MAIN CONTENT -->
+            <apex:outputPanel layout="block" styleClass="mainContent" rendered="{!isAdmin && isActive}">
+                <apex:outputPanel layout="block" rendered="{!warningMsg!=''}" style="width:100%">
+                      <apex:outputPanel layout="block" style="margin-right:20px;"><c:XactlySMBErrorMsg error="{!warningMsg}" errStyle="background:#FFFFFF;color:#FF6600;font-size:16px;font-weight:bold;overflow:auto;max-height:100px;"/></apex:outputPanel>
+                </apex:outputPanel>
+                <!-- CONTENT -->
+                <apex:outputPanel layout="block" styleClass="content" style="width:100%;margin-top:0px;margin-bottom:70px;">
+                    <apex:outputPanel id="errorMsg" layout="block" styleClass="errorScrollBox" style="width:100%">
+                        <apex:outputPanel layout="block" rendered="{!errorMsg!=''}" style="width:100%">
+                            <apex:outputPanel layout="block" style="margin-right:20px;"><c:XactlySMBErrorMsg error="{!errorMsg}" errStyle="background:#FF0000;color:#FFFFFF;font-size:16px;font-weight:bold;overflow:auto;max-height:100px;"/></apex:outputPanel>
+                        </apex:outputPanel>
+                    </apex:outputPanel>                                
+                    <div class="centeredBox">            
+                        <div id="mainScreen">
+                            <div class="btnToCenter btnAction" style="float:right;margin-right:15px;margin-left:5px">
+                                <div class="separateBtn">
+                                    <a href="{!$Page.XactlySMBCalculateManagePayments}">
+                                        <span class="rightBtnOrange">
+                                            <span class="leftBtnOrange">
+                                                <span style="color: white;" class="middleBtnOrange">
+                                                   &gt;&gt;
+                                                </span>
+                                            </span>
+                                        </span>
+                                     </a>
+                                </div>
+                            </div>           
+                            <div style="float:right;margin-top:3px;" class="areaTitle">{!$Label.backManagePayments}</div><br/><br/>
+                      <!-- LEFT SIDE -->
+                            <h1 class="titleLabel" style="margin-top:-10px;font-family:'ProximaNovaSemiBold' !important;">{!$Label.manageHoldsandReleases}</h1>
+                            <span style="float:right;width:375px;">
+                                <apex:outputpanel layout="none" rendered="{!NOT(actSect)}">
+	                                <input type="radio" checked="checked" name="mhrType" onclick="$('.oldMHR').hide();$('.newMHR').show();fixCelsDimensions();togglePage();" id="radio1"/><label for="radio1"><apex:outputText value="{!$Label.xactlyexpress__vewHeldPayment}"/></label>
+	                                <input type="radio" name="mhrType" onclick="checkLoadedPage();" id="radio2"/><label for="radio2"><apex:outputText value="{!$Label.xactlyexpress__impExpHeldPayments}"/></label>
+                                </apex:outputpanel>
+                                <apex:outputpanel layout="none" rendered="{!actSect}">
+                                    <input type="radio" name="mhrType" onclick="$('.oldMHR').hide();$('.newMHR').show();fixCelsDimensions();togglePage();" id="radio1"/><label for="radio1"><apex:outputText value="{!$Label.xactlyexpress__vewHeldPayment}"/></label>
+                                    <input type="radio" checked="checked" name="mhrType" onclick="checkLoadedPage();" id="radio2"/><label for="radio2"><apex:outputText value="{!$Label.xactlyexpress__impExpHeldPayments}"/></label>
+                                </apex:outputpanel>
+                            </span>
+                            <hr/>    
+                            <div class="newMHR" style="{!IF(actSect,'display:none;','')}">
+                                <div style="float:right;height:32px;margin-right:-17px;margin-top:16px;width:200px;" class="areaTitle" onclick="$('.importArea').is(':visible') == true?$('.importArea').hide('slow'):$('.importArea').show('slow');">
+                                    <div style="background-image: url('{!URLFOR($Resource.XactlySMBResources ,'img/layout/ImpRelFileWrapp.png')}');margin-left:4px;margin-right:2px;">
+                                        <div style="float: left;margin-left:-4px;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/ImpRelFileWrappLft.png')}"/></div>
+                                        <div style="float:left;padding-top:7px;"><apex:outputText value="{!$Label.xactlyexpress__importReleaseFile}" style="font-size:10pt;margin-left:22px;"/></div>
+                                        <div style="float: right;margin-right:-4px;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/ImpRelFileWrappRgt.png')}"/></div>
+                                        <div style="clear:both"></div>
+                                    </div>
+                                </div>
+                                <apex:form >
+                                    <div style="float:right;margin-right:30px;margin-top:10px;">
+                                        <apex:outputPanel layout="block" styleClass="actionButtons">                        
+                                            <apex:outputPanel layout="block" styleClass="actionButtonWrapper">
+                                                <div class="actionButtonLeft"></div>
+                                                <!-- <a href="{!$Page.XactlySMBExportUnreleasedEvents}?vwId={!JSENCODE(currentView.id)}" class="areaTitle actionButtonMiddle"> -->
+                                                <apex:commandLink action="{!genUnreleasedEvents}" styleclass="areaTitle actionButtonMiddle">
+                                                    <apex:outputtext escape="false" value="{!$Label.xactlyexpress__UnreleasedEvents}"/>
+                                                </apex:commandLink>
+                                                <div class="actionButtonRight"></div>    
+                                            </apex:outputpanel>
+                                        </apex:outputPanel>
+                                    </div>
+                                </apex:form>
+                                <br/><br/><br/>
+                                <div class="box importArea" style="width:540px;display:none;margin-right:-19px;margin-bottom:15px;float:right;{!IF(actSect,'display:none;','')}">
+                                    <div class="roundedBox" style="border-top:1px solid #BFBFBF;">
+                                        <div class="boxContent">
+                                            <apex:outputPanel layout="block">
+                                                <apex:form id="theImportForm">
+                                                    <div class="stepLeft">
+                                                        <div style="width:31px;float:left"><c:XactlySMBStepNumber num="1" /></div>
+                                                        <div class="leftTextOfStep" style="float:left;">
+                                                            <div style="padding-top: 3px; float: right;margin:0px;">
+                                                                <apex:inputFile value="{!document.body}" filename="{!document.name}" contentType="{!document.contentType}"/>                                
+                                                            </div>
+                                                        </div>
+                                                        <div style="float:left;margin-left:10px;margin-top:6px;"><a href="javascript:;" onclick="openCVSOrder();" style="color: #3B6080;font-size:11px;font-weight:bold;">{!$Label.manageOrderCSV}</a></div>
+                                                        <div style="clear:both"></div>
+                                                    </div>
+                                                    <div class="stepLeft">
+                                                        <div style="float:left;"><c:XactlySMBStepNumber num="2" /></div>
+                                                        <div class="leftTextOfStep">
+                                                            <div style="width:400px;">
+                                                                <div style="padding-top:3px; float:left; clear:both;"> 
+                                                                    <apex:outputPanel layout="block" styleClass="btnAction">
+                                                                        <apex:commandLink action="{!importCSV}" onclick="showProgressBar();waitOn();" >
+                                                                            <div class="rightBtnSilver">
+                                                                                <div class="leftBtnSilver">
+                                                                                    <div class="middleBtnSilver">{!$Label.ProcessCSVFile}</div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </apex:commandLink>
+                                                                    </apex:outputPanel>
+                                                                </div>
+                                                            </div> 
+                                                        </div>
+                                                        <div style="clear:both"></div>
+                                                    </div>
+                                                    <div style="clear:both"></div>
+                                                </apex:form> 
+                                            </apex:outputPanel>
+                                        </div>    
+                                    </div>      
+                                    <div class="bm">
+                                        <div style="float: left;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/bl.png')}" /></div>
+                                        <div style="float: right;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/br.png')}" /></div>
+                                    </div>
+                                </div>
+                             </div>
+                        </div>
+                        <div style="clear:both;"></div>
+                    </div>
+                    <apex:form id="thePageForm">
+                        <apex:outputPanel layout="block" id="oldMHR" styleclass="oldMHR" style="{!IF(!actSect,'display:none;','')}">
+                            <apex:actionFunction name="clearErrorMessage" action="{!clearErrorMsg}" rerender="errorMsg" oncomplete="waitOff();"/>
+                            <apex:actionFunction name="loadOldPage" action="{!loadOldPage}" rerender="oldMHR" oncomplete="fixCelsDimensions();$('.oldMHR').show();$('.newMHR').hide();togglePage();"/>
+                            <apex:inputHidden value="{!secondCharged}" id="secondCharged"/>
+                            <script>
+                                var secondCharged = '{!$Component.secondCharged}'.replace(/:/g,'\\:');
+                            </script>
+                            <apex:inputHidden value="{!actSect}" id="actSect"/>
+                            <script>
+                                var actSect = '{!$Component.actSect}'.replace(/:/g,'\\:');
+                            </script>
+                            <div class="tableContainer">
+                            <!-- TABLE -->   
+                                <apex:actionFunction name="refreshImportStatus" action="{!refreshImportStatusC}" rerender="leftSidePanel," oncomplete="fixCelsDimensions();waitOff();refreshingImport();"/>
+                                <apex:actionFunction name="ultimateRefreshImportStatus" action="{!refreshImportStatusC}" rerender="leftSidePanel,tableWrapper" oncomplete="fixCelsDimensions();waitOff();"/>
+    
+                                <apex:actionFunction name="refreshUndoStatus" action="{!refreshUndoStatusC}" rerender="leftSidePanel" oncomplete="fixCelsDimensions();waitOff();refreshingUndo();"/>
+                                <apex:actionFunction name="ultimateRefreshUndoStatus" action="{!refreshUndoStatusC}" rerender="leftSidePanel" oncomplete="fixCelsDimensions();waitOff();"/>
+                    
+                                <apex:actionFunction name="refreshView" action="{!applyView}" rerender="tableWrapper,errorMsg" oncomplete="fixCelsDimensions();introAsTab();waitOff();"/>
+                                
+                                <apex:outputPanel layout="block" style="width:1000px;" styleClass="leftSidePanel" id="leftSidePanel">
+                                    <input type="hidden" value="{!importStatus}" id="importStatusValue"/>
+                                    <input type="hidden" value="{!importSource}" id="importSource"/>
+                                    <input type="hidden" value="{!undoStatus}" id="undoStatusValue"/>
+               
+                                    <div style="background-color:#A4B8CB;padding:5px;" id="roundedCornerBlue">
+                                        <div class="filtersDetailsContainer">    
+                                            <ul class="ulElements">     
+                                               <li class="selectTab"><a href="#">{!$Label.ImportedEvents} {!output} </a></li>     
+                                            </ul>    
+                                            <apex:outputPanel styleclass="filtersDetails" id="filtersDetails">
+                                                    <apex:outputPanel styleClass="textFilter" rendered="{!IF(filters.size>0,'true','false')}">{!IF(currentFilterText!=null,'['+currentFilterText+']','')}</apex:outputPanel>                                           
+                                            </apex:outputPanel>
+                                            <div class="progressBar">
+                                                <img id="progressBar" style="{!IF(importStatus='job','','visibility: hidden;')}" src="{!URLFOR($Resource.XactlySMBResources, 'img/icons/progressBar.gif')}" />
+                                            </div>
+                                        </div>       
+                                        <div style="float:right; margin-right:10px">
+                                            {!$Label.GoToPage}
+                                            <apex:actionFunction name="goToPageAF" action="{!goToPage}" />
+                                            <apex:selectList multiselect="false" size="1" value="{!currentPage}" onchange="goToPage();">
+                                                <apex:selectOptions value="{!pages}" />
+                                            </apex:selectList>
+                                            <apex:inputField value="{!dummyDeal.XactlyExpress__DealDate__c}" style="display:none;"/>
+                                            
+                                        </div>
+    
+                                        <div class="tableBottonsContiner">
+                                            <div class="separateBtn btnToLeft btnAction">
+                                                <a href="javascript:;" onclick="toggleShowFilter();" class="areaTitle actionButton newActionbutton" >  
+                                                  <span class="rightBtnOrange">
+                                                      <span class="leftBtnOrange">
+                                                          <span class="middleBtnOrange">
+                                                              {!$Label.CreateFilter}
+                                                          </span>  
+                                                      </span>
+                                                  </span>
+                                                </a>
+                                            </div>
+                                            <div>
+                                                <div class="separateBtn btnToLeft btnAction" >
+                                                    <apex:commandLink styleclass="areaTitle actionButton newActionbutton"  action="{!discardFilters}" rerender="filtersDetails, filtersOptions, tableCont, paginator" oncomplete="fixCelsDimensions();waitOff();" onclick="waitOn();">
+                                                      <span class="rightBtnOrange" >
+                                                          <span class="leftBtnOrange">
+                                                              <span class="middleBtnOrange">
+                                                                  {!$Label.ResetFilter}
+                                                              </span>
+                                                          </span>
+                                                      </span>
+                                                    </apex:commandLink>
+                                                </div>
+                                           </div> 
+                                        </div>  
+                                        <div style="clear:both;"></div>
+                                        <div>
+                                            <center style="heigth:1000px;">
+                                                <div class="topTble" style="width:100%"></div>
+                                                	<apex:outputPanel style="width:100%;height:400px;overflow:auto;" id="tableCont">                                                                    
+                                                        <table style="width:100%;height:400px;" class="grlTable">
+                                                            <thead style="height: 30px;">
+                                                                <tr class="odd">
+                                                                    <th></th>
+                                                                    <th>{!$Label.Line} #</th>
+                                                                    <apex:variable var="iterIndex" value="{!1}"/>
+                                                                    <apex:variable var="showEvnet" value="{!0}"/>
+                                                                    <apex:repeat value="{!keyAtributes}" var="ka">
+                                                                          <apex:outputPanel layout="none" rendered="{!IF(((ka.XactlyExpress__DisplayMHROrder__c !=  iterIndex) || ISNULL(ka.XactlyExpress__DisplayMHROrder__c))  && showEvnet == 0,'true','false')}">
+                                                                          
+                                                                            <th>{!$Label.xactlyexpress__Event}</th>
+                                                                            <apex:variable var="iterIndex" value="{!iterIndex + 1}"/>
+                                                                            <apex:variable var="showEvnet" value="{!1}"/>
+                                                                          </apex:outputPanel>
+                                                                          <th>{!ka.XactlyExpress__DisplayName__c}</th>
+                                                                          <apex:variable var="iterIndex" value="{!iterIndex + 1}"/>
+                                                                    </apex:repeat>
+                                                                    <apex:outputPanel layout="none" rendered="{!IF(showEvnet ==  0,'true','false')}">
+                                                                        <th>{!$Label.xactlyexpress__Event}</th>
+                                                                    </apex:outputPanel>
+                                                                    <th>{!$Label.Statuss}</th>
+                                                                    <th>{!$Label.timeImported}</th>
+                                                                    <th>&nbsp;</th> 
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody style="height: 370px;">
+                                                            <apex:variable var="rowCount" value="{!1}"/>
+                                                            <apex:repeat value="{!importedData}" var="rd"> 
+                                                                    <tr class="{!IF(rowCount = 0, 'odd','even')}">
+                                                                        <td align="center"><a href="#"><img src="{!URLFOR($Resource.XactlySMBResources ,'/img/icons/magnifying_table.PNG')}"/></a></td>
+                                                                        <td>{!$Label.Line}&nbsp;
+                                                                        <apex:outputText value="{0,number,#}">
+                                                                             <apex:param value="{!rd.XactlyExpress__LineNumber__c}" />
+                                                                        </apex:outputText> 
+                                                                        </td>
+                                                                        <apex:variable var="count" value="{!1}"/>
+                                                                        <apex:variable var="showEvnet" value="{!0}"/>
+                                                                        <apex:repeat value="{!keyAtributes}" var="ka">
+                                                                          <apex:outputPanel layout="none" rendered="{!IF((ka.XactlyExpress__DisplayMHROrder__c !=  count || ISNULL(ka.XactlyExpress__DisplayMHROrder__c)) && showEvnet == 0, 'true','false')}">
+                                                                              <td>{!rd.XactlyExpress__EventName__c}</td>
+                                                                              <apex:variable var="showEvnet" value="{!1}"/>
+                                                                          </apex:outputPanel>
+                                                                          <td>
+                                                                              <apex:outputPanel rendered="{!IF(count = 1,'true','false')}">
+                                                                                  {!rd.XactlyExpress__DealKey1__c}
+                                                                              </apex:outputPanel>
+                                                                              <apex:outputPanel rendered="{!IF(count = 2,'true','false')}">
+                                                                                  {!rd.XactlyExpress__DealKey2__c}
+                                                                              </apex:outputPanel>
+                                                                              <apex:outputPanel rendered="{!IF(count = 3,'true','false')}">
+                                                                                  {!rd.XactlyExpress__DealKey3__c}
+                                                                              </apex:outputPanel>
+                                                                              <apex:outputPanel rendered="{!IF(count = 4,'true','false')}">
+                                                                                  {!rd.XactlyExpress__DealKey4__c}
+                                                                              </apex:outputPanel>
+                                                                              <apex:outputPanel rendered="{!IF(count = 5,'true','false')}">
+                                                                                  {!rd.XactlyExpress__DealKey5__c}
+                                                                              </apex:outputPanel>   
+                                                                              <apex:outputPanel rendered="{!IF(count = 6,'true','false')}">
+                                                                                  {!rd.XactlyExpress__DealKey6__c}
+                                                                              </apex:outputPanel>
+                                                                              <apex:outputPanel rendered="{!IF(count = 7,'true','false')}">
+                                                                                  {!rd.XactlyExpress__DealKey7__c}
+                                                                              </apex:outputPanel>      
+                                                                              <apex:outputPanel rendered="{!IF(count = 8,'true','false')}">
+                                                                                  {!rd.XactlyExpress__DealKey8__c}
+                                                                              </apex:outputPanel>      
+                                                                              <apex:variable var="count" value="{!count + 1}"/>
+                                                                          </td>
+                                                                        </apex:repeat>
+                                                                        <apex:outputPanel layout="none" rendered="{!IF(showEvnet == 0, 'true','false')}">
+                                                                            <td>{!rd.XactlyExpress__EventName__c}</td>
+                                                                        </apex:outputPanel>
+                                                                        <td>
+                                                                            <apex:outputPanel rendered="{!IF(rd.XactlyExpress__Status__c != 'Error','true','false')}">
+                                                                                 {!$Label.xactlyexpress__Success}
+                                                                            </apex:outputPanel>   
+                                                                            <apex:outputPanel rendered="{!IF(rd.XactlyExpress__Status__c = 'Error','true','false')}" >
+                                                                               <a href="javascript:;" class="errorCel" onclick="javascript: if(typeof(errorToShow) != 'undefined'){errorToShow.close();}errorToShow = window.open('/apex/XactlySMBErrorDetails', 'Errors','location=0,status=0,scrollbars=1,width=475px,height=500px');errorToShow.error='{!JSENCODE(rd.ErrorMsg__c)}';">
+                                                                                 {!$Label.Error}
+                                                                               </a>
+                                                                            </apex:outputPanel>                                                     
+                                                                        </td>
+                                                                        <td>
+                                                                           <apex:outputText value="
+                                                                               {0,date,MM/dd/yyyy HH:mm a}">
+                                                                               <apex:param value="{!rd.SystemModstamp}" />
+                                                                           </apex:outputText>
+                                                                        </td>
+                                                                        <td>&nbsp;</td>
+                                                                    </tr>
+                                                                   <apex:variable var="rowCount" value="{!(rowCount * -1) + 1}"/>
+                                                             </apex:repeat>
+                                                                    <tr class="{!IF(rowCount = 0, 'odd','even')}" style="height: auto;">    
+                                                                        <td style=".height:{!IF(370-(rowCount+1)*30>0,370-(rowCount+1)*30,0)}px;">&nbsp;</td>
+                                                                        <td>&nbsp;</td>
+                                                                        <td>&nbsp;</td>
+                                                                        <td>&nbsp;</td>      
+                                                                        <td>&nbsp;</td>                                                           <td>&nbsp;</td>
+                                                                        <apex:variable var="count" value="{!1}"/>
+                                                                        <apex:repeat value="{!keyAtributes}" var="ka">
+                                                                          <td>
+                                                                              <apex:variable var="count" value="{!count + 1}"/>&nbsp;
+                                                                          </td>
+                                                                        </apex:repeat>
+        
+                                                                    </tr>
+                                                            </tbody>
+                                                        </table>                                              
+                                                   </apex:outputPanel>
+                                               <div class="bottomTble" style="width:100%"></div>
+                                            </center>   
+                                        </div> 
+                                    </div> 
+                                </apex:outputPanel> <!-- END TABLE -->     
+                                <div style="position: relative; overflow: hidden; height: 50px;margin-top:8px;"> 
+                                    <span class="leftTextOfStep" style="display:inline;"> &nbsp; {!$Label.MakeMistake} &nbsp;</span>
+                                    <div style="display:inline;margin-top:2px;"> 
+                                        <apex:outputPanel layout="block" styleClass="btnAction">
+                                            <apex:commandLink action="{!importUndo}" onclick="showProgressBar();waitOn();">
+                                                <span class="rightBtnSilver">
+                                                    <span class="leftBtnSilver">
+                                                        <span class="middleBtnSilver areaTitle">{!$Label.Undo}</span>
+                                                    </span>
+                                                </span>
+                                            </apex:commandLink>
+                                        </apex:outputPanel>
+                                    </div>    
+                                </div>             
+                            </div>
+                            <apex:inputField value="{!dummyDeal.XactlyExpress__DealDate__c}" id="fieldDate"/>
+                        </apex:outputPanel>  
+                        <apex:outputPanel layout="block" styleClass="newMHR" style="{!IF(actSect,'display:none;','')}">
+                            <apex:outputPanel layout="block" style="margin-left:2px;margin-top:-45px;position:absolute;">
+                                <apex:outputPanel layout="block" styleClass="actionButtons" rendered="{!Views.size > 0}">
+                                    <apex:outputText style="margin-left:20px;" styleclass="areaTitle" value="{!$Label.xactlyexpress__selectView}"/>
+                                    <apex:selectList id="viewDrpdwn" onclick="checkEditing();" onchange="if(!checkEditing()){return false;};waitOn();window.location.href='{!$Page.XactlyExpress__XactlySMBCalculateManagePaymentsMHR}?vwId='+this.value" value="{!dummyString}" size="1" multiselect="false" style="margin-left:21px;margin-top:20px;">
+                                        <apex:selectOptions value="{!Views}"/> 
+                                    </apex:selectList>  
+                                    <script>
+										var viewDrpdwn = '{!$Component.viewDrpdwn}'; 
+									</script>
+                                </apex:outputpanel>
+                                <apex:actionFunction name="doSearch" action="{!doSearch}" rerender="tableWrapper, viewDrpdwn, FixedCelsTableGrid" onComplete="SearchComplete();"/>                                           
+                        	<apex:outputPanel id="searchbutton" layout="block" styleClass="actionButtons" style="float:right;margin: 20px 0px 0px 5px;cursor:pointer;">                        	                        	
+	                        	<div id="searchbuttondiv">
+	                                <apex:outputText styleClass="searchbuttonText" value="{!$Label.xactlyexpress__Search}"/> 
+	                            </div>                               
+	                        </apex:outputpanel>
+	                        <apex:outputPanel layout="block" styleClass="actionButtons" style="float:right;margin: 20px 0px 0px 20px;">                 
+	                        	<apex:inputText value="{!searchstring}" id="theTextInput" style="text-align:right;"/>
+	                        	<script>
+									var theTextInput = '{!$Component.theTextInput}'; 
+									var searchbutton = '{!$Component.searchbutton}'; 
+									var theTextInputJq = '{!$Component.theTextInput}'.replace(/:/g,'\\:');
+									var searchbuttonJq = '{!$Component.searchbutton}'.replace(/:/g,'\\:');;  
+								</script>
+		                    </apex:outputpanel>   
+                            </apex:outputPanel>
+                            
+                            <apex:outputPanel id="tableWrapper" styleclass="tableWrapper" layout="block">
+                            	<script>
+                    		function SearchComplete(){                    			
+                    			document.getElementById(viewDrpdwn).value='';
+                    			fixCelsDimensions();
+                    			jQuery('#'+theTextInputJq).removeClass('dis');
+                    			jQuery('#'+theTextInputJq).unbind('click');
+                    			jQuery('#searchbuttondiv').css('background-position','top');
+                    			jQuery('#searchbuttondiv').css('cursor','pointer');
+                    			BindClickSearch();
+                    			BindOverSearch();
+                    			BindOutSearch();                    			
+                    			waitOff();
+                    		}
+                    		function BindClickSearch(){                     			                 			
+                        		jQuery('#'+searchbuttonJq).bind('click',function(){                        			
+                        			if (document.getElementById(theTextInput).value == ''){
+                        				alert('{!$Label.SearchEmpty}');
+                        			}else{
+                        				if(document.getElementById(theTextInput).value.length>50){
+                        					alert('{!$Label.SearchMaxLimit}');
+	                        			}else{
+	                        				waitOn();
+	                        				jQuery('#'+theTextInputJq).addClass('dis');
+	                        				jQuery('#'+theTextInputJq).bind('click',function(){
+	                        					jQuery(this).blur();
+	                        				});
+	                        				jQuery(this).unbind('click');
+	                        				jQuery(this).unbind('mouseover');
+	                        				jQuery(this).unbind('mouseout');
+	                        				jQuery('#searchbuttondiv').css('cursor','default');
+	                        				jQuery('#searchbuttondiv').css('background-position','bottom');
+	                        				doSearch();
+	                        			}  
+	                        		}                      			
+                        		});
+                        	}
+                        	function BindOverSearch(){                        		
+                        		jQuery('#'+searchbuttonJq).bind('mouseover',function(){
+                        			jQuery('#searchbuttondiv').css('background-position','bottom');                        			                     
+                        		});
+                        	}
+                        	function BindOutSearch(){                        		
+                        		jQuery('#'+searchbuttonJq).bind('mouseout',function(){
+                        			jQuery('#searchbuttondiv').css('background-position','top');                        			
+                        		});
+                        	}
+                    		function doEdit(d){
+						      	if(!countEditing()){
+						      		return false;
+						      	}else{
+						      		waitOn();
+      								var str = '';
+      								if ('{!doingSearch}'){
+						      			str = '&s={!JSENCODE(searchstring)}';
+						      		}
+						      		window.location.href='{!$Page.XactlySMBDealDetails}?id='+d+'&vwId={!JSENCODE(currentView.id)}'+str;
+						      	}
+						    }
+						    function checkShowResult(){
+						          if(!{!showResults} && !{!dontShowAgain}){
+						          	if ({!doingSearch}){
+						          		$('#showLimitsearchAlert').click();
+						          	}else{
+						          		$('#showLimitAlert').click();						          		
+						          	}          	              
+						          }
+						     }  
+                    	</script>
+                                <div class="tHeader">
+                                    <div style="background-image: url('{!URLFOR($Resource.XactlySMBResources ,'img/layout/topBgTable.png')}');margin-left:5px;margin-right:3px;">
+                                        <div style="float: left;margin-left:-5px;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/topLeftCurvy.png')}"/></div>
+                                        <div class="headerLeftSide">
+                                            <a href="{!$Page.XactlySMBCreateEditViews}?sctn=payMHR" onclick="if(!checkEditing()){return false;};"><apex:outputText value="{!$Label.xactlyexpress__createNewView} |"/></a>
+                                            <apex:outputPanel layout="none" rendered="{!!ISNULL(currentView.id)}">
+                                                <a href="{!$Page.XactlyExpress__XactlySMBCreateEditViews}?sctn=payMHR&id={!JSENCODE(currentView.id)}" onclick="if(!checkEditing()){return false;};"><apex:outputText value="{!$Label.xactlyexpress__EditView} |"/></a>
+                                                <apex:commandLink id="deleteViewLink" action="{!deleteView}" onclick="if(confirmDeleteView()){if(!checkEditing()){return false;}}else{return false;};"><apex:outputText value="{!$Label.xactlyexpress__DeleteView} |"/></apex:commandLink>
+                                                <a href="{!$Page.XactlySMBCalculateManagePaymentsMHR}?vwId={!JSENCODE(currentView.id)}" style="font-weight:bold;" onclick="if(!checkEditing()){return false;}"><apex:outputText value="{!$Label.xactlyexpress__Refresh}"/></a>
+                                            </apex:outputPanel>
+                                        </div>
+                                        <apex:outputPanel layout="block" styleClass="headerRightSide" rendered="{!attrType == 'string'}">
+                                            <apex:repeat value="{!LetterList}" var="iter">
+                                                <apex:commandLink style="{!IF(SL == iter,'background-color:#DEECFC;','')}" action="{!applyView}" onclick="if(!checkEditing()){return false;};waitOn();" value="{!iter}" rerender="tableWrapper,errorMsg" oncomplete="waitOff();fixCelsDimensions();introAsTab();">
+                                                    <apex:param value="{!iter}" name="SL"/>
+                                                </apex:commandLink>
+                                            </apex:repeat>
+                                            <apex:commandLink style="{!IF(SL == 'Other','background-color:#DEECFC;','')}" action="{!applyView}" onclick="if(!checkEditing()){return false;};waitOn();" value="{!$Label.xactlyexpress__Other}" rerender="tableWrapper,errorMsg" oncomplete="waitOff();fixCelsDimensions();introAsTab();">
+                                                <apex:param value="Other" name="SL"/>
+                                            </apex:commandLink>
+                                            <apex:commandLink style="{!IF(SL == 'All','background-color:#DEECFC;','')}" action="{!applyView}" onclick="if(!checkEditing()){return false;};waitOn();" value="{!$Label.xactlyexpress__all}" rerender="tableWrapper,errorMsg" oncomplete="waitOff();fixCelsDimensions();introAsTab();">
+                                                <apex:param value="All" name="SL"/>
+                                            </apex:commandLink>
+                                        </apex:outputPanel>
+                                        <div style="float: right;margin-right:-5px;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/topRightCurvy.png')}"/></div>
+                                        <div style="clear:both"></div>
+                                    </div> 
+                                </div>
+                                <div class="tContent">
+                                    <apex:outputPanel rendered="{!IF(AND(visibleRows.size > 0,attrs.size > 0),false,true)}">
+                                        <apex:outputText value="{!$Label.xactlyexpress__noMHRforThisView}"/>
+                                    </apex:outputPanel>
+                                    <apex:actionFunction action="{!dontShowAgainChange}" name="dontShowAgainChange" rerender="errorMsg"/>
+                                    <apex:actionFunction action="{!applyView}" name="refreshRowLimit"/>
+                                    <apex:inputHidden value="{!rowLimit}" id="temporalToTest"/>
+                                    <script>
+                                        var temporalToTest = '{!$Component.temporalToTest}'.replace(/:/g,'\\:');
+                                    </script>
+                                    <apex:outputPanel rendered="{!IF(AND(visibleRows.size > 0,attrs.size > 0),true,false)}" id="tableContainer2" styleClass="tableContainer2 hideable " layout="block">            
+                                        <div class="FixedCelsTable">
+                                            <div class="tablesHolder">
+                                                <div id="scroller" class="scroller" onscroll="scrollContent();" style="display: none;"><div id="scrollCont">&nbsp;</div></div>
+                                                
+                                                <apex:outputPanel id="FixedCelsTableGrid">
+                                                    <div id="recordsList" class="recordsList">
+                                                        <input type="hidden" id="focusHandler"/>
+                                                        <!-- Left Panel -->
+                                                        <div id="rowsContainer" class="rows">
+                                                            <div id="rowsHeaders" class="rowsHeader even">
+                                                                <table border="0"  cellspacing="0" width="299px">
+                                                                    <tr class="objectHeaders" style="height:31px;">
+                                                                        <td width="99px" style="border-right:1px solid #C2DFFF;">
+                                                                            <div style="float:left;"><input type="checkbox" onclick="selectAll(this);"/></div>
+                                                                            <apex:outputPanel layout="block" styleClass="actionButtons" style="float:left;">                        
+                                                                                <apex:outputPanel layout="block" styleClass="actionButtonWrapper" style="margin:0;">
+                                                                                    <div class="actionButtonLeft"></div>
+                                                                                    <apex:actionFunction name="release" action="{!doRelease}"/>
+                                                                                    <a href="javascript:;" class="actionButtonMiddle" onclick="if(checkIfOptSel()){return false;};updateInpCSV();release();showProgressBar();waitOn();">
+                                                                                        <apex:outputtext escape="false" value="{!$Label.xactlyexpress__Release}"/>
+                                                                                    </a>
+                                                                                    <div class="actionButtonRight"></div>    
+                                                                                </apex:outputpanel>
+                                                                            </apex:outputpanel>
+                                                                        </td>
+                                                                        <td width="100px" style="border-right:1px solid #C2DFFF;">
+                                                                            <div>
+                                                                                <apex:outputPanel rendered="{!sortBy == 'EventName'}" layout="block" style="float:left;margin-top:3px;">
+                                                                                    <img  src="{!IF(sortByDesc == true, URLFOR($Resource.XactlySMBResources, 'img/icons/arrowUp.png'), URLFOR($Resource.XactlySMBResources, 'img/icons/arrowDown.png'))}" />
+                                                                                </apex:outputPanel>
+                                                                                <apex:commandLink action="{!applyView}" onclick="if(!checkEditing()){return false;};waitOn();" value="{!$Label.xactlyexpress__EventName}" style="float: left; margin-left: 2px;color: #3B6080;font-size:11px;font-weight:bold;text-align:center;white-space:nowrap;" rerender="tableWrapper,errorMsg" oncomplete="fixCelsDimensions();introAsTab();">
+                                                                                    <apex:param value="EventName" name="sb"/>
+                                                                                </apex:commandLink>
+                                                                            </div>
+                                                                        </td>
+                                                                        <td width="100px">
+                                                                            <div>
+                                                                                <apex:outputText styleClass="areaTitle" value="{!$Label.xactlyexpress__balancePaid}"/>
+                                                                            </div>
+                                                                        </td>
+                                                                    </tr>
+                                                                </table>
+                                                            </div>
+                                                            <div id="rows" class="rowsScroll">
+                                                                <table border="0" class="rowsTable" cellspacing="0" width="300px">
+                                                                    <apex:variable var="iterIndex" value="{!1}"/>
+                                                                    <apex:repeat var="d" value="{!visibleRows}">
+                                                                        <tr class="dataRow whiteCells rows{!FLOOR(iterIndex)} {!IF(mod(FLOOR(iterIndex),2)!=0,'odd','even')}">                              
+                                                                            <td width="100px" style="text-align:center;">
+                                                                                <input type="checkbox" class="dealCheck" onClick="toggleRelease(this);"/>
+                                                                                <input type="hidden" value="{!d.toRelease}" class="dealLine"/>
+                                                                            </td>
+                                                                            <td width="100px" style="text-align: center;">
+                                                                                <div class="{!IF(LEN(d.eventName) > 30,'toEllipsis trigger','')}" style="overflow:hidden;width:100px;text-overflow: ellipsis;-o-text-overflow: ellipsis;white-space: nowrap;">
+                                                                                    <apex:outputText value="{!d.eventName}" />
+                                                                                </div>
+                                                                                <div class="bubble_html"><apex:outputtext value="{!d.eventName}" /></div>
+                                                                            </td>
+                                                                            <td width="100px" style="text-align:center;">
+                                                                                <div style="width:10px;margin-left:3px;">
+                                                                                    <apex:inputText rendered="{!d.showBalancePaid}"  style="width:90px;display:none;" styleClass="balancePaid" value="{!d.balancePaid}" onBlur="$(this).val(formatNumber(parseFloat(parseFloat(unformatNumber($(this).val())))))"/>
+                                                                                </div>
+                                                                            </td>
+                                                                        </tr>
+                                                                        <apex:variable var="iterIndex" value="{!iterIndex + 1}"/>
+                                                                    </apex:repeat>
+                                                                </table>
+                                                                <apex:inputHidden id="inpCSV" value="{!inpCSV}"/>
+                                                                <script>
+                                                                    var inpCSV = '{!$Component.inpCSV}'.replace(/:/g,'\\:');
+                                                                </script>
+                                                            </div>
+                                                        </div>
+                                                    
+                                                        <!-- Top Panel -->
+                                                        <div id="colsContainer" class="colsContainer">
+                                                            <div id="cols"  class="columns">
+                                                                <table id="cellsTable" cellspacing="0" border="0" style="margin-top: 0px;">
+                                                                    <tr class="objectHeaders even">
+                                                                        <apex:repeat var="h" value="{!attrs}"> 
+                                                                           <td>                                                                           
+                                                                              <div class="titles" style="overflow:hidden;">
+                                                                                  <apex:outputPanel rendered="{!sortBy == h.XactlyExpress__DealColumnName__c}" layout="block" style="float:left;margin-top:3px;">
+                                                                                      <img  src="{!IF(sortByDesc == true, URLFOR($Resource.XactlySMBResources, 'img/icons/arrowUp.png'), URLFOR($Resource.XactlySMBResources, 'img/icons/arrowDown.png'))}" />
+                                                                                  </apex:outputPanel>
+                                                                                  <apex:commandLink action="{!applyView}" onclick="if(!checkEditing()){return false;};waitOn();" value="{!IF(OR(LOWER(h.XactlyExpress__DataType__c) == 'currency', LOWER(h.XactlyExpress__DataType__c) == 'decimal'),h.Name+'*',IF(h.Name == 'Product Id',$Label.xactlyexpress__Product,IF(h.Name == 'Account Id',$Label.xactlyexpress__Account,h.Name)) )}" style="float: left; margin-left: 2px;color: #3B6080;font-size:11px;font-weight:bold;text-align:center;white-space:nowrap;" rerender="tableWrapper,errorMsg" oncomplete="fixCelsDimensions();introAsTab();">
+                                                                                      <apex:param value="{!h.XactlyExpress__DealColumnName__c}" name="sb"/>
+                                                                                  </apex:commandLink>
+                                                                              </div>
+                                                                           </td> 
+                                                                        </apex:repeat>
+                                                                    </tr>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+        
+                                                        <!-- Cells Panel -->
+                                                        <div id="cellContainer" class="cellContainer">
+                                                            <div id="cells" class="cells">
+                                                                <table id="dealsTable" cellspacing="0" border="0">
+                                                                    <apex:variable var="iterIndex" value="{!1}"/>
+                                                                    <apex:repeat var="d" value="{!visibleRows}">
+                                                                        <tr class="dataRow whiteCells rows{!FLOOR(iterIndex)} {!IF(mod(FLOOR(iterIndex),2)!=0,'odd','even')}">
+                                                                            <apex:repeat value="{!d.attrs}" var="y">
+                                                                                <td>  
+                                                                                    <apex:outputPanel rendered="{!TEXT(iterIndex) == '1'}" style="display:none" styleClass="cWidth">
+                                                                                        <apex:outputText value="{!TEXT(FLOOR(y.customWidth))}"/>
+                                                                                    </apex:outputPanel> 
+                                                                                    <apex:outputPanel layout="block" style="width:{!IF(NOT(ISNULL(y.customWidth)),TEXT(FLOOR(y.customWidth)-4),'146')}px;overflow:hidden;white-space:nowrap">
+                                    
+                                                                                        <apex:outputPanel styleclass="rowShow{!RIGHT(TEXT(iterIndex),2)}" rendered="{!LEFT(y.field,7) == 'Boolean'}" layout="block">
+                                                                                            <apex:outputText value="{!y.value}"/>&nbsp;
+                                                                                        </apex:outputPanel>
+                                                                                        
+                                                                                        <apex:outputPanel styleclass="rowShow{!RIGHT(TEXT(iterIndex),2)}" rendered="{!y.field == 'ProfileId__c'}" layout="block">
+                                                                                            <apex:outputText value="{!d.Salesperson}"/>&nbsp;
+                                                                                        </apex:outputPanel>
+                                                                                        
+                                                                                        <apex:outputPanel styleclass="rowShow{!RIGHT(TEXT(iterIndex),2)}" rendered="{!y.field == 'ProductId__c'}" layout="block" style="white-space:nowrap;">
+                                                                                            <a href="../{!d.d.XactlyExpress__ProductID__c}"><apex:outputText value="{!d.ProductName}"/></a>&nbsp;
+                                                                                        </apex:outputPanel>
+                                                                                        
+                                                                                        <apex:outputPanel styleclass="rowShow{!RIGHT(TEXT(iterIndex),2)}" rendered="{!y.field == 'AccountId__c'}" layout="block" style="white-space:nowrap;">
+                                                                                            <a href="../{!d.d.XactlyExpress__AccountID__c}"><apex:outputText value="{!d.AccountName}"/></a>&nbsp;
+                                                                                        </apex:outputPanel>
+                                                                                        
+                                                                                        <apex:outputPanel styleclass="rowShow{!RIGHT(TEXT(iterIndex),2)}" rendered="{!y.field == 'DealId__c'}" layout="block">
+                                                                                            <apex:outputText value="{!d.d.XactlyExpress__DealID__c}"/>&nbsp;
+                                                                                        </apex:outputPanel>
+                                                                                        
+                                                                                        <apex:outputPanel styleclass="rowShow{!RIGHT(TEXT(iterIndex),2)}" rendered="{!y.field == 'DealDate__c'}" layout="block">
+                                                                                            <apex:outputText value="{!d.dateFormat}"/>&nbsp;
+                                                                                        </apex:outputPanel>
+                                                                                            
+                                                                                        <apex:outputPanel styleclass="rowShow{!RIGHT(TEXT(iterIndex),2)}" rendered="{!AND(y.field != 'DealDate__c', y.datatype=='date')}" layout="block">
+                                                                                            <apex:outputText value="{!y.value}"/>&nbsp;
+                                                                                        </apex:outputPanel>  
+                                                                                                                                                           
+                                                                                        <apex:outputPanel styleclass="rowShow{!RIGHT(TEXT(iterIndex),2)} {!IF(OR(y.datatype == 'currency', y.datatype == 'decimal'),IF(NOT(CONTAINS(y.value,'-')),'editablePositive','editableNegative'),'')}" rendered="{!AND(y.field != 'ProductId__c', y.field != 'AccountId__c', y.field != 'DealId__c', y.field != 'ProfileId__c', y.field != 'DealDate__c', y.field != 'ProfileId__r.UserId__c',y.datatype!='date', LEFT(y.field,7) != 'Boolean')}" layout="block">
+                                                                                            <apex:outputText value="{!y.value}"/>&nbsp;
+                                                                                        </apex:outputPanel>  
+                                                                                    </apex:outputPanel>
+                                                                                </td>
+                                                                            </apex:repeat>                                      
+                                                                        </tr>
+                                                                        <apex:variable var="iterIndex" value="{!iterIndex + 1}"/>
+                                                                    </apex:repeat>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </apex:outputPanel>
+                                            </div>
+                                        </div>      
+                                    </apex:outputPanel>
+                                </div>
+                                <apex:actionFunction name="goToPageNew" action="{!goToPageNew}"/>
+                                <apex:inputHidden id="currentPage2" value="{!currentPage2}"/>
+                                <script>
+                                    var currentPage2 = '{!$Component.currentPage2}'.replace(/:/g,'\\:');
+                                </script>
+                                <div class="tFooter">
+                                    <div class="footerLeftSide">
+                                    </div>
+                                    <div class="prevNextWrapp">
+                                        <center>
+                                            <apex:outputPanel layout="none" rendered="{!currentPage2 > 1}">
+                                                <a href="javascript:;" onclick="if(!checkEditing()){return false;};$('#'+currentPage2).val(1);waitOn();goToPageNew()"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/buttons/btnFirstPagebk.png')}"/></a>
+                                                <a href="javascript:;" onclick="if(!checkEditing()){return false;};$('#'+currentPage2).val($('#'+currentPage2).val()==1?1:parseInt($('#'+currentPage2).val())-1);waitOn();goToPageNew()"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/buttons/btnPrevPagebk.png')}"/>&nbsp;<apex:outputText value="{!$Label.xactlyexpress__Previous}" style="color:#404040;"/></a>&nbsp;
+                                            </apex:outputPanel>
+                                            <apex:outputPanel layout="none" rendered="{!currentPage2 == 1}">
+                                                <img src="{!URLFOR($Resource.XactlySMBResources ,'img/buttons/btnFirstPage.png')}"/>
+                                                <img src="{!URLFOR($Resource.XactlySMBResources ,'img/buttons/btnPrevPage.png')}"/>&nbsp;<apex:outputText value="{!$Label.xactlyexpress__Previous}" style="color:#A8A8A8;"/>&nbsp;
+                                            </apex:outputPanel>
+                                            <apex:outputPanel layout="none" rendered="{!currentPage2 < numPages2}">
+                                                <a href="javascript:;" onclick="if(!checkEditing()){return false;};$('#'+currentPage2).val($('#'+currentPage2).val()=={!numPages2}?{!numPages2}:parseInt($('#'+currentPage2).val())+1);waitOn();goToPageNew()"><apex:outputText value="{!$Label.xactlyexpress__Next}" style="color:#404040;"/>&nbsp;<img src="{!URLFOR($Resource.XactlySMBResources ,'img/buttons/btnNextPagebk.png')}"/></a>
+                                                <a href="javascript:;" onclick="if(!checkEditing()){return false;};$('#'+currentPage2).val({!numPages2});waitOn();goToPageNew()"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/buttons/btnLastPagebk.png')}"/></a>
+                                            </apex:outputPanel>
+                                            <apex:outputPanel layout="none" rendered="{!currentPage2 == numPages2}">
+                                                <apex:outputText value="{!$Label.xactlyexpress__Next}" style="color:#A8A8A8;"/>&nbsp;<img src="{!URLFOR($Resource.XactlySMBResources ,'img/buttons/btnNextPage.png')}"/>
+                                                <img src="{!URLFOR($Resource.XactlySMBResources ,'img/buttons/btnLastPage.png')}"/>
+                                            </apex:outputPanel>
+                                            
+                                        </center>
+                                    </div>
+                                    <div class="footerRightSide">
+                                        <apex:outputText value="{!$Label.xactlyexpress__Page}"/>&nbsp;<input type="Text" value="{!currentPage2}" onfocus="if(!checkEditing()){return false;};" onblur="if(!checkEditing()){return false;};if(isNaN(this.value) || this.value {!TRIM('<')} 1 || this.value {!TRIM('>')} {!numPages2}){return false};$('#'+currentPage2).val(this.value);waitOn();goToPageNew()" style="width:16px;"/>&nbsp;<apex:outputText value="{!$Label.xactlyexpress__Of}"/>&nbsp;<apex:outputText value="{!numPages2}"/>
+                                    </div>
+                                </div>
+                            </apex:outputPanel>
+                        </apex:outputPanel>
+                    </apex:form>
+                    
+                    <!-- FOOTER  -->
+                    <apex:outputPanel layout="block" styleClass="footer" rendered="{!isAdmin && isActive}" id="pFooter">
+                    	<apex:outputPanel layout="block" styleClass="previousStepWrapper" >
+		                    <div class="previousStepRight"></div>
+		                    <a class="previousStepMiddle" href="{!$Page.XactlySMBCalculateManagePayments}">
+		                        {!$Label.backManagePayments}
+		                    </a>
+		                    <div class="previousStepLeft"></div>
+		                </apex:outputpanel>                    	
+		                <apex:outputPanel layout="block" styleClass="actionButtons">                                            
+                		</apex:outputPanel>  
+                		<apex:outputPanel layout="block" styleClass="nextStepWrapper" style="margin-right:100px;">		                    
+		                </apex:outputPanel> 
+		            </apex:outputPanel>                      
+                </apex:outputPanel><!-- END CONTENT -->
+                <div style="clear:both"></div>
+            </apex:outputPanel><!-- END CONTENTWRAPPER -->
+         
+
+
+            <!-- FILTERS -->
+                
+            <apex:form id="theFiltersForm">
+                <div id="filterScreen" style="width:850px; background:#F4F8FB; border: 3px solid #000000; padding:20px; top:150px; left:110px; position:absolute; z-index:3;{!IF(filterErrorMsg == '','display:none;','')}">
+                    <apex:outputPanel id="filtersContent">
+                        <div id="currentFilterText" style="margin-left:100px; margin-bottom:20px; font-weight:bold">
+                            {!currentFilterText}
+                        </div>
+                        <div id="filterErrorMsg"><apex:outputText value="{!filterErrorMsg}" escape="false" styleClass="errorCel"/> </div>
+                        <br/>                          
+                        <div id="hideFilterButton" style="margin-left:15px;">
+                            <div class="separateBtn btnToLeft btnAction">
+                                <a href="javascript:;"  onclick="toggleShowFilter();" class="areaTitle actionButton newActionbutton">
+                                    <span class="rightBtnOrange">
+                                        <span class="leftBtnOrange">
+                                            <span class="middleBtnOrange">
+                                                {!$Label.HideFilter}
+                                            </span>
+                                        </span>
+                                    </span>
+                                </a>           
+                            </div>  
+                        </div>
+                        <div style="clear:both;"></div>
+                        <div id="whiteBox" style="width:820px; padding:10px; margin-top:20px; margin-left:5px; border: 1px solid #AAAAAA; background:#FFFFFF;">
+                            <div style="font-weight:bold;">
+                                {!$Label.ShowMeAllPaymentsWhere}...
+                                
+                            </div>
+                            <div id="questionMark" style="position;absolute; width:32px; height:32px; top:0px; right:0px">
+                            
+                            </div>
+                            <div id="leftFilterBox" style="padding:20px; background: #F4F8FB; float:left; width:385px;">
+                                {!$Label.FilterPayment}...
+                            
+                                <div id="leftBoxScroll" style="height:185px; overflow:auto;">                                    
+                                    <apex:outputPanel id="filtersOptions">
+                                        <apex:actionFunction name="selectOperatorReload" action="{!selectOperatorReloadC}" rerender="filtersOptions" oncomplete="fixCelsDimensions();waitOff();adjustSizeOnDrag();">                        
+                                            <apex:param name="fieldValue" value="" />
+                                        </apex:actionFunction>     
+                                        <table id="copyFilterValues">
+                                            <apex:repeat value="{!filters}" var="filter">
+                                                <tr> 
+                                                    <td>  
+                                                        <apex:selectList value="{!filter.field}" multiSelect="false" size="1" onchange="changeFilterField(this);waitOn();" styleClass="filterSelect{!filter.i}">
+                                                            <apex:selectOptions value="{!filterFieldOptions}" />
+                                                        </apex:selectList>
+                                                    </td> 
+                                                    <td>
+                                                        <apex:selectList value="{!filter.operator}" multiSelect="false" size="1">
+                                                            <apex:selectOptions value="{!filter.filterOptions}" /> 
+                                                        </apex:selectList>
+                                                    </td>
+                                                    <td>          
+                                                     <apex:inputText id="inp" value="{!filter.value}" style="{!IF(filter.fieldType != 'Salesperson', '', 'display:none;')}" styleClass="filterInput" onfocus="ifDateCalendar({!filter.i}, '{!$Component.inp}', '{!filter.fieldType}');" onchange="refresFilterValue(this, '{!$Component.hdValue}')" />  
+                                                        
+                                                     <apex:selectList value="{!filter.value}" multiSelect="false" size="1" id="spselect" style="{!IF(filter.fieldType == 'Salesperson', '', 'display:none;')}" onchange="refresFilterValue(this, '{!$Component.hdValue}')">
+                                                         <apex:selectOptions value="{!salespersons}" /> 
+                                                     </apex:selectList>
+                                                     
+                                                     <apex:inputHidden id="hdValue" value="{!filter.value}" />   
+                                                    </td>  
+                                                    <td>  
+                                                        <apex:commandLink action="{!removeFilter}" rerender="filtersContent" onclick="copyFilterValues();" oncomplete="fixCelsDimensions();loadBubbles();adjustSizeOnDrag();">
+                                                            <apex:image url="{!URLFOR($Resource.XactlyExpress__XactlySMBResources, 'img/buttons/delete_small.png')}" alt="{!$Label.xactlyexpress__Delete}"/>
+                                                            <apex:param value="{!filter.i}" name="index"/>
+                                                        </apex:commandLink>     
+                                                    </td>
+                                                </tr> 
+                                            </apex:repeat>
+                                        </table>
+                                      </apex:outputPanel>
+                                </div>
+                                <div style="font-weight:bold; color:#446076;">
+                                    <apex:commandLink action="{!addFilter}" rerender="filtersOptions" onclick="copyFilterValues();waitOn();" oncomplete="fixCelsDimensions();loadBubbles();adjustSizeOnDrag();waitOff();">
+                                       {!$Label.xactlyexpress__AddAnotherFilter}
+                                    </apex:commandLink>
+                                </div>                                
+                            </div>
+                            <div id="rightFilterBox">
+                            
+                            </div>      
+                            <div style="clear:both;"></div>
+                            <div id="filterButtons" style="margin-top:10px">
+                                <div class="btnToCenter btnAction">
+                                    <div class="separateBtn">   
+                                        <script type="text/javascript">
+                                          function changeApplyComplete(){
+                                              if('{!filterErrorMsg}'==''){
+                                                  toggleShowFilter();
+                                              }
+                                          }
+                                        </script>
+                                        <apex:commandLink action="{!applyFilters}" rerender="leftSidePanel, filtersContent"  onclick="copyFilterValues();waitOn();" oncomplete="fixCelsDimensions();waitOff();changeApplyComplete();">
+                                            <span class="rightBtnSilver">
+                                                <span class="leftBtnSilver"> 
+                                                    <span class="middleBtnSilver">
+                                                        {!$Label.ApplyChanges}
+                                                    </span>
+                                                </span>  
+                                            </span> 
+                                        </apex:commandLink>
+                                    </div>
+                                    <div class="separateBtn">
+                                        <apex:commandLink action="{!discardChange}" onclick="waitOn();" rerender="filtersContent" oncomplete="fixCelsDimensions();waitOff();toggleShowFilter();">
+                                            <span class="rightBtnSilver"> 
+                                                <span class="leftBtnSilver"> 
+                                                    <span class="middleBtnSilver">
+                                                        {!$Label.DiscardChanges}
+                                                    </span>
+                                                </span>
+                                            </span>
+                                        </apex:commandLink>
+                                    </div>  
+                                    <div class="separateBtn">
+                                        <apex:commandLink action="{!clearAllFilter}" onclick="waitOn();" rerender="filtersContent" oncomplete="fixCelsDimensions();waitOff();">
+                                                    <span class="rightBtnSilver">
+                                                        <span class="leftBtnSilver">
+                                                            <span class="middleBtnSilver">
+                                                                {!$Label.ClearFilters}
+                                                            </span>
+                                                        </span>
+                                                    </span>
+                                                </apex:commandLink>
+                                            </div>  
+                                        </div>
+                                    </div> 
+                                    <div style="clear:both;"></div>  
+                               </div>
+                            </apex:outputPanel>                 
+                        </div>    
+                    </apex:form>           
+           
+
+    </div>
+    <div style="display:none;" id="showLimitsearch">
+        <div style="background: url('{!URLFOR($Resource.XactlySMBResources ,'img/layout/topOrange.png')}');background-repeat:repeat-x;margin-left:15px;margin-right:15px;">
+            <div style="float: left;margin-left:-15px;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/topLeftOrange.png')}"/></div>
+            <div style="float: right;margin-right:-15px;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/topRightOrange.png')}"/></div>
+            <div style="clear:both"></div>
+        </div> 
+        <div style="float:left;margin-top:-3px;width:auto; height:220px; border-right:2px solid #D49761;border-left:2px solid #D49761;background-color:#FFF;">
+            <apex:outputText style="color:#FFA24F;font-size:21pt;margin-left:20px;" value="{!$Label.xactlyexpress__thatIsEmbarassing}"/><br/><br/>
+            <apex:outputText style="color:#777777;font-size:12pt;font-weight:bold;margin-left:20px;" value="{!$Label.xactlyexpress__retrievedTooMuchDate}"/><br/><br/>
+            <apex:outputText style="color:#777777;font-size:12px;font-weight:bold;margin-left:20px;display:block;margin-right:23px;" value="{!$Label.xactlyexpress__whatHappend}"/><br/>
+            <apex:outputText style="color:#999999;font-size:10px;margin-left:23px;display:block;margin-right:23px;" value="{!$Label.xactlyexpress__tooMuchDataExplanation}"/><br/><br/>
+            <apex:outputText style="color:#777777;font-size:12px;font-weight:bold;margin-left:20px;display:block;margin-right:23px;" value="{!$Label.xactlyexpress__whatCanIDo}"/><br/>
+            <apex:outputText style="color:#999999;font-size:10px;margin-left:23px;display:block;margin-right:23px;" value="{!$Label.xactlyexpress__whatCanIDoExplanationSearch}"/><br/><br/><br/>            
+            <div class="linkButton" style="float:left;margin-left:20px;">
+                <a href="javascript:;" style="margin-left:40px;" onclick="jQuery.superbox.close();dontShowAgainChange();">
+                    <img class="btnt" src="{!URLFOR($Resource.XactlySMBHome ,'img/buttons/homeButtonLeft.png')}"></img>
+                    <span class="btnCenter"> {!$Label.viewResultsAsIs}   </span>
+                    <img class="btnt" src="{!URLFOR($Resource.XactlySMBHome ,'img/buttons/homeButtonRight.png')}"></img>
+                </a>
+                <div style="clear:both"></div>
+            </div>
+            <div style="clear:both"></div>
+        </div>
+        <div style="clear:both"></div>
+        <div style="float:left;width:500px;marging-top: -3px; background-image: url('{!URLFOR($Resource.XactlySMBResources ,'img/layout/bottomOrange.png')}');margin-left:15px;margin-right:15px;">
+           <div style="float: left;margin-left:-15px;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/bottomLeftOrange.png')}"/></div>
+           <div style="float: right;margin-right:-15px;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/bottomRightOrange.png')}"/></div>
+           <div style="clear:both"></div>
+        </div> 
+    </div>         
+    <a id="showLimitsearchAlert" rel="superbox[content#showLimitsearch.limitRowAlert]" href="#showLimitsearch" style="display:none;"></a>
+       
+    <div style="display:none;" id="showLimit">
+        <div style="background-image: url('{!URLFOR($Resource.XactlySMBResources ,'img/layout/topOrange.png')}');margin-left:15px;margin-right:15px;">
+            <div style="float: left;margin-left:-15px;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/topLeftOrange.png')}"/></div>
+            <div style="float: right;margin-right:-15px;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/topRightOrange.png')}"/></div>
+            <div style="clear:both"></div>
+        </div> 
+        <div style="width:auto;border-right:2px solid #D49761;border-left:2px solid #D49761;background-color:#FFF;">
+            <apex:outputText style="color:#FFA24F;font-size:21pt;margin-left:20px;" value="{!$Label.xactlyexpress__thatIsEmbarassing}"/><br/><br/>
+            <apex:outputText style="color:#777777;font-size:12pt;font-weight:bold;margin-left:20px;" value="{!$Label.xactlyexpress__retrievedTooMuchDate}"/><br/><br/>
+            <apex:outputText style="color:#777777;font-size:12px;font-weight:bold;margin-left:20px;display:block;margin-right:23px;" value="{!$Label.xactlyexpress__whatHappend}"/><br/>
+            <apex:outputText style="color:#999999;font-size:10px;margin-left:23px;display:block;margin-right:23px;" value="{!$Label.xactlyexpress__tooMuchDataExplanation}"/><br/><br/>
+            <apex:outputText style="color:#777777;font-size:12px;font-weight:bold;margin-left:20px;display:block;margin-right:23px;" value="{!$Label.xactlyexpress__whatCanIDo}"/><br/>
+            <apex:outputText style="color:#999999;font-size:10px;margin-left:23px;display:block;margin-right:23px;" value="{!$Label.xactlyexpress__whatCanIDoExplanation}"/><br/><br/><br/>
+            <div class="linkButton" style="float:left;margin-left:20px;">
+                <a href="{!$Page.XactlySMBCreateEditViews}?sctn=payMHR&id={!JSENCODE(currentView.id)}">
+                    <img class="btnt" src="{!URLFOR($Resource.XactlySMBHome ,'img/buttons/homeButtonLeft.png')}"/>
+                    <span class="btnCenter"> {!$Label.EditView}   </span>
+                    <img class="btnt" src="{!URLFOR($Resource.XactlySMBHome ,'img/buttons/homeButtonRight.png')}"/>
+                </a>
+                <div style="clear:both"></div>
+            </div>
+            <div class="linkButton" style="float:left;margin-left:20px;">
+                <a href="javascript:;" style="margin-left:40px;" onclick="jQuery.superbox.close();dontShowAgainChange();">
+                    <img class="btnt" src="{!URLFOR($Resource.XactlySMBHome ,'img/buttons/homeButtonLeft.png')}"/>
+                    <span class="btnCenter"> {!$Label.viewResultsAsIs}   </span>
+                    <img class="btnt" src="{!URLFOR($Resource.XactlySMBHome ,'img/buttons/homeButtonRight.png')}"/>
+                </a>
+                <div style="clear:both"></div>
+            </div>
+            <div style="clear:both"></div>
+        </div>
+        <div style="background-image: url('{!URLFOR($Resource.XactlySMBResources ,'img/layout/bottomOrange.png')}');margin-left:15px;margin-right:15px;">
+           <div style="float: left;margin-left:-15px;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/bottomLeftOrange.png')}"/></div>
+           <div style="float: right;margin-right:-15px;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/bottomRightOrange.png')}"/></div>
+           <div style="clear:both"></div>
+        </div> 
+    </div>         
+    <a id="showLimitAlert" rel="superbox[content#showLimit.limitRowAlert]" href="#showLimit" style="display:none;"></a>
+
+    <apex:includeScript value="{!URLFOR($Resource.XactlyExpress__CSN, 'jquery.js')}" />
+    <c:XactlySMBFooterScript /> 
+    <script type="text/javascript" language="javascript" src="{!URLFOR($Resource.XactlySMBResources, 'js/XactlySMBJavascript.js')}"></script>
+    <script type="text/javascript" src="{!URLFOR($Resource.XactlySMBResources ,'js/jquery-ui.min.js')}"></script>
+     
+    <script type="text/javascript" language="javascript" src="{!URLFOR($Resource.XactlySMBResources, 'js/jquery.curvycorners.min.js')}"></script>
+    <script type="text/javascript" src="{!URLFOR($Resource.XactlySMBResources ,'modbubble/js/jquery.codabubble.mod.js')}"></script>
+    <script type="text/javascript" src="{!URLFOR($Resource.XactlySMBResources ,'js/jquery.superbox-min.js')}"></script>
+          
+    <script type="text/javascript" language="javascript" src="{!URLFOR($Resource.XactlySMBResources, 'js/jQueryOverflow.js')}"></script>
+    <script type="text/javascript" src="{!URLFOR($Resource.XactlySMBResources ,'modbubble/js/jquery.codabubble.mod.js')}"></script> 
+    <script>  
+        $(document).ready(function (){
+            $.superbox.settings = {
+                closeTxt: "X",
+                loadTxt: "Loading...",
+                nextTxt: "Next",
+                prevTxt: "Previous"
+            };
+            $.superbox();
+            adjCal();
+            fixCelsDimensions();
+            checkShowResult();
+        });                
+        
+        $('#roundedCornerBlue').corner({
+            tl: { radius: 5 },
+            tr: { radius: 5 },
+            bl: { radius: 5 },
+            br: { radius: 5 },
+            antiAlias: true
+        });
+        
+        function togglePage(){
+            $('#'+actSect).val(!$('#'+actSect).val());
+            waitOn();
+            clearErrorMessage();
+        }
+        
+        function changeRowLimit(newSize){
+            $('#'+temporalToTest).val(newSize);
+            refreshRowLimit();
+        }
+        
+        function checkLoadedPage(){
+            if($('#'+secondCharged).val()=='true'){
+                $('.oldMHR').show();$('.newMHR').hide();
+                togglePage();
+            }
+            else{
+                waitOn();
+                loadOldPage();
+                clearErrorMessage();
+            }
+        }
+        
+        function checkIfOptSel(){
+            var checks = $('.dealCheck');
+            var cancel = false;
+            for(var i = 0; i < checks.length; i++){
+                if($(checks[i]).attr('checked')){
+                    cancel = true;
+                }
+            }
+            if(cancel){
+                return false;
+            }
+            alert('{!$Label.youMustSelectARow}');
+            return true;
+        }
+        
+        function selectAll(obj){
+            var checks = $('.dealCheck');
+            if($(obj).attr('checked')){
+                for(var i = 0; i < checks.length; i++){
+                    $(checks[i]).attr('checked', true);
+                    $('.balancePaid', $(checks[i]).parent().parent()).show();
+                }
+            }
+            else{
+                for(var i = 0; i < checks.length; i++){
+                    $(checks[i]).attr('checked', false);
+                    $('.balancePaid', $(checks[i]).parent().parent()).hide().val('');
+                }
+            }
+        }
+        
+        function toggleRelease(obj){
+            if($(obj).attr('checked')){
+                $('.balancePaid', $(obj).parent().parent()).show();
+            }
+            else{
+                $('.balancePaid', $(obj).parent().parent()).hide().val('');
+            }
+        }
+        
+        var bubbleImagesPath = "{!URLFOR($Resource.XactlySMBResources ,'modbubble/images')}";
+        
+        $(document).ready(function(){
+            if(document.getElementById('importStatusValue').value=='job'){
+                refreshingImport();
+            }            
+            if(document.getElementById('undoStatusValue').value=='job'){
+                refreshingUndo();
+            }
+            if(document.getElementById('importStatusValue').value=='nonecsv'){
+                alert('{!$Label.NotACSVFile}');
+            }
+            
+            
+            BindClickSearch();
+            BindOverSearch();
+            BindOutSearch();
+            
+            $('.toEllipsis').ellipsis();
+        });
+               
+        function toggleShowFilter(){
+            var obj = $('#filterScreen');
+            if(obj.is(':visible')){
+                obj.hide();
+            }
+            else{
+                obj.show();
+            }   
+        }
+      var accm = true;
+      
+      function checkEditing(){
+          return true; //later
+      }
+      
+      function updateInpCSV(){
+          $('#'+inpCSV).val('');
+          var trs = $('.dealCheck');
+          for(var i = 0; i < trs.length;i++){
+              if($(trs[i]).attr('checked') == true){
+                  var temp = $('#'+inpCSV).val() == '' ? '' : $('#'+inpCSV).val() + ',';
+                  $('#'+inpCSV).val(temp+$('.dealLine',$(trs[i]).parent()).val());
+              }
+          }
+      }
+      
+      function adjCal(){
+          if(_isIE6){
+              $('#datePicker').css('left', parseInt($('#datePicker').css('left')));
+          }
+          else{
+              
+              if(accm){
+                  $('#datePicker').css('left', parseInt($('#datePicker').css('left')));
+              }
+          }
+      }
+      
+      function showCalendar(lnmString){
+          DatePicker.pickDate(true, lnmString , false);
+          scrollContentOnTab();
+      }
+        function copyFilterValues(){
+       /*     var inputs = $('#copyFilterValues input');
+            for(var i = 0; i < inputs.length; i++){
+                var parent = $(inputs[i]).parent();
+                var select = $($(inputs[i]).parent().children()[0]);
+                if(select.is(':visible')){
+                    var val = select.get(0).options[select.get(0).selectedIndex].value;
+                    inputs[i].value = val;
+                }
+            } */
+        }
+     
+        function adjustSizeOnDrag(){
+            if(parseInt($('#dragBar').css('top')) > 150&&parseInt($('#dragBar').css('top'))<320){
+                if(!_isIE7){
+                    var height1 = 235 - parseInt($('#dragBar').css('top'));
+                    var height2 = parseInt($('#dragBar').css('top')) - 235;
+                }
+                else{
+                    var height1 = 253 - parseInt($('#dragBar').css('top'));
+                    var height2 = parseInt($('#dragBar').css('top')) - 253;
+                }
+                if(parseInt($('#dragBar').css('top')) >= 235){
+                    
+                    $('#tableCont').css('max-height',orgTC+height2+'px');
+                    $('#tableCont').height(orgTC+height2);
+                    $('.roundedCornerBox').height(orgRCB-height2);
+                    $('#downTableCont').height(orgDTC-height2);   
+                } 
+                if(parseInt($('#dragBar').css('top')) < 235){
+                    
+                    $('#tableCont').css('max-height',orgTC-height1+'px');
+                    $('#tableCont').height(orgTC-height1);
+                    $('.roundedCornerBox').height(orgRCB+height1);
+                    $('#downTableCont').height(orgDTC+height1);
+                }    
+            }
+        }
+
+        function changeFilterField(obj){
+            var valueCell = $($(obj).parent().next().next());
+            var select = $(valueCell.children('select'));
+            var opt = $(valueCell.children('select')).children('option')[0];
+            var input = $(valueCell.children('input'));
+            var salesper = undefined;
+            
+            $.each($(obj).find('option:selected'), function(){
+            	if(this.text == 'Salesperson'){
+            		salesper = this;
+            	}
+            });
+            
+            waitOn();
+            if(salesper != undefined && salesper.text == 'Salesperson'){
+                select.show();
+                select.val(opt.text);
+                input.hide();
+                input.val(opt.text);
+            }
+            else{
+                select.hide();
+                input.show();
+                input.val(''); 
+            }
+            selectOperatorReload(obj.value);
+        }
+ 
+        function refreshingImport () {
+           refreshView();
+           if(document.getElementById('importStatusValue').value=='job'){
+               showProgressBar();
+               setTimeout('refreshImportStatus()', 3000);
+           }else{
+               if(document.getElementById('importStatusValue').value=='end'){
+                   setTimeout('hideProgressBar()',3000);
+                   if(document.getElementById('importSource').value == 'CSV'){
+                        setTimeout('alert("{!$Label.importFinishSuccess}")',3000);
+                        
+                   }
+                   else if(document.getElementById('importSource').value == 'UI'){
+                        setTimeout('alert("{!$Label.releaseFinishSuccess}")',3000);
+                   }
+               }else{
+                   if(document.getElementById('importSource').value == 'CSV'){
+                       alert("{!$Label.importFinishError}");
+                   }
+                   else if(document.getElementById('importSource').value == 'UI'){
+                       alert("{!$Label.releaseFinishError}");
+                   }
+               }
+                setTimeout('ultimateRefreshImportStatus()',3000);
+           }
+        }
+      
+        function ifDateCalendar(idx, nmString, fType){
+        	if(fType == 'Date'){
+                DatePicker.pickDate(true, nmString , false);        	
+        	}
+        	/*
+            if($('.filterSelect'+idx).val()=='CreatedDate' || $('.filterSelect'+idx).val()=='{!keyDate}'){
+                DatePicker.pickDate(true, nmString , false);
+            }
+            */
+        }    
+      	function refresFilterValue(obj, toid){
+      		document.getElementById(toid).value = obj.value;
+      	}
+        function refreshingUndo () {
+           waitOn();
+           refreshView();
+           if(document.getElementById('undoStatusValue').value=='job'){
+               showProgressBar();
+               setTimeout('refreshUndoStatus()', 3000);
+           }else{
+               if(document.getElementById('undoStatusValue').value=='end'){
+                   hideProgressBar();
+                   alert("{!$Label.importUndoFinishSuccess}");
+               }else{
+                   alert("{!$Label.importUndoFinishError}");
+               }
+               setTimeout('ultimateRefreshUndoStatus()', 3000);
+           } 
+        }
+             
+        function hideProgressBar () {
+           var progressBar = document.getElementById('progressBar');
+           progressBar.style.visibility = "hidden";
+        } 
+ 
+        function goToPage(){
+           waitOn();
+           goToPageAF();
+        }
+       
+        
+        function showProgressBar () {
+           var progressBar = document.getElementById('progressBar');
+           progressBar.style.visibility = "visible";
+        }
+        
+        
+        function openCVSOrder(){
+           var editOrder;
+           if(_isChrome){
+              editOrder = window.open('{!$Page.XactlySMBMHRAttributeOrder}', 'CreateEditDealRule','location=0,status=0,scrollbars=1,width=1024px,height=644px');
+           }else{
+              editOrder = window.open('{!$Page.XactlySMBMHRAttributeOrder}', 'CreateEditDealRule','location=0,status=0,scrollbars=1,width=1024px,height=540px');
+           }
+        }
+        
+        function fixCelsDimensions () {
+            if(checkTableDisplayed()){
+                initFixedCelsTable();
+                $('td',$('#cellsTable')).width(0);
+                $('td',$('#dealsTable')).width(0);
+                $('#cellsTable').width(0);
+                $('#dealsTable').width(0);
+                var headersCels = $('#cellsTable')[0].getElementsByTagName('td');
+                
+                var cellsTable = document.getElementById('cellsTable');
+                var cellsEle = document.getElementById('dealsTable');
+                var TablesWidth = 0;
+               
+                for (var i=0; i < headersCels.length; i++) {
+                    var iterHeaderCel = headersCels[i];
+                    var oneCel = cellsEle.getElementsByTagName('td')[i];
+                    var newWidth = parseInt($('.cWidth',$(oneCel)).text() != ''?$('.cWidth',$(oneCel)).text():150);
+                    iterHeaderCel.style.width = newWidth + 'px';
+                    oneCel.style.width = newWidth + 'px';
+                    $('.titles',$(iterHeaderCel)).width(newWidth-2);
+                    TablesWidth += newWidth;   
+                }
+                $('#cellsTable').width(TablesWidth);
+                $('#dealsTable').width(TablesWidth);
+                var TableHeight = jQuery('#colls').height() + jQuery('#dealsTable').height();
+                $('#colsContainer').css('width', TablesWidth + 'px');
+                $('#recordsList').css('width', TablesWidth + 300 + 'px');
+                $('#scrollCont').css('width', TablesWidth + 300 + 'px');
+                $('#cells').css('width', TablesWidth + 'px');
+                $('#cols').css('width', TablesWidth + 'px');
+                $('#cols').css('max-width', '732px');
+                $('#scroller').css('width', TablesWidth + 300 + 'px');
+                $('#scroller').css('max-width', '1032px');
+                $('.topTable').css('width', TablesWidth + 96 + 'px');
+                $('.bottomTable').css('width', TablesWidth + 96 + 'px');
+                $('.rowsScroll').css('height', TableHeight + 'px');
+                $('#rows').css('height', TableHeight + 'px');
+                $('#scroller').css('height', TableHeight + 41 + 'px');
+                $('.tableContainer2').css('height', TableHeight + 41 + 'px');
+                $('#recordsList').css('height', TableHeight + 25 +'px'); 
+                $('#cells').css('height', TableHeight + 'px');
+                $('#cells').css('max-width', '732px');
+                $('#scrollCont').css('height', TableHeight + 23 + 'px');
+                $('#FixedCelsTable').css('height', TableHeight + 60 + 'px');
+                $('#noEditable').height($('#scroller').height()-$('#cols').height()-4);
+                $('#noEditable').width($('#scroller').width()-17);
+                $('#noEditable').css('margin-top',$('#cols').height()-12);
+                waitOff();
+            }
+        }
+        
+        function checkTableDisplayed(){
+            var elm = $('.FixedCelsTable');
+            return elm.length > 0;
+        }
+        
+        function initFixedCelsTable(){
+            adjustCells();
+            scrollFixedCelsTable();
+            document.getElementById('scroller').style.display = '';
+        }
+        
+        var _leftPanelSize;
+        var _maxViewPort;
+        var _minViewPort;
+        var _whiteLocation;
+        var cgeVal = false;
+        
+        function adjustCells(){
+            _leftPanelSize = document.getElementById('rowsContainer').offsetWidth;
+            _maxViewPort = document.getElementById('recordsList').offsetWidth;
+            _minViewPort = document.getElementById('recordsList').offsetWidth - _leftPanelSize;
+            if(_minViewPort > 0){
+                document.getElementById('cells').style.width = _minViewPort + 'px';
+                document.getElementById('cols').style.width = _minViewPort + 'px';
+            }  
+        }
+        
+        function scrollFixedCelsTable(){
+            if(document.getElementById(_whiteLocation) != null){
+                var theElement = document.getElementById(_whiteLocation);
+                var selectedPosX = 0;
+                var selectedPosY = 0;
+                  
+                while(theElement != null){
+                  selectedPosX += theElement.offsetLeft;
+                  selectedPosY += theElement.offsetTop;
+                  theElement = theElement.offsetParent;
+                  window.scrollTo(0,selectedPosY);
+                }
+            }
+        }
+
+	    function confirmDeleteView(){
+	        var aux = '{!$Label.deleteCreditQuest}' + '?';
+	        aux = aux.replace("{0}", 'view');
+	        if(confirm(aux)){           
+	            return true;
+	        }else{
+	            return false;
+	        }
+	    }        
+             
+        function scrollContent(){
+            document.getElementById('cells').scrollLeft = document.getElementById('scroller').scrollLeft;
+            document.getElementById('cells').scrollTop = document.getElementById('scroller').scrollTop;
+            document.getElementById('cols').scrollLeft = document.getElementById('scroller').scrollLeft;
+            document.getElementById('rows').scrollTop = document.getElementById('scroller').scrollTop;
+            $('#datePicker').hide();
+        }
+        
+        function adjustScroll(){
+            document.getElementById('scroller').scrollTop = document.getElementById('cells').scrollTop;
+            document.getElementById('scroller').scrollLeft = document.getElementById('cells').scrollLeft;
+            document.getElementById('cols').scrollLeft = document.getElementById('cells').scrollLeft;
+            document.getElementById('rows').scrollTop = document.getElementById('cells').scrollTop;
+            setTimeout('adjCal()',100);
+        }
+    </script> 
+</apex:page>

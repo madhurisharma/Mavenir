@@ -1,0 +1,142 @@
+<apex:component >
+     <apex:attribute name="fullLogout" description="Derminate if there is need a full logout" type="Boolean" required="false" />
+     <style>
+        .headerDropDownLabel{
+            color: #FFFFFF; 
+            float:left;
+            width:136px;
+            margin-top:8px;
+            margin-left:21px;
+            cursor:pointer;
+        }
+
+        .headerDropDown{
+            display:none;
+            z-index:2002;
+            position: absolute;
+            overflow: visible;
+            height: 100px;
+            width: 136px;
+            margin-top:20px;
+            margin-left:22px;
+            *margin-left:-133px;
+        }
+        .headerDropDownTop{
+            background: url({!URLFOR($Resource.XactlyExpress__XactlySMBResources, 'img/layout/dropDownCustomTop.png')}) no-repeat;
+            float: left;
+            height: 24px;
+            margin: -20px;
+            width: 130px;
+        }
+        .headerDropDownBottom{
+            background: url({!URLFOR($Resource.XactlyExpress__XactlySMBResources, 'img/layout/dropDownCustomBottom.png')}) no-repeat;
+            height: 16px;
+            margin: 0 -20px -50px;
+            width: 130px;
+        }
+        .headerDropDownBody{
+            background-color: #FFFFFF;
+            border-left: 2px solid #9A9A9A;
+            border-right: 2px solid #9A9A9A;
+            margin: 0px -20px 0;
+            padding: 5px 0 0 20px;
+            width: 106px;
+        }
+        
+        .classHeaderDropDownItam{
+            color:#757679;
+            height: 20px;
+            margin-left: -15px;
+            margin-top: 4px;
+            padding: 4px 5px 0;
+            cursor: pointer;
+            font-weight: normal !important;
+        }
+        .classHeaderDropDownItam1{
+            margin:7px 0 0 20px;
+            font-family:'ProximaNovaRegular';
+            font-size: 11px;
+            color: #3C6E8E; 
+        }
+        .classHeaderDropDownItam:HOVER{
+            background: url({!URLFOR($Resource.XactlyExpress__XactlySMBResources, 'img/layout/DropDownItemHover.png')}) no-repeat;
+            color: #ffffff;
+        }
+        
+        .classHeaderDropDownItam a:HOVER{
+            color: #ffffff;
+        }
+        
+        .classHeaderDropDownItam a{
+		    font-weight: normal;
+		    height: 100%;
+		    margin-left: -5px;
+            padding: 6px 14px 6px 5px;
+		    width: 100%;
+        }
+        
+        .headerDropDownCont{
+            background: url({!URLFOR($Resource.XactlyExpress__XactlySMBResources ,'img/layout/DropDownCollapse.png')}) no-repeat top;
+            color: #4F7D99;
+            font-size: 10px;
+            font-weight: bold;
+            text-align: left;
+		    height: 29px;
+		    margin-top: 2px;
+            width:136px;
+            position: relative;
+            oveflow: visible;
+        }
+        
+        .headerDropDownCont:hover{
+            background: url({!URLFOR($Resource.XactlyExpress__XactlySMBResources ,'img/layout/DropDownCollapse.png')}) no-repeat bottom;
+            color: #4F7D99;
+            font-size: 10px;
+            font-weight: bold;
+            text-align: left;
+		    height: 29px;
+		    margin-top: 2px;
+            width:136px;
+            position: relative;
+            oveflow: visible;
+        }
+        
+        
+        .header {
+            overflow: visible !important;
+        }
+        
+    </style>
+    
+    <div class="headerDropDownCont">
+	    <div class="headerDropDownLabel HelveticaRegular10" onclick="showHeaderMenu();">{!$Label.xactlyexpress__XactlyExpress}</div>
+	    <div class="headerDropDown">
+	        <div class="headerDropDownTop">
+	           <div class="classHeaderDropDownItam1">{!$Label.xactlyexpress__XactlyExpress}</div>
+	        </div>
+	        <div class="headerDropDownBody">
+	            <div class="classHeaderDropDownItam"><a href="/home/home.jsp">{!$Label.xactlyexpress__ReturnToSalesforce}</a></div>
+	            
+	            <apex:outputPanel layout="none" rendered="{!NOT(fullLogout)}">
+                    <div class="classHeaderDropDownItam"><a href="{!$Page.XactlyExpress__XactlySMBHomePage}">{!$Label.xactlyexpress__ReturnToAdmin}</a></div>
+                </apex:outputPanel>
+                <div class="classHeaderDropDownItam"><a href="/../secur/logout.jsp">{!$Label.LogoutOfSalesforce}</a></div>
+	        </div>
+	        <div class="headerDropDownBottom"></div>
+	    </div>
+	</div>
+
+    <script>
+
+       $('body').click(function() {
+           if(jQuery('.headerDropDown').css('display')=='block'){
+               jQuery('.headerDropDown').fadeOut('fast');
+           }
+        });
+        
+        function showHeaderMenu(){
+            setTimeout("jQuery('.headerDropDown').fadeIn('fast')",100);
+        }
+
+    </script>
+</apex:component>

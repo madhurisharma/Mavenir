@@ -1,0 +1,445 @@
+<apex:page id="QuotaOverview" controller="XactlyExpress.XactlySMBPlanController" sidebar="false" showHeader="false" standardStylesheets="false">
+
+    <!-- Custom Cursor Loader -->
+	<c:XactlySMBCursor />
+	<!-- Custom Cursor Loader -->
+	<title>{!$Label.ManagePlans}</title>
+	<link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.XactlySMBResources ,'css/XactlySMBStyles.css')}" />
+    <link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.XactlySMBResources ,'css/XactlySMBNumeratedBox.css')}" />
+    
+    <style>
+    	body { height: 100%; }
+        hr{
+			color: #E8C9AE;
+			background-color: #E8C9AE;
+			height: 1px;
+			border: 0; 
+			margin:0;
+        }
+        
+        .errorMsg {
+            float: left;
+            color: #DD0000;
+        }    	
+		.alert {
+		   display:none;
+		   position:absolute;
+		   top:1px;
+		   left:1px;
+		   width:300px;
+		   background-color:white;
+		   border-style:solid;
+		   border-width:1px;
+		   padding:15px 20px 5px 20px;
+		}
+		
+		td .SaveEditQuota:hover{
+            color:#0000ff !important;
+		}   
+		   
+</style>
+        
+    <c:XactlySMBShadows />
+    
+    <div class="pageContent" id="pContent">
+
+       <apex:form id="theForm" >      
+			<apex:actionFunction action="{!changeSelectedYear}" name="changeFyscalYear" rerender="startDate, endDate, leftPanel,errorMsg" oncomplete="waitOff();">
+			    <apex:param name="move" assignTo="{!fyscalYearOption}" value="" />
+			</apex:actionFunction>   
+       
+            <!-- HEADER -->
+	        <apex:outputPanel layout="block" styleClass="header">
+	            <c:XactlySMBHeader isAdmin="{!isAdmin}"  isActive="{!isActive}" nbrSeparator="{!nbrSeparator}" nbrDecimal="{!nbrDecimal}" currentUserOrSlected="{!currentUserOrSlected}" emulatingUserURLAppend="{!emulatingUserURLAppend}" selected="3" wclabel="{!currentSettings.creditsPlural}" wId="{!plan.id}" step="2" wlabel="{!currentSettings.dealsPlural}" wqlabel="{!currentSettings.quotasPlural}" wtype="plan" hlabel="{!DefineQuotasForThePeopleLabel}" stepHelp="PlanCreateStep3" stepBreadcrumb="{!plan.Name} {!$Label.xactlyexpress__Plan}"/>
+	        </apex:outputPanel>
+             
+       		
+       		     
+            <!-- INSUFFICIENT PERMISSIONS -->
+            <apex:outputPanel rendered="{!!isAdmin}">
+                <c:XactlySMBErrorMsg error="{!$Label.xactlyexpress__InsufficientPermissions}" />
+            </apex:outputPanel>
+            
+            <apex:outputPanel layout="block" styleclass="additionalContent" rendered="{!isAdmin && isActive}">    
+                <c:XactlySMBChatterWall objectId="{!$User.Id}" showHeader="true" showWall="true" currentPage="{!$CurrentPage.Name}"/>
+            </apex:outputPanel>
+            
+            <!-- MAIN CONTENT -->
+            <apex:outputPanel layout="block" styleClass="mainContent" style="padding-bottom:50px;" rendered="{!IF(isAdmin,true,false)}">
+                 <!-- LEFT PANEL -->
+                <apex:outputPanel id="leftPanel" layout="block" styleClass="leftPanel" style="min-height: 540px;">
+                    <c:XactlySMBLeftPanelAccordeon currentSettings="{!currentSettings}" fiscalYear="{!plan.XactlyExpress__XCFiscalYearSettingsID__c}" currentPlan="{!plan.id}" step="3.1" planId="{!plan.id}" currentQuota="{!pqm.currentQuota.id}" indexSelected="1" havePreviousYear="{!havePreviousYear}" namePreviousYear="{!namePreviousYear}" haveNextYear="{!haveNextYear}" nameNextYear="{!nameNextYear}"/>                    
+                    <br/>
+                </apex:outputPanel>
+                
+                <apex:outputPanel id="quotaContent" layout="block" styleClass="content">
+                
+                     <div style="margin: 0 60px 0 10px;">                                                                    
+                        <div style="clear: both;"></div>                        
+                        <div class="box">
+                            <div class="tm">
+                                <div style="float: left;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/tl.png')}" /></div>
+                                <div style="float: right;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/tr.png')}" /></div>
+                                <div style="clear:both"></div>
+                            </div>
+                            <div class="roundedBox">
+                                <div class="boxHeader">
+                                    <div class="PNovaBlack60c5 stepActionNumber">
+                                     A
+                                    </div>
+                                    <div class="titleWrapper">  
+                                        <div class="mainTitle PNovaSemiBold17c3">{!pqo.quotaOverviewLabel}</div>
+                                        <div class="detailedTitle HelveticaRegular12c3">{!pqo.doYouTrackSalesLabel}</div>
+                                    </div>
+                                    <div class="extraTitleStuff"></div>
+                                    <div style="clear:both"></div>
+                                </div> 
+                                <div class="boxContent"> 
+
+                                    <div style="float: left;">
+                                        <input type="radio" name="radios" id="radios1" value = "yes" checked="checked" />
+                                        <label for="radios1">
+                                            <span>
+                                                {!$Label.yes}
+                                            </span>
+                                        </label>
+                                    </div>
+                                    <div style="float: left;">
+                                        <input type="radio" name="radios" id="radios2" value = "no" />
+                                        <label for="radios2">
+                                            <span>
+                                                {!$Label.No}  
+                                            </span>
+                                        </label>
+                                    </div> 
+                                    
+                                    <div style="float:left;margin-top:2px;margin-left:15px" class="areaTitle textToChange">{!$Label.xactlyexpress__NextStep}</div>
+                                    
+                                    <div class="btnToCenter btnAction" style="float:left;margin-right:15px;margin-left:5px;margin-top:1px;" id="extraDisabledSaveNextButton">
+                                        <div class="separateBtn disabledOpacityButton">
+                                                <div class="rightBtnOrange">
+                                                    <div class="leftBtnOrange">
+                                                        <div style="color: white;" class="middleBtnOrange">
+                                                            &gt;&gt;
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="btnToCenter btnAction" style="float:left;margin-right:15px;margin-left:5px;margin-top:1px;display:none;" id="extraEnabledSaveNextButton">
+                                        <div class="separateBtn">
+                                            <apex:commandLink id="saveLink" action="{!saveNext}" onclick="if(quotaOverviewHandler.onSave()==false)return false;savePageHandler.disableBottomBar();storeValues();" id="extraSaveNextButton" >
+                                                <div class="rightBtnOrange">
+                                                    <div class="leftBtnOrange">
+                                                        <div style="color: white;" class="middleBtnOrange">
+                                                            &gt;&gt;
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </apex:commandLink>
+                                        </div>
+                                    </div>
+                                    
+                                    <div style="clear: both;"></div>
+                                    
+                                </div>    
+                            </div>      
+                            <div class="bm">
+                                <div style="float: left;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/bl.png')}" /></div>
+                                <div style="float: right;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/br.png')}" /></div>
+                            </div>
+                        </div>
+                        
+                        <div style="height:10px">&nbsp;</div>
+                        <div class="box">
+                            <div class="tm">
+                                <div style="float: left;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/tl.png')}" /></div>
+                                <div style="float: right;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/tr.png')}" /></div>
+                                <div style="clear:both"></div>
+                            </div>
+                            <div class="roundedBox">
+                                <div class="boxHeader">
+                                    <div class="PNovaBlack60c5 stepActionNumber">
+                                     B
+                                    </div>
+                                    <div class="titleWrapper">  
+                                        <div class="mainTitle PNovaSemiBold17c3">{!pqo.quotaNameLabel}</div> 
+                                        <div class="detailedTitle HelveticaRegular12c3">{!pqo.addQuotasBelowLabel}</div>
+                                    </div>
+                                    <div class="extraTitleStuff"></div>
+                                    <div style="clear:both"></div>
+                                </div> 
+                                <div class="boxContent"> 
+                                	<apex:outputPanel id="errorMsg" layout="block">
+			                            <c:XactlySMBErrorMsg error="{!errorMsg}"/><br/>
+			                            <apex:inputHidden value="{!pqo.newones}" id="newones"/>
+										<script>
+										var newones = '{!$Component.newones}'; 
+										</script>
+			                        </apex:outputPanel>
+			                        <apex:inputHidden value="{!pqo.savenewones}" id="savenewones"/>
+		                            <script>
+										var savenewones = '{!$Component.savenewones}'; 										
+									</script>
+			                        <apex:inputHidden value="{!pqo.dummy}" id="selectedindex"/>
+		                            <script>
+										var dummyid = '{!$Component.selectedindex}'; 										
+									</script>
+			                        <apex:actionFunction action="{!pqo.doalert}" name="doalert" rerender="errorMsg" oncomplete="rerenderNoCompare = true;if(document.getElementById(newones).value == 1){DisplayAlert('AlertBox',100,250);waitOff();}else{rerenderNoCompare = false;document.getElementById(savenewones).value='0';saveEdit();};"/>
+			                        <apex:actionFunction action="{!pqo.saveEdit}" name="saveEdit" rerender="errorMsg, linksToQuotas" onComplete="rerenderNoCompare = true;;waitOff();"/>		
+                                    
+                                    <apex:outputPanel id="linksToQuotas" layout="block" styleClass="boxContent">                                     
+	                                    <table cellpadding="3" cellspacing="0" style="border:1px solid #E8C9AE;">	                                    	
+		                                    <thead>
+		                                    	<th height="20" style="color:#CE641B;border-left:1px solid #E8C9AE;"></th>
+		                                        <th height="20" style="color:#CE641B;border-left:1px solid #E8C9AE;"><span style="white-space: nowrap;">{!pqo.quotaNameLabel}</span></th>
+		                                        <th height="20" style="color:#CE641B;border-left:1px solid #E8C9AE;"><span style="white-space: nowrap;">{!$Label.currentAvgValue}</span></th>
+		                                        <th height="20" style="color:#CE641B;border-left:1px solid #E8C9AE;"><span style="white-space: nowrap;">{!$Label.currentTotalValue}</span></th>
+		                                        <th height="20" style="color:#CE641B;border-left:1px solid #E8C9AE;"></th>
+		                                    </thead>
+		                                    <apex:actionFunction action="{!pqo.removeQuota}" name="deleteQuota"/>		                                    
+		                                    	                                    	                                 
+		                                    <tbody id="quotaNames"> 
+		                                    	<apex:variable var="index" value="{!0}"/>		                                    			                                    	
+		                                        <apex:repeat value="{!pqo.quotaListToShow}" var="quota" id="quotaGenerator"> 
+		                                            <apex:outputtext >
+			                                            <tr height="30">
+			                                            	<td style="border-left:1px solid #E8C9AE;border-top:1px solid #E8C9AE;">
+			                                            		<div style="float:left;padding-left:5px">
+							                                       <apex:commandLink id="deleteQuota" action="{!pqo.removeQuota}" onclick="document.getElementById('AlertBox').style.display='none';if(confirm('{!pqo.deleteCreditQuestLabel}?')){rerenderNoCompare = false;waitOn();quotaOverviewHandler.setQuotaFromLeftPanel('{!FLOOR(index)}');}else{return false;}" oncomplete="quotaOverviewHandler.removeQuotaFromLeftPanel();storeValues();rerenderNoCompare = true;waitOff();" rerender="linksToQuotas, errorMsg">
+							                                           <apex:param value="{!index}" name="quotaIndexList" /> 
+							                                           <img src="{!URLFOR($Resource.XactlySMBResources ,'img/buttons/delete_small.png')}" /> REMOVE
+							                                       </apex:commandLink>
+							                                    </div>
+			                                            	</td>
+			                                                <td style="border-left:1px solid #E8C9AE;border-top:1px solid #E8C9AE;" width="175">
+			                                                	<apex:inputText id="quotaName" maxlength="35" value="{!quota.quotaObject.name}" style="float:left;" />
+			                                                	<script>
+																	var quotaName{!FLOOR(index)} = '{!$Component.quotaName}'.replace(/:/g,'\\:'); 
+																</script>			                                                				                                                    			                                                		                                                  
+			                                                </td> 
+			                                                <td style="border-left:1px solid #E8C9AE;border-top:1px solid #E8C9AE;text-align:right;">
+			                                                    {!quota.averageA1S} 
+			                                                </td>
+			                                                <td style="border-left:1px solid #E8C9AE;border-top:1px solid #E8C9AE;text-align:right;">
+			                                                    {!quota.totalA1S}
+			                                                </td>
+			                                                <td style="border-left:1px solid #E8C9AE;border-top:1px solid #E8C9AE;">				                                                
+								                                <apex:outputPanel id="SaveEditQuota" styleClass="SaveEditQuota" style="cursor:pointer;color:#3B6080;" onClick="rerenderNoCompare = false;waitOn();document.getElementById('AlertBox').style.display='none';document.getElementById(dummyid).value='{!FLOOR(index)}';doalert();">{!$Label.xactlyexpress__saveEditQuota}</apex:outputPanel>
+								                                								                                			                                                	
+			                                                </td>
+			                                            </tr>
+		                                            </apex:outputtext>
+		                                            <apex:variable var="index" value="{!(index) + 1}"/>   
+		                                        </apex:repeat>			                                                                                                                      
+		                                    </tbody>
+		                                </table>                                    	
+                                	</apex:outputPanel>  
+                                	<div id="AlertBox" class="alert">
+										<p>{!pqo.quotaOverviewSaveEditLabel}?</p>										
+										<input type="button" value="{!$Label.YesSave}" style="width:75px;" onclick="rerenderNoCompare = false;document.getElementById('AlertBox').style.display='none';waitOn();document.getElementById(savenewones).value='1';saveEdit();"/>
+										<input type="button" value="{!$Label.No}" style="width:75px;" onclick="rerenderNoCompare = false;waitOn();document.getElementById('AlertBox').style.display='none';document.getElementById(savenewones).value='0';saveEdit();"/>
+									</div>		
+                                	<div style="clear:both"></div>    
+                                	<div style="background-color:#FFFFFF;padding:0 10px 0 10px;">		                                    
+	                                <hr style="margin-left:6px;"/>
+	                                <apex:outputPanel layout="block" styleClass="actionButtonWrapper" style="margin-top:-1px;">
+	                                    <div class="actionButtonLeft" style="margin:0;"></div>
+	                                        <apex:commandLink id="addMoreQuota" action="{!pqo.addNewQuota}" styleClass="actionButtonMiddle" style="margin:0;color:#CE641B;" onclick="if(!isInteger(document.getElementById(numbernewquotas).value)){alert('{!$Label.xactlyexpress__PleaseEnterValidNumber}');document.getElementById(numbernewquotas).value='1';document.getElementById(numbernewquotas).focus();return false;}else{document.getElementById('AlertBox').style.display='none';waitOn();}" oncomplete="waitOff();" rerender="linksToQuotas, errorMsg">
+	                                              {!UPPER(pqo.addMoreQuotasLabel)}
+	                                        </apex:commandLink> 	                                                                                                
+	                                    <div class="actionButtonRight" style="margin:0;"></div>
+	                                    <apex:inputText onblur="checkInteger(this);" id="numbernewquotas" maxlength="2" size="2" value="{!pqo.numberOfNewQuotasToCreate}" style="float:left;text-align:center;" />
+	                                    <script>
+	                                    	function checkInteger(obj){
+	                                    		var val = String(obj.value).replace(/[^\d]*/, '');
+	                                    		if(val == ''){
+	                                    			val = '1';
+	                                    		}
+	                                    		obj.value = val;
+	                                    	} 
+											var numbernewquotas = '{!$Component.numbernewquotas}'; 
+										</script>		                      
+	                                </apex:outputPanel>
+	                                
+	                                <div style="clear: both;"></div>
+                                </div>
+                            	</div>                                                                	                            
+                         	</div>  
+                         	<div class="bm">
+	                        	<div style="float: left;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/bl.png')}" /></div>
+	                            <div style="float: right;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/br.png')}" /></div>
+	                        </div> 
+                        </div>                        
+                        <div style="height:50px">&nbsp;</div>                                                
+                     </div>
+                
+                </apex:outputPanel>
+                <div style="clear:both"></div>
+            </apex:outputPanel>
+            
+            <!-- FOOTER  -->
+            <apex:outputPanel layout="block" styleClass="footer" rendered="{!IF(isAdmin,true,false)}" id="pFooter">
+            
+                <apex:outputPanel layout="block" styleClass="previousStepWrapper" style="max-width:150px;">
+                    <div class="previousStepRight"></div>
+                    <a href="{!$Page.XactlySMBPlanCreate}?id={!plan.Id}" class="previousStepMiddle" id="prevBtn" onClick="document.getElementById('AlertBox').style.display='none';">
+                        {!$Label.PreviousStep}
+                    </a>
+                    <div class="previousStepLeft"></div>
+                </apex:outputPanel>
+                    
+                <apex:outputPanel layout="block" styleClass="actionButtons">                        
+                    <apex:outputPanel layout="block" styleClass="actionButtonWrapper">
+                        <div class="actionButtonLeft"></div>
+                        <apex:commandLink styleClass="actionButtonMiddle saveBtn" action="{!savePlan}" onclick="document.getElementById('AlertBox').style.display='none';if(quotaOverviewHandler.onSave()==false){return false;}else{rerenderNoCompare = false;savePageHandler.disableBottomBar();waitOn();}">
+                            <apex:outputtext escape="false" value="{!$Label.xactlyexpress__SaveChanges}">
+                               <apex:param value="{!URLFOR($Resource.XactlyExpress__XactlySMBResources ,'img/buttons/navigateSaveMiddle.gif')}" />
+                            </apex:outputtext>  
+                        </apex:commandLink>
+                        <div class="actionButtonRight"></div>    
+                    </apex:outputPanel>
+                    
+                    <apex:outputPanel layout="block" styleClass="actionButtonWrapper">
+                        <div class="actionButtonLeft"></div>
+                        <a href="javascript:;" class="actionButtonMiddle" onclick="document.getElementById('AlertBox').style.display='none';discardChangesConfirm('{!$Page.XactlySMBPlanCreateQuotaOverview}?id={!plan.id}&step=3.1');">
+                            <apex:outputtext escape="false" value="{!$Label.xactlyexpress__DiscardChanges}">
+                               <apex:param value="{!URLFOR($Resource.XactlyExpress__XactlySMBResources ,'img/buttons/navigateCancelMiddle.gif')}" />
+                            </apex:outputtext>
+                        </a>
+                        
+                        <div class="actionButtonRight"></div>    
+                    </apex:outputPanel>
+                </apex:outputPanel>
+            
+                <apex:outputPanel layout="block" styleClass="nextStepWrapper" style="margin-right:100px;">
+                    <div class="nextStepLeft"></div>
+                    <apex:commandLink styleClass="nextStepMiddle" action="{!saveNext}" onclick="document.getElementById('AlertBox').style.display='none';if(quotaOverviewHandler.onSave()==false)return false;savePageHandler.disableBottomBar();storeValues();savePageHandler.disableBottomBar();">
+                        {!$Label.xactlyexpress__NextStep}  
+                    </apex:commandLink> 
+                    <div class="nextStepRight"></div>
+                </apex:outputPanel>
+                
+            </apex:outputPanel>           
+        </apex:form>
+    </div>
+
+    <apex:includeScript value="{!URLFOR($Resource.XactlyExpress__CSN, 'jquery.js')}" />
+    <c:XactlySMBFooterScript /> 
+
+    <script type="text/javascript" language="javascript" src="{!URLFOR($Resource.XactlySMBResources, 'js/jquery.curvycorners.min.js')}"></script>
+    <script type="text/javascript" language="javascript" src="{!URLFOR($Resource.XactlySMBResources, 'js/XactlySMBJavascript.js')}"></script>
+    <script type="text/javascript" language="javascript" src="{!URLFOR($Resource.XactlySMBResources, 'js/jquery.arrayUtils.js')}"></script>
+    <script type="text/javascript" src="{!URLFOR($Resource.XactlySMBResources ,'js/jquery.superbox-min.js')}"></script>
+    <script type="text/javascript" src="{!URLFOR($Resource.XactlySMBResources ,'js/jquery.tools.min.js')}"></script>
+    <script type="text/javascript" charset="utf-8">
+	
+	function DisplayAlert(id,left,top) {
+		document.getElementById(id).style.left='40%';
+		document.getElementById(id).style.top='40%';
+		document.getElementById(id).style.display='block';
+	}
+
+    
+        var $J = jQuery.noConflict(); 
+        var rerenderNoCompare = true;
+        
+        $J(function(){
+            $J.superbox.settings = {
+                closeTxt: "X",
+                loadTxt: "Loading...",
+                nextTxt: "Next",
+                prevTxt: "Previous"
+            };
+            $J.superbox();
+            storeValues();
+        });
+        
+        
+        window.onbeforeunload = function(){
+            if(compareValues(true,rerenderNoCompare) != undefined){
+                setTimeout("savePageHandler.enableBottomBar();",1000);
+            }
+            window.onunload = function() {savePageHandler.disableBottomBar();}
+            return compareValues(true,rerenderNoCompare);
+        }                     
+        
+        /**
+         * @author alvaro olivencia 05/20/10
+         * Main PlanCreateQuotaOverview js namespace.
+         */
+        var quotaOverviewHandler = function(){
+			
+			var quotaFromLeftPanel = 0;//to keep truck of the quota left panel that we must delete when the user deletes (oncomplete) a quota from box 3	
+			
+			var getQuotaFromLeftPanel = function(){
+                return quotaFromLeftPanel; 				 
+			}
+				
+            return {
+            
+                init: function(){
+                
+                    $J('#radios1').click(function(){
+                    
+                        $J('#extraDisabledSaveNextButton').show();
+                        $J('#extraEnabledSaveNextButton').hide();
+                        
+                    });
+                    
+                    $J('#radios2').click(function(){
+                    
+                        $J('#extraDisabledSaveNextButton').hide();
+                        $J('#extraEnabledSaveNextButton').show();    
+                    
+                    });        
+                
+                },
+                                            
+                onSave: function(){                     	   
+                    var returnVal = true;
+	                $J('input[id$="quotaName"]').each(function(){	                	
+			            if(jQuery.trim($J(this).val()) == ''){
+				            $J(this).focus();
+				            alert('{!JSENCODE(pqo.quotaNameCantBeEmptyLabel)}');
+				            returnVal = false;	
+				            return false;
+		                }	                   
+	                })	                
+	                return returnVal;	                
+            
+                },
+                setQuotaFromLeftPanel: function(index){
+                    quotaFromLeftPanel = index;
+                },
+                /**
+                 * removeQuotaFromLeftPanel is fired on oncomplete from the commandLink that deletes the quotas
+                 */
+                removeQuotaFromLeftPanel: function(){
+                    quotaIndex = getQuotaFromLeftPanel();
+                    $J('#quotaContainer').children('.quotasMenuItem').eq(quotaIndex).remove();
+                    quotaFromLeftPanel = 0;
+                }        
+            }
+		    		
+        }();
+    	$J(document).ready(function () {
+            savePageHandler.storeBottomBarOnclickEvents();
+            quotaOverviewHandler.init();
+            storeValues();
+			loadAccordion();
+        });
+        function isInteger(s){
+            var i;
+            for (i = 0; i < s.length; i++){   
+                // Check that current character is number.
+                var c = s.charAt(i);
+                if (((c < "0") || (c > "9"))) return false;
+            }
+            // All characters are numbers.
+            return true;
+        }
+    </script>
+
+</apex:page>

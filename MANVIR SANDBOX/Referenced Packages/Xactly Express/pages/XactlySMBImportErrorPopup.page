@@ -1,0 +1,233 @@
+<apex:page id="importErrors" controller="XactlyExpress.XactlySMBImportErrorController" sidebar="false" showHeader="false" standardStylesheets="true"  action="{!redirectWhenAccessIsDenied}">
+    <link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.XactlySMBResources ,'css/XactlySMBFontStyles.css')}" />
+    <c:XactlySMBCursor />
+    <style>
+         
+		body{
+			margin: 0px !important;
+			padding: 0px !important;
+		}
+         table tr td{
+            padding:5px;
+            text-align:left;
+         }
+          
+         table tr th{
+            padding:5px;
+         }
+         table thead tr{
+            background-color: #F4F8FB;
+            color: #426E83;
+            border-bottom: 1px solid #000000;
+         }
+         
+         table{
+            border-collapse: collapse;
+         }  
+         
+         a, a:hover { 
+            cursor:pointer;
+            text-decoration:none;
+            color:#446076;
+         } 
+         
+         .leftSidePanel{
+            width:715px;
+            margin:20px;
+            padding-left: 6px;
+            padding-right: 6px;
+         }
+                 
+        .tableContainer{
+            clear:both;
+            padding-left:30px;
+            padding-top:10px;
+            padding-right:30px;
+        }   
+        .tableBottonsContiner{
+           width:215px;
+           float:right;
+           padding-top:5px;
+        }
+         
+         table td{
+            border-right: none;
+         }  
+         
+         table th{
+            border-right: none;
+         }
+         
+         .even{
+            background-color: #F4F8FB;
+            height:30px;
+         }
+         
+         .odd{
+            background-color: #FFFFFF;
+            height:30px;
+         }
+         
+         .selected{
+            background-color: #CECECE;
+         }   
+         
+         .topTble{
+            background:transparent url({!URLFOR($Resource.XactlyExpress__XactlySMBResources,'img/layout/table_top_1000w_no_title_bar.png')}) no-repeat scroll 0 0;
+            height: 9px;
+            width: 510px;
+            margin-top:1px;
+         }
+         
+         .errorCel{
+            color:#FF0000;
+            font-weight:bold;
+         }
+         .bottomTble{
+            background:transparent url({!URLFOR($Resource.XactlyExpress__XactlySMBResources,'img/layout/table_top_1000w_no_title_bar.png')}) no-repeat scroll 0 0;
+            height: 9px;
+            width: 510px;
+         }   
+         
+  
+        .filtersDetails{
+            float:left;
+            margin-left:136px;
+            margin-top:10px;
+            overflow:hidden;
+            position:relative;
+            width:350px;
+        }     
+        
+        .xactlyLogoContainer {
+            height: 59px;
+            width: 720px;
+            margin: 0px;
+            padding: 0px;
+            bottom: 10px;
+            right: 20px;
+            position: absolute;
+        }     
+        .xactlyLogo{
+            background: url({!URLFOR($Resource.XactlyExpress__XactlySMBResources, 'img/layout/SearchXactlyLogo.png')}) white no-repeat right bottom;
+            border-top:  3px solid #D5D7D8;
+            margin-left:10px;
+            height: 59px;
+            position: relative;
+            
+        }
+        
+        .uniqueError{
+            color:#FF0000;
+            font-size:18px;
+            font-weight:bold;
+            padding-top:15px;
+            background-color:#FFFFcc;
+        }
+        
+        .importPanelTitle{
+            float:left;
+            color:#ffffff;
+            font-weight:bold;
+            font-size:15px;
+            margin-bottom:4px;
+            float:left;
+        }                
+    </style>
+    <apex:form id="theImportForm"> 
+        <div class="leftSidePanel">
+           <div style="background-color:#A4B8CB;padding:5px;" id="roundedCornerBlue">    
+              <div class="importPanelTitle">
+                <a href="{!$Page.XactlySMBImportLogPopup}" style="color:#ffffff;">{!$Label.ImportLog}</a> -> ({!$Label.Errors})
+              </div>
+              <apex:outputPanel style="float:right; margin-right:10px" rendered="{!IF(totalRow>0,'true','false')}">
+                  {!$Label.xactlyexpress__GoToPage}
+                  <apex:actionFunction name="goToPageAF" action="{!goToPage}" />
+                  <apex:selectList multiselect="false" size="1" value="{!currentPage}" onchange="goToPage();">
+                      <apex:selectOptions value="{!pages}" />
+                  </apex:selectList>
+              </apex:outputPanel>
+
+              <div style="clear:both;"></div>
+              <div>      
+             <center>
+             <div class="topTble" style="width:100%"></div>
+                 <apex:outputPanel style="width:700px;height:400px;overflow:auto;" id="tableCont" layout="block"  rendered="{!IF(totalRow>0,'true','false')}" >                 
+                      
+                      <table style="width:684px;height:400px;">
+                          <thead style="height: 30px;">
+                              <tr class="odd">
+                                  <th>{!$Label.xactlyexpress__Line} #</th>
+                                  <th width="200">{!$Label.xactlyexpress__Error}</th>
+                                  <th style="min-width:50px;">{!$Label.xactlyexpress__In}</th>
+                                  <th>{!$Label.xactlyexpress__Line}</th>
+                              </tr>
+                          </thead> 
+                          <tbody style="height: 370px;">
+                          <apex:variable var="rowCount" value="{!1}"/>
+                          <apex:repeat value="{!errors}" var="rd"> 
+                                  <tr class="{!IF(rowCount = 0, 'odd','even')}">
+                                      <td>
+                                           {!IF(rd.LineNumber__c = null,'', $Label.Line)}&nbsp;
+                                           <apex:outputText value="{0,number,#}">
+                                                <apex:param value="{!rd.XactlyExpress__LineNumber__c}" />
+                                           </apex:outputText> 
+                                      </td>
+                                      <td> 
+                                          {!rd.XactlyExpress__ErrorMsg__c}                                             
+                                      </td>
+                                      <td> 
+                                          {!IF(rd.XactlyExpress__OpportunityID__c = null, $Label.xactlyexpress__NotApplies, rd.OpportunityID__r.Name)}                                             
+                                      </td>
+                                      <td> 
+                                          {!rd.XactlyExpress__RawData__c}                                             
+                                      </td>
+                                 </tr>
+                                 <apex:variable var="rowCount" value="{!(rowCount * -1) + 1}"/>
+                           </apex:repeat>
+                                  <tr class="{!IF(rowCount = 0, 'odd','even')}" style="height: auto;">    
+                                      <td>&nbsp;</td>
+                                      <td>&nbsp;</td>  
+                                      <td>&nbsp;</td>   
+                                      <td>&nbsp;</td>     
+                                  </tr>
+                          </tbody>
+                      </table>   
+                    </apex:outputPanel>
+                    <apex:outputPanel style="width:700px;height:400px;overflow:auto;" id="uniqueError" rendered="{!IF(totalRow=0,'true','false')}" layout="block" >                                   
+                        <div style="width:684px;height:380px;" class="uniqueError">{!currentProc.ErrorMsg__c}</div>
+                    </apex:outputPanel>
+                <div class="bottomTble" style="width:100%"></div>
+           </center>
+        </div>
+    </div>
+    </div>
+    
+    <div class="xactlyLogoContainer"><div class="xactlyLogo"></div></div>
+    
+    </apex:form>
+    <apex:includeScript value="{!URLFOR($Resource.XactlyExpress__CSN, 'jquery.js')}" />
+    <c:XactlySMBFooterScript /> 
+    <script type="text/javascript" language="javascript" src="{!URLFOR($Resource.XactlySMBResources, 'js/XactlySMBJavascript.js')}"></script>
+    <script type="text/javascript" language="javascript" src="{!URLFOR($Resource.XactlySMBResources, 'js/jquery.curvycorners.min.js')}"></script>
+    <script type="text/javascript">
+        $('#roundedCornerBlue').corner({
+            tl: { radius: 5 },
+            tr: { radius: 5 }, 
+            bl: { radius: 5 },
+            br: { radius: 5 },
+            antiAlias: true
+        });    
+        
+ 
+        $(document).ready(function(){
+    
+        });
+              
+    
+        function goToPage(){
+           waitOn();
+           goToPageAF();
+        }
+    </script>
+</apex:page>

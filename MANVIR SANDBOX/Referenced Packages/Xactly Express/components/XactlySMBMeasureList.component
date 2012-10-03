@@ -1,0 +1,37 @@
+<apex:component ></apex:component>
+<!-- 
+<apex:component controller="XactlyExpress.XactlySMBMeasureListController">
+
+    <style> 
+    
+    .orangeL{
+       color:#BD5C19;
+       font-weight: bold;
+    }
+    
+    </style>
+
+	<link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.XactlySMBResources ,'css/XactlySMBMeasureList.css')}" />
+	<apex:attribute name="ctl" description="The parent controller" type="XactlyExpress.XactlySMBPlanController" required="true" access="public"/>
+	<apex:attribute name="idPlan" description="The parent controller" type="String" required="true" access="public" assignTo="{!idPlan}"/>
+	<apex:attribute name="compLabel" description="The Component Label" type="String" access="public"/>
+	
+	<apex:outputPanel id="editMeasuresContainer" layout="block">
+		<div id="measuresContainer">
+            <div class="measuresTitle">
+                {!EditAPaymentDealsLabel}
+            </div>  
+			<div class="measuresContent">
+				<apex:repeat value="{!measures}" var="measure">
+					<apex:commandLink value="{!measure.Name}" action="{!ctl.changeActiveMeasure}" styleClass="{!IF(measure.id==ctl.pmm.activeMeasureId,'orangeL','measuresListLinks')}" >
+						<apex:param value="{!measure.Id}" name="measureId"/>
+					</apex:commandLink><br>
+				</apex:repeat>
+			</div>
+			<div class="measuresBottom">
+			
+			</div>
+		</div>
+	</apex:outputPanel>
+</apex:component>
+ -->

@@ -1,0 +1,1238 @@
+<!-- 
+ * Developed by Timba Software Corp. www.timbasoftware.com admin@timbasoftware.com
+ * This component displays the main home page with slider tabs navigation
+ * @author Fabian Rey <frey@timbasoftware.com>
+ -->
+<apex:component controller="XactlyExpress.XactlySMBHomePageSlideShowController" allowDML="true">
+    <apex:attribute name="fiscalYear" description="the FY" type="Id" required="true" />
+    <apex:attribute name="currentSelected" description="tab Selected" type="Id" required="false"/>
+    
+    <link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.XactlySMBResources ,'css/XactlySMBFontStyles.css')}" />
+
+    <style>
+        .chatterComponent{
+            border-left:1px solid #DDEAF3;
+            border-right:1px solid #DDEAF3;
+        }
+        .pageContent{
+            margin-top: 0px;
+        }
+        
+        .chatterComponent .whole{
+            margin-top: 10px;
+        }
+        
+        .topHeader{
+            margin-top:-2px;
+            width:1068px !important;  
+            height: 59px !important; 
+            border-left:1px solid #FFFFFF;
+            border-right:1px solid #FFFFFF;
+        }
+        .bottomHeader{
+            background: url({!URLFOR($Resource.XactlySMBResources ,'img/layout/XacltySliderBack.png')}) no-repeat;
+            float:left;
+            position:relative;
+            z-index:500;
+            width:1068px;
+            border-left:1px solid #FFFFFF;
+            border-right:1px solid #FFFFFF;
+            height: 36px;
+        } 
+        .leftBottomHeader{
+           /* background: url({!URLFOR($Resource.XactlySMBHome ,'img/layout/XactlySliderLeftHeader.png')}) left no-repeat;*/
+            float:left;
+            height:35px;
+            width:24px;
+            display:block;
+        }
+        .leftBottomHeaderSelected{
+            background: url({!URLFOR($Resource.XactlySMBHome ,'img/layout/XactlySliderLeftHeader.png')}) right no-repeat;
+            margin-top:1px;
+            display:block;
+            float:left;
+            height:35px;
+            width:24px;
+        }
+        .centerBottomHeader{
+            /*background: url({!URLFOR($Resource.XactlySMBHome ,'img/layout/XactlySliderCenterHeader.png')}) repeat-x;*/
+            display:block;
+            float:left;
+            height: 35px;           
+        }
+        .rightBottomHeader{
+            background: url({!URLFOR($Resource.XactlySMBHome ,'img/layout/XactlySliderRightHeader.png')}) left no-repeat;
+            display:block;
+            float:left;
+            height:35px;
+            width:40px;
+            margin-left:-33px;
+        }
+        .rightBottomHeaderSelected{
+            background: url({!URLFOR($Resource.XactlySMBHome ,'img/layout/XactlySliderRightHeader.png')}) right no-repeat;
+            display:block;
+            float:left;
+            height:35px;
+            width:40px;
+            border-top:1px solid #E0E0E0;
+            margin-left:-33px;
+        }
+        .activeTabs{
+            float:left;
+            display: block;
+            height: 35px;
+            max-width:175px;
+            width:auto;
+            padding:0px;
+        }
+        .borderRight{
+            border-right:1px solid #BBBBBB;
+        }
+        .navi{
+            height: 100%;
+        }
+        
+        .active{
+            background: #FFFFFF;
+            border-bottom:1px solid #FFFFFF;
+            height:34px;
+            border-top:1px solid #E0E0E0;
+        }
+        .cactive{
+            background: #FFFFFF;            
+            height:34px;            
+        }
+        
+        .activeTabs a{
+            font-size:12px;
+            font-weight:bolder;
+            display: block;
+            color:#5E5E5E;
+            padding:10px 10px 0px 15px;
+            width:113px;
+        }
+        .scrollable {
+
+            /* required settings */
+            position:relative;
+            overflow:hidden;
+            height:476px;
+            width: 1068px;
+        }
+        
+        /*
+            root element for scrollable items. Must be absolutely positioned
+            and it should have a extremely large width to accommodate scrollable items.
+            it's enough that you set width and height for the root element and
+            not for this element.
+        */
+        .scrollable .items {
+            /* this cannot be too large */
+            width:20000em;
+            position:absolute;
+            height: 476px;
+            clear:both;
+        }
+        .mainContent{
+            height:476px;
+            margin: 0px;
+            border-bottom:3px solid #ACACAC;
+            overflow: hidden;
+        }
+        .centerPane{
+            background: url({!URLFOR($Resource.XactlySMBHome ,'img/layout/homeCenterBackground.png')}) no-repeat;
+            height:476px;
+            display:block;
+            float: left;
+        }   
+        .informationTextFirstPane{
+            float:left;
+            margin-left:600px;
+            margin-top:-160px;
+        }
+        .title{
+            font-family:'ProximaNovaLight' !important;
+            color:#4888B8;
+            margin-left:40px;
+            margin-top:10px;
+            cursor: default;
+        }
+        .second{
+            float:left;
+            margin-right:65px;
+            margin-left:0px;
+            font-size:18px;
+            display:block;
+        }
+        .first{
+            font-size:38px;
+        }
+        .infoText{
+            width: 310px;
+            font-size:11px;
+            color: #868686;
+            float:none;
+            cursor: default;
+            display: block;
+            margin-right:30px;
+        }
+        .infoText a {
+            color:#4888B8;
+        }
+        .arrows{
+            float:left;
+            height:26px;
+            width:35px;
+            margin-left: -35px;
+        }
+        .arrowFirstPanelFirst{
+            margin-top: 3px;
+        }
+        .arrowFirstPanelSecond{
+            margin-top: 20px;
+        }
+        .arrowFirstPanelThird{
+            margin-top: 20px;
+        }
+        .arrowSecondPanelFirst{
+            margin-top: 20px;
+        }
+        .arrowSecondPanelSecond{
+            margin-top: 33px;
+        }
+        .arrowSecondPanelThird{
+            margin-top: 28px;
+        }
+        .arrowThirdPanelFirst{
+            margin-top:5px;
+        }
+        .arrowThirdPanelSecond{
+            margin-top:27px;
+        }
+        .arrowThirdPanelThird{
+            margin-top:27px;
+        }
+        .arrowThirdPanelFourth{
+            margin-top:20px;
+        }
+        .arrowFourthPanelFirst{
+            margin-top:5px;
+        }
+        .arrowFourthPanelSecond{
+            margin-top:20px;
+        }
+        .arrowFourthPanelThird{
+            margin-top:55px;
+        }
+        .btnLeftPanelFirst{
+            float:left;
+        }
+        .btnCenter{
+            background:  url({!URLFOR($Resource.XactlySMBHome ,'img/buttons/homeButtonBackground.png')}) repeat-x;
+            padding-bottom:10px;
+            padding-top:6px;
+            float:left;
+            font-size:13px;
+            font-weight:bold;
+            padding-bottom:10px;
+            padding-top:8px;
+            color: #4888B8;
+        }
+        .btnt{
+            float:left;
+        }
+        .firstIconFirstPane{
+            display:block;
+            float:left;
+            margin-top:160px;
+        }
+        .secondIconFirstPane{
+        	font-family:'ProximaNovaLight' !important;
+            display:block;
+            float:left;
+        }
+        .secondPaneSecondIcon {
+            margin-top: 14px;
+        }
+        .thirdPaneSecondIcon{
+            margin-left:-25px;
+            margin-top:20px;
+        }
+        .fourthPaneSecondIcon{
+            margin-top: 20px;
+        }
+        .secondIconFirstPane img.frontImg{
+            left:-125px;
+            top:12px;
+            position: relative;
+        }
+        .secondIconFirstPane span div{
+        	font-family:'ProximaNovaLight' !important;
+            font-size: 22px;
+            left: 28px;
+            position: relative;
+            top: -63px;
+            width: 90px;
+        }
+        .secondIconFirstPane img.line{
+            position:relative;
+            left:224px;
+            top:-81px;
+        }
+        .secondIconFirstPane img.dot{
+            position: relative;
+            left:214px;
+            top:-80px;
+        }
+        .thirdIconFirstPane{
+            display:block;
+            float:left;
+        }
+        .secondPaneThirdIcon{
+            margin-top: 5px;
+        }
+        .thirdPaneThirdIcon{
+            margin-left:-90px;
+            margin-top:-18px;
+        }
+        .fourthPaneThirdIcon{
+            margin-top: px;
+        }
+        .thirdIconFirstPane img.frontImg{
+            position:relative;
+            left:-100px;
+            top:5px;
+        }
+        .thirdIconFirstPane img.frontImgThird{
+            position:relative;
+            left:-115px;
+            top:25px;
+        }
+        .thirdIconFirstPane span div{
+        	font-family:'ProximaNovaLight' !important;
+            font-size: 16px;
+            left: 19px;
+            position: relative;
+            top: -53px;
+            width: 80px;
+        }
+        .thirdIconFirstPane img.line{
+            position: relative;
+            left:198px;
+            top:-72px;
+        }
+        .thirdIconFirstPane img.dot{
+            position: relative;
+            left:187px;
+            top:-70px;
+        }
+        .fourthIconFirstPane{
+            display:block;
+            float:left;
+        }
+        .secondPaneFourthIcon{
+            margin-top: -10px;
+        }
+        .thirdPaneFourthIcon{
+            margin-left:-65px;
+            margin-top:-8px;
+        }
+        .fourthPaneFourthIcon{
+            margin-top: -15px;
+        }
+        
+        .fourthIconFirstPane img.frontImg{
+            position:relative;
+            left:-85px;
+            top:10px;
+        }
+        .fourthIconFirstPane img.frontImgThird{
+            left:-94px;
+            position:relative;
+            top:10px;
+        }
+        .fourthIconFirstPane span div{
+        	font-family:'ProximaNovaLight' !important;
+            font-size: 14px;
+            left: 21px;
+            position: relative;
+            top: -45px;
+            width: 86px;
+        }
+        .fourthIconFirstPane img.line{
+            position: relative;
+            left:171px;
+            top:-65px;
+        }
+        .fourthIconFirstPane img.dot{
+            position: relative;
+            left:161px;
+            top:-63px;
+        }
+        .fifthIconThirdPane{
+            display: block;
+            float:left;
+            margin-left:-55px;
+            margin-top:-10px;
+        }
+        .fifthIconThirdPane img.frontImg{
+            left:-68px;
+            position:relative;
+            top:5px;
+        }
+        .fifthIconThirdPane span div{
+        	font-family:'ProximaNovaLight' !important;
+            font-size: 11px;
+            left: 15px;
+            position: relative;
+            top: -36px;
+            width: 55px;
+        }
+        
+        .fifthIconThirdPane img.line{
+            position:relative;
+            left:127px;
+            top:-49px;
+        }
+        .fifthIconThirdPane img.dot{
+            left:117px;
+            position:relative;
+            top:-47px;
+        }
+        .midMenu {
+            height:320px;
+            width:1068px;
+        }
+        .midMenu span {
+            color:#545454;
+        }
+        .pronouncedTitle{
+            color:#000000;
+        }
+        .linkButton{
+            margin-top:25px;
+        }
+        
+        .divul{
+            background-color:#C7C6C6;           
+            width:175px;
+            clear:both;
+            border-color: #BBBBBB;
+            border-style:none solid solid solid;
+            border-width:0px 1px 1px 1px;
+            margin:-3px -1px -1px -1px;
+            display:none;
+        } 
+         
+        .activeTabs .divul ul li {  
+             display: inline;  
+             /*padding: 2px 7px; /*Separar el texto*/  
+             /*margin:5px; /* Separar los botones */  
+             float:left;    
+             clear:both;
+             height:100%;
+             width:100%;
+             margin:0 5px;
+             padding-left:15px;
+        }  
+        
+        
+        .activeTabs .divul ul li a{
+	        font-family: 'helvetica';
+            font-weight:normal;
+            padding:3px 0px;
+            width:100%;
+            height: 100%;
+            text-transform: capitalize;
+        }   
+        
+        .activeTabs .divul .fsDropDown li:hover {  
+             background: url({!URLFOR($Resource.XactlySMBResources ,'img/icons/trdropItemHover.png')}) no-repeat scroll 0 0px;
+             cursor: pointer; /* cambiar el aspecto del puntero */  
+        } 
+        
+        
+        .activeTabs .divul .fsDropDown .ItemWide{
+             background: url({!URLFOR($Resource.XactlySMBResources ,'img/icons/trbdropItemHover.png')}) no-repeat scroll 0 0px !important;  
+        }
+        
+        .activeTabs ul li a:hover{
+            color:#FFFFFF;
+        }
+    
+         
+        .activeTabs .divul ul {  
+             /* Linea para delimitar la botonera */  
+             /*border-color:-moz-use-text-color #000000 #000000;
+             border-right:1px solid #000000;
+             border-left:1px solid #000000;
+             border-style:none solid solid;
+             border-width:0px 2px 2px 2px;*/
+             background:transparent;
+             z-index:9999;
+             position:relative;
+             padding-left:3px;
+             margin-top:0;
+             margin:-1px 0px 0px 0px;
+        }  
+        .cba{
+            float: left;
+            height:35px;
+            /*width:136px;*/
+            width:80%;          
+        }
+        .abc{
+            float: right;
+            /*width:35px;*/
+            width:20%;
+            height:35px;            
+            
+        }       
+        .arrowDropDown{
+            background: url({!URLFOR($Resource.XactlySMBResources ,'img/icons/arrowDropDown.png')}) no-repeat scroll 0 0px;
+            position:absolute;
+            height:7px;
+            margin-left:9px;
+            margin-right:15px;
+            margin-top:13px;
+            width:11px;
+        }
+
+        .arrowDropDown .arrowDropDownActive{
+            background: url({!URLFOR($Resource.XactlySMBResources ,'img/icons/arrowDropDown.png')}) no-repeat scroll 0 0px;
+            position:absolute;
+            height:7px;
+            margin-left:6px;
+            margin-right:6px;
+            margin-top:8px;
+            width:11px;
+        }
+        
+        .activeTabs .arrowDropDownVisited{
+            background: url({!URLFOR($Resource.XactlySMBResources ,'img/icons/arrowDropDown.png')}) no-repeat scroll 0 -7px !important;
+            float:right;
+            height:7px;
+            margin-left:6px;
+            margin-right:15px;
+            margin-top:13px;
+            width:11px;
+        } 
+        
+        .active .arrowDropDown{
+            background: url({!URLFOR($Resource.XactlySMBResources ,'img/icons/arrowDropDown.png')}) no-repeat scroll 0 -14px;
+            position:absolute;
+            height:7px;
+            margin-left:6px;
+            margin-right:15px;
+            margin-top:13px;
+            width:11px;
+        }
+        
+        .activeDropDown{
+            background:none repeat scroll 0 0 #FFFFFF;
+            border:2px solid #000000;
+            border-bottom:1px solid #FFFFFF;
+            height:34px;
+        }
+        
+        .startHereHomeItem{
+            background: url({!URLFOR($Resource.XactlySMBResources ,'img/buttons/orangeButton.png')}) left no-repeat;
+            background-position:top;
+            clear: both;
+            color: white;
+            float: left;
+            font-size: 20px;
+            font-weight: normal;
+            height: 27px;
+            margin: 10px 10px 10px 6px;
+            padding: 20px 7px 20px 40px;
+            width: 224px;
+        	font-family:'ProximaNovaLight' !important;
+        }
+        
+        .viewHomeItem{
+            background: url({!URLFOR($Resource.XactlySMBResources ,'img/buttons/greenButton.png')}) left no-repeat;
+            background-position:top;
+            clear: both;
+            color: white;
+            float: left;
+        	font-family:'ProximaNovaLight' !important;
+            font-size: 16px;
+            font-weight: normal;
+            height: 25px;
+            margin: 12px 10px 10px -7px;
+            padding: 8px 10px 2px 55px;
+            width: 224px;
+        }
+
+        .headerComponentInfo {
+            position: relative;
+            overflow: visible;
+            float: left;
+            margin: 2px 0px 0px 0px;
+        }
+        
+        .headerComponentDropdown {
+            position: relative;
+            overflow: visible;
+            float: left;
+            margin: -5px 0px 0px 15px;
+            width:136px;
+        }
+        
+        .headerComponentCont {
+            position: relative; 
+            overflow:visible; 
+            z-index:2002;    
+        }        
+        
+        .PNovaLight{
+	        font-family: 'ProximaNovaLight' !important;
+	        font-weight: normal !important; 
+	    }
+	    
+	    .activeTabs:hover .textButtons{color:#015BA7}
+    </style>
+    <apex:form style="height:100%">
+        
+        
+        <!-- HEADER START -->
+        
+        <link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.XactlySMBResources ,'css/XactlySMBHeader.css')}" /> 
+        <c:XactlySMBUserSearch emulatingUserURLAppend="{!emulatingUserURLAppend}"/>
+        
+        <div  class="topHeader">
+            <a rel="superbox[content#searchUser.xactlySuperBox #searchUser.searchUserSuperbox]" href="#searchUser" onclick="openPopup();"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/headerMagGlass.png')}" class="headerMagGlass" /></a>
+            <script>
+                function openPopup(){
+                    jQuery('.hiddenResults').hide();
+                    setTimeout("jQuery('.usersInput')[1].focus()", 500);
+                }
+            </script>
+            <div class="HeaderText headerComponentCont">
+	            <div class="headerComponentInfo">
+	                <div class="HeaderTextElement HelveticaRegular10"><apex:outputText value="{!CrrntPeriod}"/>&nbsp;<apex:outputText value="{!CrrntYear}" /></div>
+	                <a href="/_ui/core/userprofile/UserProfilePage?u={!CurrentUserOrSlected.Id}" class="HeaderTextElement HelveticaRegular10">
+	                    <apex:outputText value="{!$Label.xactlyexpress__NameAndLastName}">
+	                        <apex:param value="{!CurrentUserOrSlected.FirstName}" />
+	                        <apex:param value="{!CurrentUserOrSlected.LastName}" />
+	                    </apex:outputText>
+	                </a>   
+	                <a href="{!$Page.XactlySMBHelpAndInformation}" class="HeaderTextElement HelveticaRegular10"><apex:outputText value="{!$Label.xactlyexpress__Help}" /></a>
+	            </div>
+	            <div class="headerComponentDropdown">
+	                <c:XactlySMBExpressDropdown fullLogout="true"/>
+	            </div>
+	        </div> 
+        </div>
+
+        <div class="bottomHeader">
+            <div id="leftHeader" class="leftBottomHeader">
+            </div>
+            <div class="centerBottomHeader">
+                <div class="navi" id="navi">
+                    <div class="activeTabs tab1 borderRight">
+                        <div class="cba" onclick="changePage(this);FixActive();">
+                            <a id="CurrentPageId-0" href="?page=0" style="width:40px">
+                                <span class="textButtons PNovaSemiBold14c2"> {!$Label.HomePage} </span>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="activeTabs tab2 borderRight" style="width:180px;" onmouseover="jQuery('.divul2').hide();jQuery('.divul3').hide();">
+                        <div class="cba" onclick="changePage(this);">
+                            <a id="CurrentPageId-1" href="?page=1" onclick="jQuery('.divul').hide();">
+                                <span class="textButtons PNovaSemiBold14c3"> {!$Label.Calculate} </span>
+                            </a>
+                        </div>
+                        <div class="abc"><div class="arrowDropDown" ></div></div>
+                        <div class="divul divul1" style="margin-left:-141px;*margin-left:-1px;margin-left /*\**/:-1px\9;margin-top:34px;*margin-top:0;position:absolute;'">
+                        <ul class="fsDropDown" style="width:171px;">  
+                            <div class="clear"></div>
+                            <li> <a href="{!$Page.XactlyExpress__XactlySMBCalculateStep2}" onclick="waitOn();"> 
+                                     <apex:outputtext value="{!$Label.xactlyexpress__CalculateWizardStep1}">
+                                         <apex:param value="{!currentSettings.dealsPluralCap}" />
+                                     </apex:outputtext>
+                                </a>
+                            </li>  
+                            <li> <a href="{!$Page.XactlyExpress__XactlySMBCalculateStep3}" onclick="waitOn();">
+                                     <apex:outputtext value="{!$Label.xactlyexpress__CalculateWizardStep2}">
+                                        <apex:param value="{!currentSettings.dealsPluralCap}" />
+                                    </apex:outputtext>
+
+                                </a></li>  
+                            <li> <a href="{!$Page.XactlyExpress__XactlySMBCalculateCalculate}"  onclick="waitOn();"> 
+                                        <apex:outputtext value="{!$Label.xactlyexpress__CalculateWizardStep3}" /> 
+                                 </a></li>
+                            <li> <a href="{!$Page.XactlySMBCalculateManageAttainments}"  onclick="waitOn();"> 
+                                        <apex:outputtext value="{!$Label.xactlyexpress__CalculateWizardStep4}" />                          
+                                </a></li> 
+                            <li> <a href="{!$Page.XactlyExpress__XactlySMBCalculateManagePayments}"  onclick="waitOn();"> 
+                                        <apex:outputtext value="{!$Label.xactlyexpress__CalculateWizardStep5}" />
+                                 </a></li> 
+                            <li> <a href="{!$Page.XactlyExpress__XactlySMBCalculatePayroll}"  onclick="waitOn();">
+                                        <apex:outputtext value="{!$Label.xactlyexpress__CalculateWizardStep6}" />
+                                 </a></li> 
+                        </ul>  
+                        
+                          <div class="clear"></div> 
+                        </div>
+ 
+                    </div>
+                    <div class="activeTabs tab3 borderRight"  style="width:180px;" onmouseover="jQuery('.divul1').hide();jQuery('.divul3').hide();">
+                        <div class="cba" onclick="changePage(this);">
+                            <a id="CurrentPageId-2" href="?page=2" onclick="jQuery('.divul').hide();">
+                                <span class="textButtons PNovaSemiBold14c3"> {!$Label.ManagePlans} </span>
+                            </a>
+                        </div>
+                        <div class="abc"><div class="arrowDropDown" ></div></div>
+                        <div class="divul divul2" style="margin-left:-141px;*margin-left:-1px;margin-left /*\**/:-1px\9;;margin-top:34px;*margin-top:0;position:absolute;'">
+                        <ul class="fsDropDown" style="width:171px;">  
+                            <div class="clear"></div>
+                            <li> <a href="{!$Page.XactlyExpress__XactlySMBPlanCreate}" onclick="waitOn();">
+                                    <apex:outputtext value="{!$Label.xactlyexpress__DefinePlan}" />    
+                                </a>
+                            </li>  
+                            <li> <a href="javascript:;"  onclick="planClickQuotas();" >
+                                    <apex:outputtext value="{!$Label.xactlyexpress__PlanWizardStep2}">
+                                        <apex:param value="{!UPPER(LEFT(currentSettings.quotasPlural, 1)) + MID(currentSettings.quotasPlural, 2, LEN(currentSettings.quotasPlural) - 1)}" />
+                                    </apex:outputtext>
+                                </a>  
+                            </li> 
+                            <li> <a href="javascript:;"  onclick="planClickCredits();">
+                                    <apex:outputtext value="{!$Label.xactlyexpress__PlanWizardStep3}">
+                                        <apex:param value="{!UPPER(LEFT(currentSettings.creditsPlural, 1)) + MID(currentSettings.creditsPlural, 2, LEN(currentSettings.creditsPlural) - 1)}" />
+                                    </apex:outputtext>
+                                </a> 
+                            </li>   
+                            <li> <a href="javascript:;"  onclick="planClickRates();">
+                                    <apex:outputtext value="{!$Label.xactlyexpress__PlanWizardStep4}" /> 
+                                </a> 
+                            </li>  
+                            <li> <a href="javascript:;"  onclick="planClickReview();">  
+                                    <apex:outputtext value="{!$Label.xactlyexpress__PlanWizardStep5}" /> 
+                                 </a> 
+                            </li>  
+                        </ul>  
+                        
+                          <div class="clear"></div> 
+                        </div>
+ 
+                    </div>
+                    <div class="activeTabs tab4"  style="width:180px;" style="width:180px;" onmouseover="jQuery('.divul1').hide();jQuery('.divul2').hide();">
+                        <div class="cba" onclick="changePage(this);">
+                            <a id="CurrentPageId-3" href="?page=3" onclick="jQuery('.divul').hide();">
+                                <span class="textButtons PNovaSemiBold14c3"> {!$Label.ChangeMy} </span>
+                            </a>
+                        </div>
+                        <div class="abc"><div class="arrowDropDown"></div></div>
+                        <div class="divul divul3" style="margin-left:-141px;*margin-left:-1px;margin-left /*\**/:-1px\9;margin-top:34px;*margin-top:0;position:absolute;'">
+                        <ul class="fsDropDown" style="width:171px;">  
+                            <div class="clear"></div>
+                            <li> <a href="{!$Page.XactlyExpress__XactlySMBSettingsUsers}"  onclick="waitOn();"> 
+                                    <apex:outputtext value="{!$Label.xactlyexpress__SettingsWhizardStep2}" /> 
+                                </a>
+                            </li>  
+                            <li> 
+                                <a href="{!$Page.XactlyExpress__XactlySMBSettingsDeals}"  onclick="waitOn();"> 
+                                    <apex:outputtext value="{!$Label.xactlyexpress__SettingsWhizardStep3}">
+                                         <apex:param value="{!currentSettings.dealsAbbCap}" />
+                                    </apex:outputtext>
+                                </a>
+                            </li>  
+                            <li> <a href="{!$Page.XactlyExpress__XactlySMBSettingsTerminology}"  onclick="waitOn();"> 
+                                        <apex:outputtext value="{!$Label.xactlyexpress__SettingsWhizardStep4}" />  
+                                </a>
+                            </li>  
+                            <li> <a href="{!$Page.XactlyExpress__XactlySMBSettingsPayroll}"  onclick="waitOn();">    
+                                        <apex:outputtext value="{!$Label.xactlyexpress__SettingsWhizardPayroll}" /> 
+                                </a>
+                            </li> 
+                            <li> <a href="{!$Page.XactlyExpress__XactlySMBSettingsOther}"  onclick="waitOn();"> 
+                                    <apex:outputtext value="{!$Label.xactlyexpress__SettingsWhizardStep5}" /> 
+                                </a>
+                            </li> 
+                            <li> <a href="javascript:;"> 
+                                    <apex:outputtext value="{!$Label.xactlyexpress__ChatterSettings}" />
+                                </a>
+                            </li> 
+                        </ul>  
+                        
+                          <div class="clear"></div> 
+                        </div>
+ 
+                    </div>
+                </div>
+            </div>
+            <div id="rightHeader" class="rightBottomHeader">
+            </div>
+        </div>
+        
+        <!-- END OF HEADER -->
+        
+        <!-- Component Chatter    -->
+        <div class="chatterComponent" style="padding-top: 10px;" >
+            <c:XactlySMBChatterWall objectId="{!$User.Id}" showHeader="true" showWall="true" currentPage="{!$CurrentPage.Name}"/>
+        </div> 
+        
+        <!-- SCROLLING TABS -->
+        <div class="mainContent">
+            <div class="scrollable">   
+               <!-- root element for the items -->
+                <div class="items">
+                
+                    <!-- FIRST TAB -->
+                    <div class="centerPane">       
+                         
+                        <div class="title first">
+                            <apex:outputtext escape="false" value="{!$Label.xactlyexpress__quickestCommunicateRslts}"/>
+                        </div>
+                        <div class="midMenu">
+                            <div class="firstIconFirstPane">
+                                <span>
+                                    <img src="{!URLFOR($Resource.XactlySMBHome ,'img/icons/settingsHomeLogo.png')}"  style="visibility: hidden;"/>
+                                </span>
+                            </div>
+                            <a href="{!$Page.XactlyExpress__XactlySMBPlanCreate}" class="secondIconFirstPane secondPaneSecondIcon" onclick="blur();">
+                                <span>
+                                    <img class="backImg" src="{!URLFOR($Resource.XactlySMBHome ,'img/layout/homeFirstBackground.png')}"/>
+                                    <img class="frontImg" src="{!URLFOR($Resource.XactlySMBHome ,'img/icons/paymentsHomeFirstIcon.png')}"/>
+                                    <div>{!$Label.BuildPlan}</div>
+                                    <img class="line" src="{!URLFOR($Resource.XactlySMBHome ,'img/layout/homeFirstLine.png')}"/>
+                                </span>
+                            </a>
+                            <a href="{!$Page.XactlyExpress__XactlySMBCalculateCalculate}" class="thirdIconFirstPane secondPaneThirdIcon" onclick="blur();">
+                                <span>
+                                    <img class="backImg" src="{!URLFOR($Resource.XactlySMBHome ,'img/layout/homeSecondBackground.png')}"/>
+                                    <img class="frontImg" src="{!URLFOR($Resource.XactlySMBHome ,'img/icons/calcHomeSecondIcon.png')}"/>
+                                    <div>{!$Label.SelectFields}</div>
+                                    <img class="line" src="{!URLFOR($Resource.XactlySMBHome ,'img/layout/homeSecondLine.png')}"/>
+                                </span>
+                            </a>
+                            <a href="{!$Page.XactlyExpress__XactlySMBCalculateManagePayments}" class="fourthIconFirstPane fourthPaneFourthIcon" onclick="blur();">
+                                <span>
+                                    <img class="backImg" src="{!URLFOR($Resource.XactlySMBHome ,'img/layout/homeThirdBackground.png')}"/>
+                                    <img class="frontImg" src="{!URLFOR($Resource.XactlySMBHome ,'img/icons/calcHomeThirdIcon.png')}"/>
+                                    <div>{!$Label.FinalizeSetup}</div>
+                                    <img class="line" src="{!URLFOR($Resource.XactlySMBHome ,'img/layout/homeThirdLine.png')}"/>
+                                                                
+                                </span>
+                            </a>
+                        </div>
+                        <div class="informationTextFirstPane"> 
+                            <a href="{!$Page.XactlyExpress__XactlySMBPlanCreate}">
+                                <span class="startHereHomeItem PNovaLight" onMouseOver="jQuery(this).css('background-position','bottom');" onMouseOut="jQuery(this).css('background-position','top');">
+                                    {!$Label.Get_Started_Now}
+                                </span>
+                            </a>
+                            <a href="{!$Page.XactlySMBPlanList}">
+                                <span class="viewHomeItem" onMouseOver="jQuery(this).css('background-position','bottom');" onMouseOut="jQuery(this).css('background-position','top');">
+                                    {!$Label.ViewPlans}
+                                </span>
+                            </a>    
+                            <a href="{!$Page.XactlySMBDashRepHome}">
+                                <span class="viewHomeItem" onMouseOver="jQuery(this).css('background-position','bottom');" onMouseOut="jQuery(this).css('background-position','top');">
+                                    {!$Label.ViewDashBoards}
+                                </span>
+                            </a>
+                        </div>
+                    </div> 
+                    
+                    <!-- SECOND TAB -->
+                    <div class="centerPane">
+                         
+                        <div class="title first">     
+                            <apex:outputtext escape="false" value="{!$Label.xactlyexpress__easiestIntegrateData}"/>
+                        </div>
+                        <div class="midMenu">
+                            <a href="{!$Page.XactlyExpress__XactlySMBCalculateStep2}" class="firstIconFirstPane">
+                                <span>
+                                    <img src="{!URLFOR($Resource.XactlySMBHome ,'img/icons/settingsHomeLogo.png')}"/>
+                                </span>
+                            </a>
+                            <a href="{!$Page.XactlyExpress__XactlySMBCalculateStep2}" class="secondIconFirstPane secondPaneSecondIcon" onclick="blur();">
+                                <span>
+                                    <img class="backImg" src="{!URLFOR($Resource.XactlySMBHome ,'img/layout/calcHomeFirstBackground.png')}"/>
+                                    <img class="frontImg" src="{!URLFOR($Resource.XactlySMBHome ,'img/icons/calcHomeFirstIcon.png')}"/>
+                                    <div>{!$Label.ImportData}</div>
+                                    <img class="line" src="{!URLFOR($Resource.XactlySMBHome ,'img/layout/calcHomeFirstLine.png')}"/>
+                                    
+                                </span>
+                            </a>
+                            <a href="{!$Page.XactlyExpress__XactlySMBCalculateCalculate}" class="thirdIconFirstPane secondPaneThirdIcon" onclick="blur();">
+                                <span>
+                                    <img class="backImg" src="{!URLFOR($Resource.XactlySMBHome ,'img/layout/calcHomeSecondBackground.png')}"/>
+                                    <img class="frontImg" src="{!URLFOR($Resource.XactlySMBHome ,'img/icons/calcHomeSecondIcon.png')}"/>
+                                    <div>{!$Label.SelectFields}</div>
+                                    <img class="line" src="{!URLFOR($Resource.XactlySMBHome ,'img/layout/calcHomeSecondLine.png')}"/>
+                                        
+                                </span>
+                            </a>
+                            <a href="{!$Page.XactlyExpress__XactlySMBCalculateManagePayments}" class="fourthIconFirstPane secondPaneFourthIcon" onclick="blur();">
+                                <span>
+                                    <img class="backImg" src="{!URLFOR($Resource.XactlySMBHome ,'img/layout/calcHomeThirdBackground.png')}"/>
+                                    <img class="frontImg" src="{!URLFOR($Resource.XactlySMBHome ,'img/icons/calcHomeThirdIcon.png')}"/>
+                                    <div>{!$Label.FinalizeSetup}</div>
+                                    <img class="line" src="{!URLFOR($Resource.XactlySMBHome ,'img/layout/calcHomethirdLine.png')}"/>
+                                                                
+                                </span>
+                            </a>
+                        </div>
+                        <div class="informationTextFirstPane"> 
+                            <div class="arrows">
+                                <img class="arrowSecondPanelFirst" src="{!URLFOR($Resource.XactlySMBHome ,'img/icons/homeArrow.png')}"/>
+                                <img class="arrowSecondPanelSecond" src="{!URLFOR($Resource.XactlySMBHome ,'img/icons/homeArrow.png')}"/>
+                                <img class="arrowSecondPanelThird" src="{!URLFOR($Resource.XactlySMBHome ,'img/icons/homeArrow.png')}"/>
+                            </div>
+                            <div class="infoText">
+                                <apex:outputtext escape="false" value="{!$Label.xactlyexpress__dataInTwoSteps}">
+                                    <apex:param value="{!$Page.XactlyExpress__XactlySMBCalculateStep2}"/>
+                                    <apex:param value="{!currentSettings.dealsPlural}"/>
+                                    <apex:param value="{!$Page.XactlyExpress__XactlySMBCalculateStep3}"/>
+                                    <apex:param value="{!currentSettings.dealsPlural}"/>
+                                </apex:outputtext>
+                                <br/>
+                                <apex:outputtext escape="false" value="{!$Label.xactlyexpress__selectTheSourceOfData}">
+                                    <apex:param value="{!$Page.XactlyExpress__XactlySMBCalculateCalculate}"/>
+                                </apex:outputtext>
+                                <br/>
+                                <apex:outputtext escape="false" value="{!$Label.xactlyexpress__selectTheFields}">
+                                    <apex:param value="{!$Page.XactlyExpress__XactlySMBCalculateManagePayments}"/>
+                                    <apex:param value="{!$Page.XactlyExpress__XactlySMBCalculatePayroll}"/>
+                                </apex:outputtext>
+                            </div>
+                            <div class="linkButton">
+                                <a href="{!$Page.XactlyExpress__XactlySMBCalculateStep2}">
+                                    <img class="btnt" src="{!URLFOR($Resource.XactlySMBHome ,'img/buttons/homeButtonLeft.png')}"/>
+                                    <span class="btnCenter PNovaLight"> {!$Label.Get_Started_Now}   </span>
+                                    <img class="btnt" src="{!URLFOR($Resource.XactlySMBHome ,'img/buttons/homeButtonRight.png')}"/>
+                                </a>
+                            </div>
+                        </div>
+                        
+                    </div>
+                    
+                    
+                    <!-- THIRD TAB -->
+                    <div class="centerPane">
+                        
+                        <div class="title first">
+                            <apex:outputtext escape="false" value="{!$Label.xactlyexpress__queckestIncenAndSell}"/>
+                        </div>
+                        <div class="midMenu">
+                            <a href="{!$Page.XactlySMBPlanList}" class="firstIconFirstPane">
+                                <span>
+                                    <img src="{!URLFOR($Resource.XactlySMBHome ,'img/icons/settingsHomeLogo.png')}"/>
+                                </span>
+                            </a>
+                            <a href="{!$Page.XactlyExpress__XactlySMBPlanCreate}" class="secondIconFirstPane thirdPaneSecondIcon" onclick="blur();">
+                                <span>
+                                    <img class="backImg" src="{!URLFOR($Resource.XactlySMBHome ,'img/layout/paymentsHomeFirstBackground.png')}"/>
+                                    <img class="frontImg" src="{!URLFOR($Resource.XactlySMBHome ,'img/icons/paymentsHomeFirstIcon.png')}"/>
+                                    <div>{!$Label.DefinePlans}</div>
+                                    <img class="line" src="{!URLFOR($Resource.XactlySMBHome ,'img/layout/paymentsHomeFirstLine.png')}"/>
+                                    
+                                </span>
+                            </a>
+                            <a id="linkPlanQuotas" rel="superbox[content#planQuotas.xactlySuperBox][350][50]" href="#planQuotas"  onclick="jQuery('.hiddenResults').hide();" style="display:none"></a>
+                            <a href="javascript:;" onclick="{!IF(existPlan, 'planClickQuotas();' , 'errorNoPlan();')}" class="thirdIconFirstPane thirdPaneThirdIcon">
+                                <span>
+                                    <img class="backImg" src="{!URLFOR($Resource.XactlySMBHome ,'img/layout/paymentsHomeSecondBackground.png')}"/>
+                                    <img class="frontImgThird" src="{!URLFOR($Resource.XactlySMBHome ,'img/icons/paymentsHomeSecondIcon.png')}"/>
+                                    <div>
+                                        <apex:outputtext value="{!$Label.xactlyexpress__AddRates}">
+                                            <apex:param value="{!currentSettings.quotasPluralCap}"/>
+                                        </apex:outputtext>
+                                    </div>
+                                    <img class="line" src="{!URLFOR($Resource.XactlySMBHome ,'img/layout/paymentsHomeSecondLine.png')}"/>
+                                        
+                                </span>
+                            </a>
+                            <a id="linkPlanRates" rel="superbox[content#planRates.xactlySuperBox][350][50]" href="#planRates"  onclick="jQuery('.hiddenResults').hide();" style="display:none"></a>
+                            <a href="javascript:;" onclick="{!IF(existPlan, 'planClickRates();' , 'errorNoPlan();')}" class="fourthIconFirstPane thirdPaneFourthIcon">
+                                <span>
+                                    <img class="backImg" src="{!URLFOR($Resource.XactlySMBHome ,'img/layout/paymentsHomeThirdBackground.png')}"/>
+                                    <img class="frontImgThird" src="{!URLFOR($Resource.XactlySMBHome ,'img/icons/paymentsHomeThirdIcon.png')}"/>
+                                    <div>{!$Label.addPayment}</div>
+                                    <img class="line" src="{!URLFOR($Resource.XactlySMBHome ,'img/layout/paymentsHomeThirdLine.png')}"/>
+                                                                
+                                </span>
+                            </a>
+                            <a id="linkPlanReview" rel="superbox[content#planReview.xactlySuperBox][350][50]" href="#planReview" onclick="jQuery('.hiddenResults').hide();" style="display:none"></a>
+                            <a href="javascript:;" onclick="{!IF(existPlan, 'planClickReview();' , 'errorNoPlan();')}" class="fifthIconThirdPane thirdPaneFifthIcon">
+                                <span>
+                                    <img class="backImg" src="{!URLFOR($Resource.XactlySMBHome ,'img/layout/paymentsHomeFourthBackground.png')}"/>
+                                    <img class="frontImg" src="{!URLFOR($Resource.XactlySMBHome ,'img/icons/paymentsHomeFourthIcon.png')}"/>
+                                    <div>{!$Label.reviewPlan}</div>
+                                    <img class="line" src="{!URLFOR($Resource.XactlySMBHome ,'img/layout/paymentsHomeFourthLine.png')}"/>
+                                    
+                                </span>
+                            </a>
+                            <a id="linkPlanCredits" rel="superbox[content#planCredits.xactlySuperBox][350][50]" href="#planCredits" onclick="jQuery('.hiddenResults').hide();" style="display:none"></a>
+                        </div>
+                        <div class="informationTextFirstPane"> 
+                            <div class="arrows">
+                                <img class="arrowThirdPanelFirst" src="{!URLFOR($Resource.XactlySMBHome ,'img/icons/homeArrow.png')}"/>
+                                <img class="arrowThirdPanelSecond" src="{!URLFOR($Resource.XactlySMBHome ,'img/icons/homeArrow.png')}"/>
+                                <img class="arrowThirdPanelThird" src="{!URLFOR($Resource.XactlySMBHome ,'img/icons/homeArrow.png')}"/>
+                                <img class="arrowThirdPanelFourth" src="{!URLFOR($Resource.XactlySMBHome ,'img/icons/homeArrow.png')}"/>
+                            </div>
+                            <div class="infoText">
+                                <apex:outputtext escape="false" value="{!$Label.xactlyexpress__planInThreeSteps}">
+                                    <apex:param value="{!$Page.XactlyExpress__XactlySMBPlanCreate}"/>
+                                </apex:outputtext>
+                                <br/>
+                                <br/>
+                                <apex:outputtext escape="false" value="{!$Label.xactlyexpress__defineThePlan}">
+                                    <apex:param value="{!IF(existPlan, 'planClickQuotas();' , 'errorNoPlan();')}"/>
+                                    <apex:param value="{!currentSettings.quotasPlural}"/>
+                                    <apex:param value="{!IF(existPlan, 'planClickCredits();' , 'errorNoPlan();')}"/>
+                                    <apex:param value="{!currentSettings.creditsPlural}"/>
+                                    <apex:param value="{!currentSettings.dealsPlural}"/>
+                                </apex:outputtext>
+
+                                <apex:outputtext escape="false" value="{!$Label.xactlyexpress__addQuotasHome}">
+                                    <apex:param value="{!IF(existPlan, 'planClickRates();' , 'errorNoPlan();')}"/>
+                                </apex:outputtext>
+                                <br/>
+                                <apex:outputtext escape="false" value="{!$Label.xactlyexpress__addIncentives}">
+                                    <apex:param value="{!IF(existPlan, 'planClickReview();' , 'errorNoPlan();')}"/>
+                                </apex:outputtext>
+                            </div>
+                            <div class="linkButton">
+                                <a href="{!$Page.XactlyExpress__XactlySMBPlanCreate}">
+                                    <img class="btnt" src="{!URLFOR($Resource.XactlySMBHome ,'img/buttons/homeButtonLeft.png')}"/>
+                                    <span class="btnCenter PNovaLight"> {!$Label.Get_Started_Now}   </span>
+                                    <img class="btnt" src="{!URLFOR($Resource.XactlySMBHome ,'img/buttons/homeButtonRight.png')}"/>
+                                </a>
+                            </div>
+                        </div>
+                        
+                    </div>
+                    
+                    
+                    <!-- FOURTH TAB -->
+                    <div class="centerPane">
+                    
+                        <div class="title first">
+                            <apex:outputtext escape="false" value="{!$Label.xactlyexpress__easiestMotivateOrg}"/>
+                        </div>
+                
+                        <div class="midMenu">
+                            <a href="{!$Page.XactlyExpress__XactlySMBSettingsUsers}" class="firstIconFirstPane">
+                                <span>
+                                    <img src="{!URLFOR($Resource.XactlySMBHome ,'img/icons/settingsHomeLogo.png')}"/>
+                                </span>
+                            </a>
+                            <a href="{!$Page.XactlyExpress__XactlySMBSettingsUsers}" class="secondIconFirstPane fourthPaneSecondIcon" onclick="blur();">
+                                <span>
+                                    <img class="backImg" src="{!URLFOR($Resource.XactlySMBHome ,'img/layout/settingsHomeFirstBackground.png')}"/>
+                                    <img class="frontImg" src="{!URLFOR($Resource.XactlySMBHome ,'img/icons/settingsHomeFirstIcon.png')}"/>
+                                    <div>{!$Label.UserSettings}</div>
+                                    <img class="line" src="{!URLFOR($Resource.XactlySMBHome ,'img/layout/settingsHomeFirstLine.png')}"/>
+                                    
+                                </span>
+                            </a>
+                            <a href="{!$Page.XactlyExpress__XactlySMBSettingsDeals}" class="thirdIconFirstPane fourthPaneThirdIcon" onclick="blur();">
+                                <span>
+                                    <img class="backImg" src="{!URLFOR($Resource.XactlySMBHome ,'img/layout/settingsHomeSecondBackground.png')}"/>
+                                    <img class="frontImg" src="{!URLFOR($Resource.XactlySMBHome ,'img/icons/settingsHomeSecondIcon.png')}"/>
+                                    <div>{!$Label.Manage_Plan}</div>
+                                    <img class="line" src="{!URLFOR($Resource.XactlySMBHome ,'img/layout/settingsHomeSecondLine.png')}"/>
+                                        
+                                </span>
+                            </a>
+                            <a href="{!$Page.XactlyExpress__XactlySMBSettingsOther}" class="fourthIconFirstPane fourthPaneFourthIcon" onclick="blur();">
+                                <span>
+                                    <img class="backImg" src="{!URLFOR($Resource.XactlySMBHome ,'img/layout/settingsHomeThirdBackground.png')}"/>
+                                    <img class="frontImg" src="{!URLFOR($Resource.XactlySMBHome ,'img/icons/settingsHomeThirdIcon.png')}"/>
+                                    <div>{!$Label.OtherSettings}</div>
+                                    <img class="line" src="{!URLFOR($Resource.XactlySMBHome ,'img/layout/settingsHomeThirdLine.png')}"/>
+                                                                
+                                </span>
+                            </a>
+                        </div>
+                        <div class="informationTextFirstPane"> 
+                            <div class="arrows">
+                                <img class="arrowFourthPanelFirst" src="{!URLFOR($Resource.XactlySMBHome ,'img/icons/homeArrow.png')}"/>
+                                <img class="arrowFourthPanelSecond" src="{!URLFOR($Resource.XactlySMBHome ,'img/icons/homeArrow.png')}"/>
+                                <img class="arrowFourthPanelThird" src="{!URLFOR($Resource.XactlySMBHome ,'img/icons/homeArrow.png')}"/>
+                            </div>
+                            <div class="infoText">
+                                <apex:outputtext escape="false" value="{!$Label.xactlyexpress__walkThroughSetup}">
+                                    <apex:param value="{!$Page.XactlyExpress__XactlySMBSettingsUsers}"/>
+                                </apex:outputtext>
+                                <br/>
+                                <apex:outputtext escape="false" value="{!$Label.xactlyexpress__buildPlans}">
+                                    <apex:param value="{!$Page.XactlyExpress__XactlySMBSettingsDeals}"/>
+                                </apex:outputtext>
+                                <br/>
+                                <apex:outputtext escape="false" value="{!$Label.xactlyexpress__calcAndAnalyzeRslts}">
+                                    <apex:param value="{!$Page.XactlyExpress__XactlySMBSettingsTerminology}"/>
+                                    <apex:param value="{!$Page.XactlyExpress__XactlySMBSettingsPayroll}"/>
+                                    <apex:param value="{!$Page.XactlyExpress__XactlySMBSettingsOther}"/>
+                                    <apex:param value="javascript:;"/>
+                                </apex:outputtext>
+                            </div>
+                            <div class="linkButton">
+                                <a href="{!$Page.XactlyExpress__XactlySMBSettingsUsers}">
+                                    <img class="btnt" src="{!URLFOR($Resource.XactlySMBHome ,'img/buttons/homeButtonLeft.png')}"/>
+                                    <span class="btnCenter PNovaLight"> {!$Label.Get_Started_Now}   </span>
+                                    <img class="btnt" src="{!URLFOR($Resource.XactlySMBHome ,'img/buttons/homeButtonRight.png')}"/>
+                                </a>
+                            </div>
+                        </div>
+                      </div>
+                    </div>
+               </div>
+            </div>
+        <apex:inputHidden value="{!currentPage}" id="currentPageId" />
+        <apex:actionFunction name="saveCurrentPage" action="{!saveCurrentPage}" rerender="auxPanel"/>
+        <apex:outputpanel id="auxPanel" />
+        <script type="text/javascript" language="javascript" src="{!URLFOR($Resource.XactlySMBResources, 'js/jquery.curvycorners.min.js')}"></script>
+        <script>
+        
+            var tab2 = true;
+	        var tab3 = true;
+	        var tab4 = true;
+	        
+	        function hoverDrowDowns(){
+	            jQuery('.activeTabs').mouseleave(function(){
+	                if(jQuery('.divul',jQuery(this)).css('display')=='block'){
+	                    if(jQuery(this).hasClass('tab2')){
+	                        tab2 = false;
+	                        setTimeout('tab2=true',500);
+	                    }
+	                    if(jQuery(this).hasClass('tab3')){
+	                        tab3 = false;
+	                        setTimeout('tab3=true',500);
+	                    }
+	                    if(jQuery(this).hasClass('tab4')){
+	                        tab4 = false;
+	                        setTimeout('tab4=true',500);
+	                    }
+	                }
+	                jQuery('.divul',jQuery(this)).fadeOut();
+	            }).mouseover(function(){
+	                var tempBool = false;
+	                if(jQuery(this).hasClass('tab2')){
+	                        tempBool = tab2;
+	                    }
+	                    if(jQuery(this).hasClass('tab3')){
+	                        tempBool = tab3;
+	                    }
+	                    if(jQuery(this).hasClass('tab4')){
+	                        tempBool = tab4;
+	                    }
+	                if(!jQuery(this).hasClass('active')&&jQuery('.divul',jQuery(this)).css('display')=='none'&&tempBool){
+	                    jQuery('.divul',jQuery(this)).fadeIn('fast');
+	                }
+	            }); 
+	        }
+         
+            jQuery(document).ready(function (){
+                jQuery('.divul').corner({
+                     tl: { radius: 0 },
+                     tr: { radius: 0 },
+                     bl: { radius: 10 },
+                     br: { radius: 10 },
+                     antiAlias: true
+                 });
+                 hoverDrowDowns();
+            });
+         
+            function goToStep(_url){                
+                document.location.href = _url;
+            }
+            function loadSlideShow(){               
+                //Creates the scrollable effect
+                jQuery(".scrollable").scrollable().navigator();     
+                //Loads existing current page selected      
+                var currentIndexId = document.getElementById('{!$Component.currentPageId}').value;              
+                jQuery("#CurrentPageId-"+currentIndexId).parent().next().find('.arrowDropDown').hide();
+                jQuery(".scrollable").eq(0).data("scrollable").seekTo(currentIndexId, 500);                     
+                
+                saveCurrentPage();
+                
+                //Sets current page selected 
+                if(currentIndexId == 0){
+                    leftSelected();
+                } else if (currentIndexId == 3){
+                    rightSelected();
+                }else{
+                    clearSelected();
+                }
+                
+                //hoverDrowDowns();
+            };
+
+            function resetFont(){
+                jQuery('.textButtons').removeClass('PNovaSemiBold14c2');                
+                jQuery('.textButtons').addClass('PNovaSemiBold14c3');                            
+            }
+            
+            function changePage(element1){
+                var element = jQuery(element1).find("a")[0];
+                jQuery(element1).blur();    
+                jQuery(element).blur();                     
+                var currentPageId = element.id.replace('CurrentPageId-','');                        
+                document.getElementById('{!$Component.currentPageId}').value = currentPageId;
+                saveCurrentPage();                  
+                if(currentPageId == 0){
+                    leftSelected();
+                } else if (currentPageId == 3){
+                    rightSelected();
+                }else{
+                    clearSelected();
+                }
+                jQuery('.activeTabs').find('.arrowDropDown').show();
+                jQuery("#CurrentPageId-"+currentPageId).parent().next().find('.arrowDropDown').hide();
+                resetFont();
+                jQuery(element1).find(".textButtons").removeClass('PNovaSemiBold14c3');              
+                jQuery(element1).find(".textButtons").addClass('PNovaSemiBold14c2');              
+            };
+            function FixActive(){
+                jQuery('.cba').removeClass('cactive');
+            }
+            function errorNoPlan(){
+                alert('{!$Label.noPlanCreated}');
+            };
+            function leftSelected(){    
+                jQuery('.activeTabs').removeClass('active');                
+                var currentIndexId = document.getElementById('{!$Component.currentPageId}').value;              
+                jQuery("#CurrentPageId-"+currentIndexId).parent().parent().addClass('active');          
+                jQuery('#rightHeader').attr('class','rightBottomHeader');
+                jQuery('#leftHeader').attr('class','leftBottomHeaderSelected');
+                jQuery('.activeTabs').removeClass('activeDropDown');                                                        
+                jQuery('.activeTabs').children('#divul').fadeOut(200);
+                jQuery('.activeTabs').find('.arrowDropDown').removeClass('arrowDropDownVisited');
+                jQuery("#CurrentPageId-"+currentIndexId).parent().parent().find('.abc').unbind('click');
+                
+            };
+            function rightSelected(){   
+                jQuery('.activeTabs').removeClass('active');
+                jQuery('.cba').removeClass('cactive');
+                var currentIndexId = document.getElementById('{!$Component.currentPageId}').value;              
+                jQuery("#CurrentPageId-"+currentIndexId).parent().parent().addClass('active');  
+                jQuery('#leftHeader').attr('class','leftBottomHeader');
+                jQuery('#rightHeader').attr('class','rightBottomHeaderSelected');
+                jQuery('.activeTabs').removeClass('activeDropDown');                                                        
+                jQuery('.activeTabs').children('#divul').fadeOut(200);
+                jQuery('.activeTabs').find('.arrowDropDown').removeClass('arrowDropDownVisited');
+                jQuery("#CurrentPageId-"+currentIndexId).parent().parent().find('.abc').unbind('click');
+            };
+            function clearSelected(){   
+                jQuery('.activeTabs').removeClass('active');
+                jQuery('.cba').removeClass('cactive');
+                var currentIndexId = document.getElementById('{!$Component.currentPageId}').value;              
+                jQuery("#CurrentPageId-"+currentIndexId).parent().parent().addClass('active');                  
+                jQuery('#leftHeader').attr('class','leftBottomHeader');
+                jQuery('#rightHeader').attr('class','rightBottomHeader');
+                jQuery('.activeTabs').removeClass('activeDropDown');                                                        
+                jQuery('.activeTabs').children('#divul').fadeOut(200);
+                jQuery('.activeTabs').find('.arrowDropDown').removeClass('arrowDropDownVisited');
+                jQuery("#CurrentPageId-"+currentIndexId).parent().parent().find('.abc').unbind('click');
+            };
+            
+        </script>
+    </apex:form>
+</apex:component>

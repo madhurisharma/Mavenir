@@ -1,0 +1,546 @@
+<!--
+    Developed by Timba Software Corp. www.timbasoftware.com admin@timbasoftware.com
+    This page lists plans
+    @author Dario Levy <dlevy@timbasoftware.com>
+    -->
+    <apex:page id="Calculate" controller="XactlyExpress.XactlySMBCalculateCalculate" sidebar="false" showHeader="false" standardStylesheets="true" action="{!redirectWhenAccessIsDenied}">
+    <c:XactlySMBCursor />
+    <title>{!$Label.Calculate}: {!$Label.CalculateWizardStep3}</title>
+    <link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.XactlySMBResources ,'css/XactlySMBStyles.css')}" />
+    <link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.XactlySMBResources ,'css/XactlySMBNumeratedBox.css')}" />
+    <apex:includeScript value="{!URLFOR($Resource.XactlyExpress__CSN, 'jquery.js')}" />
+    <style>
+        
+        .centeredBox{
+            width:690px; 
+            margin-left:auto;
+            margin-right: auto;
+            margin-top:10px;
+            padding:0px 20px 20px 100px;            
+        }
+        .error{
+            
+        }
+        
+        .OpportunityFieldReadyValue {
+            margin-left: 30px;
+            margin-top: 10px;
+        }
+        
+        .errorScrollBox{
+            height:4em; 
+            width:600px; 
+            overflow:auto;
+        }
+        
+        div.tableContainer {     
+            width: 712px;
+            max-height:280px;
+            overflow-y:auto;
+            overflow-x: hidden; 
+            _height: 315px;             
+            display: block; 
+            padding-left: 1px;
+            xxxwhite-space: nowrap; 
+        }
+        
+        div.topTable {
+            background: url({!URLFOR($Resource.XactlySMBResources ,'img/layout/grayTopTable.png')});
+            height: 8px;
+        }
+        
+        div.bottomTable {
+            background: url({!URLFOR($Resource.XactlySMBResources ,'img/layout/grayBottomTable.png')});
+            height: 3px;
+        }
+        
+        div.formatControl {
+            font-size: 12px;
+            margin: 0px auto;
+            width: 325px;
+            
+        }
+        div.aboveTableButtons {
+            margin-bottom: 20px;
+        }
+        
+        div.changeFilterCont {
+            float: left;
+            margin-left: 40px;
+        }
+        
+        div.showMoreDetailsCont {
+            float: right;
+            margin-right: 40px;
+        }
+        
+        .commonTable thead tr th a {
+            color: #3B6080;
+        }
+        .commonTable thead tr th img {
+            border: 0px;
+            margin: 0px 3px 0px 0px;
+            padding: 0px;
+        }
+        .planName{
+            color:#3B6080;
+            margin-left:43px;
+        }
+        
+        .calculationFail {
+          color: red !important;
+        }
+        
+        .processInformation {
+          padding: 0px;
+          margin: 10px;
+        }
+        
+        .processInformation .planProcessed {
+          padding: 0px;
+          margin: 5px 30px;
+        }
+        
+        .processStatus {
+          padding: 0px;
+          margin: 10px;
+          font-weight: bold;
+          font-size: 12px;
+          color: #3B6080;  
+          width: 200px;
+        }
+        
+        .commonTable tbody tr td {
+          border-right: 0px !important;
+        }
+        
+        .processStatusTD {
+          width: 200px;
+          text-align: center;
+        }
+        
+        .progressBar {
+          width: 130px; 
+          margin:auto; 
+          height: 15px;
+          overflow: hidden;
+          position: relative;
+        }
+        
+        .even{
+            background-color:#E7E7E7;
+        }
+        
+        .even td{
+            border-bottom:1px solid #C1C2BD !important;
+        }
+        
+        .odd td{
+            border-bottom:1px solid #C1C2BD !important;
+        }
+          
+    </style>
+    
+    <c:XactlySMBShadows />
+    
+    <!-- PAGE WRAPPER -->
+    <div class="pageContent" id="pContent">
+       		<apex:form id="theForm">
+	            <!-- HEADER -->
+	            <apex:outputPanel layout="block" styleClass="header">
+	                <c:XactlySMBHeader isAdmin="{!isAdmin}"  isActive="{!isActive}" nbrSeparator="{!nbrSeparator}" nbrDecimal="{!nbrDecimal}" currentUserOrSlected="{!currentUserOrSlected}" emulatingUserURLAppend="{!emulatingUserURLAppend}" selected="2"  wqlabel="{!currentSettings.quotasPlural}" wclabel="{!currentSettings.creditsPlural}" wlabel="{!currentSettings.dealsPluralCap}" wtype="calculate" step="3" hlabel="{!$Label.xactlyexpress__CalculateComissions}" stepHelp="CalculateStep2"  sPorcent="10"/>
+	            </apex:outputPanel>
+           	
+           
+            
+            <div  class="error">
+            <!-- INSUFFICIENT PERMISSIONS -->
+                <apex:outputPanel rendered="{!!isAdmin || !isActive}">
+                    <c:XactlySMBErrorMsg error="{!$Label.xactlyexpress__InsufficientPermissions}" />
+                </apex:outputPanel>
+            </div>
+            <apex:outputPanel layout="block" styleclass="additionalContent" rendered="{!isAdmin && isActive}">    
+                <c:XactlySMBChatterWall objectId="{!$User.Id}" showHeader="true" showWall="true" currentPage="{!$CurrentPage.Name}"/>
+            </apex:outputPanel>
+            
+            <!-- MAIN CONTENT -->
+            <apex:outputPanel layout="block" styleClass="mainContent" rendered="{!isAdmin && isActive}">
+         
+                <!-- CONTENT -->   
+                <apex:outputPanel layout="block" styleClass="content" style="width:100%">
+                    <!-- 
+                    <div style="width:465px; margin:auto;"><div class="topTable" style="width:465px;;"></div><div style="width:465px;" class="stepTableContainer"><table cellspacing="0" cellpadding="0" border="0" style="width:100%;">
+                    <tr class="odd"><td><c:XactlySMBStepNumber num="1" label="{!$Label.xactlyexpress__selectplanstocalculate}" /></td><td>
+                    
+                        <apex:selectList size="1" multiselect="false" value="{!planToCalculate}">
+                            <apex:selectOptions value="{!plans}"/>
+                        </apex:selectList>
+                        
+                    </td></tr>
+                    <tr class="odd"><td><c:XactlySMBStepNumber num="2" label="{!$Label.xactlyexpress__processCreditQuota}" /></td><td>
+                       <div class="btnToCenter btnAction">  
+                           <apex:commandLink styleClass="saveBtn" action="{!runCreditCalculate}" onclick="showProgressBar();$('.middleBtnSilver').removeClass('middleBtnSilver').addClass('middleBtnSilverDisabled');$(this).unbind('click');" rerender="mainPopup" oncomplete="refreshCalcsTable();">
+                               <apex:outputPanel layout="block" styleClass="rightBtnSilver">
+                                   <apex:outputPanel layout="block" styleClass="leftBtnSilver">
+                                       <apex:outputPanel layout="block" styleClass="middleBtnSilver">
+                                           {!$Label.ProcessAttainment}
+                                       </apex:outputPanel>
+                                   </apex:outputPanel>
+                               </apex:outputPanel>   
+                               <apex:outputPanel layout="block" styleClass="rightBtnSilver displayNone">
+                                   <apex:outputPanel layout="block" styleClass="leftBtnSilver">
+                                       <apex:outputPanel layout="block" styleClass="middleBtnSilverDisabled">
+                                           {!$Label.ProcessAttainment}
+                                       </apex:outputPanel>
+                                   </apex:outputPanel>
+                               </apex:outputPanel>
+                           </apex:commandLink>
+                        </div>
+                    </td></tr>       
+                    <tr class="even"><td><c:XactlySMBStepNumber num="3" label="{!$Label.xactlyexpress__CalculatePayouts}" /></td><td>
+                       <div class="btnToCenter btnAction">  
+                            
+                            <apex:actionStatus id="runCalculation">
+                                <apex:facet name="stop">
+                                    <!-- 
+                                    <apex:commandLink status="runCalculation" action="{!runCalculation}" oncomplete="refreshCalcsTable();" onclick="showProgressBar();">
+                                        <div class="rightBtnSilver">
+                                            <div class="leftBtnSilver">
+                                                <div class="middleBtnSilver">
+                                                    {!$Label.RunCalculations}
+                                                </div>
+                                            </div>
+                                        </div> 
+                                    </apex:commandLink>
+                                     -/->
+                                    
+                                    <apex:commandLink styleClass="saveBtn" id="saveBtn" action="{!runCalculation}" onclick="showProgressBar();$('.middleBtnSilver').removeClass('middleBtnSilver').addClass('middleBtnSilverDisabled');$(this).unbind('click');" rerender="mainPopup" oncomplete="refreshCalcsTable();">
+                                        <apex:outputPanel layout="block" styleClass="rightBtnSilver">
+                                            <apex:outputPanel layout="block" styleClass="leftBtnSilver">
+                                                <apex:outputPanel layout="block" styleClass="middleBtnSilver">
+                                                    {!$Label.RunCalculations}
+                                                </apex:outputPanel>
+                                            </apex:outputPanel>
+                                        </apex:outputPanel>   
+                                        <apex:outputPanel layout="block" styleClass="rightBtnSilver displayNone">
+                                            <apex:outputPanel layout="block" styleClass="leftBtnSilver">
+                                                <apex:outputPanel layout="block" styleClass="middleBtnSilverDisabled">
+                                                    {!$Label.RunCalculations}
+                                                </apex:outputPanel>
+                                            </apex:outputPanel>
+                                        </apex:outputPanel>
+                                    </apex:commandLink>
+                                    
+                                    
+                                </apex:facet>  
+                                <apex:facet name="start">
+                                    <apex:commandLink onclick="javascript:;">
+                                        <div class="rightBtnSilver">
+                                            <div class="leftBtnSilver">
+                                                <div class="middleBtnSilverDisabled">
+                                                    {!$Label.RunCalculations}
+                                                </div>
+                                            </div>
+                                        </div> 
+                                    </apex:commandLink>
+                                </apex:facet>
+                            </apex:actionStatus>
+                            
+                        </div>
+                    
+                    </td></tr>
+                    </table></div><div class="bottomTable" style="width:465px;;"></div></div>
+                    -->  
+                    <div style="width:665px; margin:auto;">
+	                    <div class="box" style="margin: 15px;">
+		                    <div class="tm">
+		                       <div style="float: left;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/tl.png')}"/></div>
+		                       <div style="float: right;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/tr.png')}"/></div>
+		                       <div style="clear:both"></div>
+		                    </div> 
+		                    <div class="roundedBox">
+		                        <div class="boxHeader">
+		                            <div class="stepActionNumber">
+		                            </div>
+		                            <div class="titleWrapper">  
+		                                <div class="mainTitle PNovaSemiBold17c3">{!$Label.calculateTitle}</div>
+		                                <div class="detailedTitle HelveticaRegular12c3">{!$Label.calculateSubTitle}</div>
+		                            </div>
+		                            <div class="extraTitleStuff"></div>
+		                            <div style="clear:both"></div>
+		                        </div>
+		                        <div class="boxContent" style="padding-top: 7px; padding-bottom: 0px;padding-left: 20px">
+		                            <table cellspacing="0" cellpadding="0" border="0" style="width:100%;">
+					                    <tr><td><c:XactlySMBStepNumber num="1" label="{!$Label.xactlyexpress__selectplanstocalculate}" /></td><td>
+					                    
+					                        <apex:selectList id="plansList" size="1" multiselect="false" value="{!planToCalculate}">
+					                            <apex:selectOptions value="{!plans}"/>
+					                        </apex:selectList>
+					                        
+					                    </td></tr>
+					                    <tr><td>
+											<span class="stepActionNumber">2</span><span class="stepActionLabel" id="stepActionLabel2">
+												<apex:outputtext value="{!$Label.xactlyexpress__processCreditQuota}">
+													<apex:param value="{!currentSettings.creditsPlural}"/>
+													<apex:param value="{!currentSettings.quotasPlural}"/>
+												</apex:outputtext>
+											</span>
+										</td><td>
+					                       <div class="btnToCenter btnAction">  
+					                           <apex:commandLink id="processAtt" styleClass="saveBtn" action="{!runCreditCalculate}" onclick="showProgressBar();$('.middleBtnSilver').removeClass('middleBtnSilver').addClass('middleBtnSilverDisabled');$(this).unbind('click');" rerender="mainPopup" oncomplete="refreshCalcsTable();">
+					                               <apex:outputPanel layout="block" styleClass="rightBtnSilver">
+					                                   <apex:outputPanel layout="block" styleClass="leftBtnSilver">
+					                                       <apex:outputPanel layout="block" styleClass="middleBtnSilver">
+					                                           {!$Label.xactlyexpress__ProcessAttainment}
+					                                       </apex:outputPanel>
+					                                   </apex:outputPanel>
+					                               </apex:outputPanel>   
+					                               <apex:outputPanel layout="block" styleClass="rightBtnSilver displayNone">
+					                                   <apex:outputPanel layout="block" styleClass="leftBtnSilver">
+					                                       <apex:outputPanel layout="block" styleClass="middleBtnSilverDisabled">
+					                                           {!$Label.xactlyexpress__ProcessAttainment}
+					                                       </apex:outputPanel>
+					                                   </apex:outputPanel>
+					                               </apex:outputPanel>
+					                           </apex:commandLink>
+					                        </div>
+					                    </td></tr>       
+					                    <tr><td><c:XactlySMBStepNumber num="3" label="{!$Label.xactlyexpress__CalculatePayouts}" /></td><td>
+					                       <div class="btnToCenter btnAction">  
+					                            
+					                            <apex:actionStatus id="runCalculation">
+					                                <apex:facet name="stop">
+					                                    
+					                                    <apex:commandLink id="runCalc" styleClass="saveBtn" id="saveBtn" action="{!runCalculation}" onclick="showProgressBar();$('.middleBtnSilver').removeClass('middleBtnSilver').addClass('middleBtnSilverDisabled');$(this).unbind('click');" rerender="mainPopup" oncomplete="refreshCalcsTable();">
+					                                        <apex:outputPanel layout="block" styleClass="rightBtnSilver">
+					                                            <apex:outputPanel layout="block" styleClass="leftBtnSilver">
+					                                                <apex:outputPanel layout="block" styleClass="middleBtnSilver">
+					                                                    {!$Label.xactlyexpress__RunCalculations}
+					                                                </apex:outputPanel>
+					                                            </apex:outputPanel>
+					                                        </apex:outputPanel>   
+					                                        <apex:outputPanel layout="block" styleClass="rightBtnSilver displayNone">
+					                                            <apex:outputPanel layout="block" styleClass="leftBtnSilver">
+					                                                <apex:outputPanel layout="block" styleClass="middleBtnSilverDisabled">
+					                                                    {!$Label.xactlyexpress__RunCalculations}
+					                                                </apex:outputPanel>
+					                                            </apex:outputPanel>
+					                                        </apex:outputPanel>
+					                                    </apex:commandLink>
+					                                    
+					                                    
+					                                </apex:facet>  
+					                                <apex:facet name="start">
+					                                    <apex:commandLink onclick="javascript:;">
+					                                        <div class="rightBtnSilver">
+					                                            <div class="leftBtnSilver">
+					                                                <div class="middleBtnSilverDisabled">
+					                                                    {!$Label.xactlyexpress__RunCalculations}
+					                                                </div>
+					                                            </div>
+					                                        </div> 
+					                                    </apex:commandLink>
+					                                </apex:facet>
+					                            </apex:actionStatus>
+					                            
+					                        </div>
+					                    
+					                    </td></tr>
+				                    </table>                                    
+		                        </div>    
+		                    </div>        
+		                    <div class="bm">
+		                        <div style="float: left;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/bl.png')}"/></div>
+		                        <div style="float: right;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/br.png')}"/></div>
+		                    </div> 
+		                </div>
+	                </div>
+                    <div class="progressBar">
+                       <img id="progressBar" style="visibility: hidden;" src="{!URLFOR($Resource.XactlySMBResources, 'img/icons/progressBar.gif')}" />
+                    </div>
+                    <apex:outputPanel layout="block" style="width: 708px; margin: auto;height: 370px;"> 
+                    <div style="width:713px;margin-bottom:90px;">
+                        <div class="topTable"></div> 
+	                    <script>
+	                        var runFirst = false;
+	                    </script>
+	                    <apex:actionFunction name="refreshCalcsTable" action="{!fixLostProcess}" rerender="alphabeticalBox" oncomplete="refreshCalcsTableReal();"/>
+                        <apex:actionFunction name="refreshCalcsTableReal" action="{!genLastCalculations}" rerender="alphabeticalBox" oncomplete="showAll('false');if($('.processStatus:contains({!running})').size()>0 || $('.processStatus:contains({!queued})').size()>0 || !runFirst){refreshingCalc();runFirst=true;} else {hideProgressBar();runFirst =false;}"/>
+	                    <apex:outputPanel id="alphabeticalBox" styleClass="tableContainer" layout="block">                
+	                        <apex:dataTable value="{!lastProcesses}" var="iter" id="profilesTable" styleClass="commonTable" border="0" style="border:0;width:100%" rowClasses="odd,even" headerClass="odd" width="100%">
+	                            <apex:column >
+	                                <div class="processInformation">
+	                                    <apex:outputtext value="{!$Label.xactlyexpress__CalculationTime}" />&nbsp;:&nbsp;&nbsp;<apex:outputtext value="{!iter.processDate}" /><br />
+	                                    <apex:outputtext value="{!IF(iter.process.XactlyExpress__Type__c='Credit',$Label.xactlyexpress__DealsProcessed,$Label.xactlyexpress__CreditsProcessed)}" ><apex:Param value="{!currentSettings.dealsPluralCap}"/></apex:outputtext> :&nbsp;&nbsp;<apex:outputtext value="{!iter.dealsProcessed}" /><br />
+	                                    <apex:outputtext value="{!$Label.xactlyexpress__PayeesProcessed}" /> :&nbsp;&nbsp;<apex:outputtext value="{!iter.payeesProcessed}" /><br />
+	                                    <div class="planProcessed">
+	                                        <apex:repeat value="{!iter.plansProcessed}" var="iterPlan">
+	                                            <pre>{!iterPlan.name}</pre>&nbsp;&nbsp;<apex:outputtext value="{!iterPlan.FiscalYear}" /><br />
+	                                        </apex:repeat>
+	                                    </div>
+	                                </div>
+	                            </apex:column>  
+	                            
+	                            <apex:column styleClass="processStatusTD">
+	                                 <div class="processStatus {!IF(iter.fail, 'calculationFail', '')}">
+	                                     <apex:outputtext value="{!IF(iter.process.XactlyExpress__Type__c='Credit',$Label.xactlyexpress__Crediting,IF(iter.process.XactlyExpress__Type__c ='Clean Result',$Label.xactlyexpress__CleanResults,IF(iter.process.XactlyExpress__Type__c ='Release',$Label.xactlyexpress__Release,$Label.xactlyexpress__Calculation)))} {!iter.process.XactlyExpress__Status__c}" />
+	                                     <apex:outputpanel layout="block" rendered="{!iter.fail}">
+	                                        <apex:outputtext value="{!iter.process.XactlyExpress__ErrorMsg__c}" /> 
+	                                     </apex:outputpanel>
+	                                 </div>
+	                            </apex:column>                      
+	                        </apex:dataTable>
+	                    </apex:outputPanel> 
+	                    <div class="bottomTable"></div> 
+                        <apex:actionFunction name="runReundoReleasesFN"  action="{!runReundoReleases}"  rerender="mainPopup"  oncomplete="refreshCalcsTable();"/>
+                        <apex:actionFunction name="runClearResultFN"  action="{!runClearResult}"  rerender="mainPopup"  oncomplete="refreshCalcsTable();"/>
+ 
+                        <div class="btnToCenter btnAction" style="float:left;margin:5px;">   
+                            <a class="saveBtn" href="javascript:;" onclick="runClearResultF();">
+                                <apex:outputPanel layout="block" styleClass="rightBtnSilver">
+	                                <apex:outputPanel layout="block" styleClass="leftBtnSilver">
+	                                    <apex:outputPanel layout="block" styleClass="middleBtnSilver">
+	                                        {!$Label.xactlyexpress__undoCalculation}
+	                                    </apex:outputPanel>
+	                                </apex:outputPanel>
+                                </apex:outputPanel>   
+                                <apex:outputPanel layout="block" styleClass="rightBtnSilver displayNone">
+                                    <apex:outputPanel layout="block" styleClass="leftBtnSilver">
+                                        <apex:outputPanel layout="block" styleClass="middleBtnSilverDisabled">
+                                            {!$Label.xactlyexpress__undoCalculation}
+                                        </apex:outputPanel>
+                                    </apex:outputPanel>
+                                </apex:outputPanel>
+                            </a>
+                        </div>
+
+                        <div class="btnToCenter btnAction" style="float:right;margin:5px;">   
+                            <a class="saveBtn" href="javascript:;" onclick="runReundoReleasesF();">
+                                <apex:outputPanel layout="block" styleClass="rightBtnSilver">
+                                    <apex:outputPanel layout="block" styleClass="leftBtnSilver">
+                                        <apex:outputPanel layout="block" styleClass="middleBtnSilver">
+                                            {!$Label.xactlyexpress__reprocessCurrentReleases}
+                                        </apex:outputPanel>
+                                    </apex:outputPanel>
+                                </apex:outputPanel>   
+                                <apex:outputPanel layout="block" styleClass="rightBtnSilver displayNone">
+                                    <apex:outputPanel layout="block" styleClass="leftBtnSilver">
+                                        <apex:outputPanel layout="block" styleClass="middleBtnSilverDisabled">
+                                            {!$Label.xactlyexpress__reprocessCurrentReleases}
+                                        </apex:outputPanel>
+                                    </apex:outputPanel>
+                                </apex:outputPanel>
+                            </a>
+                        </div>         
+                    </div>  
+                    </apex:outputPanel> 
+                    
+                </apex:outputPanel><!-- END CONTENT -->
+                <div style="clear:both"></div>
+            </apex:outputPanel><!-- END CONTENTWRAPPER -->
+           
+            <!-- FOOTER  -->
+            <apex:outputPanel layout="block" styleClass="footer" rendered="{!isAdmin && isActive}" id="pFooter">
+                <apex:outputPanel layout="block" styleClass="previousStepWrapper" style="max-width:150px;">
+                    <div class="previousStepRight"></div>
+                    <a class="previousStepMiddle" href="{!$Page.XactlySMBCalculateStep3}" onclick="savePageHandler.disableBottomBar();">
+                        {!$Label.PreviousStep}
+                    </a>
+                    <div class="previousStepLeft"></div>
+                </apex:outputpanel>
+                    
+                <apex:outputPanel layout="block" styleClass="actionButtons">                        
+                   
+                </apex:outputPanel>
+            
+                <apex:outputPanel layout="block" styleClass="nextStepWrapper" style="margin-right:100px;">
+                    <div class="nextStepLeft"></div>
+                    <a class="nextStepMiddle" href="{!$Page.XactlySMBCalculateManageAttainments}" onclick="savePageHandler.disableBottomBar();">
+                        {!$Label.SimpleNextStep}
+                    </a>
+                    <div class="nextStepRight"></div>
+                </apex:outputPanel>
+            </apex:outputPanel>
+        </apex:form>
+    </div>
+    <c:XactlySMBFooterScript /> 
+    <script type="text/javascript" language="javascript" src="{!URLFOR($Resource.XactlySMBResources, 'js/XactlySMBJavascript.js')}"></script>
+    <script type="text/javascript" src="{!URLFOR($Resource.XactlySMBResources ,'js/jquery.superbox-min.js')}"></script>
+	<script type="text/javascript">
+	    $(function(){
+	        $.superbox.settings = {
+	            closeTxt: "X",
+	            loadTxt: "Loading...",
+	            nextTxt: "Next",
+	            prevTxt: "Previous"
+	        };
+	        $.superbox();
+	    });
+	</script>
+    <script type="text/javascript" charset="utf-8">
+            if(showAll == undefined){
+                var showAll = function(){};
+            } 
+            
+            $(document).ready(function (){
+                saveBtnOnclick = $('.saveBtn').attr('onclick');
+            });
+            
+            var saveBtnOnclick;
+           
+            
+            function refreshingCalc () {
+                //setTimeout('hideProgressBar()', 3000);
+                
+                setTimeout('refreshCalcsTable()', 3000);
+                
+            }
+            
+            function runClearResultF () {
+                if(confirm('{!$Label.wantDeleteCalculationsReleases}')){
+                    showProgressBar();
+                    $('.middleBtnSilver').removeClass('middleBtnSilver').addClass('middleBtnSilverDisabled');
+                    $(this).unbind('click');
+                    runClearResultFN();
+                }
+            }            
+            
+            function runReundoReleasesF () {
+                if(confirm('{!$Label.wantReprocessReleases}')){
+                    showProgressBar();
+                    $('.middleBtnSilver').removeClass('middleBtnSilver').addClass('middleBtnSilverDisabled');
+                    $(this).unbind('click');
+                    runReundoReleasesFN();
+                }
+            }    
+            
+            function showProgressBar () {
+                var progressBar = document.getElementById('progressBar');
+                progressBar.style.visibility = "visible";
+            }
+            
+            function hideProgressBar () {
+            
+                
+                var progressBar = document.getElementById('progressBar');
+                progressBar.style.visibility = "hidden";
+                
+                $('.middleBtnSilverDisabled').removeClass('middleBtnSilverDisabled').addClass('middleBtnSilver');
+                
+                if($('.saveBtn').attr('onclick')==""){
+                    
+                    $('.saveBtn').attr('onclick',function(){
+                        return saveBtnOnclick;
+                    
+                    });
+                
+                }
+                
+                
+                
+                
+            }
+            
+
+    </script>
+</apex:page>

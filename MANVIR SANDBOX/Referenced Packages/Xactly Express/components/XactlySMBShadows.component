@@ -1,0 +1,4 @@
+<apex:component >
+    <div id="shadowContainer" class="shadowContainer" style="top:0;">
+    </div>
+</apex:component>

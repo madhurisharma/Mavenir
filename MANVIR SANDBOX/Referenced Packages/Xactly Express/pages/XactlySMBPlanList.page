@@ -1,0 +1,625 @@
+<!--
+ Developed by Timba Software Corp. www.timbasoftware.com admin@timbasoftware.com
+ This page lists plans
+ @author Guillermo Freire <guillermo.freire@gmail.com>
+-->
+<apex:page id="planList" controller="XactlyExpress.XactlySMBPlanListController" sidebar="false" showHeader="false" standardStylesheets="true" action="{!redirectWhenAccessIsDenied}">
+    
+   <c:XactlySMBJitCharts />
+   <c:XactlySMBGauges />
+   
+   <!-- Custom Cursor Loader -->
+   <c:XactlySMBCursor />
+   <!-- Custom Cursor Loader -->
+    <title>{!$Label.ManagePlans}</title>
+    <link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.XactlySMBResources ,'css/XactlySMBStyles.css')}" />   
+    
+    <style>
+        /* THIS PAGE SPECIFIC CONTENT */
+        .padding{
+            padding-right:31px
+         }
+        img{ 
+            border: 0;
+            display:block;
+        }  
+                
+        .plansIframe{
+            width:760px;
+            height:460px;
+            overflow:auto;
+            margin: 0px auto;
+        }
+        
+        .planBox{
+            width:235px;
+            margin-right:1em;
+        }
+        
+        .planBoxTitle{
+            border: none;
+            padding-left:1em;
+            background: url({!URLFOR($Resource.XactlySMBResources ,'img/layout/grayTopTable.png')});
+            height:8px;
+            font-size: 11px;
+            font-weight: bold;
+            padding: 2px 0 0 10px;          
+        }
+        
+        .planBoxFooter1{
+            background: url({!URLFOR($Resource.XactlySMBResources ,'img/layout/grayBottomTable.png')});
+            height: 3px;
+            text-align:right;    
+            width: 235px;   
+        }
+        
+        .planBoxContent {
+            border-left: 1px solid rgb(204,204,204);
+            border-right: 1px solid rgb(204,204,204);
+            width: 213px;
+            max-width: 213px;
+            width: expression(document.body.clientWidth > 214? '213px' : 'auto');
+            overflow: auto;
+            background: rgb(255,255,255);
+            font-size: 11px;
+            padding: 10px 10px 15px 10px;
+            *padding-bottom: 0px;
+        }
+
+        .plansTable tr td{
+            vertical-align:top;
+        }
+        
+    
+        .totalsGraphTitle{
+            border-bottom: solid 1px rgb(0,0,0);
+            padding-left:1em
+        }
+        
+        .totalsGraphContent{
+            margin: 0 2px;
+        }
+        
+        .centered{
+            text-align:center;
+        }
+        
+        div#aboveCenter {
+            font-size: 15px;
+            margin-left: 150px;
+        }
+        
+        div.chartDescription{
+            text-align:center; 
+            font-size:11px; 
+        }
+        
+        img.chartImg{
+            display:block; 
+            width:170px; 
+            text-align:center; 
+            margin:auto;
+        }
+        
+        .leftPlanBox {
+            margin: 20px 0px 10px 34px;
+        }
+        
+        .planBox .editBtnWrapper  {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .planBox .editBtn {
+            float: right;
+        } 
+        
+        .selectAPlanComponentWrapper {
+            padding: 0px;
+            margin: 10px 0px 0px 0px;
+        }
+        
+        .meauresLinks{
+            white-space:nowrap;
+        }
+        
+        .planNameBox {
+            color:#3B6080;
+            font-size:12px;
+            font-weight:bold;
+        }
+        
+        .planInfoLabel {
+            font-weight: bold;
+            width: 140px;
+        }
+        
+        .chartWrapper {
+            display:block; 
+            width:182px; 
+            height:auto;
+        }
+        
+        .extraTitleStuffDoc {
+            padding: 0px 5px 5px 0;
+            margin-left:33px;
+        }
+        
+        .nextStepLeftDoc {
+           margin: 0px;
+           padding: 0px;
+           background: url("{!URLFOR($Resource.XactlySMBResources ,'img/buttons/navigateLeft.gif')}") no-repeat;
+           float: left;
+           width: 11px;
+           height: 27px;
+           margin-top: 8px;
+        }
+
+        .nextStepMiddleDoc {
+           margin: 0px;
+           padding: 0px;
+           background: url("{!URLFOR($Resource.XactlySMBResources ,'img/buttons/navigateMiddle.gif')}") repeat-x;
+           float: left;
+           height: 21px;
+           margin-top: 8px;
+           padding-top: 5px;
+           padding-right: 4px;
+           color: #3B6080;
+           font-weight: bold;
+           font-size: 11px;
+        }
+        
+        .nextStepRightDoc {
+            background:url("{!URLFOR($Resource.XactlySMBResources ,'img/buttons/EditPlanDocButton.png')}") no-repeat scroll 0 0 transparent;
+            float:left;
+            height:53px;
+            margin:0;
+            padding:0;
+            margin-top: 6px;
+            width:40px;
+        }
+        
+        .pageContent  {
+			padding:90px 0 0;
+		}
+		
+		
+		/* Not plans style Images */
+			.scrollable {
+				height:486px;
+				margin-top:4px;
+				overflow:hidden;
+				position:relative;
+				width:1068px;
+			}
+			
+			a:visited {
+				cursor:pointer !important;
+				text-decoration:none !important;
+			}
+			
+			.items div.centerPane {
+				background: url({!URLFOR($Resource.XactlySMBResources ,'img/layout/homeCenterBackground.png')}) no-repeat scroll 0 0 transparent;
+				display:block;
+				height:569px;
+				width:1068px;
+			}
+			
+			.items div {
+				float:left;
+			}
+			
+			.first {
+				font-size:38px;
+			}
+			.title {
+				color:#4888B8;
+				cursor:default;
+				margin-left:40px;
+			}
+			
+			.midMenu {
+				height:210px;
+				margin-left:45px;
+				position:relative;
+				top:50px;
+				width:981px;
+			}
+			
+
+			.midMenu img {
+				margin-bottom:25px;
+				display:inline;
+			}
+		
+			.midMenu span {
+				color:#FFFFFF;
+				font-weight:bold;
+				text-shadow:0 0 3px #000000;
+			}
+			
+			.pronouncedTitle  {
+				color:#000000; 
+			}
+
+			.pFirst {
+				font-size:44px;
+			}
+		
+			.items .informationTextThirdPane {
+				float:right;
+				margin-top:45px;
+			}
+			
+			.items .infoText {
+				cursor:default;
+				display:block;
+				float:none;
+				font-size:11px;
+				margin-top:30px;
+				width:310px;
+			}
+			
+			.linkButton {
+				margin-top:10px;
+			}
+			
+			.firstIconThirdPane {
+				font-size:25px;
+				left:50px;
+				position:relative;
+				top:50px;
+			}
+				
+			.firstIconThirdPane img {
+				margin-right:-129px;
+			}
+			
+			.secondIconThirdPane  {
+				font-size:25px;
+			}
+			
+			.secondIconThirdPane  {
+				font-size:25px;
+				left:170px;
+				position:relative;
+				top:-20px;
+			}
+			
+			.secondIconThirdPane img {
+				margin-right:-160px;
+			}
+			
+			.thirdIconThirdPane {
+				font-size:20px;
+				left:300px;
+				position:relative;
+				top:-50px;
+			}
+			
+			.thirdIconThirdPane img {
+				margin-right:-110px;
+			}
+			
+			
+			.secondIconThirdPane img {
+				margin-right:-160px;
+			}
+			
+			.fourthIconThirdPane  {
+				font-size:20px;
+				left:420px;
+				position:relative;
+				top:-70px;
+			}
+			.fourthIconThirdPane img {
+				margin-right:-125px;
+			}
+			
+			.items .second {
+				display:block;
+				float:left;
+				font-size:18px;
+				margin-left:0;
+				margin-right:65px;
+			}
+			
+			.btnLeft {
+				float:left;
+			}
+			
+			.btnCenter {
+				background: url({!URLFOR($Resource.XactlySMBHome ,'img/buttons/homeButtonBackground.png')}) repeat-x scroll 0 0 transparent;
+				color:#FFFFFF;
+				float:left;
+				font-size:16px;
+				font-weight:bold;
+				padding-bottom:10px;
+				padding-top:6px;
+			}
+			
+			.btnRight {
+				float:right;
+			}
+			
+			div#XactlySMBHeader{
+				height: 0px !important;
+			} 
+			
+			#XactlySMBHeader #XactlySMBSubHeead{
+				height: 36px;
+			}
+    </style> 
+    
+    <c:XactlySMBShadows />
+    <apex:includeScript value="{!URLFOR($Resource.XactlyExpress__CSN, 'jquery.js')}" />
+    <script type="text/javascript" language="javascript" src="{!URLFOR($Resource.XactlySMBResources, 'js/XactlySMBJavascript.js')}"></script>
+    <script type="text/javascript" src="{!URLFOR($Resource.XactlySMBResources ,'js/jquery.superbox-min.js')}"></script>
+    <script type="text/javascript">
+    
+        $(document).ready(function (){
+            $.superbox.settings = {
+                closeTxt: "X",
+                loadTxt: "Loading...",
+                nextTxt: "Next",
+                prevTxt: "Previous"
+            };
+            $.superbox();
+            checkShowResult();
+        });                
+        
+        function checkShowResult(){
+			if(!{!showResults} && !{!dontShowAgain}){
+				$('#showLimitAlert').click();						          		
+			}   
+		}  
+        
+        
+    </script>
+        
+    <!-- PAGE WRAPPER -->
+    <div class="pageContent" id="pContent">
+        <apex:form >
+            <!-- HEADER -->
+            <apex:outputPanel layout="block" styleClass="header">
+                <c:XactlySMBHeader isAdmin="{!isAdmin}"  isActive="{!isActive}" nbrSeparator="{!nbrSeparator}" nbrDecimal="{!nbrDecimal}" currentUserOrSlected="{!currentUserOrSlected}" emulatingUserURLAppend="{!emulatingUserURLAppend}" selected="3" hlabel="{!$Label.xactlyexpress__CreatePlanOrSelect}" wclabel="{!currentSettings.creditsPlural}" wlabel="{!currentSettings.dealsPlural}" wqlabel="{!currentSettings.quotasPlural}" stepHelp="PlanList"  />
+            </apex:outputPanel>
+               
+            <!-- INSUFFICIENT PERMISSIONS -->
+            <div  class="error">
+                <apex:outputPanel rendered="{!!isAdmin || !isActive}">
+                    <c:XactlySMBErrorMsg error="{!$Label.xactlyexpress__InsufficientPermissions}" />
+                </apex:outputPanel>
+            </div>            
+            <apex:outputPanel layout="block" styleclass="additionalContent" rendered="{!isAdmin && isActive}">    
+                <c:XactlySMBChatterWall objectId="{!$User.Id}" showHeader="true" showWall="true" currentPage="Manage Plans"/>
+            </apex:outputPanel>
+           
+            <!-- MAIN CONTENT -->
+            <apex:outputPanel layout="block" styleClass="mainContent" rendered="{!isAdmin && isActive}">
+	              
+
+                <!-- LEFT PANEL -->
+                <apex:outputPanel id="leftPanel" layout="block" styleClass="leftPanel">
+                    
+                    <div class="newPlan newLeftPanel" >
+                        <div class="btnToLeft btnAction newLeftPanel" >
+                            <div class="leftSide">
+                            {!$Label.CreateNewPlan}
+                            </div>
+                            <a href="{!$Page.XactlySMBPlanCreate}{!IF(LEN(selectedFiscalYear)>0,'?fysid=' + selectedFiscalYear,'')}">
+	                            <div class="rightSide padding">
+	                                <div class="rightBtnOrange">
+	                                   <div class="leftBtnOrange">
+	                                     <div class="middleBtnOrange">
+	                                       {!$Label.New}
+	                                     </div>
+	                                  </div>
+	                               </div>
+	                           </div>
+                           </a>
+                        </div>
+                        
+                    </div>
+                    
+                    <div class="selectAPlanComponentWrapper">
+                        <c:XactlySMBLeftSelectAPlan myPage="/apex/XactlySMBPlanCreate" currentFiscalYear="{!selectedFiscalYear}" currentPlanId="" currentFiscalYearName="{!selectedFiscalYearLabel}"/>
+                    </div>
+                    <!--  
+                    <c:XactlySMBLeftPanel pageNameFor="PlanList"/> 
+                    -->
+                    <br/>
+                    
+                    <div class="extraTitleStuffDoc">
+                       <div class="nextStepLeftDoc"></div>
+	                       <a class="nextStepMiddleDoc" href="{!$Page.XactlySMBTermsAndConditions}">
+	                          <div style="text-align:center;width:170px;">{!$Label.CreatePlanD}</div>
+	                       </a>
+                       <div class="nextStepRightDoc"></div>
+                    </div>
+                </apex:outputPanel>
+                 
+                <!-- CONTENT -->
+                <apex:outputPanel layout="block" styleClass="content">
+                    <apex:actionFunction name="rerenderPlansList" action="{!searchPlansByYear}" status="fetchingPlanStatus"/>
+                    <div class="contentHeader areaTitle">
+                        <apex:outputLabel id="fiscalYearTitleLabel" value="{!$Label.xactlyexpress__FiscalYearTitle}: " for="fyselect" />
+                        <apex:selectList value="{!selectedFiscalYear}" id="fyselect" onchange="rerenderNoCompare = true;storeValues();rerenderPlansList();waitOn();" rendered="{!IF(fiscalYearOptions.size>0,'true','false')}" multiselect="false" size="1">
+                            <apex:selectOptions value="{!fiscalyearoptions}"/>
+                        </apex:selectList>
+                    </div>
+                    
+                    <apex:outputPanel rendered="{!IF(fiscalYearOptions.size>0,'false','true')}">
+                        <c:XactlySMBErrorMsg error="{!$Label.xactlyexpress__CreateFiscalYearFirstError}" />
+                    </apex:outputPanel>
+                    <apex:outputPanel id="plansList" layout="block" styleClass="plansIframe" style="margin-bottom:60px;">
+                        <apex:outputPanel layout="block"  id="NoPlansForThisYear" rendered="{!IF(plansList.size>0,'false','true')}">
+                            {!$Label.xactlyexpress__NoPlansForThisYear}
+                        </apex:outputPanel>
+                        <table class="plansTable">
+                            <tr>
+                                <apex:repeat value="{!plansListInfo}" var="iterPlanXX">
+                                    <td>
+                                        <div class="planBox">
+                                            <div class="planBoxTitle"></div>
+                                            <div class="planBoxContent">
+                                                 <table cellpadding="0px" cellspacing="0px">
+                                                     <tr>
+                                                         <td>
+                                                             <div class="planNameBox">
+                                                                 <apex:outputtext value="{!IF(LEN(iterPlanXX.p.Name) < 27, iterPlanXX.p.Name, LEFT(iterPlanXX.p.Name, 24) + '...')}" />
+                                                             </div>
+                                                         </td>
+                                                         <td align="right">
+                                                            <apex:outputPanel styleClass="btnAction editBtn" layout="block">
+                                                                <a href="{!$Page.XactlyExpress__XactlySMBPlanCreate}?id={!iterPlanXX.p.Id}">
+                                                                    <div class="rightBtnOrange">
+                                                                        <div class="leftBtnOrange">
+                                                                            <div class="middleBtnOrange">
+                                                                               {!$Label.xactlyexpress__ClickHereToEditThePlan}
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </a>
+                                                            </apex:outputPanel>
+                                                         </td>
+                                                     </tr>
+                                                     <tr><td><br /></td></tr>
+                                                     <tr>
+                                                         <td class="planInfoLabel">
+                                                             <apex:outputtext value="{!$Label.xactlyexpress__Payees}" />:
+                                                         </td>
+                                                         <td class="planInfoValue" align="right">
+                                                             <apex:outputtext value="{!iterPlanXX.peopleCount}" />
+                                                         </td>
+                                                     </tr>
+                                                     <tr>
+                                                         <td class="planInfoLabel">
+                                                             <apex:outputtext value="{!$Label.xactlyexpress__LastCalcDate}" />:
+                                                         </td>
+                                                         <td class="planInfoValue" align="right">
+                                                             <apex:outputtext value="{!iterPlanXX.lastCalcDate}" />
+                                                         </td>
+                                                     </tr>
+                                                     <tr><td><br /></td></tr>
+                                                     <tr>
+                                                         <td class="planInfoLabel">
+                                                             <apex:outputtext value="{!$Label.xactlyexpress__TotalPlannedSpend}" />:
+                                                         </td>
+                                                         <td class="planInfoValue" align="right">
+                                                             <apex:outputtext value="{!iterPlanXX.totalPlannedSpend}"/>
+                                                         </td> 
+                                                     </tr>
+                                                     <tr><td><br /><br /></td></tr>
+                                                     <tr>
+                                                        <td colspan="2" class="planInfoLabel" align="center">
+                                                            <div>
+                                                                <apex:outputtext value="{!$Label.xactlyexpress__PlannedPayoutAttainment}">
+                                                                    <apex:param value="{!currentSettings.componentsCap}" />
+                                                                </apex:outputtext>
+                                                            </div>
+                                                            <div class="chartWrapper chartImg">
+                                                               <apex:outputpanel layout="none" rendered="{!NOT(problemLoadingCharts)}">
+                                                                   
+                                   								   <c:XactlySMBChart values="{!IF(iterPlanXX.dataArrayForFlex != '',iterPlanXX.dataArrayForFlex,' :#:0:#: ')}" cid="{!iterPlanXX.p.id}" type="Sales Results" />
+                                                                   
+                                                                   <!--  
+                                                                   <object>
+                                                                       <param name="wmode" value="transparent" />
+                                                                       <embed 
+                                                                        wmode="transparent"
+                                                                       id="columnChartEmbed" 
+                                                                       width="100%" 
+                                                                       height="200"
+                                                                       align="middle" 
+                                                                       type="application/x-shockwave-flash" 
+                                                                       src="{!$Resource.ReviewPlanChart}" 
+                                                                       pluginspage="http://www.adobe.com/go/getflashplayer" 
+                                                                       play="true" 
+                                                                       name="FlexSalesforce" 
+                                                                       loop="false" 
+                                                                       flashvars="planId={!iterPlanXX.p.id}&session_id={!$Api.Session_ID}&server_url={!$Api.Partner_Server_URL_130}&namespace={!nameSpace}&dataArray={!iterPlanXX.dataArrayForFlex}&planName={!IF(MAX(LEN(iterPlanXX.p.Name),24) == 24, iterPlanXX.p.Name, LEFT(iterPlanXX.p.Name, 21) + '...')}" 
+                                                                       bgcolor="#FFFFFF" 
+                                                                       allowscriptaccess="always"
+                                                                      />
+                                                                    </object>
+                                                                    -->
+                                                                </apex:outputpanel>
+                                                                <apex:outputpanel layout="none" rendered="{!problemLoadingCharts}">
+                                                                    <div style="color: red; margin-top: 30px;">
+                                                                        Problem loading Chart<br /><br />
+                                                                        <a style="color: #3B6080; font-size: 11px; font-weight: normal;" href="{!$Page.XactlySMBReviewPlan}?step=6&id={!iterPlanXX.p.id}" target="_blank">See chart here</a>
+                                                                    </div>
+                                                                </apex:outputpanel>
+                                                            </div>
+                                                        </td>
+                                                     </tr>
+                                                 </table>
+                                                
+                                            </div>
+                                            <div class="planBoxFooter1"></div>
+                                                                                
+                                        </div>
+                                    </td>
+                                </apex:repeat>
+                            </tr>
+                        </table>
+                    </apex:outputPanel> 
+                </apex:outputPanel>
+                <div style="clear:both"></div>
+            </apex:outputPanel>
+            
+            <!-- FOOTER  -->
+            <apex:outputPanel layout="block" styleClass="footer" rendered="{!isAdmin && isActive}" id="pFooter">
+                <div class="btnToRight btnAction">
+                    <a href="javascript:;" onclick="location.href = '/apex/XactlySMBPlanCreate';">
+                        <div class="rightBtnOrange">
+                            <div class="leftBtnOrange">
+                                <div class="middleBtnOrange">
+                                   {!$Label.xactlyexpress__CreateNewPlan}
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <apex:inputHidden id="budgetSum" value="{!budgetSum}"/>
+            </apex:outputPanel> 
+            <script>     
+                var sum = document.getElementById('{!$Component.budgetSum}').value;
+            </script>           
+            <apex:actionFunction action="{!dontShowAgainChange}" name="dontShowAgainChange" rerender="errorMsg"/>
+        </apex:form>
+        <c:XactlySMBFooterScript /> 
+        
+    </div>  
+    
+    <div style="display:none;" id="showLimit">
+        <div style="background-image: url('{!URLFOR($Resource.XactlySMBResources ,'img/layout/topOrange.png')}');margin-left:15px;margin-right:11px;">
+            <div style="float: left;margin-left:-15px;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/topLeftOrange.png')}"/></div>
+            <div style="float: right;margin-right:-15px;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/topRightOrange.png')}"/></div>
+            <div style="clear:both"></div>
+        </div> 
+        <div style="width:100%;border-right:2px solid #D49761;border-left:2px solid #D49761;background-color:#FFF;">
+            <apex:outputText style="color:#FFA24F;font-size:21pt;margin-left:20px;" value="{!$Label.xactlyexpress__thatIsEmbarassing}"/><br/><br/>
+            <apex:outputText style="color:#777777;font-size:12pt;font-weight:bold;margin-left:20px;" value="{!$Label.xactlyexpress__retrievedTooMuchDate}"/><br/><br/>
+            <apex:outputText style="color:#777777;font-size:7pt;font-weight:bold;margin-left:20px;" value="{!$Label.xactlyexpress__whatHappend}"/><br/>
+            <apex:outputText style="color:#999999;font-size:7pt;margin-left:23px;" value="{!$Label.xactlyexpress__tooMuchDataExplanation}"/><br/><br/>
+            <div class="linkButton" style="float:left;margin-left:20px;">
+                <a href="javascript:;" style="margin-left:40px;" onclick="jQuery.superbox.close();dontShowAgainChange();">
+                    <img style="float:left;" class="btnt" src="{!URLFOR($Resource.XactlySMBHome ,'img/buttons/homeButtonLeft.png')}"/>
+                    <span class="btnCenter"> {!$Label.viewResultsAsIs}   </span>
+                    <img class="btnt" src="{!URLFOR($Resource.XactlySMBHome ,'img/buttons/homeButtonRight.png')}"/>
+                </a>
+                <div style="clear:both"></div>
+            </div>
+            <div style="clear:both"></div>
+        </div>
+        <div style="background-image: url('{!URLFOR($Resource.XactlySMBResources ,'img/layout/bottomOrange.png')}');margin-left:15px;margin-right:11px;">
+           <div style="float: left;margin-left:-15px;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/bottomLeftOrange.png')}"/></div>
+           <div style="float: right;margin-right:-15px;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/bottomRightOrange.png')}"/></div>
+           <div style="clear:both"></div>
+        </div> 
+    </div>         
+    <a id="showLimitAlert" rel="superbox[content#showLimit.limitRowAlert]" href="#showLimit" style="display:none;"></a>
+    
+</apex:page>

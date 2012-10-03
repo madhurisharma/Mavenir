@@ -1,0 +1,573 @@
+<apex:page id="createEditTeam" controller="XactlyExpress.XactlySMBCreateEditTeamController" showHeader="false" sidebar="false"  action="{!redirectWhenAccessIsDenied}">
+
+    <c:XactlySMBCursor />
+    <link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.XactlySMBResources ,'css/XactlySMBStyles.css')}"/>
+    <link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.XactlySMBResources ,'css/XactlySMBNumeratedBox.css')}" /> 
+    <link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.XactlySMBResources ,'css/XactlySMBFontStyles.css')}" /> 
+    
+    <title>Create/Edit Team</title> 
+    <style>
+	    body {
+	    	font-family: 'Helvetica', Arial, sans-serif !important;
+	    	margin: 0px !important;
+	        padding: 0px !important;
+	        background-color:white;
+	        min-width:910px;
+	        min-height:300px;
+	    }
+	    body td{font-family: 'Helvetica', Arial, sans-serif !important;}
+	    body .x-btn button, body .btn, body .btnImportant, body .btnDisabled, body .btnCancel, body .menuButton .menuButtonButton, body .menuButton .menuButtonMenu a, body .menuButton .menuButtonMenu input.theOption, h1, h2, h3, h4, h5, h6 {font-family: 'Helvetica', Arial, sans-serif !important;}
+        
+        
+        .leftPeoplePanel{
+            width: 260px;
+            float: left;
+            
+        } 
+        
+        .contenctPanel{
+            float: left;
+            width:717px;
+            margin-bottom: 50px;
+            border-left:1px solid #BFBFBF;
+            border-right:1px solid #BFBFBF;
+        }
+        
+        .content {
+            font-size: 11px;
+            padding: 0px;
+            margin:30px 0px 20px;
+            position:relative;
+            overflow: hidden;
+            width:1070px !important;
+        }  
+        
+        a {
+            text-decoration: none;
+        }
+        
+        .btnAction {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btnAction input {
+            float: left;
+        } 
+        
+        .btnAction .leftBtnOrange {
+            background:url({!URLFOR($Resource.XactlySMBResources, 'img/buttons/orange_button_left.png')}) transparent  no-repeat scroll 0 0;
+            float: left;
+            height:19px;
+            padding:0px 0px 0px 5px;
+            width:auto;
+        }
+        .btnAction .middleBtnOrange {
+            color: white;
+            font-size: 10px;
+            font-weight: bold;
+            padding: 3px 5px;
+            width: auto;
+        }
+        .btnAction .rightBtnOrange {
+            background: url({!URLFOR($Resource.XactlySMBResources, 'img/buttons/orange_button_right.png')}) transparent no-repeat scroll right center;
+            float:left;
+            height:19px;
+            padding:0px 5px 0px 0px;
+            width:auto;
+            margin-top: 1px;
+            margin-left: 5px;
+        }          
+        
+        .header {
+            background: url({!URLFOR($Resource.XactlySMBResources, 'img/layout/SearchBackgroundHeader.jpg')}) white repeat-x;
+            height: 28px;
+            margin: 0px;
+            padding: 0px;
+        }
+        
+        .topBorder {
+            background: url({!URLFOR($Resource.XactlySMBResources, 'img/layout/SearchBackgroundTopBorder.jpg')}) white repeat-x;
+            height: 9px;
+            margin: 0px;
+            padding: 0px;
+        }
+        
+        .bottomBorder {
+            background: url({!URLFOR($Resource.XactlySMBResources, 'img/layout/SearchBackgroundBottomBorder.jpg')}) white repeat-x;
+            height: 4px;
+            padding: 0px;
+            bottom: 69px;
+            right: 20px;
+            left: 20px;
+            position: absolute;
+        }
+       
+        .xactlyLogo {
+            background: url({!URLFOR($Resource.XactlySMBResources, 'img/layout/SearchXactlyLogo.png')}) white no-repeat right bottom;
+            height: 59px;
+            width: 725px;
+            margin: 0px;
+            padding: 0px;
+            bottom: 0px;
+            right: 20px;
+            position: fixed;
+            padding-bottom: 10px;
+        } 
+        
+        /*#adjustIcon{
+            float:left;
+            margin-left:10px;
+            width:76px;
+            height:63px;
+            background: url({!URLFOR($Resource.XactlySMBResources, 'img/icons/teamIcon.png')}) no-repeat;
+        }*/
+        
+        #centerContainer{
+            margin-left:auto;
+            margin-top:auto;            
+        }
+
+		#spaceMenu{
+		    border-right:2px solid #D49761; 
+		    border-left:2px solid #D49761; 
+		    background-color:#fff;
+		    width:236px; 
+		    height:320px;
+		    margin-left:5px;
+		    postion: relative;
+		    overflow: visible;
+		}
+		
+		.leftPanelTitle{
+		    float:left;
+		    margin-left:0;
+		    margin-top:2px;
+		}
+		
+		.leftPanelCreateNew{
+		    float:right;
+		    font-size:8pt;
+		    margin-right:4px;
+		    margin-top:-8px;
+		}
+
+		.leftPanelContainer{
+		    float:left;
+		    margin-left:26px;
+		    margin-top:10px;
+		    height:275px;
+		    overflow:auto; 
+		    width:210px;
+		}
+		
+		.leftPanelMenuItem{
+		    margin-bottom:16px;
+		}
+		
+		.topCurvy{
+		    background: url({!URLFOR($Resource.XactlySMBResources ,'img/layout/topCurvy2.gif')}) no-repeat;
+		    width:240px;
+		    height:15px;
+		    margin-left:5px;
+		}
+
+		.bottomCurvy{
+		    background: url({!URLFOR($Resource.XactlySMBResources ,'img/layout/bottomCurvy.gif')}) no-repeat;
+		    width:240px;
+		    height:15px;
+		    margin-left:5px;
+		}
+
+		.flechader {
+		    border-color:transparent transparent transparent #E8E8E8;
+		    border-style:solid;
+		    border-width:7px 13px;
+		    width:0;
+		}
+
+		.itemLink{
+		    color:#000000;
+		    width:300px;
+		}
+
+	    .title{
+	        font-size:25px;
+	        font-weight:bold;
+	        color:#D88045;
+	        margin-left:10px;
+	        margin-right:10px;
+	    }
+	        
+	        span.dateFormat{
+	            display:none;
+	        }
+	     
+	    .stepActionNumber{    
+	        float:left;
+	        margin-top:-3px;
+	    }
+        
+        .tableContainer {
+            position:relative; 
+            overflow: hidden;
+        }
+        
+        .elementContainer{
+	        margin-top:3px;
+	    }
+	    
+	    .leftItemText{
+	        float:left;
+	        width:118px;
+	    }
+	    
+	    .itemLink{
+	        color:#000000;
+	        width:300px; 
+	    }
+	    
+	    .flechader {
+	        border-color:transparent transparent transparent #E8E8E8;
+	        border-style:solid;
+	        border-width:8px 9px;
+	        width:0;
+	        font-size: 0pt;  
+	    }
+	    .errorMsg {
+		    border-bottom-color:-moz-use-text-color;
+			border-bottom-style:none;
+			border-bottom-width:medium;
+			color:#CC0000;
+			text-align:center;
+        }
+   
+    </style>
+    <apex:form id="mainPopup"> 
+        <div class="header"></div>
+        <div class="content">
+            <div id="centerContainer">
+                <apex:outputPanel layout="block" style="overflow:auto; font-size:10pt;" >
+                    
+                    <apex:outputpanel layout="block" style="float:left;margin: 5px 0pt 0pt 5px; color: #3B6080; verdana; font-size: 18px; font-weight: bold;">
+                        {!$Label.teamName} &nbsp; <apex:inputField value="{!team.Name}" id="teamName" style="width: 270px;" />
+                    </apex:outputpanel>
+                    <apex:outputPanel id="errorMsg" layout="block" styleClass="errorMsg" style="float: left;margin:10px 0 0 5px;">
+                        {!errorMsg}
+                    </apex:outputPanel>
+                    <div style="clear:both"></div>
+                
+                    <!-- STEP 1 -->
+                    <div class="box" style="margin: 10px 15px 10px 5px;width:970px !important;">
+                        <div class="tm">
+                            <div style="float: left;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/tl.png')}" /></div>
+                            <div style="float: right;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/tr.png')}" /></div>
+                            <div style="clear:both"></div>
+                        </div> 
+                        <div class="roundedBox">
+                            <div class="boxHeader" >
+                                <div class="PNovaBlack60c5 stepActionNumber">
+                                 A
+                                </div>
+                                <div class="titleWrapper">  
+                                    <div class="PNovaSemiBold17c3 mainTitle">
+                                        <apex:outputtext value="{!$Label.xactlyexpress__sourceOfCredit}" >
+                                            <apex:param value="{!currentSettings.creditsCap}" />
+                                        </apex:outputtext>
+                                    </div>
+                                    <div class="HelveticaRegular12c3 detailedTitle">
+                                    	<apex:outputtext value="{!$Label.xactlyexpress__SourceOfCreditDesc}" >
+                                            <apex:param value="{!currentSettings.deals}" />
+                                        </apex:outputtext>
+                                    
+                                    </div>
+                                </div> 
+                                <div class="extraTitleStuff"></div>
+                                <div style="clear:both"></div>
+                            </div>
+                            
+                            <div class="boxContent" style="padding: 8px 0px; font-size: 11px;">
+                                <apex:selectRadio id="typesOptions" layout="lineDirection" value="{!team.XactlyExpress__TeamType__c}" onclick="rerenderNoCompare = false;changeSelectedSource();">
+                                    <apex:selectOptions value="{!sourceOptions}" />
+                                </apex:selectRadio>   
+                                
+                                <apex:actionFunction name="changeSelectedSource" action="{!changeSelectedSource}" rerender="step3, scripts"/>   
+                            </div>    
+                        </div>      
+                        <div class="bm">
+                            <div style="float: left;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/bl.png')}" /></div>
+                            <div style="float: right;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/br.png')}" /></div>
+                        </div>
+                    </div>
+                    
+                    <div class="leftPeoplePanel">
+                        <div class="topCurvy"></div>
+                        <div id="spaceMenu">
+                            <div class="PNovaBlack60c5 stepActionNumber" style="margin-top:-13px;">B</div>
+                            <div class="leftPanelTitle PNovaSemiBold17c3">{!$Label.SelectThePersonToEdit}</div>
+   
+						    <div class="leftPanelCreateNew"></div>
+						    <div class="leftPanelContainer">
+                                <apex:repeat value="{!planUsers}" id="repplanUsers" var="iterUser">
+		                            <div class="elementContainer">
+		                                <div style="float:left;width:165px;{!IF(iterUser.XactlyExpress__ProfileID__c == selectedUser,'background-color:#E8E8E8;','')}">
+		                                    <div class="leftItemText">
+		                                        <apex:commandLink styleclass="itemLink" action="{!changeUser}" value="{!iterUser.ProfileID__r.UserId__r.Name}" onclick="if(checkChanges()==false)return false;rerenderNoCompare = false;">
+			                                        <apex:param name="userId" value="{!iterUser.XactlyExpress__ProfileID__c}" />
+			                                    </apex:commandLink>
+		                                    </div>
+		                                </div>
+		                                <div style="float:left;"><div class="{!IF(iterUser.ProfileID__c == selectedUser,'flechader','')}"></div></div> 
+		                            </div>
+		                        </apex:repeat>
+						    </div>
+						</div>
+                        <div class="bottomCurvy"></div>
+                    </div>
+                    
+                    <div class="contenctPanel">
+                        <!-- STEP 2 -->
+                        <div class="box">
+                            <div class="tm">
+                                <div style="float: left;margin-left:-1px;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/tl.png')}" /></div>
+                                <div style="float: right;margin-right:-1px;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/tr.png')}" /></div>
+                                <div style="clear:both"></div>
+                            </div> 
+                            <apex:outputPanel styleclass="roundedBox" id="step3" style="border:none;"  layout="block"> 
+                                <div class="boxHeader">
+                                    <div class="PNovaBlack60c5 stepActionNumber">
+                                     C
+                                    </div>
+                                    <div class="titleWrapper">  
+                                        <div class="PNovaSemiBold17c3 mainTitle">
+                                            <apex:outputtext value="{!$Label.xactlyexpress__SelectWhoSoldDeal}">
+                                                <apex:param value="{!currentSettings.dealsCap}" />
+                                            </apex:outputtext>
+                                        </div>
+                                        <div class="HelveticaRegular12c3 detailedTitle">
+                                            <apex:outputtext value="{!$Label.xactlyexpress__SelectWhoSoldDeal}">
+                                                <apex:param value="{!currentSettings.deals}" />
+                                            </apex:outputtext>
+                                        </div>
+                                    </div> 
+                                    <div class="extraTitleStuff"></div>
+                                    <div style="clear:both"></div>
+                                </div>
+                                
+                                <div class="boxContent">
+                                    <!-- ROLE SOURCE -->
+                                    <apex:outputpanel rendered="{!IF(team.XactlyExpress__TeamType__c == 'Role' ,true, false)}">
+                                        <div class="topTable"></div>
+                                        <apex:outputPanel styleClass="tableContainer" layout="block">                                 
+                                            <apex:dataTable id="mainTable4" style="width: 100%;" styleClass="commonTable" value="{!members}" rowClasses="even,odd" var="member" headerClass="odd">
+                                                <apex:column >
+                                                    <apex:facet name="header">
+                                                        {!$Label.xactlyexpress__RoleName}
+                                                    </apex:facet>
+                                                    <apex:outputtext value="{!member.roleName}" />
+                                                </apex:column>  
+                                                <apex:column style="width: 100px; text-align: center;">
+                                                    <apex:facet name="header">
+                                                        <apex:outputpanel layout="block">
+	                                                        {!$Label.SelectedRole}
+	                                                        <input type="checkbox" id="switchCheckbox" />
+                                                        </apex:outputpanel>    
+                                                    </apex:facet>
+                                                    <apex:inputCheckbox id="chkMember4" value="{!member.selected}" />
+                                                </apex:column>                 
+                                            </apex:dataTable>
+                                        </apex:outputPanel>  
+                                        <div class="bottomTable"></div>
+                                    </apex:outputpanel>  
+                                    
+                                    <!-- PLAN SOURCE -->
+                                    <apex:outputpanel rendered="{!IF(team.XactlyExpress__TeamType__c == 'Plan' ,true, false)}">
+                                        <div class="topTable"></div>
+                                        <apex:outputPanel styleClass="tableContainer" layout="block">                                 
+                                            <apex:dataTable id="mainTable3" style="width: 100%;" styleClass="commonTable" value="{!members}" rowClasses="even,odd" var="member" headerClass="odd">
+                                                <apex:column >
+                                                    <apex:facet name="header">
+                                                        {!$Label.xactlyexpress__PlanName}
+                                                    </apex:facet>
+                                                    <apex:outputtext value="{!member.srcPlan.Name}" />
+                                                </apex:column>  
+                                                <apex:column style="width: 100px; text-align: center;">
+                                                    <apex:facet name="header">
+                                                        <apex:outputpanel layout="block">
+                                                            {!$Label.SelectedPlans}
+                                                            <input type="checkbox" id="switchCheckbox" />
+                                                        </apex:outputpanel>    
+                                                    </apex:facet>
+                                                    <apex:inputCheckbox id="chkMember3" value="{!member.selected}" />
+                                                </apex:column>                 
+                                            </apex:dataTable>
+                                        </apex:outputPanel>  
+                                        <div class="bottomTable"></div>
+                                    </apex:outputpanel> 
+                                    
+                                    <!-- PERSONS SOURCE -->
+                                    <apex:outputpanel rendered="{!IF(OR(team.XactlyExpress__TeamType__c == 'User', team.XactlyExpress__TeamType__c == null) ,true, false)}">
+                                        <div class="topTable"></div>
+                                        <apex:outputPanel styleClass="tableContainer" layout="block">                                 
+                                            <apex:dataTable id="mainTable2" style="width: 100%;" styleClass="commonTable" value="{!members}" rowClasses="even,odd" var="member" headerClass="odd">
+                                                <apex:column >
+                                                    <apex:facet name="header">
+                                                        {!$Label.xactlyexpress__FirstName}
+                                                    </apex:facet>
+                                                    <apex:outputtext value="{!member.srcProfile.UserId__r.FirstName}" />
+                                                </apex:column>  
+                                                <apex:column style="width: 200px;"> 
+                                                    <apex:facet name="header">
+                                                         {!$Label.xactlyexpress__LastName}
+                                                    </apex:facet>
+                                                    <apex:outputtext value="{!member.srcProfile.UserId__r.LastName}" />
+                                                </apex:column>
+                                                <apex:column style="width: 80px; text-align: center;">
+                                                    <apex:facet name="header">
+                                                         <apex:outputpanel layout="block">
+                                                            {!$Label.CirrusUser}
+                                                            <input type="checkbox" id="switchCheckbox" />
+                                                        </apex:outputpanel>
+                                                    </apex:facet>
+                                                    <apex:inputCheckbox id="chkMember2" value="{!member.selected}" />
+                                                </apex:column>                 
+                                            </apex:dataTable>
+                                        </apex:outputPanel>  
+                                        <div class="bottomTable"></div>
+                                    </apex:outputpanel> 
+                                    
+                                    <!-- COMBINATION SOURCE -->
+                                    <apex:outputpanel rendered="{!IF(team.XactlyExpress__TeamType__c == 'Combination' ,true, false)}">
+                                        <div class="topTable"></div>
+                                        <apex:outputPanel styleClass="tableContainer" layout="block">                                 
+                                            <apex:dataTable id="mainTable" style="width: 100%;" styleClass="commonTable" value="{!members}" rowClasses="even,odd" var="member" headerClass="odd">
+                                                <apex:column >
+                                                    <apex:facet name="header">
+                                                        {!$Label.xactlyexpress__Name}
+                                                    </apex:facet>
+                                                    <apex:outputtext rendered="{!IF(member.source == 'Role', true, false)}" value="{!member.roleName}" />
+                                                    <apex:outputtext rendered="{!IF(member.source == 'Plan', true, false)}" value="{!member.srcPlan.Name}" />
+                                                    <apex:outputtext rendered="{!IF(member.source == 'User', true, false)}" value="{!member.srcProfile.UserId__r.FirstName} {!member.srcProfile.UserId__r.LastName}" />
+                                                </apex:column>  
+                                                <apex:column style="width: 200px;"> 
+                                                    <apex:facet name="header">
+                                                         {!$Label.xactlyexpress__Type}
+                                                    </apex:facet>
+                                                    <apex:outputtext rendered="{!IF(member.source == 'Role', true, false)}" value="{!$Label.xactlyexpress__RoleInIncent}" />
+                                                    <apex:outputtext rendered="{!IF(member.source == 'Plan', true, false)}" value="{!$Label.xactlyexpress__Plan}" />
+                                                    <apex:outputtext rendered="{!IF(member.source == 'User', true, false)}" value="{!$Label.xactlyexpress__Payee}" />
+                                                </apex:column>
+                                                <apex:column style="width: 80px; text-align: center;">
+                                                    <apex:facet name="header">
+                                                        <apex:outputpanel layout="block">
+	                                                        {!$Label.Selected}
+	                                                        <br/>
+	                                                        <input type="checkbox" id="switchCheckbox" />
+                                                        </apex:outputpanel>	                                                        
+                                                    </apex:facet>
+                                                    <apex:inputCheckbox id="chkMember" value="{!member.selected}" />
+                                                </apex:column>                  
+                                            </apex:dataTable>
+                                        </apex:outputPanel>  
+                                        <div class="bottomTable"></div>
+                                    </apex:outputpanel>     
+                                </div>    
+                            </apex:outputPanel>      
+                            <div class="bm">
+                                <div style="float: left;margin-left:-1px;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/bl.png')}" /></div>
+                                <div style="float: right;margin-right:-1px;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/br.png')}" /></div>
+                            </div> 
+                        </div>       
+                    </div>               
+                </apex:outputPanel>
+            </div> 
+        </div> 
+        <div style="clear:both;"></div> 
+        <div class="xactlyLogo">
+           <div class="btnToCenter btnAction" >
+                <div class="separateBtn">   
+                    <apex:outputPanel layout="block" styleClass="actionButtonWrapper">
+                        <div class="actionButtonLeft"></div>
+                        <apex:commandLink action="{!validate}" rerender="errorMsg" styleclass="actionButtonMiddle" onclick="jQuery('input[id$=\'saveAs\']').val(0);waitOn();storeValues();" oncomplete="waitOff();if(jQuery.trim(jQuery('div[id$=\'errorMsg\']').html())==''){window.opener.refreshTeamList();window.location.href='?pid={!currentPlanId}&teamId={!teamId}';}">
+                            <apex:outputtext escape="false" value="{!$Label.xactlyexpress__SaveChanges}"> 
+                               <apex:param value="{!URLFOR($Resource.XactlyExpress__XactlySMBResources ,'img/buttons/navigateSaveMiddle.gif')}" />
+                            </apex:outputtext>  
+                        </apex:commandLink>
+                        
+                        <div class="actionButtonRight"></div>    
+                    </apex:outputpanel>
+                    
+                    <apex:outputPanel layout="block" styleClass="actionButtonWrapper">
+                        <div class="actionButtonLeft"></div>
+                        <a href="javascript:;" class="actionButtonMiddle" onclick="discardChangesConfirm(window.location.href);">
+                            <apex:outputtext escape="false" value="{!$Label.xactlyexpress__DiscardChanges}">
+                               <apex:param value="{!URLFOR($Resource.XactlyExpress__XactlySMBResources ,'img/buttons/navigateCancelMiddle.gif')}" />
+                            </apex:outputtext>
+                        </a>
+                        <div class="actionButtonRight"></div>    
+                    </apex:outputpanel>
+                    
+                    <apex:outputPanel layout="block" styleClass="actionButtonWrapper">
+                        <div class="actionButtonLeft"></div>
+                        <apex:commandLink action="{!validate}" rerender="errorMsg" styleclass="actionButtonMiddle" onclick="jQuery('input[id$=\'saveAs\']').val(1);waitOn();storeValues();" oncomplete="waitOff();if(jQuery.trim(jQuery('div[id$=\'errorMsg\']').html())==''){window.opener.refreshTeamList();window.location.href='?pid={!currentPlanId}&teamId={!teamId}';};">
+                            <apex:outputtext escape="false" value="{!$Label.xactlyexpress__SaveAs}">
+                               <apex:param value="{!URLFOR($Resource.XactlyExpress__XactlySMBResources ,'img/buttons/navigateCancelMiddle.gif')}" />
+                            </apex:outputtext>
+                        </apex:commandLink>
+                        <div class="actionButtonRight"></div>    
+                    </apex:outputpanel>
+                    <apex:inputHidden value="{!saveAs}" id="saveAs"/>   
+                </div>  
+            </div>
+        
+        </div>
+    </apex:form>
+    <apex:includeScript value="{!URLFOR($Resource.XactlyExpress__CSN, 'jquery.js')}" />
+    <c:XactlySMBFooterScript /> 
+    <script type="text/javascript" language="javascript" src="{!URLFOR($Resource.XactlySMBResources, 'js/XactlySMBJavascript.js')}"></script>
+<apex:outputPanel id="scripts"> 
+    <script>        
+        var rerenderNoCompare = true;
+        var $J = jQuery.noConflict();
+        $J(document).ready(function (){
+            storeValues();                                              
+            $J('#switchCheckbox').click(function () {            	
+			    if($J(this).attr("checked")) {
+			        $J('.commonTable tbody input:checkbox').each(function(){
+                        $J(this).attr('checked' , true);    
+		            });
+			        return;
+			    }
+			    $J('.commonTable tbody input:checkbox').each(function(){
+                        $J(this).attr('checked' , false);    
+                });
+			});
+            
+            
+            //Next pice of code detects onload when all checkbox are checked, if this is true we must check $J('#switchCheckbox') as well.
+		    var areAllCheckboxesChecked = true;
+		    $J('.commonTable tbody input:checkbox').each(function(){
+		        if($J(this).is(':checked') == false){
+		            areAllCheckboxesChecked = false
+		            return false;
+		        }
+		    });
+		    if(areAllCheckboxesChecked == true){
+		        $J('#switchCheckbox').attr('checked' , true);
+		    }
+		    storeValues();
+        });
+                        
+        function checkChanges(){            
+            if(compareValues(true,true) != null && compareValues(true,true) != undefined && compareValues(true,true) != ''){
+               if(!confirm(compareValues(true,true))){
+                   return false;
+               }
+            }
+            return true;
+        }
+        var ChangesWillNotBeSaved = "{!$Label.ChangesWillNotBeSaved}";
+        window.onbeforeunload = function(){return compareValues(true,rerenderNoCompare);};
+    </script>
+</apex:outputPanel>    
+</apex:page>

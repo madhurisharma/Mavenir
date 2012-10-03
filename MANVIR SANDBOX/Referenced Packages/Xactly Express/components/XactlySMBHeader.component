@@ -1,0 +1,648 @@
+<!--
+Developed by Timba Software Corp. www.timbasoftware.com admin@timbasoftware.com
+ This component displays the caracteristic header of the page
+ @author Alvaro Scuccimarra <ascuccimarra@timbasoftware.com>
+-->  
+<apex:component controller="XactlyExpress.XactlySMBHeaderController" allowDML="true">
+    <apex:attribute name="CurrentUserOrSlected" description="The Current User" type="User" required="false" />
+    <apex:attribute name="emulatingUserURLAppend" description="The Emulated User" type="String" required="false" />
+    <apex:attribute name="nbrSeparator" description="To Determinate the number format" type="String" required="false" />
+    <apex:attribute name="nbrDecimal" description="To Determinate the number format" type="String" required="false" />
+    <apex:attribute name="isActive" description="Derminate if the user is active" type="Boolean" required="false" />
+    <apex:attribute name="isAdmin" description="Derminate if the user is admin" type="Boolean" required="false" />
+    
+    <apex:attribute name="selected" description="The selected tab" type="Integer" required="false" />
+    <apex:attribute name="step" description="The step of wizard" type="Integer" required="false" />
+    <apex:attribute name="wlabel" description="The terminology of deal" type="String" required="true" />
+    <apex:attribute name="wqlabel" description="The terminology of quota" type="String" required="true" />
+    <apex:attribute name="wclabel" description="The terminology of credit" type="String" required="true" />
+    <apex:attribute name="wId" description="The current element id" type="String" required="false" />
+    <apex:attribute name="wtype" description="The type of wizard" type="String" required="false" />
+    <apex:attribute name="hlabel" description="The label bottom of wizard" type="String" required="false" />
+    <apex:attribute name="stepHelp" description="The parameter to help page" type="String" required="false" />
+    <apex:attribute name="sPorcent" description="The status porcent" type="Integer" required="false" />
+    <apex:attribute name="stepBreadcrumb" description="The current element descriptor" type="String" required="false" />
+    
+    <link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.XactlySMBResources ,'css/XactlySMBFontStyles.css')}" />
+
+    <script type="text/javascript" language="javascript" src="{!URLFOR($Resource.XactlySMBResources, 'js/XactlySMBJavascript.js')}"></script>
+    <script type="text/javascript" language="javascript" src="{!URLFOR($Resource.XactlySMBResources, 'js/jquery.tools.min.js')}"></script>
+    <script type="text/javascript" src="{!URLFOR($Resource.XactlySMBResources ,'js/jquery.superbox-min.js')}"></script>
+     <script type="text/javascript">
+
+        jQuery(function(){
+            jQuery.superbox.settings = {
+                closeTxt: "X",
+                loadTxt: "Loading...",
+                nextTxt: "Next",
+                prevTxt: "Previous"
+            };
+            jQuery.superbox();
+        });
+      </script>
+        
+        
+        
+    
+    
+    <style>
+        
+        .cba{
+            float: left;
+            height:35px;
+            width:136px;
+        }
+        .abc{
+            float: right;
+            /*width:35px;*/
+            height:35px;
+            /*z-index:9999;*/
+            
+        }
+        .header{
+            overflow:visible;
+        }
+        .topHeader{
+            margin-top:-2px;
+            width:1068px !important; 
+            height: 59px !important; 
+            border-left:1px solid #FFFFFF;
+            border-right:1px solid #FFFFFF;
+        }
+        .bottomHeader{
+            background: url({!URLFOR($Resource.XactlySMBResources ,'img/layout/XacltySliderBack.png')}) no-repeat;
+            float:left;
+            position:relative;
+            z-index:500;
+            margin-left:-1px;
+            width:1070px;
+            border-left:1px solid #FFFFFF;
+            border-right:1px solid #FFFFFF;
+            height: 36px;
+            margin-bottom:20px;
+        }
+        .leftBottomHeader{
+            /*background: url({!URLFOR($Resource.XactlySMBHome ,'img/layout/XactlySliderLeftHeader.png')}) left no-repeat;*/
+            float:left;
+            height:35px;
+            width:24px;
+            display:block;
+        }
+        .leftBottomHeaderSelected{
+            background: url({!URLFOR($Resource.XactlySMBHome ,'img/layout/XactlySliderLeftHeader.png')}) right no-repeat;
+            margin-top:1px;
+            display:block;
+            float:left;
+            height:35px;
+            width:24px;
+        }
+        .centerBottomHeader{
+            /*background: url({!URLFOR($Resource.XactlySMBHome ,'img/layout/XactlySliderCenterHeader.png')}) repeat-x;*/
+            display:block;
+            float:left;
+            height: 35px;
+        }
+        .rightBottomHeader{
+            background: url({!URLFOR($Resource.XactlySMBHome ,'img/layout/XactlySliderRightHeader.png')}) left no-repeat;
+            display:block;
+            float:left;
+            height:35px;
+            width:40px;
+            margin-left:-33px;
+        }
+        .rightBottomHeaderSelected{
+            background: url({!URLFOR($Resource.XactlySMBHome ,'img/layout/XactlySliderRightHeader.png')}) right no-repeat;
+            display:block;
+            float:left;
+            height:35px;
+            width:40px;
+            border-top:1px solid #E0E0E0;
+            margin-left:-33px;
+        }
+        .activeTabs{
+            float:left;
+            display: block;
+            height: 35px;
+            max-width:175px;
+            width:auto;
+            padding:0px;
+        }
+        .borderRight{
+            border-right:1px solid #BBBBBB;
+        }
+        .navi{
+            height: 100%;
+        }
+        
+        .active{
+            background: #FFFFFF;
+            border-bottom:1px solid #FFFFFF;
+            height:34px;
+            border-top:1px solid #E0E0E0;
+        }
+        
+        /*.activeTabs a{
+            font-size:14px;
+            font-weight:bolder;
+            display: block;
+            color:#5E5E5E;
+            padding:10px 20px;
+            width:131px;
+        }*/
+        .activeTabs a{
+            font-size:12px;
+            font-weight:bolder;
+            display: block;
+            color:#5E5E5E;
+            padding:10px 10px 0px 15px;
+            width:113px;
+        }
+        .informationTextFirstPane{
+            float:left;
+            margin-left:600px;
+            margin-top:-160px;
+        }
+        .title{
+            color:#4888B8;
+            margin-left:40px;
+            margin-top:10px;
+            cursor: default;
+        }
+        .second{
+            float:left;
+            margin-right:65px;
+            margin-left:0px;
+            font-size:18px;
+            display:block;
+        }
+        .first{
+            font-size:38px;
+        }
+        .infoText{
+            width: 310px;
+            font-size:11px;
+            color: #868686;
+            float:none;
+            cursor: default;
+            display: block;
+            margin-right:30px;
+        }
+        .infoText a {
+            color:#4888B8;
+        }
+        
+        .divul{
+            background-color:#C7C6C6;           
+            width:175px;
+            clear:both;
+            border-color: #BBBBBB;
+            border-style:none solid solid solid;
+            border-width:0px 1px 1px 1px;
+            margin:-3px -1px -1px -1px;
+            display:none;
+        } 
+         
+        .activeTabs .divul ul li {  
+             display: inline;  
+             /*padding: 2px 7px; /*Separar el texto*/  
+             /*margin:5px; /* Separar los botones */  
+             float:left;    
+             clear:both;
+             height:100%;
+             width:100%;
+             margin:0 5px;
+             padding-left:15px;
+        }  
+        
+        
+        .activeTabs .divul ul li a{
+	        font-family: 'helvetica';
+            font-weight:normal;
+            padding:3px 0px;
+            width:100%;
+            height: 100%;
+            text-transform: capitalize;
+        }   
+        
+        .activeTabs .divul .fsDropDown li:hover {  
+             background: url({!URLFOR($Resource.XactlySMBResources ,'img/icons/trdropItemHover.png')}) no-repeat scroll 0 0px;
+             cursor: pointer; /* cambiar el aspecto del puntero */  
+        } 
+        
+        
+        .activeTabs .divul .fsDropDown .ItemWide{
+             background: url({!URLFOR($Resource.XactlySMBResources ,'img/icons/trbdropItemHover.png')}) no-repeat scroll 0 0px !important;  
+        }
+        
+        .activeTabs ul li a:hover{
+            color:#FFFFFF;
+        }
+    
+         
+        .activeTabs .divul ul {  
+             /* Linea para delimitar la botonera */  
+             /*border-color:-moz-use-text-color #000000 #000000;
+             border-right:1px solid #000000;
+             border-left:1px solid #000000;
+             border-style:none solid solid;
+             border-width:0px 2px 2px 2px;*/
+             background:transparent;
+             z-index:9999;
+             position:relative;
+             padding-left:3px;
+             margin-top:0;
+             margin:-1px 0px 0px 0px;
+        }  
+        
+        
+        /*
+        .arrowDropDown{
+            background: url({!URLFOR($Resource.XactlySMBResources ,'img/icons/arrowDropDown.png')}) no-repeat scroll 0 0px;
+            float:right;
+            height:7px;
+            margin-left:6px;
+            margin-right:15px;
+            margin-top:-22px;
+            width:11px;
+        }
+        
+        .active .arrowDropDown{
+            background: url({!URLFOR($Resource.XactlySMBResources ,'img/icons/arrowDropDown.png')}) no-repeat scroll 0 -14px;
+            float:right;
+            height:7px;
+            margin-left:6px;
+            margin-right:15px;
+            margin-top:-22px;
+            width:11px;
+        }
+        
+        .activeTabs .arrowDropDownVisited{
+            background: url({!URLFOR($Resource.XactlySMBResources ,'img/icons/arrowDropDown.png')}) no-repeat scroll 0 -7px !important;
+            float:right;
+            height:7px;
+            margin-left:6px;
+            margin-right:15px;
+            margin-top:-22px;
+            width:11px;
+        } 
+        
+        .activeDropDown{
+            background:none repeat scroll 0 0 #FFFFFF;
+            border:2px solid #000000;
+            border-bottom:1px solid #FFFFFF;
+            height:34px;
+        }*/
+        .arrowDropDown{
+            background: url({!URLFOR($Resource.XactlySMBResources ,'img/icons/arrowDropDown.png')}) no-repeat scroll 0 0px;
+            height:7px;
+            margin-left:147px;
+            margin-right:15px;
+            margin-top:13px;
+            width:11px;
+            position:absolute;
+        }
+
+        .arrowDropDown .arrowDropDownActive{
+            background: url({!URLFOR($Resource.XactlySMBResources ,'img/icons/arrowDropDown.png')}) no-repeat scroll 0 0px;
+            position:absolute;
+            height:7px;
+            margin-left:147px;
+            margin-right:6px;
+            margin-top:8px;
+            width:11px;
+        }
+        
+        .activeTabs .arrowDropDownVisited{
+            background: url({!URLFOR($Resource.XactlySMBResources ,'img/icons/arrowDropDown.png')}) no-repeat scroll 0 -7px !important;
+            float:right;
+            height:7px;
+            margin-left:6px;
+            margin-right:15px;
+            margin-top:13px;
+            width:11px;
+        } 
+        
+        .active .arrowDropDown{
+            background: url({!URLFOR($Resource.XactlySMBResources ,'img/icons/arrowDropDown.png')}) no-repeat scroll 0 -14px;
+            position:absolute;
+            height:7px;
+            margin-left:6px;
+            margin-right:15px;
+            margin-top:13px;
+            width:11px;
+        }
+        
+        .activeDropDown{
+            background:none repeat scroll 0 0 #FFFFFF;
+            border:2px solid #000000;
+            border-bottom:1px solid #FFFFFF;
+            height:34px;
+        }
+        
+        .headerComponentInfo {
+            position: relative;
+            overflow: visible;
+            float: left;
+            margin: 2px 0px 0px 0px;
+        }
+        
+        .headerComponentDropdown {
+            position: relative;
+            overflow: visible;
+            float: left;
+            margin: -5px 0px 0px 15px;
+            width:136px;
+        }
+        
+        .headerComponentCont {
+            position: relative; 
+            overflow:visible; 
+            z-index:2002;    
+        }
+        
+        .activeTabs:hover .textButtons{color:#015BA7}
+        
+    </style>
+    
+
+    <link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.XactlySMBResources ,'css/XactlySMBHeader.css')}" /> 
+    
+    <c:XactlySMBUserSearch emulatingUserURLAppend="{!emulatingUserURLAppend}"/>
+    <div  class="topHeader">
+        <a rel="superbox[content#searchUser.xactlySuperBox #searchUser.searchUserSuperbox]" href="#searchUser" onclick="openUserSearchPopup();"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/headerMagGlass.png')}" class="headerMagGlass" /></a>
+        <script>
+            function openUserSearchPopup(){
+                jQuery('.hiddenResults').hide();
+                setTimeout("jQuery('.usersInput')[1].focus()", 500);
+            }
+        </script>
+        <div class="HeaderText headerComponentCont">
+            <div class="headerComponentInfo">
+	            <div class="HeaderTextElement HelveticaRegular10"><apex:outputText value="{!CrrntPeriod}"/>&nbsp;<apex:outputText value="{!CrrntYear}" /></div>
+	            <a href="/_ui/core/userprofile/UserProfilePage?u={!CurrentUserOrSlected.Id}" class="HeaderTextElement HelveticaRegular10">
+	                <apex:outputText value="{!$Label.xactlyexpress__NameAndLastName}">
+	                    <apex:param value="{!CurrentUserOrSlected.FirstName}" />
+	                    <apex:param value="{!CurrentUserOrSlected.LastName}" />
+	                </apex:outputText>
+	            </a>   
+	            <a href="{!$Page.XactlySMBHelpAndInformation}" class="HeaderTextElement HelveticaRegular10"><apex:outputText value="{!$Label.xactlyexpress__Help}" /></a>
+            </div>
+            <div class="headerComponentDropdown">
+                <c:XactlySMBExpressDropdown fullLogout="true"/>
+            </div>
+        </div> 
+    </div>  
+    <!--  -->
+    <div id="XactlySMBHeader" style="margin-left:-1px;">
+        <div id="XactlySMBSubHeead" style="float:left;">
+            <apex:outputPanel layout="none" rendered="{!isActive}">           
+    <!-- HEADER START -->
+
+        <div class="bottomHeader">
+            <div id="leftHeader" class="leftBottomHeader{!IF(selected=1,'Selected','')}">
+            </div>
+            <div class="centerBottomHeader">
+                <div class="navi" id="navi">
+                    <div class="activeTabs tab1 borderRight {!IF(selected=1,'active','')}">
+                        <a id="CurrentPageId-0" href="/apex/XactlySMBHomePage?page=0" onclick="waitOn();blur();" style="width:40px">
+                            <span class="textButtons {!IF(selected=1,' PNovaSemiBold14c2',' PNovaSemiBold14c3')}"> {!$Label.HomePage} </span>
+                        </a>
+                        
+                    </div>
+                    <div class="activeTabs tab2 borderRight {!IF(selected=2,'active','')}" style="width:180px;" onmouseover="jQuery('.divul2').hide();jQuery('.divul3').hide();">
+                        <div class="cba" onclick="waitOn();changePage(this);">
+                            <a id="CurrentPageId-1" href="/apex/XactlySMBHomePage?page=1">
+                                <span class="textButtons {!IF(selected=2,' PNovaSemiBold14c2',' PNovaSemiBold14c3')}"> {!$Label.Calculate} </span>                          
+                            </a>
+                        </div>
+                        <div class="arrowDropDown" style="display:{!IF(selected=2,'none','')};"></div>
+                        <div class="divul divul1" style="margin-left:-137px;margin-top:34px;position:absolute;'">
+                        <ul class="fsDropDown" style="width:171px;">  
+                            <div class="clear"></div>
+                            <li> 
+                                <a href="/apex/XactlySMBCalculateStep2" onclick="waitOn();"> 
+                                     <apex:outputtext value="{!$Label.xactlyexpress__CalculateWizardStep1}">
+                                         <apex:param value="{!wlabel}" />
+                                     </apex:outputtext>
+                                </a>
+                            </li>  
+                            <li> 
+                                <a href="/apex/XactlySMBCalculateStep3" onclick="waitOn();"> 
+                                 <apex:outputtext value="{!$Label.xactlyexpress__CalculateWizardStep2}">
+                                     <apex:param value="{!wlabel}" />
+                                 </apex:outputtext>
+                                </a>
+                            </li>  
+                            <li> <a href="/apex/XactlySMBCalculateCalculate" onclick="waitOn();">
+                                    <apex:outputtext value="{!$Label.xactlyexpress__CalculateWizardStep3}" /> 
+                                </a>
+                            </li>
+                            <li> <a href="/apex/XactlySMBCalculateManageAttainments" onclick="waitOn();"> 
+                                    <apex:outputtext value="{!$Label.xactlyexpress__CalculateWizardStep4}" /> 
+                                 </a>
+                            </li> 
+                            <li> <a href="/apex/XactlySMBCalculateManagePayments" onclick="waitOn();"> 
+                                    <apex:outputtext value="{!$Label.xactlyexpress__CalculateWizardStep5}" />
+                                 </a>
+                            </li> 
+                            <li> <a href="/apex/XactlySMBCalculatePayroll" onclick="waitOn();">
+                                    <apex:outputtext value="{!$Label.xactlyexpress__CalculateWizardStep6}" />
+                                 </a>
+                            </li> 
+                          
+                        </ul>  
+                        
+                          <div class="clear"></div> 
+                        </div>
+                    </div>
+                    <div class="activeTabs tab3 borderRight {!IF(selected=3,'active','')}" style="width:180px;" onmouseover="jQuery('.divul1').hide();jQuery('.divul3').hide();">
+                        <div class="cba" onclick="waitOn();changePage(this);">
+                            <a id="CurrentPageId-2" href="XactlySMBHomePage?page=2">
+                                <span class="textButtons{!IF(selected=3,' PNovaSemiBold14c2',' PNovaSemiBold14c3')}"> {!$Label.ManagePlans} </span>                            
+                            </a>
+                        </div>  
+                        <div class="arrowDropDown" style="display:{!IF(selected=3,'none','')};"></div>
+                        <div class="divul divul2" style="margin-left:-137px;margin-top:34px;position:absolute;'">
+                        <ul class="fsDropDown" style="width:171px;">  
+                            <div class="clear"></div>
+                            <li> <a href="/apex/XactlySMBPlanCreate" onclick="waitOn();">
+                                    <apex:outputtext value="{!$Label.xactlyexpress__DefinePlan}" />    
+                                 </a>
+                            </li>  
+                            <li>
+                                <a id="linkPlanQuotas" rel="superbox[content#planQuotas.xactlySuperBox][350][50]" href="#planQuotas"  onclick="jQuery('.hiddenResults').hide();" style="display:none"></a> 
+                                <a onclick="planClickQuotas();">
+                                    <apex:outputtext value="{!$Label.xactlyexpress__PlanWizardStep2}">
+                                         <apex:param value="{!UPPER(LEFT(wqlabel, 1)) + MID(wqlabel, 2, LEN(wqlabel) - 1)}" />
+                                    </apex:outputtext>
+                                 </a>  
+                            </li> 
+                            <li><a id="linkPlanCredits" rel="superbox[content#planCredits.xactlySuperBox][350][50]" href="#planCredits" onclick="jQuery('.hiddenResults').hide();" style="display:none"></a> 
+                                <a onclick="planClickCredits();">
+                                      <apex:outputtext value="{!$Label.xactlyexpress__PlanWizardStep3}">
+                                        <apex:param value="{!UPPER(LEFT(wclabel, 1)) + MID(wclabel, 2, LEN(wclabel) - 1)}" />
+                                    </apex:outputtext>
+                                 </a> 
+                            </li>   
+                            <li>
+                                <a id="linkPlanRates" rel="superbox[content#planRates.xactlySuperBox][350][50]" href="#planRates"  onclick="jQuery('.hiddenResults').hide();" style="display:none"></a> 
+                                <a onclick="planClickRates();">
+                                    <apex:outputtext value="{!$Label.xactlyexpress__PlanWizardStep4}" /> 
+                                </a> 
+                            </li>  
+                            <li>
+                                <a id="linkPlanReview" rel="superbox[content#planReview.xactlySuperBox][350][50]" href="#planReview" onclick="jQuery('.hiddenResults').hide();" style="display:none"></a> 
+                                <a onclick="planClickReview();">
+                                    <apex:outputtext value="{!$Label.xactlyexpress__PlanWizardStep5}" /> 
+                                 </a> 
+                            </li>   
+                        </ul>  
+                        
+                          <div class="clear"></div> 
+                        </div>
+                    </div>
+                    <div class="activeTabs tab4 {!IF(selected=7,'active','')}" style="width:180px;" onmouseover="jQuery('.divul1').hide();jQuery('.divul2').hide();">
+                        <div class="cba" onclick="waitOn();changePage(this);">
+                            <a id="CurrentPageId-3" href="/apex/XactlySMBHomePage?page=3">
+                                <span class="textButtons {!IF(selected=7,' PNovaSemiBold14c2',' PNovaSemiBold14c3')}"> {!$Label.ChangeMy} </span>                           
+                            </a>
+                        </div>  
+                        <div class="arrowDropDown" style="display:{!IF(selected=7,'none','')};"></div>
+                        <div class="divul divul3" style="margin-left:-137px;margin-top:34px;position:absolute;'">
+                        <ul class="fsDropDown" style="width:171px;">  
+                            <div class="clear"></div>
+                            <li> <a href="/apex/XactlySMBSettingsUsers" onclick="waitOn();"> 
+                                    <apex:outputtext value="{!$Label.xactlyexpress__SettingsWhizardStep2}" /> 
+                                </a>
+                            </li>  
+                            <li> <a href="/apex/XactlySMBSettingsDeals" onclick="waitOn();"> 
+                                    <apex:outputtext value="{!$Label.xactlyexpress__SettingsWhizardStep3}">
+                                         <apex:param value="{!currentSettings.dealsAbbCap}" />
+                                    </apex:outputtext>
+                                </a>
+                            </li>  
+                            <li> <a href="/apex/XactlySMBSettingsTerminology" onclick="waitOn();"> 
+                                    <apex:outputtext value="{!$Label.xactlyexpress__SettingsWhizardStep4}" /> 
+                                </a>
+                            </li>  
+                            <li> <a href="/apex/XactlySMBSettingsPayroll" onclick="waitOn();"> 
+                                    <apex:outputtext value="{!$Label.xactlyexpress__SettingsWhizardPayroll}" /> 
+                                </a>
+                            </li> 
+                            <li> <a href="/apex/XactlySMBSettingsOther" onclick="waitOn();"> 
+                                    <apex:outputtext value="{!$Label.xactlyexpress__SettingsWhizardStep5}" /> 
+                                 </a>
+                            </li> 
+                            <li> <a href="javascript:;"> 
+                                    <apex:outputtext value="{!$Label.xactlyexpress__ChatterSettings}" />
+                                 </a>
+                            </li> 
+                        </ul>  
+                        
+                          <div class="clear"></div> 
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="rightHeader" class="rightBottomHeader{!IF(selected=7,'Selected','')}">
+            </div>
+        </div>
+        <c:XactlySMBPlanListToQuota fiscalYear="{!currentPeriod.XactlyExpress__FiscalYearSettings__c}"  /> 
+        <!-- END OF HEADER -->  
+                
+            </apex:outputPanel>
+                 <!-- Calculate WIZARD -->
+            <apex:outputPanel layout="block" styleClass="wizard" rendered="{!isAdmin && isActive && wtype=='calculate'}">
+                 <c:XactlySMBCalculateWizardSteps dealsLabel="{!wlabel}" step="{!step}"/>
+            </apex:outputPanel>
+                 <!-- Plan WIZARD -->
+            <apex:outputPanel layout="block" styleClass="wizard"  rendered="{!wtype=='plan'}">
+                    <c:XactlySMBPlanWizardSteps planId="{!wId}" creditLabel="{!wclabel}" step="{!step}" dealLabel="{!wlabel}" quotaLabel="{!wqlabel}"/>
+            </apex:outputPanel>
+                <!-- Setting  -->
+            <apex:outputPanel layout="block" styleClass="wizard"  rendered="{!wtype=='setting'}">
+                <c:XactlySMBSettingsWizardSteps step="{!step}" dealsLabel="{!wlabel}" />
+            </apex:outputPanel>
+                <!-- Terms WIZARD -->
+            <apex:outputPanel layout="block" styleClass="wizard"  rendered="{!wtype=='terms'}">
+                <c:XactlySMBTermsWizardStep step="{!step}"/>
+            </apex:outputPanel>     
+            
+            <apex:outputPanel layout="none" rendered="{!(ISNULL(wtype) || wtype=='')}">
+               <script>
+                   jQuery('.header')[0].style.height = '92px';
+               </script>
+            </apex:outputPanel>
+        </div>
+        <!-- TODO: When add help add "(!ISNULL(stepHelp) && stepHelp!='')" || to rendered conditions -->
+        <apex:outputPanel layout="block" styleClass="HeaderMessage"  rendered="{! ((ISNULL(wtype) || wtype=='') && (!ISNULL(hlabel) && hlabel!=''))}">
+            <div style="float:left;">{!IF(!ISNULL(wtype) && wtype!='',hlabel,'')}</div>
+         <!--    <a class="stepHelp" onmouseover="rerenderNoCompare = false;" onmouseout="rerenderNoCompare = true;" href="javascript: helpWindow = window.open('{!$Page.XactlySMBHelp}?page={!stepHelp}', 'Help','location=0,status=0,scrollbars=1,width=700px,height=500px'); helpWindow.moveTo(100,100);">{!$Label.HowDoesThisPageWork}</a>  -->
+        </apex:outputPanel>
+    </div>
+    <script type="text/javascript" language="javascript" src="{!URLFOR($Resource.XactlySMBResources, 'js/jquery.curvycorners.min.js')}"></script>
+    <script>
+       jQuery(document).ready(function (){
+           jQuery('.divul').corner({
+                tl: { radius: 0 },
+                tr: { radius: 0 },
+                bl: { radius: 10 },
+                br: { radius: 10 },
+                antiAlias: true
+            });
+           hoverDrowDowns();
+       });
+    
+       var nbrSeparator = "{!nbrSeparator}";
+       var nbrDecimal = "{!nbrDecimal}";
+       var ChangesWillNotBeSaved = "{!$Label.ChangesWillNotBeSaved}";
+       var tab2 = true;
+       var tab3 = true;
+       var tab4 = true;
+       
+       function hoverDrowDowns(){
+           jQuery('.activeTabs').mouseleave(function(){
+               if(jQuery('.divul',jQuery(this)).css('display')=='block'){
+                   if(jQuery(this).hasClass('tab2')){
+	                   tab2 = false;
+	                   setTimeout('tab2=true',500);
+	               }
+	               if(jQuery(this).hasClass('tab3')){
+                       tab3 = false;
+                       setTimeout('tab3=true',500);
+                   }
+                   if(jQuery(this).hasClass('tab4')){
+                       tab4 = false;
+                       setTimeout('tab4=true',500);
+                   }
+               }
+               jQuery('.divul',jQuery(this)).fadeOut();
+           }).mouseover(function(){
+               var tempBool = false;
+               if(jQuery(this).hasClass('tab2')){
+                       tempBool = tab2;
+                   }
+                   if(jQuery(this).hasClass('tab3')){
+                       tempBool = tab3;
+                   }
+                   if(jQuery(this).hasClass('tab4')){
+                       tempBool = tab4;
+                   }
+               if(!jQuery(this).hasClass('active')&&jQuery('.divul',jQuery(this)).css('display')=='none'&&tempBool){
+                   jQuery('.divul',jQuery(this)).fadeIn('fast');
+               }
+           }); 
+       }
+       
+        function changePage(element1){
+                var element = jQuery(element1).find("a")[0];
+                jQuery(element1).blur();    
+                jQuery(element).blur();                     
+                var currentPageId = element.id.replace('CurrentPageId-','');                        
+                document.getElementById('{!$Component.currentPageId}').value = currentPageId;
+                saveCurrentPage();                  
+                jQuery('.activeTabs').find('.arrowDropDown').show();
+                jQuery("#CurrentPageId-"+currentPageId).parent().next().find('.arrowDropDown').hide();              
+            };
+    </script>
+</apex:component>

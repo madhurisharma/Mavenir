@@ -1,0 +1,54 @@
+<apex:page sidebar="false" showHeader="false" controller="XactlyExpress.XactlySMBHelpController">
+	<c:XactlySMBCursor />
+	<style>
+		#helpContent {
+			margin: 30px;
+			padding: 0px;
+			color: #3B6080;
+			font-size: 12px;
+		}
+	</style>
+	
+	<div id="helpContent">{!$Label.xactlyexpress__WaitLoading}...</div>
+	
+	<apex:includeScript value="{!URLFOR($Resource.XactlyExpress__CSN, 'jquery.js')}" />
+    <c:XactlySMBFooterScript /> 
+	<script>
+		
+		$(document).ready(function (){
+			
+			$.ajaxSetup({
+                "beforeSend": function(xhr) {
+                    if (window.XMLHttpRequest) {
+			            xmlHttpReq = new XMLHttpRequest();
+			            if (xhr.overrideMimeType) {
+			                xhr.overrideMimeType('text/html; charset=iso-8859-1');
+			                // See note below about this line
+			            }
+			        // IE
+			        } else if (window.ActiveXObject) { // IE
+			            try {
+			                xhr = new ActiveXObject("Msxml2.XMLHTTP");
+			        } catch (e) {
+			            try {
+			                xhr = new ActiveXObject("Microsoft.XMLHTTP");
+			            } catch (e) {}
+			            }
+			        }
+                    
+                }
+            });
+		    
+		      
+			var pageName = '{!pageName}';
+			var currentUserLang = '{!currentUserLang}';
+			if (pageName != null && pageName != '') {
+				$("#helpContent").load("{!URLFOR($Resource.BestPracticesAndHelpContent, currentUserLang + '/PageHelpContentFor' + pageName + '.txt')}");
+			}
+			else {
+				$("#helpContent").load("{!URLFOR($Resource.BestPracticesAndHelpContent, currentUserLang + '/PageHelpContent.txt')}");
+			}
+		});
+		
+	</script>
+</apex:page>

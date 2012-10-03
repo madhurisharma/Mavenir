@@ -1,0 +1,422 @@
+<!--
+Developed by Timba Software Corp. www.timbasoftware.com admin@timbasoftware.com
+ This page defines Settings
+ @author Juan Bessonart <jbessonart@timbasoftware.com>
+-->
+<apex:page id="XactlySMBSettingsTerminology" controller="XactlyExpress.XactlySMBSettingsTerminologyController" sidebar="false" showHeader="false" standardStylesheets="true"  action="{!redirectWhenAccessIsDenied}">
+	
+   <!-- Custom Cursor Loader -->
+   <c:XactlySMBCursor />
+   <!-- Custom Cursor Loader -->
+    <title>{!$Label.ChangeMy} : {!$Label.SettingsWhizardStep4}</title>
+	<link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.XactlySMBResources ,'css/XactlySMBStyles.css')}" />
+	<link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.XactlySMBResources ,'css/XactlySMBNumeratedBox.css')}" />
+	<apex:includeScript value="{!URLFOR($Resource.XactlyExpress__CSN, 'jquery.js')}" />
+	<style>
+		
+		.settingSection {
+			position: relative;
+			overflow: hidden;
+			margin: 20px 30px;
+			padding: 0px;
+		}
+		
+		.settingSection .settingLabel {
+			margin: 10px;
+			padding: 0px;
+		}
+		
+		.settingSection .settingValue {
+			margin: 10px;
+			padding: 0px;
+			margin-left: 200px;
+		}
+		
+		.settingSection .helpCorner {
+			position: absolute;
+			top: 10px;
+			right: 10px;
+		}
+		
+		div.bestPContent {
+			border-right: 1px solid #CAE2F9;
+			border-left: 1px solid #CAE2F9;
+		}
+		div.bestPTitle {
+			border-right: 1px solid #CAE2F9;
+			border-left: 1px solid #CAE2F9;
+		}
+        
+        .tableWrapper {    
+            position: relative;  
+            overflow: visible;
+            margin-top:10px;
+            padding: 0px;
+            width:100%; 
+        }
+        
+        .userTableWrapper {
+            position: relative;
+            overflow: auto;
+            _height: 410px;
+            max-height: 410px;
+            min-height: 47px;
+            width: 100%;
+        }
+        
+        .profilesDataTable{
+            margin: 0px;
+            width: 100%;
+            position: relative;
+            overflow: auto;
+        }
+        
+        div.topTable {
+            background: url({!URLFOR($Resource.XactlyExpress__XactlySMBResources ,'img/layout/grayTopTable.png')});
+            height: 8px;
+            /*margin-left:32px;*/
+        }
+        
+        div.bottomTable {
+            background: url({!URLFOR($Resource.XactlyExpress__XactlySMBResources ,'img/layout/grayBottomTable.png')});
+            height: 3px;
+            /*margin-left:32px;*/
+        }
+        
+        .commonTable thead tr th {
+            color:#4D5C5F;   
+        }
+        
+        .leftTable tr td {
+            color:#4D5C5F;   
+        }
+        
+        .titleBlue{
+        	font-family:'ProximaNovaSemiBold' !important;
+            color:#4888B8;
+            cursor:default;
+            font-size:38px;
+        }
+        
+        .titleBlack{
+        	font-family:'ProximaNovaSemiBold' !important;
+            color:#000000;
+            cursor:default;
+            font-size:44px;
+        }
+        
+	</style>
+	
+    <c:XactlySMBShadows /> 
+ 
+    <!-- PAGE WRAPPER -->  
+    <div class="pageContent" id="pContent">
+            
+        <apex:form id="settingsForm1">
+            <!-- HEADER -->
+            <apex:outputPanel layout="block" styleClass="header">
+                <c:XactlySMBHeader isAdmin="{!isAdmin}"  isActive="{!isActive}" nbrSeparator="{!nbrSeparator}" nbrDecimal="{!nbrDecimal}" currentUserOrSlected="{!currentUserOrSlected}" emulatingUserURLAppend="{!emulatingUserURLAppend}" selected="7" wqlabel="{!currentSettings.quotasPlural}" wclabel="{!currentSettings.creditsPlural}" wlabel="{!currentSettings.dealsPluralCap}" step="4" wtype="setting" hlabel="{!$Label.xactlyexpress__SelectTheSalesTerms}" stepHelp="SettingsTerminology" />
+            </apex:outputPanel> 
+            
+            <!-- INSUFFICIENT PERMISSIONS -->
+            <apex:outputPanel rendered="{!!isAdmin || !isActive}">
+                <c:XactlySMBErrorMsg error="{!$Label.xactlyexpress__InsufficientPermissions}" />
+            </apex:outputPanel>
+            
+            <apex:outputPanel layout="block" styleclass="additionalContent" rendered="{!isAdmin && isActive}">   
+                <c:XactlySMBChatterWall objectId="{!$User.Id}" showHeader="true" showWall="true" currentPage="Manage Terminology"/>
+                <div style="width:100%">
+                    <apex:outputText escape="false" value="{!$Label.xactlyexpress__settingsTerminologyTitle}" style="margin-left:30px;"/>
+                </div>
+            </apex:outputPanel>
+		
+        	
+            <!-- MAIN CONTENT -->
+            <apex:outputPanel layout="block" styleClass="mainContent" rendered="{!isAdmin && isActive}">
+            	
+                <!-- LEFT PANEL -->
+                <apex:outputPanel layout="block" styleClass="leftPanel">
+                    <div style="background-image: url('{!URLFOR($Resource.XactlyExpress__XactlySMBResources ,'img/layout/topCurvyLarge2.gif')}');height:22px;margin-left:10px;margin-top:18px;width:250px;">
+                        <apex:outputText value="{!$Label.xactlyexpress__howTo}" style="font-weight:bold;margin-left:10px;margin-top:5px;position:absolute;"/>
+                    </div>
+                    <div style="width:246px;margin-left:10px;">
+                        <div style="width:100%;border-right:2px solid #D49761;border-left:2px solid #D49761;background-color:#FFF;">
+                            <table width="100%" class="leftTable" cellspacing="10" cellpadding="4" style="font-size:9pt;text-align:justify;">
+                                <tr>
+                                    <td><img src="{!URLFOR($Resource.XactlySMBResources ,'img/icons/leftGrayArrow.png')}"/></td>
+                                    <td><apex:outputText value="{!$Label.xactlyexpress__termHowToStep1}"/></td>
+                                </tr>
+                                <tr>
+                                    <td><img src="{!URLFOR($Resource.XactlyExpress__XactlySMBResources ,'img/icons/leftGrayArrow.png')}"/></td>
+                                    <td><apex:outputText value="{!$Label.xactlyexpress__termHowToStep2}"/></td>
+                                </tr>
+                                <tr>
+                                    <td><img src="{!URLFOR($Resource.XactlyExpress__XactlySMBResources ,'img/icons/leftGrayArrow.png')}"/></td>
+                                    <td><apex:outputText value="{!$Label.xactlyexpress__termHowToStep3}"/></td>
+                                </tr>
+                                <tr>
+                                    <td><img src="{!URLFOR($Resource.XactlyExpress__XactlySMBResources ,'img/icons/leftGrayArrow.png')}"/></td>
+                                    <td><apex:outputText value="{!$Label.xactlyexpress__termHowToStep4}"/></td>
+                                </tr>
+                                <tr>
+                                    <td><img src="{!URLFOR($Resource.XactlyExpress__XactlySMBResources ,'img/icons/leftGrayArrow.png')}"/></td>
+                                    <td><apex:outputText value="{!$Label.xactlyexpress__termHowToStep5}"/></td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div style="background-image: url('{!URLFOR($Resource.XactlySMBResources ,'img/layout/bottomOrange.png')}');margin-left:15px;margin-right:11px;">
+                           <div style="float: left;margin-left:-15px;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/bottomLeftOrange.png')}"/></div>
+                           <div style="float: right;margin-right:-15px;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/bottomRightOrange.png')}"/></div>
+                           <div style="clear:both"></div>
+                        </div> 
+                    </div>         
+                </apex:outputPanel> <!-- close LEFT PANEL -->
+                  
+                <!-- CONTENT -->
+                <apex:outputPanel id="settingsContent" layout="block" styleClass="content" style="margin: 10px 0 0 10px; width:720px;">
+	                <div style="background-color:#A4B8CB;padding:5px;width:670px;margin-left:25px;" id="mainCornerDiv"> 
+	                	<apex:outputPanel layout="block" id="tableWrapper" styleclass="tableWrapper">
+	                    	<div class="topTable" style="width:100%"></div>
+	                        <apex:outputPanel styleClass="userTableWrapper" id="userTableWrapper" layout="block">
+		                        <table cellspacing="0" cellpadding="0" border="0" class="profilesDataTable commonTable">
+		                             <thead>
+		                                 <tr class="odd">
+		                                    <th style="text-align:left;">
+		                                        <apex:outputText value="{!$Label.xactlyexpress__Description}"/>
+		                                    </th>
+		                                    <th style="text-align:left;">
+		                                        <apex:outputText value="{!$Label.xactlyexpress__terminology}"/>
+		                                    </th>
+		                                 </tr>
+		                             </thead>
+		                             <tbody>
+	                             	   	 <tr class="even">
+		                                    <td class="column">
+		                                        <apex:outputText value="{!$Label.xactlyexpress__SalespersonGoalsOrTargets}"/>
+		                                    </td>
+		                                    <td class="column">
+		                                        <apex:selectList id="quotaTerm" value="{!SalespersonGoalsOrTargetsSelected}" size="1" multiselect="false">
+		                                            <apex:selectOptions value="{!salespersonGoalsOrTargetsOpts}" />
+		                                        </apex:selectList>
+		                                    </td>
+		                                 </tr>
+		                                 <tr class="odd">
+		                                    <td class="column">
+		                                        <apex:outputText value="{!$Label.xactlyexpress__Salespeople}"/>
+		                                    </td>
+		                                    <td class="column">
+		                                        <apex:selectList id="salesPeopleTerm" value="{!SalespeopleSelected}" size="1" multiselect="false">
+		                                            <apex:selectOptions value="{!salespeopleOpts}" />
+		                                        </apex:selectList>
+		                                    </td>
+		                                 </tr>
+		                                 <tr class="even">
+		                                    <td class="column">
+		                                        <apex:outputText value="{!TermDealLabelLabel}"/>
+		                                    </td>
+		                                    <td class="column">
+		                                        <apex:selectList id="dealsTerms" value="{!DealsTerminologySelected}" size="1" multiselect="false">
+		                                            <apex:selectOptions value="{!dealsOpts}" />
+		                                        </apex:selectList>
+		                                    </td>
+		                                 </tr>
+		                                 <tr class="odd">
+		                                    <td class="column">
+		                                        <apex:outputText value="{!$Label.xactlyexpress__TermTICLabel}"/>
+		                                    </td>
+		                                    <td class="column">
+		                                        <apex:selectList id="ticTerm" value="{!TICTerminologySelected}" size="1" multiselect="false">
+		                                            <apex:selectOptions value="{!TICOpts}" />
+		                                        </apex:selectList>
+		                                    </td>
+		                                 </tr>
+		                                 <tr class="even">
+		                                    <td class="column">
+		                                        <apex:outputText value="{!$Label.xactlyexpress__TermCreditLabel}"/>
+		                                    </td>
+		                                    <td class="column">
+		                                        <apex:selectList id="creditTerm" value="{!CreditsTerminologySelected}" size="1" multiselect="false">
+		                                            <apex:selectOptions value="{!CreditsOpts}" />
+		                                        </apex:selectList>
+		                                    </td>
+		                                 </tr>
+		                                 <tr class="odd">
+		                                    <td class="column">
+		                                        <apex:outputText value="{!$Label.xactlyexpress__step6TerminologySubTitle}"/>
+		                                    </td>
+		                                    <td class="column">
+		                                        <apex:selectList id="earnedTerm" value="{!EarnedTerminologySelected}" size="1" multiselect="false">
+		                                            <apex:selectOptions value="{!EarnedOpts}" />
+		                                        </apex:selectList>
+		                                    </td>
+		                                 </tr>
+		                                 <tr class="even">
+		                                    <td class="column">
+		                                        <apex:outputText value="{!$Label.xactlyexpress__step7TerminologySubTitle}"/>
+		                                    </td>
+		                                    <td class="column">
+		                                        <apex:selectList id="qualifierTerm" value="{!QualifierTerminologySelected}" size="1" multiselect="false">
+		                                            <apex:selectOptions value="{!QualifierOpts}" />
+		                                        </apex:selectList>
+		                                    </td>
+		                                 </tr>
+		                                 <tr class="odd">
+                                            <td class="column">
+                                                <apex:outputText value="{!$Label.xactlyexpress__step8TerminologySubTitle}"/>
+                                            </td>
+                                            <td class="column">
+                                                <apex:selectList id="liabilityTerm" value="{!LiabilityTerminologySelected}" size="1" multiselect="false">
+                                                    <apex:selectOptions value="{!LiabilitiesOpts}" />
+                                                </apex:selectList>
+                                            </td>
+                                         </tr>
+		                             </tbody>
+		                        </table>
+	                    	</apex:outputPanel>
+	                    	<div class="bottomTable" style="width:100%"></div>
+	                    	
+	                    </apex:outputPanel> <!--Close tableWrapper -->   
+			               	
+	            	</div>    
+	            	
+           		   <div style="background-color:#A4B8CB;padding:5px;width:670px;margin-left:25px;margin-bottom:80px;" id="mainCornerDiv2"> 
+	               		<apex:outputPanel layout="block" id="tableWrapper2" styleclass="tableWrapper">
+	                       <div class="topTable" style="width:100%"></div>
+	                       <apex:outputPanel styleClass="userTableWrapper" id="userTableWrapper2" layout="block">
+	                           <table cellspacing="0" cellpadding="0" border="0" class="profilesDataTable commonTable">
+	                               <thead>
+	                                   <tr class="odd">
+	                                      <th style="text-align:left;">
+	                                          <apex:outputText value="{!$Label.xactlyexpress__commisionEstimatorTitle}"/>
+	                                      </th>
+	                                   </tr>
+	                               </thead>
+	                               <tbody>
+	                                   <tr class="even">
+	                                      <td class="column">
+	                                          <apex:inputField id="disclaimer" value="{!settings.XactlyExpress__estimatorDisclaimer__c}" style="width:640px;color:#4D5C5F;"/>
+	                                      </td>
+	                                   </tr>
+	                               </tbody>
+	                           </table>
+	                       </apex:outputPanel>
+	                       <div class="bottomTable" style="width:100%"></div>
+	                    </apex:outputPanel>
+	               	</div>  
+	            </apex:outputPanel>  <!--Close CONTENT -->
+	                     
+                <br/><br/>
+                   
+			</apex:outputPanel> <!-- Close MainContent  -->
+				
+				<!-- FOOTER  -->
+			<apex:outputPanel layout="block" styleClass="footer" rendered="{!isAdmin && isActive}" id="pFooter">
+                <apex:outputPanel layout="block" styleClass="previousStepWrapper" style="max-width:150px;">
+                    <div class="previousStepRight"></div>
+                    <a class="previousStepMiddle" href="{!$Page.XactlySMBSettingsDeals}" onclick="savePageHandler.disableBottomBar();">
+                        {!$Label.PreviousStep}
+                    </a>
+                    <div class="previousStepLeft"></div>
+                </apex:outputPanel>
+                    
+                <apex:outputPanel layout="block" styleClass="actionButtons">                        
+                    <apex:outputPanel layout="block" styleClass="actionButtonWrapper">
+                        <div class="actionButtonLeft"></div>
+                        <apex:commandLink styleClass="actionButtonMiddle" id="saveBtn" action="{!saveSettings}" onclick="storeValues();waitOn();savePageHandler.disableBottomBar();">
+                            <apex:outputtext escape="false" value="{!$Label.xactlyexpress__SaveChanges}">
+                               <apex:param value="{!URLFOR($Resource.XactlyExpress__XactlySMBResources ,'img/buttons/navigateSaveMiddle.gif')}" />
+                            </apex:outputtext>  
+                        </apex:commandLink>
+                        <div class="actionButtonRight"></div>    
+                    </apex:outputPanel>
+                     
+                    <apex:outputPanel layout="block" styleClass="actionButtonWrapper">
+                        <div class="actionButtonLeft"></div>
+                        <a href="javascript:;" class="actionButtonMiddle" onclick="discardChangesConfirm(window.location.href);">
+                            <apex:outputtext escape="false" value="{!$Label.xactlyexpress__DiscardChanges}">
+                               <apex:param value="{!URLFOR($Resource.XactlyExpress__XactlySMBResources ,'img/buttons/navigateCancelMiddle.gif')}" />
+                            </apex:outputtext>
+                        </a>
+                        <div class="actionButtonRight"></div>    
+                    </apex:outputPanel> 
+                </apex:outputPanel>
+            
+                <apex:outputPanel layout="block" styleClass="nextStepWrapper" style="margin-right:100px;">
+                    <div class="nextStepLeft"></div>
+                    <apex:commandLink styleClass="nextStepMiddle" action="{!saveNext}"  onclick="storeValues();waitOn();savePageHandler.disableBottomBar();">
+                        {!$Label.xactlyexpress__NextStep}
+                    </apex:commandLink>
+                    <div class="nextStepRight"></div>
+                </apex:outputPanel>
+			</apex:outputPanel>	<!-- Close Footer -->
+			
+		</apex:form>
+			
+	</div> <!-- Close PageContent -->
+        
+        <div style="clear:both"></div>
+			
+			
+		<apex:outputPanel id="auxPanel">	</apex:outputPanel>
+		
+
+    <c:XactlySMBFooterScript /> 
+
+	<script type="text/javascript" language="javascript" src="{!URLFOR($Resource.XactlySMBResources, 'js/XactlySMBJavascript.js')}"></script>
+	<script type="text/javascript" src="{!URLFOR($Resource.XactlySMBResources ,'js/jquery.superbox-min.js')}"></script>
+    <script type="text/javascript" language="javascript" src="{!URLFOR($Resource.XactlySMBResources, 'js/jquery.curvycorners.min.js')}"></script>
+    <script type="text/javascript">
+        $(function(){
+            $.superbox.settings = {
+                closeTxt: "X",
+                loadTxt: "Loading...",
+                nextTxt: "Next",
+                prevTxt: "Previous"
+            };
+            $.superbox();
+        });
+    </script>
+    <script type="text/javascript" charset="utf-8">
+        
+        var rerenderNoCompare = true;
+        
+        $(document).ready(function()
+        {
+        	savePageHandler.storeBottomBarOnclickEvents();
+    		savePageHandler.setExtraBottomBarClick();
+            storeValues();  
+            
+            $('#mainCornerDiv').corner({
+                tl: { radius: 5 },
+                tr: { radius: 5 },
+                bl: { radius: 5 },
+                br: { radius: 5 },
+                antiAlias: true
+            });
+            
+            $('#mainCornerDiv2').corner({
+                tl: { radius: 5 },
+                tr: { radius: 5 },
+                bl: { radius: 5 },
+                br: { radius: 5 },
+                antiAlias: true
+            });
+        }); 
+        
+        var saveBtn = function(){
+		
+	    	savePageHandler.disableBottomBar();			        
+		
+		}
+        
+       
+        window.onbeforeunload = function(){
+            if(compareValues(true,rerenderNoCompare) != undefined){
+                setTimeout("savePageHandler.enableBottomBar();",1000);
+            }
+            window.onunload = function() {savePageHandler.disableBottomBar();}
+            return compareValues(true,rerenderNoCompare);
+        }         
+    </script>
+    
+</apex:page>

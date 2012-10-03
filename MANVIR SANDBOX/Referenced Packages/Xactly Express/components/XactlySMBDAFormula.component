@@ -1,0 +1,1186 @@
+<apex:component id="daFormula" controller="XactlyExpress.XactlySMBDAFormula" allowDML="true">
+   
+    <style>       
+        .contentDAF {
+            font-size: 11px;
+            padding: 0px;
+            position:relative;
+            overflow: hidden;
+            float:left;
+            margin-top:10px;
+        } 
+        
+        a {
+            text-decoration: none;
+        }
+     
+        .show{display:block;}
+        .hide{display:none;}
+        
+        .btnAction {
+            /*position: relative;*/
+            overflow: hidden;
+        }
+        
+        .btnAction input {
+            float: left;
+        }
+        
+        .btnAction .leftBtnSilverDAF {
+            background: url({!URLFOR($Resource.XactlySMBResources, 'img/layout/sch_bottomSilvRight.png')}) transparent no-repeat scroll right center;
+            float: left;
+            height:19px;
+            padding:0px 0px 0px 5px;
+            width:auto;
+        }
+        .btnAction .middleBtnSilverDAF {
+            color: white;
+            height:19px;
+            text-transform: lowercase;
+            font-size: 11px;
+            padding:2px 25px 0 0;
+            float:left;
+        }
+        .btnAction .rightBtnSilverDAF {
+            background: url({!URLFOR($Resource.XactlySMBResources, 'img/layout/sch_bottomSilvLeft.png')}) transparent no-repeat scroll left center;
+            float:left;
+            height:19px;
+            width:auto;
+            margin-top: 1px;
+            margin-left: 5px;
+            padding-left:22px;
+        }         
+        
+        .btnAction .leftBtnOrangeDAF {
+            background: url({!URLFOR($Resource.XactlySMBResources, 'img/layout/sch_bottomRight.png')}) transparent no-repeat scroll right center;
+            float: left;
+            height:19px;
+            padding:0px 0px 0px 5px;
+            width:auto;
+        }
+        .btnAction .middleBtnOrangeDAF {
+            color: white;
+            height:19px;
+            text-transform: lowercase;
+            font-size: 11px;
+            padding:2px 25px 0 0;
+            float:left;
+        }
+        .btnAction .rightBtnOrangeDAF {
+            background: url({!URLFOR($Resource.XactlySMBResources, 'img/layout/sch_bottomLeft.png')}) transparent no-repeat scroll left center;
+            float:left;
+            height:19px;
+            width:auto;
+            margin-top: 1px;
+            margin-left: 5px;
+            padding-left:22px;
+        } 
+        
+        .superboxDAFFooter {
+            float:left;
+            background: url({!URLFOR($Resource.XactlySMBResources, 'img/layout/sch_winBot.png')}) transparent no-repeat right bottom;
+            height: 52px;
+            width: 100%;
+            margin: 0px;
+        }
+        
+        .resultPanel2 {
+            float:left;
+            overflow:auto;
+            margin: 0px 0px 0px 10px;
+        }
+        
+        .titleLabelDAF { 
+            color:#3b6f8e; 
+            font-size:23px;
+        }
+        
+        .saveAndCancel {
+            float:right;
+            padding:12px 0 0 40px;
+            width:610px;
+        }
+        
+
+
+
+        
+        /*************** footer button styles ***************/
+        
+
+        .displayNone{
+            display:none;
+            
+        }
+        
+        #DAFormula .close{
+            display:none;
+        }
+        
+        .btnAction .middleBtnSilver, .btnAction .middleBtnSilverDisabled {
+            font-size: 10px;
+            font-weight: bold;
+            padding: 3px 5px;
+            width: auto;
+        }
+        
+        .saveAsPanel{
+            overflow: visible; 
+            float: left;
+            margin:10px 0 0 20px;
+        }
+        
+
+        .btnAction .leftBtnSilver {
+            background:url({!URLFOR($Resource.XactlySMBResources, 'img/buttons/silver_button_left.gif')}) transparent  no-repeat scroll top left;
+            float: left;
+            height:19px;
+            padding:0px 0px 0px 5px;
+            width:auto;
+        }
+
+        .btnAction .rightBtnSilver {
+            background: url({!URLFOR($Resource.XactlySMBResources, 'img/buttons/silver_button_right.gif')}) transparent no-repeat scroll right top;
+            /*background: url(../img/buttons/silver_button_right.png) transparent no-repeat scroll right top;*/
+            float:left;
+            height:19px;
+            padding:0px 5px 0px 0px;
+            width:auto;
+            margin-left: 5px;           
+        }
+        
+        /*************** end of footer button styles ***************/
+
+
+        .errorsPanel {
+           color: red;
+           font-weight: bold;
+           font-size: 12px;
+        }
+        
+        .superboxDAFBody{
+            background-color:#FFFFFF;
+            border-left:3px solid #A7A9AC;
+            border-right:3px solid #A7A9AC;
+            margin-left:5px;
+            width:989px;
+            min-height: 400px;
+        }
+        .superboxDAFTop{
+            background: url({!URLFOR($Resource.XactlySMBResources, 'img/layout/sch_winTop.png')}) no-repeat;
+            height:25px;
+            margin-left:5px;
+            width:996px;
+        }
+        
+        .tableTopDAFLeft{
+            background: url({!URLFOR($Resource.XactlySMBResources, 'img/layout/DAFleftTopTable.png')}) no-repeat;
+            height:16px;
+            width:11px;
+            float:left;
+            display:inline;
+            margin-left: 20px;
+        }
+
+        .tableTopDAFCenter{
+            background: url({!URLFOR($Resource.XactlySMBResources, 'img/layout/DAFCenterTopTable.png')}) repeat-x #F2F2F2;
+            height:16px;
+            float:left;
+            display:inline;
+            width:883px;
+        }
+        
+        .tableTopDAFRight{
+            background: url({!URLFOR($Resource.XactlySMBResources, 'img/layout/DAFrightTopTable.png')}) no-repeat;
+            height:16px;
+            width:11px;
+            float:left;
+            display:inline;
+        }
+        
+        .tableTopDAFBottom{
+            background: url({!URLFOR($Resource.XactlySMBResources, 'img/layout/DAFBottomTable.png')}) no-repeat;
+            height:15px;
+            width:905px;
+            margin-left: 20px;
+        }
+        
+        .tableTopDAFBody{
+            border-left: 1px solid #E2E2E2;
+            border-right: 1px solid #E2E2E2;
+            background-color: #FAFAFA;
+            width:903px;
+            margin-left: 20px;
+            color: black;
+            font-size: 12px;
+            
+        }
+        
+        .resultsX{
+            padding-left:10px;
+            height: 30px;
+            background-color: #FAFAFA;
+            padding-left: 50px;
+            padding-top: 10px;
+        } 
+        .resultsXText{
+            color: #2B2B2B;
+            display: inline;
+            float: left;
+            font-size: 12px;
+            padding: 3px 15px 3px 3px;
+        }
+                
+        .titleBoxContainer{
+            float:left;
+            margin-top:10px;
+            margin-left: 20px;
+            height: 75px;
+        }
+        
+        .selectContainer{
+            clear: both;
+            float: left;
+            height: 20px;
+            padding-top: 3px;
+            width: 900px;
+            padding-bottom: 8px;
+        }
+        
+        .normalDAFSelect{
+            float:left;
+            display: inline;
+            width: 140px;
+            margin-left: 10px;
+        }
+        
+        .operatorDAFSelect{
+            float:left;
+            display: inline;
+            width: 50px;
+            margin-left: 10px;
+        }
+        
+        .leftLetter{
+            float:left;
+            display: inline;
+            margin-left: 50px;
+            margin-top: 2px;
+        }   
+        
+        .rowColored{
+            background-color: #F2F2F2;
+        }
+        
+        .deleteImg{
+            float:left;
+            display: inline;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+        
+        .isAdvFormCont{
+            float: left;
+            margin-left: 70px;
+            margin-top: 20px;
+        }
+        
+        .valueInputDAF{
+            margin-left:20px;
+            width:118px;
+            text-align: right;
+        }
+        
+    </style>
+    <div id="DAFormula" style="display:none;">
+        <div class="contentDAF">
+               
+               <div class="superboxDAFTop"></div>
+               
+               <div class="superboxDAFBody" id="formulaWrapper">
+                    <div style="clear:both;"></div>
+
+                    <apex:outputpanel layout="block" style="position:relative; overflow: hidden;" id="header">
+                        <div class="titleBoxContainer">
+                            <apex:outputtext styleclass="titleLabelDAF" value="{!$Label.xactlyexpress__Formula}" /> &nbsp;
+                        </div>
+                    </apex:outputpanel>
+                    
+                    <div style="clear:both"></div>
+                    
+                    <div class="tableTopDAFLeft"></div>
+                    <div class="tableTopDAFCenter"></div>
+                    <div class="tableTopDAFRight"></div>
+                    <div style="clear:both"></div>
+                    <apex:actionFunction name="addFormulaField" action="{!addFormulaField}" rerender="formulaItemContainer, isAdvFormCont" oncomplete="jQuery.superbox.refreshSuperboxContent();formulaPopupHandler.updateFormulaTypes();formulaPopupHandler.generateReadableAdvancedFormula();deleteExitingFormulaFieldInDropdown();waitOff();" />
+                    <apex:actionFunction name="saveDAF" action="{!processFormula}" rerender="formulaItemContainer, isAdvFormCont, errorPanel" oncomplete="jQuery.superbox.refreshSuperboxContent();formulaPopupHandler.updateFormulaTypes();formulaPopupHandler.generateReadableAdvancedFormula(); objToSet.value =  jQuery('#' + rawAdvFormula)[0].value; jQuery('.viewMode',jQuery(displayContainer).parent().parent()).html(jQuery('.formualDisplayDefault')[0].value); displayContainer.innerHTML =  jQuery('.formualDisplayDefault')[0].value; isAdvanceFormula.checked = jQuery('#' + isAdvFormula)[0].checked; if(errorNumber == 0)jQuery.superbox.close();waitOff(); " />
+                    <div id="formulaItems">
+                        <apex:outputPanel layout="block" id="formulaItemContainer" styleClass="tableTopDAFBody">
+                            <apex:actionFunction name="loadFormulasAF" action="{!loadFormulas}" rerender="formulaItemContainer, isAdvFormCont" oncomplete="jQuery.superbox.refreshSuperboxContent();formulaPopupHandler.updateFormulaTypes();formulaPopupHandler.generateReadableAdvancedFormula();deleteExitingFormulaFieldInDropdown();waitOff();"/>
+                            <apex:actionFunction name="deleteFormulaAF" action="{!deleteFormula}" rerender="formulaItemContainer, isAdvFormCont" oncomplete="jQuery.superbox.refreshSuperboxContent();waitOff();introAsTab();replaceCommaAll();setMax();jQuery.superbox.refreshSuperboxContent();formulaPopupHandler.updateFormulaTypes();formulaPopupHandler.generateReadableAdvancedFormula();"/>
+                            <apex:actionFunction name="clearFormula" action="{!clearFormulas}" rerender="formulaItemContainer, isAdvFormCont" oncomplete="jQuery.superbox.refreshSuperboxContent();formulaPopupHandler.updateFormulaTypes();formulaPopupHandler.generateReadableAdvancedFormula();waitOff();"/>
+                            <apex:actionFunction name="cancelFormula" action="{!cancelFormulas}" rerender="formulaItemContainer, isAdvFormCont" oncomplete="jQuery.superbox.refreshSuperboxContent();formulaPopupHandler.updateFormulaTypes();formulaPopupHandler.generateReadableAdvancedFormula();waitOff();"/>
+                            <apex:inputHidden id="selectedIndexHidden" value="{!selectedIndex}" />
+                             <script>
+                                 var selectedIndex = document.getElementById('{!$Component.selectedIndexHidden}');
+                                 var selectedQLIndex = '{!$Component.selectedQLIndex}';
+                             </script> 
+                            <div style="clear:both"></div>
+                            <apex:variable var="i" value="{!1}"/> 
+                            <apex:repeat id="repformulas" value="{!formulas}" var="f">
+                                <div class="selectContainer {!IF(MOD(i,2)==1, 'rowColored', '')}">
+                                    <div style="float:left;margin-left:5px;" id="letter">
+                                        {!FLOOR(i)}
+                                    </div>
+                                    <div style="float:left;"> 
+                                        <select class="normalDAFSelect" size="1" id="formulaType_{!FLOOR(f.Order__c )}" name="formulaType_{!FLOOR(f.Order__c )}" onchange="formulaPopupHandler.loadFormulaItem(this);deleteExitingFormulaFieldInDropdown();">
+                                             <option value="1">
+                                               {!$Label.data_Field}
+                                             </option>
+                                             <option value="3">
+                                               {!$Label.numericValue}
+                                             </option>
+                                             <option value="4">
+                                               {!$Label.percent_Value}
+                                             </option>
+                                        </select>
+                                    </div>   
+                                    <div class="formulaItemDiv" style="float:left;"> 
+                                        <apex:selectList id="selObjOptionsLst" styleclass="{!IF(f.XactlyExpress__Field__c!='Number' && f.XactlyExpress__Field__c!='Percentage','show','hide')} formulaOption f_{!FLOOR(f.XactlyExpress__Order__c )}" onchange="setterTitle();formulaPopupHandler.updateRawAdvFormulaOnChange({!FLOOR(i)-1});" value="{!f.XactlyExpress__Field__c}" multiselect="false" size="1" style="width: 120px;margin-left:20px;">
+                                             <apex:selectOptions value="{!selObjOptions}"/>
+                                        </apex:selectList>
+                                        <apex:inputtext id="valueInputDAF" size="10" value="{!f.XactlyExpress__Value__c}" styleclass="valueInputDAF {!IF(f.XactlyExpress__Field__c=='Number' || f.XactlyExpress__Field__c=='Percentage','show','hide')}" onblur="validateNumber(this);" onchange="formulaPopupHandler.updateRawAdvFormulaOnChange({!FLOOR(i)-1});"/>
+                                    </div>
+                                    <div style="float: left; width: 20px; height: 20px;">
+                                        <span id="percentSymbol_{!FLOOR(f.Order__c )}" class="titleA" style="font-size: 17px; font-weight: bold; margin-left: 2px; display: none;">%</span>
+                                    </div>
+                                    <div style="float:left;">
+                                        <apex:selectList id="SelForOptionsLst" styleclass="operator operatorDAFSelect" rendered="{!IF(f.XactlyExpress__Order__c == formulas.size - 1, false,true)}" id="selOp" value="{!f.XactlyExpress__Operator__c}" multiselect="false" size="1"  style="width: 40px">
+                                            <apex:selectOptions value="{!SelForOptions}"/>
+                                        </apex:selectList>
+                                    </div>
+                                    <apex:variable var="i" value="{!i + 1}"/> 
+                                       
+                                    <apex:outputPanel layout="none" rendered="{!formulas.size > 1}" >
+                                      <img class="deleteImg" onclick="waitOn();deleteFormula('{!JSENCODE(TEXT(f.Order__c))}');" src="{!URLFOR($Resource.XactlySMBResources, 'img/buttons/delete_small.png')}" />    
+                                    </apex:outputPanel>
+                                </div>
+                            </apex:repeat>
+                            
+                            <div style="width: 800px; border-top: 1px solid #d4d5d6; float: right;"></div>
+                            <div style="clear:both;"></div>
+                            <div class="btnAction" style="float: left; margin-left: 37px; margin-top: -2px;">
+                                <a href="javascript:;" onclick="waitOn();jQuery.superbox.overrideSourceWithSuperboxContent();addFormulaField();">
+                                    <span class="rightBtnSilverNew">
+                                        <span class="leftBtnSilverNew">
+                                            <span class="middleBtnSilverNew">
+                                                {!$Label.AddField}
+                                            </span> 
+                                        </span>
+                                    </span> 
+                                </a>                      
+                            </div>
+                            <div style="clear:both"></div>
+                        </apex:outputPanel>
+                    </div>    
+                    <div style="clear:both"></div>
+                    <div class="tableTopDAFBottom"></div>
+                    <apex:outputpanel id="isAdvFormCont" styleClass="isAdvFormCont">
+                        {!$Label.xactlyexpress__IsThere}<apex:inputCheckbox value="{!isAdvFormula}" id="isAdvFormula" onclick="formulaPopupHandler.switchAdvFormulas();" />
+                        <br/>
+                        <apex:inputText value="{!formulaString}" id="rawAdvFormula" style="display:none;" />
+                        <div id="advFormulaDiv" style="display:none;">
+                          <input size="55"   onchange="jQuery(this).val(formulaPopupHandler.formulaBlankSpaces(jQuery(this).val().toUpperCase()));formulaPopupHandler.updateRawAdvFormulaOnChange();" id="advFormula" onkeypress="formulaPopupHandler.filterNotAllowedChars(event);"  />
+                           <script>
+                           
+                               var isAdvFormula = '{!$Component.isAdvFormula}'.replace(/:/g,'\\:');
+                               var rawAdvFormula = '{!$Component.rawAdvFormula}'.replace(/:/g,'\\:');
+                           </script>
+                           <apex:inputText value="{!formulaDisplay}" id="displayFormVal" styleClass="formualDisplayDefault" style="display:none;"/>
+                        </div>
+                    </apex:outputpanel>
+                    <apex:outputpanel styleclass="resultPanel2" layout="block" id="resultPanel2">
+                        <apex:outputpanel layout="block" id="errorPanel" styleclass="errorsPanel">
+                            <apex:repeat value="{!errors}" var="err">
+                                <apex:outputtext value="{!err}" /><br />
+                            </apex:repeat>
+                            <script>
+                                var errorNumber = {!errors.size};
+                            </script>
+                        </apex:outputpanel>
+                     </apex:outputpanel>
+                     <div style="clear:both"></div>
+                     <div class="isAdvFormCont">{!$Label.DaFormulaAdv}</div>                    
+                     
+                     
+                    <div style="clear:both;"></div>
+                </div>
+                <apex:outputpanel layout="block" id="superboxDAFFooter" styleClass="superboxDAFFooter">
+                     <div class="btnAction saveAsPanel">                                          
+                         <apex:outputLink value="javascript:;" styleClass="resetBottom" id="resetBottom" onclick="waitOn();cancelFormula();">
+                             <apex:outputPanel styleClass="rightBtnSilverNew">
+                                  <apex:outputPanel styleClass="leftBtnSilverNew">
+                                      <apex:outputPanel styleClass="middleBtnSilverNew" style="color: white;">
+                                          {!$Label.xactlyexpress__ResetFormula}
+                                     </apex:outputPanel>
+                                 </apex:outputPanel>    
+                              </apex:outputPanel>
+                              <apex:outputPanel styleClass="rightBtnSilverNew displayNone">
+                                  <apex:outputPanel styleClass="leftBtnSilverNew">
+                                      <apex:outputPanel styleClass="middleBtnSilverNew">
+                                          {!$Label.xactlyexpress__ResetFormula}
+                                      </apex:outputPanel>
+                                  </apex:outputPanel> 
+                              </apex:outputPanel>
+                         </apex:outputLink>
+                     </div> 
+                    <div class="btnToCenter btnAction saveAndCancel">
+                     <apex:outputLink value="javascript:;" styleClass="saveBtn" id="saveBtn" onclick="if(!formulaPopupHandler.isThereFormulaErrors()){waitOn();jQuery.superbox.overrideSourceWithSuperboxContent();saveDAF();}">
+                         <apex:outputPanel styleClass="rightBtnOrangeDAF">  
+                              <apex:outputPanel styleClass="leftBtnOrangeDAF">
+                                  <apex:outputPanel styleClass="middleBtnOrangeDAF" style="color: white;">
+                                      {!$Label.xactlyexpress__Save}
+                                 </apex:outputPanel>
+                             </apex:outputPanel>     
+                          </apex:outputPanel> 
+                          <apex:outputPanel styleClass="rightBtnSilverDAF displayNone">
+                              <apex:outputPanel styleClass="leftBtnSilverDAF">
+                                  <apex:outputPanel styleClass="middleBtnSilverDAF">
+                                      {!$Label.xactlyexpress__Save}
+                                  </apex:outputPanel>
+                              </apex:outputPanel>
+                          </apex:outputPanel>
+                     </apex:outputLink>
+                     
+                     <apex:outputLink styleClass="discardChanges" value="javascript:;" onclick="rerenderNoCompare = false;jQuery.superbox.close();">                         
+                          <apex:outputPanel styleClass="rightBtnOrangeDAF">
+                              <apex:outputPanel styleClass="leftBtnOrangeDAF">
+                                  <apex:outputPanel styleClass="middleBtnOrangeDAF" style="color: white;">
+                                      {!$Label.xactlyexpress__Cancel}
+                                 </apex:outputPanel>
+                             </apex:outputPanel>
+                          </apex:outputPanel>   
+                          <apex:outputPanel styleClass="rightBtnSilver displayNone">
+                              <apex:outputPanel styleClass="leftBtnSilver">
+                                  <apex:outputPanel styleClass="middleBtnSilver">
+                                      {!$Label.xactlyexpress__Cancel}
+                                  </apex:outputPanel>
+                              </apex:outputPanel>
+                          </apex:outputPanel>       
+                      </apex:outputLink>
+                      
+                      <div class="btnAction" style="float: right;margin-right:20px;">                                          
+                         <apex:outputLink value="javascript:;" styleClass="clearFormula" id="clearFormula" onclick="waitOn();clearFormula();">
+                             <apex:outputPanel styleClass="rightBtnSilverNew">
+                                  <apex:outputPanel styleClass="leftBtnSilverNew">
+                                      <apex:outputPanel styleClass="middleBtnSilverNew" style="color: white;">
+                                          {!$Label.xactlyexpress__clearFormula}
+                                     </apex:outputPanel>
+                                 </apex:outputPanel>    
+                              </apex:outputPanel>
+                              <apex:outputPanel styleClass="rightBtnSilverNew displayNone">
+                                  <apex:outputPanel styleClass="leftBtnSilverNew">
+                                      <apex:outputPanel styleClass="middleBtnSilverNew">
+                                          {!$Label.xactlyexpress__clearFormula}
+                                      </apex:outputPanel>
+                                  </apex:outputPanel> 
+                              </apex:outputPanel>
+                         </apex:outputLink>
+                     </div> 
+                  </div>
+                  <c:XactlySMBFooterScript /> 
+               </apex:outputpanel>
+        </div>
+    </div>
+
+    <a id="DAFormulaLink" rel="superbox[content#DAFormula.xactlySuperBox][1000][700]" href="#DAFormula" onclick="jQuery('.hiddenResults').hide();" style="display:none"></a>
+    <script>
+                
+         var objToSet;
+         var displayContainer;
+         var isAdvanceFormula;
+
+         function showDAFormula(obj,conteiner,objIsAdv){
+             waitOn();        
+             displayContainer = conteiner;
+             objToSet = obj;
+             isAdvanceFormula = objIsAdv;
+             jQuery('#DAFormulaLink').trigger('click');
+             setTimeout('clearDAFormula()',500);
+         }
+         
+         
+         /**
+          * clearDAFormula is called when the popup is displayed.
+          * It deletes any error msg previously defined
+          */
+         function clearDAFormula(){
+           jQuery('#' + rawAdvFormula)[0].value = objToSet.value;
+           jQuery('#' + isAdvFormula)[0].checked = isAdvanceFormula.checked;
+           jQuery.superbox.refreshSuperboxContent();
+           formulaPopupHandler.switchAdvFormulas();
+           
+           loadFormulasAF();
+           
+           var errorMsg = $innerbox.find('.errorMsg');
+             if(errorMsg!=undefined){
+               errorMsg.html('');
+             }
+         } 
+         
+         
+        /**
+         * @author Alvaro Olivencia 07/15/10
+         * formulaPopupHandler handles some popup methods
+         */
+        var formulaPopupHandler = function(){
+        
+            var debugProcess = new Object();
+            var letters;
+            var formulaItems;//array of comboboxes/input texts values
+            //cached object used all over formulaPopupHandler: 
+            var isAdvFormulaSource = jQuery('#formulaWrapper').find('input[id$="isAdvFormula"]');
+            var formulaItemsObjects;
+            var specials = new RegExp("[.*+%?|()\\[\\]{}\\\\]", "g"); // .*+?|()[]{}\ 
+        
+            /**
+             * convertNumbersToLetters converts the numbered rows to letters.
+             */
+            var convertNumbersToLetters = function(){
+                var letter = '';
+                $innerbox.find('#letter').each(function(){
+                    letter = String.fromCharCode(64+parseInt(jQuery(this).html()))
+                    jQuery(this).html(letter);
+                })
+            }
+            
+            /**
+             * @param   array items
+             * @return  boolean
+             * This method checks if there is repeated formula value.
+             * 09/09/10: currently this method is not used any more
+             */
+            var isThereRepeatedValues = function(items){
+                var checkRepeated = new Object();
+                var isRepeated = false;
+                for(i=0;i<=items.length-1;i++){
+                    if(checkRepeated[items[i]]!=undefined && checkRepeated [items[i]]==1){
+                        
+                        //debug
+                        debugProcess['method: isThereRepeatedValues'] = items[i]+' is repeated';       
+                        
+                        isRepeated = true;
+                        break;    
+                    }
+                    checkRepeated[items[i]] = 1;    
+                }
+                return isRepeated;
+            }
+            
+            /**
+             * For some reason, the test() method sometimes doesn't work as expected therefor we use next function
+             */
+            var evaluteExp = function (param) {
+                var count = param.length;
+                var result = param.replace(/\[|\]|\(|\)/gi, "");
+                return (count != result.length);
+            }
+            
+            
+            /**
+             * updateRawAdvancedFormula translates the #advFormula value to the values stored in #rawAdvFormula
+             * This method is called when the use saves the formulas
+             */
+            var updateRawAdvancedFormula = function(){
+                var newRawFormulaValue = $innerbox.find('#advFormula').val();
+                for(i=0;i<=letters.length-1;i++){
+                    //only if isAdvFormula is checked AND formulaItems[i] is of type percentage ( formulaType.value = 4 ) AND % symbol was not previously defined,
+                    //we concatenate % symbol. In case that the formula is not advanced (isAdvFormula.checked = false), 
+                    //the symnbol is added on the controller
+                    if($innerbox.find('input[id$="isAdvFormula"]').is(':checked') && $innerbox.find('#formulaType_'+i).val()==4 && /\%$/.test(formulaItems[i]) == false){
+                        formulaItems[i] = formulaItems[i]+'%';
+                    }
+                    newRawFormulaValue = newRawFormulaValue.replace(new RegExp("\\b"+letters[i]+"\\b", "ig"), formulaItems[i]);
+                }
+                $innerbox.find('input[id$="rawAdvFormula"]').val(newRawFormulaValue);
+            }
+            
+            /**
+             * formatAdvFormula as its name stands, it formats #advFormula to the desired format, for example,
+             * the user inputs (A   + B) -(( C)) and this method formats (A + B) - ((C)) 
+             */
+            var formatAdvFormula = function(){
+
+                var formulaOriginalValue = formulaOriginalObj.val();//cached value 
+                formulaOriginalValue = formulaOriginalValue.replace(/(\s)/g, '');//whitespaces are replaces by '' because it's not needed in the process
+                var formula = formulaOriginalValue.split('');
+                var advFormulaSeparatedBySpace = '';
+                
+                for(i=0;i<=formula.length-1;i++){
+                    advFormulaSeparatedBySpace+=formula[i]+' ';
+                }
+                
+                //at this point the final string will be ( A + B ) - ( ( C ) ), we need to get rid of whitespaces beside
+                //each parenthesis:
+                advFormulaSeparatedBySpace = advFormulaSeparatedBySpace.replace(/\((\s)/g, "(");
+                advFormulaSeparatedBySpace = advFormulaSeparatedBySpace.replace(/(\s)\)/g, ")");
+                
+                formulaOriginalObj.val(jQuery.trim(advFormulaSeparatedBySpace));
+                
+            }
+
+            return{
+                
+                //defaultDealAttr is used to set the "x dealAttr" when the user uncheck the Override checkbox
+                defaultDealAttr : '',
+                
+                getFormulaItemsObjects: function(){
+                    return formulaItemsObjects;
+                },
+                /**
+                 * loadFormulaItem is executed when the user chenge an option from formulaTypes comboboxes.
+                 * This function shows/hides the options from formulaItems ( combos ) related to a selected formulaTypes option.  
+                 */
+                loadFormulaItem: function(obj){
+                    var selectType = $innerbox.find('#'+jQuery(obj).attr('id'));
+                    var index = selectType.attr('id').split('_')[1];
+                    var formulaItem = $innerbox.find('.f_'+index);
+                    if(formulaItem!=undefined){
+                        formulaItem.get(0).length = 0;
+                    }
+                    var selected = jQuery(obj).find('option:selected').html();//text from selected option
+                    
+                    for(key in formulaItemsObjects[selected]){
+                        formulaItem.append(formulaItemsObjects[selected][key]);
+                    }
+                    //
+                    if(selected=='Data Field' || selected=='System Field'){
+                        formulaItem.next().hide();
+                        formulaItem.show();
+                        //formulaItem.siblings(':last').hide();
+                        jQuery('#percentSymbol_'+index,$innerbox).hide();
+                    }else{
+                        formulaItem.next().show();
+                        formulaItem.hide();
+                        //Next IF sets the percent symbol beside eash percentage field
+                        if(selected=='Percent Value'){
+                            jQuery('#percentSymbol_'+index,$innerbox).show();
+                        }else{
+                            jQuery('#percentSymbol_'+index,$innerbox).hide();
+                        } 
+
+                    }
+                    
+                    formulaPopupHandler.updateRawAdvFormulaOnChange(index);
+                        
+                },
+                
+                /**
+                 * resetFormula is fired when the user clicks on Reset button 
+                 */
+                resetFormula: function(){
+                    jQuery('.overridePayCheck').each(function(){
+                        if(jQuery(this).is(':checked'))
+                            jQuery(this).attr('checked', false);
+                    });
+                    resetFormulaPopup();
+                },
+                
+                /**
+                 * This function updates the formulaTypes comboboxes in dependency of their selected( saved ) formulaItems values.
+                 * This means that if  TIC is selected, once this function is executed, the related formulaTypes combobox will display
+                 * the option System Filed as selected.
+                 * 
+                 * It also removes those options which are not related to formulaTypes and formats rawAdvFormula input field   
+                 * 
+                 * updateFormulaTypes should be executed when the formulas pop-up is rerendered ( i.e. when we delete a formula or show the pop up ).
+                 */
+                updateFormulaTypes:function(){
+                    var rawAdvFormulaObj = $innerbox.find('input[id$="rawAdvFormula"]');
+                    rawAdvFormulaObj.val(rawAdvFormulaObj.val().replace(/\%/g,''));//remove % symbols from rawAdvFormulaObj, this is needed for further parsing
+                    //Next lines of code updates the numeric or percent row based formulas with the values from the adv formula input field
+                    var rawAdvFormula = rawAdvFormulaObj.val().split(' ');
+                    var formulaItemsRaw = new Array();
+                    for(i=0; i<=rawAdvFormula.length-1; i++){
+                        if(rawAdvFormula[i]!='/' && rawAdvFormula[i]!='*' && rawAdvFormula[i]!='-' && rawAdvFormula[i]!='+'){
+                            formulaItemsRaw.push(rawAdvFormula[i].replace(new RegExp("[()\%]", "g"),''));
+                        }
+                    }
+                    $innerbox.find('.formulaItemDiv').children(':visible').each(function(index){
+                        if(this.tagName.toLowerCase() == 'input'){
+                            jQuery(this).val(formulaItemsRaw[index]);
+                        }
+                    })
+                    
+                    
+                    //Then we format percent values from rawAdvFormula
+                    var formatedRawAdvFormula = new Array();
+                    jQuery.each(rawAdvFormula,function(index,val){
+                        /*if(!isNaN(val)){
+                            formatedRawAdvFormula.push(parseFloat(val).toFixed(8));
+                        }else*/ if(/\%$/.test(val)){//if it's a percentage
+                            formatedRawAdvFormula.push(parseFloat(val.replace(/\%$/,'')));                            
+                        }else{
+                            formatedRawAdvFormula.push(val);
+                        }
+                    });
+                    rawAdvFormulaObj.val(formatedRawAdvFormula.join(' '));
+                    //First piece of code updates formulaTypes comboboxes selectedIndex and shows/hides combobox-options                          
+                    $innerbox.find('#formulaItems .formulaOption').each(function(index){
+                        if(formulaItemsObjects == undefined){
+                            formulaItemsObjects = new Object();
+                            formulaItemsObjects['Data Field'] = new Object();
+                            formulaItemsObjects['Numeric Value'] = new Object();
+                            formulaItemsObjects['Percent Value'] = new Object();
+                            
+                            var htmlOption = '';
+                            jQuery('option',jQuery(this)).each(function(index){
+                                htmlOption = '<option title="'+jQuery(this).html()+'" value="'+jQuery(this).val()+'">'+jQuery(this).html()+'</option>';
+                                if(jQuery.trim(jQuery(this).html()) == 'Number'){
+                                    //Numeric:
+                                    formulaItemsObjects['Numeric Value'][jQuery(this).html()] = htmlOption;
+                                }else if(jQuery.trim(jQuery(this).html()) == 'Percentage'){
+                                    //Percentage:
+                                    formulaItemsObjects['Percent Value'][jQuery(this).html()] = htmlOption;
+                                }else{
+                                    //Data Field:
+                                    formulaItemsObjects['Data Field'][jQuery(this).html()] = htmlOption;
+                                }
+                            })
+                        }
+                        
+                       
+                        //debug
+                        debugProcess['method: updateFormulaTypes, 1)var formulaItemsObjects'] = formulaItemsObjects;
+                       
+                        var selectedFormulaType;
+                        // Next for iterates over a tree structure where formulaType is the parent and formulaItem are the children, ie:
+                        // typeKey      itemKey
+                        // [Data Field] =        [Amount, Salary, etc...]
+                        // [System Field] =        [TIC, Salary, OTE, Quota] 
+                        // [Numeric Value] =        [Number]
+                        for(typeKey in formulaItemsObjects){
+                            debugProcess['method: updateFormulaTypes, 2)'+typeKey] = formulaItemsObjects[typeKey];
+                            if(Object.size(formulaItemsObjects[typeKey])){
+                                for(itemKey in formulaItemsObjects[typeKey]){
+                                    var selectedItem = jQuery(this).attr('selectedIndex');
+                                    //If html option from this select is equal to itemKey
+                                    if(jQuery(this).find('option').eq(selectedItem).html() == itemKey){
+                                        
+                                        //we must delete all select options because in the next for we assing the right ones
+                                        jQuery(this).get(0).length = 0;
+                                        
+                                        
+                                        //And finally we add the right ones
+                                        for(selectOption in formulaItemsObjects[typeKey]){
+                                            jQuery(this).append(formulaItemsObjects[typeKey][selectOption]);
+                                        }
+                                        //after we have removed and added the the correct options, we must set one as selected:
+                                        jQuery(this).find('option').each(function(){
+                                           if(jQuery(this).html()==itemKey){
+                                               this.selected = 'selected';
+                                           }
+                                        })
+                                        
+                                        selectedFormulaType = typeKey;
+                                        
+                                        //Next IF sets the percent symbol beside eash percentage field
+                                        if(selectedFormulaType=='Percent Value'){
+                                            jQuery('#percentSymbol_'+index,$innerbox).show();
+                                        }
+                                        
+                                        
+                                    }
+                                }
+                            }else{
+                                //in case that formulaItemsObjects[typeKey] is empty, we should remove the related formulaType
+                                jQuery('#formulaType_'+index,$innerbox).find('option').each(function(){
+                                    if(jQuery(this).html() == typeKey){
+                                        jQuery(this).remove();
+                                    }   
+                                })
+                            }
+                        }
+                        
+                        
+                        //sets the value to formula type combobox
+                        jQuery('#formulaType_'+index,$innerbox).find('option').each(function(){
+                            if(jQuery(this).html() == selectedFormulaType){
+                                this.selected = true;
+                            }   
+                        })
+                        
+                                
+                    });
+                    
+                    convertNumbersToLetters();
+                    if(formulaPopupHandler.lastCheckFormula == 'true' || formulaPopupHandler.lastCheckFormula == true){
+                        $innerbox.find('input[id$="isAdvFormula"]').attr('checked', 'checked');
+                        formulaPopupHandler.switchAdvFormulas();                    
+                    }
+                    if(formulaPopupHandler.lastCheckFormula == 'false' || formulaPopupHandler.lastCheckFormula == false){
+                        $innerbox.find('input[id$="isAdvFormula"]').removeAttr('checked');
+                        formulaPopupHandler.switchAdvFormulas();                    
+                    }
+                    if(formulaPopupHandler.lastCheckFormula == 'undefined' || formulaPopupHandler.lastCheckFormula == undefined){
+                        formulaPopupHandler.lastCheckFormula = $innerbox.find('input[id$="isAdvFormula"]').is(':checked');
+                    }
+                    
+                    //next code checkes if isAdvFomurla is checked, if so, it means that after the rerender is executed, we should hide .operator-comboboxes
+                    if($innerbox.find('input[id$="isAdvFormula"]').is(':checked')){
+                        $innerbox.find('.operator').each(function(){
+                                jQuery(this).hide();
+                        })
+                    }
+                                      
+                },
+                
+                /**
+                 * generateReadableAdvancedFormula generates the advanced input text value
+                 * It's executed in showPopup(), this one executed oncomplete that is fired whhen the user clicks on formula symbol. 
+                 */
+                generateReadableAdvancedFormula: function(){
+                    letters = new Array();
+                    var formulaArr = new Array();//this is the final value that we save into advanced input text
+                    formulaItems = new Array();
+                    var rawAdvFormulaObj = $innerbox.find('input[id$="rawAdvFormula"]');
+                                        
+                    $innerbox.find('#letter').each(function(){
+                        letters.push(jQuery(this).html());
+                    });
+                    
+                    //debug
+                    debugProcess['method: generateReadableAdvancedFormula, 1)var letters'] = letters;
+                    
+                    //next we get the values from the comboboxes/input texts
+                    var isAdvFormulaChecked = $innerbox.find('input[id$="isAdvFormula"]').is(':checked');
+                    $innerbox.find('.formulaItemDiv').children(':visible').each(function(index){
+                            formulaItems.push(jQuery(this).val());  
+                    })
+                    
+                    var rawAdvFormulaValueReplacedWithLetters = rawAdvFormulaObj.val();
+                    //debug
+                    debugProcess['method: generateReadableAdvancedFormula, 3)var formulaItems'] = formulaItems;
+                    debugProcess['method: generateReadableAdvancedFormula, 4)var rawAdvFormulaValueReplacedWithLetters (before processing)'] = rawAdvFormulaValueReplacedWithLetters;
+                    
+                    var escapedFormulaItems = '';//aux var
+                    //var checkSpecials = new RegExp("(\\[|\\]|\\)|\\()", "g");//checkSpecials is used to check when a formulaItems has an special char
+                    for(i=0;i<=letters.length-1;i++){
+                        if(evaluteExp(formulaItems[i])){
+                            //if formulaItems contains special chars we must escape it
+                            escapedFormulaItems = formulaItems[i].replace(specials, "\\\$&");
+                            rawAdvFormulaValueReplacedWithLetters = rawAdvFormulaValueReplacedWithLetters.replace(new RegExp(escapedFormulaItems, "i"), letters[i]);
+                        }else{
+                            rawAdvFormulaValueReplacedWithLetters = rawAdvFormulaValueReplacedWithLetters.replace(new RegExp(formulaItems[i], "i"), letters[i]);
+                        }
+                    }
+                    $innerbox.find('#advFormula').val(rawAdvFormulaValueReplacedWithLetters);
+                    
+                    debugProcess['method: generateReadableAdvancedFormula, 5)var rawAdvFormulaValueReplacedWithLetters (after processing)'] = rawAdvFormulaValueReplacedWithLetters;
+                    
+                    //Next line hides or shows the adv formulas
+                    formulaPopupHandler.switchAdvFormulas();
+                },
+                
+                /**
+                 * If overridePayCheck is checked it means that we must override the text beside the upper block and the text beside advFormula.
+                 * It's executed in showPopup(), this one is executed oncomplete that is fired whhen the user clicks on formula symbol, and when the user 
+                 * changes an option from override combobox.
+                 */
+                overrideTextsWithSelectedNumericDealAttr: function(){
+                    if($innerbox.find('.overridePayCheck').is(':checked')){
+                        //get html from selected option:
+                        var overrideHtml = $innerbox.find('select[id$="overrideWithNumericDealAttr"]').find('option:selected').html();
+                        $innerbox.find('.selectedNumericDeal').each(function(){
+                            jQuery(this).html('X '+ overrideHtml);
+                        })
+                    }  
+                },
+                
+                /**
+                 * switchAdvFormulas shows and hides the comboboxes operators and the advances formulas form original and copied formulas
+                 * It's executed when the user clicks on isAdvFormula checkbox 
+                 */    
+                switchAdvFormulas: function(){
+                    
+                    //here we assign the value from advFormula in superbox to the original one.
+                    jQuery('#formulaWrapper').find('#advFormula').val($innerbox.find('#advFormula').val()); 
+                    
+                    if($innerbox.find('input[id$="isAdvFormula"]').is(':checked') == true){
+                        
+                        $innerbox.find('.operator').each(function(){
+                            jQuery(this).hide();
+                        })
+                        $innerbox.find('#advFormulaDiv').show();
+                        
+                        jQuery('#formulaWrapper').find('.operator').each(function(){
+                            jQuery(this).hide();
+                        })
+                        jQuery('#formulaWrapper').find('#advFormulaDiv').show();
+                        
+                        isAdvFormulaSource.attr('checked', true);
+                        
+                    }else{
+                        
+                        $innerbox.find('.operator').each(function(){
+                            jQuery(this).show();
+                        })
+                        $innerbox.find('#advFormulaDiv').hide();
+                        
+                        jQuery('#formulaWrapper').find('.operator').each(function(){
+                            jQuery(this).show();
+                        })
+                        jQuery('#formulaWrapper').find('#advFormulaDiv').hide();
+                        
+                        isAdvFormulaSource.attr('checked', false)
+                        
+                    }
+                    
+                    formulaPopupHandler.lastCheckFormula = $innerbox.find('input[id$="isAdvFormula"]').is(':checked');
+                    
+                },
+                
+                /**
+                 * isThereFormulaErrors checks if data is right for further submittion.
+                 */
+                isThereFormulaErrors: function(){
+                    var error = false;
+                    
+                    if($innerbox.find('input[id$="isAdvFormula"]').is(':checked') == true){
+                        var alpha = new RegExp(/[A-Z]/);
+                        var operator = new RegExp(/[+-/*]/);
+                        var dobleSpace = new RegExp(/(\s){2}/);//doble space detection: (\s)= space, {2} = 2 times.
+                        var numOfAlpha = 0;//used for further validation
+                        var numOfOperators = 0;//used for further validation
+                        var numOfCloseParenthesis = 0;//used for further validation
+                        var numOfOpenParenthesis = 0;//used for further validation
+                        var formualDoesNotExit = false;//used for further validation
+                        var formulaOriginal = $innerbox.find('#advFormula').val();//cached value
+                        formulaOriginal = formulaOriginal.replace(/(\s)/g, '');//remove whitespaces
+                        var isParenthesisBesideOperator = false;//used for further validation
+                        //Next formula var is used for further validation
+                        var formula = formulaOriginal.split('');
+                        /*var formula = jQuery.grep(formula, function(n, i){//By using jQuery.grep we filter values from the array that we don't want to any more.
+                          return (n != " ");
+                        });*/
+                        
+                        //Next FOR analize the formula array, it generates some aux vars that are used for validation
+                        for(i=0;i<=formula.length-1;i++){
+                            if(alpha.test(formula[i])){
+                                numOfAlpha++
+                            }else if(operator.test(formula[i])){
+                                numOfOperators++
+                            }else if(formula[i]==')'){
+                                if(operator.test(formula[i-1]))
+                                    isParenthesisBesideOperator = true;
+                                numOfCloseParenthesis++
+                            }else if(formula[i]=='('){
+                                numOfOpenParenthesis++
+                            }
+                        }
+                        
+                        //Next for detects if a letter from #advFormula (formulaOriginal) doesn't match with the row-letters from the upper block (letters)
+                        for(i=0;i<=formulaOriginal.length-1;i++){
+                            if(alpha.test(formulaOriginal[i])){
+                                if(jQuery.inArray(formulaOriginal[i], letters)==-1){
+                                    debugProcess['method: isThereFormulaErrors, criteria letter doesn\'t exist'] = formulaOriginal[i];
+                                    formualDoesNotExit = true;
+                                    break;
+                                }
+                            }
+                        }
+                        
+                        //debug
+                        debugProcess['method: isThereFormulaErrors, numOfCloseParenthesis is equal numOfOpenParenthesis'] = (numOfCloseParenthesis == numOfOpenParenthesis);
+                        debugProcess['method: isThereFormulaErrors, is numOfAlpha-numOfOperators = 1'] = (numOfAlpha-numOfOperators);
+                        debugProcess['method: isThereFormulaErrors, isParenthesisBesideOperator'] = isParenthesisBesideOperator;
+                        
+                        /*if(isThereRepeatedValues(formulaItems) == true){
+                            alert('There are repeated formulas');
+                            error = true;
+                        }else */
+                        
+                        if(dobleSpace.test(formulaOriginal)){
+                            alert('Please separate each formula  with only one space');
+                            error = true;
+                        //If the result from numOfAlpha - numOfOperators is different than 1, it means that there is an error
+                        }else if((numOfAlpha-numOfOperators)!=1 || (numOfCloseParenthesis != numOfOpenParenthesis) || isParenthesisBesideOperator == true){
+                            alert('Invalid formula');
+                            error = true;
+                        }else if(formualDoesNotExit==true){
+                            alert('The advanced formula references a criteria that no longer exists.');
+                            error = true;
+                        }
+                        
+                    }else{
+                        var items = new Array();
+                        $innerbox.find('.formulaItemDiv').children(':visible').each(function(){
+                            items.push(jQuery(this).val());    
+                        });
+                        
+                        /*if(isThereRepeatedValues(items) == true){
+                            alert('There is repeated formulas');
+                            error = true;
+                        }*/
+                    }
+                    
+                    return error;
+                },
+                
+                /**
+                 * saveFormula groups several other methods that must be executed once the user tries to save the formulas 
+                 */
+                saveFormula: function(){
+
+                
+                    if(formulaPopupHandler.isThereFormulaErrors()==false){
+                        //next each controls that the input fields (percent and numeric values), don't have more than 6 decimal digits
+                        $innerbox.find('.formulaItemDiv').children(':visible').each(function(index){
+                            if(this.tagName.toLowerCase() == 'input'){
+                                var splitedNumber = jQuery(this).val().split(nbrDecimal);
+                                if(splitedNumber[1]!=undefined){
+                                    jQuery(this).val(splitedNumber[0] + nbrDecimal + splitedNumber[1].slice(0,6));
+                                    formulaPopupHandler.updateRawAdvFormulaOnChange(index);//we need to update rawAdvFormula to reflect the changes
+                                }       
+                            }
+                        });
+                    
+                        formatAdvFormula();
+                        updateRawAdvancedFormula();
+                        jQuery.superbox.overrideSourceWithSuperboxContent();
+                        waitOn(); 
+                        saveReturnFormulasPopup();   
+                    }
+                },
+                
+                /**
+                 * Next method filters the chars that should not be allowed in advance formula input text 
+                 */
+                filterNotAllowedChars: function(e){
+                    var k;
+                    document.all ? k = e.keyCode : k = e.which;
+                    var ok =(k == 0 || (k > 39 && k < 44) || k == 45 || k == 47 || k == 32 || (k > 64 && k < 91) || (k > 96 && k < 123) || k == 8)
+                    if(ok!=true){
+                       e.preventDefault();
+                       return;
+                    }
+                },
+                
+                /**
+                 * updateRawAdvFormulaOnChange updates/overrides the hidden rawAdvFormula field when a formualItem value is changed.
+                 * It's fired when the user change the selected option from formulaType, formulaItem comboboxes or a formulaItem of type Number.
+                 * @param index int
+                 */
+                updateRawAdvFormulaOnChange:function(index){
+                    var combo = $innerbox.find('.f_'+index);
+                    var newValue = combo.val();
+                    
+                    //If the selected value is Number and the value from the input is '', we sets its value to 0.00
+                    if(newValue == 'Number' || newValue == 'Percentage'){
+                        var input = combo.next()//
+                        if(jQuery.trim(input.val())=='' || jQuery.trim(input.val())=='0.00'){
+                            input.val('0.00');
+                            newValue = '0.00';
+                        }else{
+                            newValue = input.val();
+                        }
+                    }
+                    
+                    //debug
+                    debugProcess['method: updateRawAdvFormulaOnChange, formulaItems[index](old)'] = formulaItems[index];
+                    debugProcess['method: updateRawAdvFormulaOnChange, updated formulaItems[index]'] = newValue;
+                    
+                    formulaItems[index] = newValue;
+                    
+                    updateRawAdvancedFormula();
+                },
+                
+                formulaBlankSpaces:function(formula){
+                        formula = formula.replace(/\+/g, ' + ');
+                        formula = formula.replace(/-/g, ' - ');
+                        formula = formula.replace(/\*/g, ' * ');
+                        formula = formula.replace(/\//g, ' / ');
+                        formula = formula.replace(/\)/g, ') ');
+                        formula = formula.replace(/\(/g, ' (');
+                        formula = formula.replace(/  /g, ' ');
+                        formula = formula.replace(/\( /g, '(');
+                        formula = formula.replace(/ \)/g, ')');
+                        formula = formula.replace(/  /g, ' ');
+                        formula = formula.trim();
+                        return formula;
+                },
+
+                outputDebugProcess:function(){
+                    console.info(debugProcess);
+                }
+                
+            }   
+        }();
+       
+        function validateNumber(obj){
+            if(isNaN(obj.value)){
+                alert('{!$Label.PleaseEnterValidNumber}');
+                obj.value = '0.00';
+                obj.focus();
+            }
+            
+        }  
+        
+        function deleteExitingFormulaFieldInDropdown(){
+            var allOptions = jQuery('#superbox-wrapper .formulaOption option');
+            var elementShow = new Array();
+            var totalElment = 0;
+            jQuery.each(jQuery('.dealNameInp'),  function() {
+                if(jQuery('.isFormula',jQuery(this).parent().parent().parent())[0].checked){
+                    for(i=0;i < allOptions.length; i++){
+                       if(allOptions[i].innerHTML == this.value){
+                           var psel = allOptions[i].parentNode;
+                           psel.removeChild(allOptions[i]);
+                       }
+                    }
+                }else{
+                    elementShow[jQuery(this).val()] = jQuery(this).val();
+                    if(formulaPopupHandler.getFormulaItemsObjects()['Data Field'][jQuery(this).val()] != undefined){
+                        totalElment ++;
+                    }
+                }
+            });
+
+            for(i=0;i < allOptions.length; i++){
+               if(allOptions[i].parentNode != null && elementShow[allOptions[i].innerHTML] == undefined && formulaPopupHandler.getFormulaItemsObjects()['Data Field'][allOptions[i].innerHTML] != undefined){
+                   var psel = allOptions[i].parentNode;
+                   psel.removeChild(allOptions[i]);
+               }
+            }
+
+            jQuery.each(jQuery('.normalDAFSelect'),  function() {
+                 for(i=0;i < this.options.length; i++){
+                    if(this.options[i].value == 1){
+                        if(totalElment == 0){
+                            this.removeChild(this.options[i]);
+                        }
+                    }
+                 }
+                 if(this.selectedIndex == null){
+                    this.selectedIndex = 0;
+                    formulaPopupHandler.loadFormulaItem(this);
+                 }
+            });
+        }
+        
+        function deleteFormula(i){
+            i=Math.round(i);
+            selectedIndex.value = i;
+            deleteFormulaAF();
+        }
+        
+       
+       Object.size = function(obj) {
+            var size = 0, key;
+            for (key in obj) {
+                if (obj.hasOwnProperty(key)) size++;
+            }
+            return size;
+       };        
+    </script>      
+</apex:component>

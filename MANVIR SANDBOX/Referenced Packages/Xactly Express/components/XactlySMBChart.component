@@ -1,0 +1,43 @@
+<!--
+ Developed by Timba Software Corp. www.timbasoftware.com admin@timbasoftware.com
+ This component allow to display charts based on SVG and VML. 
+ It need XactlySMBGauges.component and XactlySMBJitCharts.component in the page.
+ Yoy must set type, values, and id for that chart.
+ 
+ * Types: Quota Results and Target Payout display a gauge with only one value between 0 to 100.
+ 
+ * Types: Sales Results and Total Payout display a bar chart, your values must be with this 
+ notation: "column_name:#:value:#:label_for_tooltip;#;"
+ There will be create just a one column for a column_name. Each value
+ with the same column_name will be placed over with a new color... column
+ will be a stack of values. ";#;" separate each data, you must assign just
+ one value for each ";#;".
+ 
+ @author Julio Viera <jviera@timbasoftware.com>
+-->
+<apex:component >
+    
+    <style>
+        .containerChartsLayout {
+	        margin-top: 8px;
+	    }
+    </style>
+   
+
+
+	<apex:attribute name="type" description="If must set a type for display" type="String" required="true"/>
+	<apex:attribute name="values" description="If must set the values to display on charts" type="String" required="true"/>
+	<apex:attribute name="cid" description="You must set a unique ID for the bar chart or gauge" type="String" required="true"/>
+	
+	<apex:outputPanel styleClass="containerChartsLayout" layout="block" rendered="{!IF(OR(type == 'Quota Results', type == 'Target Payout'), true, false)}">
+		<div class="speedometer" rel="{!values}" id="char_{!cid}">&nbsp;</div>
+    </apex:outputPanel>
+	<apex:outputPanel styleClass="containerChartsLayout" layout="block" rendered="{!IF(type == 'showMeTheMoney', true, false)}">
+		<div class="speedometer2" rel="{!values}" id="char_{!cid}">&nbsp;</div>
+    </apex:outputPanel>
+	<apex:outputPanel styleClass="containerChartsLayout" layout="block" rendered="{!IF(OR(type == 'Sales Results', type == 'Total Payout'), true, false)}">
+		<div class="chartContainerScale" id="scale_char_{!cid}">&nbsp;</div>
+		<div class="chartContainer" rel="{!values}" name="{!type}" id="char_{!cid}">&nbsp;</div>
+    </apex:outputPanel>
+    
+</apex:component>

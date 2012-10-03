@@ -1,0 +1,3 @@
+<apex:page controller="XactlyExpress.XactlySMBDataExportController" cache="true" sidebar="false" showHeader="false" standardStylesheets="false" contentType="text/xml#{!planName}.xml">
+<apex:outputtext escape="false" value="{!data}"/>
+</apex:page>

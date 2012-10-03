@@ -1,0 +1,180 @@
+<apex:component id="dealAttrOrder" controller="XactlyExpress.XactlySMBDealAttributeOrderController" allowDML="true" >
+<apex:attribute name="importSourceToMapping" description="Import Source to Use in CSV mapping" type="String" assignTo="{!importSource}"  access="public" required="false" />
+
+    <style>
+        .toOrder{
+            height: 20px;
+        }
+    </style>
+
+
+
+    <div style="clear:both"></div>    
+   	    <apex:outputpanel styleclass="resultPanel" layout="block" id="resultPanel" >
+             <table class="dealAttributeTable" cellpadding="0" cellspacing="0">
+                 <thead>
+                     <tr class="tableHeader">
+                         <th style="width: 57px;">Column</th>
+                         <th style="width: 45px;padding: 3px 7px 7px;">Reorder</th>
+                         <th style="width: 50px;">Type</th>
+                         <th >Name</th>
+                         <th style="width: 228px;">Include in Import</th>
+                     </tr>
+                 </thead>
+             </table>
+             <div style="clear:both;"></div>
+             <div class="tableElementsContainer">
+	            <table cellpadding="0" cellspacing="0" border="0" >
+	       		   <tr>
+	       				<td style="width:70px;" align="center">
+		       				<div>
+		       				 <apex:variable var="i" value="{!0}" />
+		       				 <apex:repeat value="{!letters}" var="iter">
+		       					<apex:outputPanel styleClass="columsL" layout="block" rendered="{!IF(i<dealAttributes.size + dealAttributesNoMap.size , true, false)}"   style="{!IF(i >=dealAttributes.size, 'background-color: #FFFFFF !important;', '')}" >
+		                			<apex:outputtext value="{!$Label.xactlyexpress__dealAttributesOrderColumn} {!iter}"  rendered="{!IF(i<dealAttributes.size, true, false)}"  />
+		                		</apex:outputPanel>
+		       				 <apex:variable var="i" value="{!i + 1}" />
+		                	 </apex:repeat>
+		       				</div>
+	       				</td>
+	       				<td style="width:100%;">
+		       				<ul id="dealAttrList">
+                            <apex:variable var="i" value="{!0}" />
+		       				<apex:repeat id="repdealAttributes" value="{!dealAttributes}" var="iter">
+		            				<li class="{!IF(iter.dealA.toImport__c,' toOrder handle', '')}"  style="{!IF(iter.dealA.toImport__c,' ',' background-color: #FFFFFF;')}{!IF(i = 0,'margin-top:0px;','')}" onmouseover="{!IF(iter.dealA.toImport__c,' dragAndDropMe(this, true);',' return false; ')}" onmouseout="{!IF(iter.dealA.toImport__c,' dragAndDropMe(this, false);','  return false; ')}">
+	                                    <table class="tableElement" cellpadding="0" cellspacing="0">
+		            				       <tr>
+	    	            				     <td style="width: 53px;" align="center">
+	                                            <img src="{!URLFOR($Resource.XactlySMBResources, 'img/icons/move.png')}" alt="move" class="handle2" style="{!IF(iter.dealA.toImport__c,' ', ' display:none;')}" />
+	                                         </td>
+	                                         <td style="width: 69px; "  align="left">
+                                                {!HTMLENCODE(iter.dataTypeDisplayed)}
+	                                         </td>
+					                         <td  align="left">
+			                                    <apex:outputtext value="{!IF(iter.dealA.name == 'Product Id',$Label.xactlyexpress__Product,IF(iter.dealA.name == 'Account Id',$Label.xactlyexpress__Account,iter.dealA.name))}" />
+			                                    <apex:outputtext styleclass="dealAttributeIds" value="{!iter.dealA.id}" style="display:none;" />
+	                                         </td>
+					                         <td style="width: 230px;"  align="left">
+				                                 <div style="float: left;margin: 5px 0 10px 10px;width: 100px;" >
+			                                        {!$Label.dealAttributesOrderImportField}
+			                                        &nbsp;&nbsp;
+			                                        <apex:inputCheckbox id="useDA" value="{!iter.dealA.XactlyExpress__toImport__c}" styleclass="chekboxImportable" disabled="{!If(OR(iter.dealA.XactlyExpress__IsRequired__c==true,iter.dealA.XactlyExpress__IsKey__c==true), true, false)}" />
+				                                 </div>
+	                                         </td>
+		            				       </tr>
+		            				    </table>   
+	           
+		                 				<apex:inputText styleclass="dealAttributeImp" value="{!iter.dealA.XactlyExpress__toImport__c}" style="display: none;"/>
+		                 				<input type="text" class="dealAttributeReqKey" value="{!If(OR(iter.dealA.IsRequired__c==true,iter.dealA.IsKey__c==true),true,false)}" style="display: none;"/>
+		 
+		            				</li>
+		            				<apex:variable var="i" value="{!i + 1}" />
+		       				</apex:repeat>
+		       				</ul>
+                            <ul id="dealAttrListNoS">
+                            <apex:variable var="i" value="{!0}" />
+                            <apex:repeat id="repdealAttributesNoMap" value="{!dealAttributesNoMap}" var="iter">
+                                    <li class="{!IF(iter.dealA.toImport__c,' toOrder handle', '')}"  style="{!IF(iter.dealA.toImport__c,' ',' background-color: #FFFFFF;')}" onmouseover="{!IF(iter.dealA.toImport__c,' dragAndDropMe(this, true);',' return false; ')}" onmouseout="{!IF(iter.dealA.toImport__c,' dragAndDropMe(this, false);','  return false; ')}">
+                                        <table class="tableElement" cellpadding="0" cellspacing="0">
+                                           <tr>
+                                             <td style="width: 53px;" align="center">
+                                                <img src="{!URLFOR($Resource.XactlySMBResources, 'img/icons/move.png')}" alt="move" class="handle2" style="{!IF(iter.dealA.toImport__c,' ', ' display:none;')}" />
+                                             </td>
+                                             <td style="width: 69px; " align="left">
+                                                {!HTMLENCODE(iter.dataTypeDisplayed)}
+                                             </td>
+                                             <td align="left">
+                                                <apex:outputtext value="{!IF(iter.dealA.name == 'Product Id',$Label.xactlyexpress__Product,IF(iter.dealA.name == 'Account Id',$Label.xactlyexpress__Account,iter.dealA.name))}" />
+                                                <apex:outputtext styleclass="dealAttributeIds" value="{!iter.dealA.id}" style="display:none;" />
+                                             </td>
+                                             <td style="width: 230px;" align="left">
+                                                 <div style="float: left;margin: 5px 0 10px 10px;width: 100px;" >
+                                                    {!$Label.dealAttributesOrderImportField}
+                                                    &nbsp;&nbsp;
+                                                    <apex:inputCheckbox id="noUseDA"  value="{!iter.dealA.XactlyExpress__toImport__c}" styleclass="chekboxImportable" disabled="{!If(OR(iter.dealA.XactlyExpress__IsRequired__c==true,iter.dealA.XactlyExpress__IsKey__c==true), true, false)}" />
+                                                 </div>
+                                             </td>
+                                           </tr>
+                                        </table>  
+                                        <apex:inputText styleclass="dealAttributeImp"  value="{!iter.dealA.XactlyExpress__toImport__c}" style="display: none;"/>
+                                        <input type="text" class="dealAttributeReqKey" value="{!If(OR(iter.dealA.IsRequired__c==true,iter.dealA.IsKey__c==true),true,false)}" style="display: none;"/>
+         
+                                    </li>
+                                    <apex:variable var="i" value="{!i + 1}" />
+                            </apex:repeat>
+                            </ul>
+                            <apex:outputpanel layout="none" rendered="{!i == 0}">
+                                <script>
+                                    $('#dealAttrListNoS').hide();
+                                </script>
+                            
+                            </apex:outputpanel>
+                            
+	       				</td>
+	       	       </tr>
+	  		   </table>
+  			 </div>
+	   </apex:outputpanel>
+                 <apex:inputText value="{!newOrder}" styleclass="newOrderInputHidden" style="display: none;"/>
+   
+
+  
+       <apex:outputPanel id="popupContainer" layout="block">
+           <div id="dealAttibuteButtons" class="btnAction" style="clear:both; height:30px; margin-left:150px; margin-top:0px; padding-top:10px;">
+
+          
+           </div>
+            
+       </apex:outputPanel>
+                   
+
+  
+   <apex:actionFunction name="refreshOrderTable" action="{!reGenDA}" rerender="resultPanel" oncomplete="makeListSortable();waitOff();"/>
+   <apex:actionFunction name="saveNewOrder" action="{!saveNewOrder}" rerender="resultPanel" oncomplete="makeListSortable();waitOff();"/>
+   <apex:actionFunction name="saveNextOrder" action="{!saveNextOrder}" rerender="resultPanel" oncomplete="makeListSortable();waitOff();"/>
+
+    <script type="text/javascript" language="javascript" >
+
+		var saveBtn = function(){
+	    	savePageHandler.disableBottomBar();			        
+		}
+		function makeListSortable () {
+            $('.chekboxImportable').click(function() {
+                waitOn();
+                updateNewOrder();
+                refreshOrderTable();
+            });
+            $("#dealAttrList").sortable();
+		}
+		
+		function dragAndDropMe(ele, isOn) {
+		  if (isOn) {
+            ele.style.color = '#E26E1B';
+            ele.style.border = '1px solid #888888';
+          }
+          else {
+            ele.style.color = 'black';
+            ele.style.border = 'solid 1px #ffffff';
+            ele.style.borderBottom = 'solid 1px  #888888';
+          }
+		}
+        
+        function updateNewOrder () {
+            var dealAttrIds = $('.dealAttributeIds');
+            var newOrderInputHidden = $('.newOrderInputHidden')[0];
+            var ids = '';
+            for (var i=0; i < dealAttrIds.length; i++) {
+                if($('.chekboxImportable', $(dealAttrIds[i]).parent().parent().parent())[0].checked ){
+                    ids += dealAttrIds[i].innerHTML + ';';
+                }
+            }
+            if (dealAttrIds.length > 0) {
+                ids = ids.substring(0, ids.length -1);
+            }
+            newOrderInputHidden.value = ids;
+        }
+        makeListSortable ();
+
+    </script>
+
+</apex:component>

@@ -1,0 +1,70 @@
+<apex:component ></apex:component>
+<!-- 
+<apex:component controller="XactlyExpress.XactlySMBMeasureListController">
+    <style> 
+    .orangeL{
+       color:#BD5C19;
+       font-weight: bold;
+    }
+    </style>
+    <link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.XactlySMBResources ,'css/XactlySMBMeasureList.css')}" />
+    <apex:attribute name="ctl" description="The parent controller" type="XactlyExpress.XactlySMBPlanController" required="true" access="public"/>
+    <apex:attribute name="idPlan" description="The parent controller" type="String" required="true" access="public" assignTo="{!idPlan}"/>
+    <apex:attribute name="compLabel" description="The Component Label" type="String" access="public"/>
+    
+    <apex:outputPanel id="changePlanSelection" layout="block" style="margin-bottom:15px;overflow:auto">
+            <div class="areaTitle" style="margin-bottom:5px;">
+                <apex:outputtext value="{!$Label.PaymentSelection}" />
+            </div>
+            <div style="margin-bottom:5px;margin-top:5px;margin-left:5px;font-size:7pt;">
+                <apex:outputtext value="{!$Label.CanCreateOrEditPayment}" />
+            </div>
+            <div  class="newLeftPanel"  style="position:static !important;">
+                <div class="btnToLeft btnAction newLeftPanel" style="position:static !important;">
+                    <div class="leftSide" style="margin-bottom:5px;margin-top:5px;position:static !important;">
+	                    <apex:commandLink action="{!ctl.createNewPayment}">
+	                        {!$Label.CreateNewPayment}
+	                    </apex:commandLink>
+                    </div>
+                </div>
+            </div>
+            <div  class="newLeftPanel"  style="position:static !important;">
+                 <div class="btnToLeft btnAction newLeftPanel" style="position:static !important;">
+                    <div class="leftSide" style="margin-bottom:5px;margin-top:5px;position:static !important;">
+                        <a href="javascript:confirmReset();" onclick="rerenderNoCompare=false;" class="actionButton newActionbutton">
+                            {!$Label.ResetPayments}
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="leftSide" style="margin-bottom:5px;margin-top:5px;">
+                {!$Label.SelectAnExistingPayment}
+            </div>
+            <br>
+            <div style="height:100px;margin-top:15px;*margin-top:30px">
+                 <apex:outputpanel rendered="{!IF(measures.size == 0, false, true)}">
+                    <apex:repeat value="{!measures}" var="measure">   
+                    <div  class="newLeftPanel"  style=" height:expression('20px');margin-bottom:5px;margin-top:5px;margin-left:5px;position:static !important;">
+                        <div class="btnToLeft btnAction newLeftPanel" style="position:static !important;">
+                            <apex:outputPanel rendered="{!IF(measure.id==ctl.pmm.activeMeasureId,'false','true')}">
+                            <div style="float:left">
+                                <apex:commandLink action="{!ctl.changeActiveMeasure}">
+                                <apex:param value="{!measure.Id}" name="measureId"/>
+                                    {!measure.Name}
+                                </apex:commandLink>
+                            </div>
+                           </apex:outputPanel>
+                           <apex:outputPanel rendered="{!IF(measure.id==ctl.pmm.activeMeasureId,'true','false')}" style="margin-bottom:5px;margin-top:5px;">
+                                <apex:OutputText value="{!measure.Name}" styleclass="orangeLi"/>
+                           </apex:outputPanel>
+                        </div>
+                     </div>
+                    </apex:repeat>
+                </apex:outputpanel>
+                <apex:outputpanel rendered="{!IF(measures.size == 0, true, false)}">
+                    <apex:outputtext value="{!$Label.NoPaymentsPlan}" style="font-size: 7pt; margin-left: 6px;font-style:italic; "/>
+                </apex:outputpanel>
+            </div>  
+    </apex:outputPanel>
+</apex:component>
+ -->

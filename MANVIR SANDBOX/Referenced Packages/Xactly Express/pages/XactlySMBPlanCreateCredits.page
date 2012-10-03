@@ -1,0 +1,1050 @@
+<!-- 
+Developed by Timba Software Corp. www.timbasoftware.com admin@timbasoftware.com
+ This page defines plans
+ @author Dario Levy <dlevy@timbasoftware.com>
+-->
+<apex:page id="planCredits" action="{!redirectWhenAccessIsDenied}" controller="XactlyExpress.XactlySMBPlanCreateCredits" sidebar="false" showHeader="false" standardStylesheets="true"> 
+ 
+   <!-- Custom Cursor Loader -->
+   <c:XactlySMBCursor />
+   <!-- Custom Cursor Loader -->
+    <title>{!$Label.ManagePlans} : {!$Label.manageCresits}</title>
+    <link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.XactlySMBResources ,'css/XactlySMBStyles.css')}" />
+    <link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.XactlySMBResources ,'css/XactlySMBNumeratedBox.css')}" /> 
+    
+    <style>
+        .leftPanelWrapper {
+            margin-top: -480px;
+        }
+
+        
+        .planName{
+            color:#3B6080;
+          
+        }
+        
+        hr {
+			color: #E8C9AE;
+			background-color: #E8C9AE;
+			height: 1px;
+			border: 0;
+			margin:0;
+		}
+		.blueBorderTop{
+            background: url({!URLFOR($Resource.XactlySMBResources ,'img/layout/blueBorderTop.png')}) no-repeat;
+            width: 400px;
+            height: 8px;
+        }
+        
+        .blueBorderBottom{
+            background: url({!URLFOR($Resource.XactlySMBResources ,'img/layout/blueBorderBottom.png')}) no-repeat;
+            width: 400px;
+            height: 8px;
+        }
+        
+        span.dateFormat{
+            display:none;
+        }
+        
+        .box{
+            margin-left:20px;
+            width:755px;
+        }        
+        
+        .explanationImage {
+            margin: 5px 0px 0px 20px;
+        }
+        
+        div.box .boxHeader .titleWrapper .detailedTitle {
+			color:#143E49;
+			font-size:8pt;
+			width:580px;
+		}
+    </style>
+    
+    
+    
+    <c:XactlySMBShadows />
+    
+    <!-- PAGE WRAPPER -->
+    <div class="pageContent" id="pContent" style="overflow:visible;">
+       <apex:form id="theForm">
+       		<apex:actionFunction name="refreshDataAtributes" rerender="loadAttrTypes" action="{!loadCreditList}" />
+       		 <apex:actionFunction action="{!changeSelectedYear}" name="changeFyscalYear" rerender="startDate, endDate, leftPanel,errorMsg" oncomplete="waitOff();">
+                       <apex:param name="move" assignTo="{!fyscalYearOption}" value="" />
+             </apex:actionFunction> 
+             
+       		<apex:outputPanel id="loadAttrTypes" layout="block" styleClass="header">
+	            <script>
+			        attrTypes = new Array();
+			        <apex:repeat value="{!attributeTypes}" var="at">        
+			            attrTypes['{!at.s}'] = '{!at.typ}';        
+			        </apex:repeat>	    
+		        </script>
+       		</apex:outputPanel>
+       		
+       		<apex:inputField value="{!dummyDeal.XactlyExpress__DealDate__c}" id="dummyElemennt" required="false" style="display:none;"/>
+       			
+            <!-- HEADER -->
+            <apex:outputPanel layout="block" styleClass="header">
+                <c:XactlySMBHeader isAdmin="{!isAdmin}"  isActive="{!isActive}" nbrSeparator="{!nbrSeparator}" nbrDecimal="{!nbrDecimal}" currentUserOrSlected="{!currentUserOrSlected}" emulatingUserURLAppend="{!emulatingUserURLAppend}" selected="3" wclabel="{!currentSettings.creditsPlural}" wId="{!plan.id}" step="3" wlabel="{!currentSettings.dealsPlural}" wqlabel="{!currentSettings.quotasPlural}" wtype="plan" hlabel="{!creditWizardLabel}" stepHelp="PlanCreateCredits" stepBreadcrumb="{!plan.Name} {!$Label.Plan} &gt; {!IF(!ISNULL(currentCredits),currentCredits.creditRule.name,'')}"/>
+            </apex:outputPanel>
+            
+            <!-- INSUFFICIENT PERMISSIONS -->
+            <apex:outputPanel rendered="{!!isAdmin}">
+                <c:XactlySMBErrorMsg error="{!$Label.xactlyexpress__InsufficientPermissions}" />
+            </apex:outputPanel>
+            
+            <apex:outputPanel layout="block" styleclass="additionalContent" rendered="{!isAdmin && isActive}">    
+                <c:XactlySMBChatterWall objectId="{!$User.Id}" showHeader="true" showWall="true" currentPage="{!$CurrentPage.Name}"/>
+            </apex:outputPanel>
+            
+            <!-- MAIN CONTENT -->
+            <apex:outputPanel layout="block" styleClass="mainContent" rendered="{!isAdmin}" style="overflow:visible;padding-bottom:50px;">
+     
+                <apex:outputPanel layout="block" styleClass="content" rendered="{!IF(ISNULL(plan),true,false)}">
+                   {!$Label.xactlyexpress__selectAPlanToEdit}
+                </apex:outputPanel>
+                <apex:outputPanel layout="none" rendered="{!IF(!ISNULL(plan),true,false)}">
+	                <!-- LEFT PANEL -->
+	                <apex:outputPanel id="leftPanel" layout="block" styleClass="leftPanel">
+	                	<c:XactlySMBLeftPanelAccordeon currentSettings="{!currentSettings}" fiscalYear="{!plan.XactlyExpress__XCFiscalYearSettingsID__c}" currentPlan="{!plan.id}" step="2" planId="{!plan.id}" currentCredit="{!currentCredits.creditRule.id}" indexSelected="2" havePreviousYear="{!havePreviousYear}" namePreviousYear="{!namePreviousYear}" haveNextYear="{!haveNextYear}" nameNextYear="{!nameNextYear}"/>	                	
+	                    <apex:outputPanel layout="none"  rendered="{!IF(creditId!='0' && !ISNULL(creditId),true,false)}">
+		                    <div>
+		                        <apex:commandLink action="{!deleteCredit}" onclick="if(!confirmDelete()){return false};">
+		                            <apex:outputPanel styleClass="buttonCurvy" onmouseover="jQuery(this).css('background-position','bottom');"  onmouseout="jQuery(this).css('background-position','top');">
+		                                <apex:outputPanel layout="block">
+		                                    <center>
+		                                      <apex:outputPanel layout="block" style="padding-top:5px;">
+		                                          <apex:outputtext escape="false" value="{!$Label.xactlyexpress__deleteCreditRule}" styleclass="HelveticaRegular12c1">
+		                                              <apex:param value="{!currentSettings.creditsCap}"/>
+		                                          </apex:outputtext>
+		                                      </apex:outputPanel>
+		                                    </center>
+		                                </apex:outputPanel>
+		                            </apex:outputPanel>
+		                        </apex:commandLink>
+		                    </div>
+		                </apex:outputPanel>
+	                    <br/>
+	                    <apex:outputPanel layout="none" rendered="{!IF(AND(creditsList.size > 0, !ISNULL(currentCredits)),true,false)}">
+		                    <div>
+		                        <a href="{!$Page.XactlyExpress__XactlySMBPlanCreateCredits}?step=3&id={!plan.id}">
+		                            <apex:outputPanel styleClass="buttonCurvy" onmouseover="jQuery(this).css('background-position','bottom');"  onmouseout="jQuery(this).css('background-position','top');">
+		                                <apex:outputPanel layout="block">
+		                                    <center>
+		                                    	<apex:outputPanel layout="block"  style="padding-top:5px;">
+		                                    		<apex:outputtext escape="false" value="{!$Label.xactlyexpress__backToOverview}" styleclass="HelveticaRegular12c1"/>
+		                                    	</apex:outputPanel>
+		                                    </center>
+		                                </apex:outputPanel>
+		                            </apex:outputPanel>
+		                        </a>
+		                    </div>
+	                    </apex:outputPanel>
+	                </apex:outputPanel>
+	                <!-- CONTENT -->
+	                <apex:outputPanel layout="block" styleClass="content" rendered="{!IF(ISNULL(currentCredits),true,false)}">
+	                     <div class="box" style="margin-bottom:70px;">
+	                        <div class="tm">
+	                            <div style="float: left;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/tl.png')}" /></div>
+	                            <div style="float: right;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/tr.png')}" /></div>
+	                            <div style="clear:both"></div>
+	                        </div>
+		                    <div class="roundedBox">
+		                         <div class="boxHeader">
+		                             <div class="PNovaBlack60c5 stepActionNumber">
+		                             </div>
+		                             <div class="titleWrapper">  
+		                                 <div class="mainTitle PNovaSemiBold17c3">{!creditOverviewLabel}</div>
+		                                 <div class="detailedTitle HelveticaRegular12c3">{!creditOverviewSubLabel}</div>
+		                             </div>
+		                             <div class="extraTitleStuff"></div>
+		                             <div style="clear:both"></div>
+		                         </div>
+		                         
+		                         <div class="boxContent">
+	                                <div class="HelveticaRegular12c3">{!editCreditRuleLabel}</div>
+	                                <br/>
+	                                <div>
+		                                <table border="0" cellpadding="0" cellspacing="0" style="border:1px solid #E8C9AE;" width="685">
+		                                    <thead>
+		                                        <th height="20" style="color:#CE641B;text-align:center;border-left:1px solid #E8C9AE;">{!creditRuleLabel}</th>
+		                                        <th height="20" style="color:#CE641B;text-align:center;border-left:1px solid #E8C9AE;">{!$Label.Type}</th>
+		                                        <th height="20" style="color:#CE641B;text-align:center;border-left:1px solid #E8C9AE;">{!$Label.Filter}</th>
+		                                    </thead>
+		                                    <tbody>
+			                                    <apex:repeat value="{!creditsList}" var="cl">
+			                                        <tr height="30">
+			                                            <td style="border-left:1px solid #E8C9AE;border-top:1px solid #E8C9AE;" width="175">
+			                                                <div>          
+					                                            <a href="{!$Page.XactlySMBPlanCreateCredits}?step=3&id={!plan.id}&credit={!cl.creditRule.id}">
+					                                            	<div style="float:left;margin-top:3px;"><pre class="HelveticaRegularL15">&nbsp;{!cl.creditRule.name}</pre></div>
+					                                            </a>
+					                                        </div>
+			                                            </td>
+			                                            <td style="border-left:1px solid #E8C9AE;border-top:1px solid #E8C9AE;">
+			                                                &nbsp;{!IF(cl.creditRule.Type__c=='Direct',$Label.Direct + ' -\"' + $Label.iSoldIt + '\"',IF(cl.creditRule.Type__c=='Rollup',$Label.Rollup + ' -\"' + $Label.subsSoldIt + '\"',IF(cl.creditRule.Type__c=='Team',$Label.Team + ' -\"' + $Label.teamSoldIt + '\"',dealBasedLabel + ' -\"' + $Label.noMattersSoldIt + '\"')))}
+			                                            </td>
+			                                            <td style="border-left:1px solid #E8C9AE;border-top:1px solid #E8C9AE;">
+			                                                &nbsp;<apex:outputtext value="{!cl.AdvancedFormula}" escape="false"/>&nbsp;
+			                                            </td>
+			                                        </tr>
+			                                    </apex:repeat>
+		                                    </tbody>
+		                                </table>
+	                                </div>	                                
+		                         </div>    
+		                     </div>      
+		                     <div class="bm">
+		                         <div style="float: left;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/bl.png')}" /></div>
+		                         <div style="float: right;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/br.png')}" /></div>
+		                     </div>
+		                 </div>
+	                </apex:outputPanel>
+	                
+	                <apex:outputPanel id="scrContent" layout="block" styleClass="content scrollContent" rendered="{!IF(!ISNULL(currentCredits),true,false)}">
+		                    <apex:outputPanel id="errorMsg" layout="block">
+	                            <c:XactlySMBErrorMsg error="{!errorMsg}"/>
+	                        </apex:outputPanel>
+	                        <br />
+	                    
+	                        <div class="box">
+	                            <div class="tm">
+	                                <div style="float: left;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/tl.png')}" /></div>
+	                                <div style="float: right;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/tr.png')}" /></div>
+	                                <div style="clear:both"></div>
+	                            </div>
+	                            <div class="roundedBox">
+	                                <div class="boxHeader">
+	                                    <div class="PNovaBlack60c5 stepActionNumber">
+	                                     A
+	                                    </div>
+	                                    <div class="titleWrapper">  
+	                                        <div class="mainTitle PNovaSemiBold17c3">{!CreditUpperLabel}</div>
+	                                        <div class="detailedTitle HelveticaRegular12c3">{!$Label.creditRuleSub}</div>
+	                                    </div>
+	                                    <div class="extraTitleStuff"></div>
+	                                    <div style="clear:both"></div>
+	                                </div>
+	                                
+	                                <div class="boxContent">
+	                                    <div style="height:20px;position:relative;">
+		                                    <div style="float:left">
+			                                    <apex:outputtext escape="false" value="<input type='radio' id='step1Radio1' name='step1Radios' onclick='changeToStep1Radio1();' " /><apex:outputtext escape="false" value="{!IF(AND(!ISNULL(currentCredits.creditRule.XactlyExpress__QuotaID__c),QuotaName==currentCredits.creditRule.name),'checked','')} {!IF(OR(ISNULL(currentCredits.creditRule.XactlyExpress__QuotaID__c)),'disabled','')}" /><apex:outputtext escape="false" value="/>"/>
+			                                    <label for="step1Radio2"> {!sameNameAsQuotaLabel}</label>
+			                                    <apex:outputtext escape="false" value="<input type='radio' id='step1Radio2' name='step1Radios' onclick='changeToStep1Radio2();' " /><apex:outputtext escape="false" value="{!IF(OR(ISNULL(currentCredits.creditRule.XactlyExpress__QuotaID__c),QuotaName!=currentCredits.creditRule.name),'checked','')} {!IF(OR(ISNULL(currentCredits.creditRule.XactlyExpress__QuotaID__c)),'disabled','')}" /><apex:outputtext escape="false" value="/>"/>
+			                                    <label for="step1Radio2"> {!$Label.xactlyexpress__customName}</label>
+								            </div>
+								            <div style="float:left;margin-left:5px;">
+								                <apex:outputpanel layout="none" rendered="{!IF(AND(!ISNULL(currentCredits.creditRule.XactlyExpress__QuotaID__c),QuotaName==currentCredits.creditRule.name),true,false)}">
+								                   <input id="inputName" type="Text" maxlength="35" size="25" value="{!currentCredits.creditRule.name}" onblur="assignName();" disabled="disabled"/>
+								                </apex:outputpanel>
+								                <apex:outputpanel layout="none" rendered="{!IF(AND(!ISNULL(currentCredits.creditRule.XactlyExpress__QuotaID__c),QuotaName==currentCredits.creditRule.name),false,true)}">
+                                                   <input id="inputName" type="Text" maxlength="35" size="25" value="{!currentCredits.creditRule.name}" onblur="assignName();"/>
+                                                </apex:outputpanel>
+								            </div>
+								            <apex:inputHidden id="creditName" value="{!currentCredits.creditRule.name}"/>
+								            <script>
+				                                var creditName = '{!$Component.creditName}'.replace(/:/g,'\\:');
+				                            </script>
+								        </div>
+	                                </div>    
+	                            </div>      
+	                            <div class="bm">
+	                                <div style="float: left;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/bl.png')}" /></div>
+	                                <div style="float: right;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/br.png')}" /></div>
+	                            </div>
+	                        </div>
+	                        <div class="box" style="margin-top:10px">
+	                            <div class="tm">
+	                                <div style="float: left;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/tl.png')}" /></div>
+	                                <div style="float: right;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/tr.png')}" /></div>
+	                                <div style="clear:both"></div>
+	                            </div>
+	                            <div class="roundedBox">
+	                                <div class="boxHeader">
+	                                    <div class="PNovaBlack60c5 stepActionNumber">
+	                                     B
+	                                    </div>
+	                                    <div class="titleWrapper">  
+	                                        <div class="mainTitle PNovaSemiBold17c3">{!QuotaUpperLabel}</div>
+	                                        <div class="detailedTitle HelveticaRegular12c3">{!QuotaAssociatedCreditLabel}</div>	                                        
+	                                    </div>
+	                                    <div class="extraTitleStuff"></div>
+	                                    <div style="clear:both"></div>
+	                                </div>
+	                                
+	                                <div class="boxContent">
+	                                    <apex:outputtext escape="false" value="<input type='radio' id='step2Radio1' name='step2Radios' onclick='changeToStep2Radio1();' " /><apex:outputtext escape="false" value="{!IF(!ISNULL(currentCredits.creditRule.XactlyExpress__QuotaID__c),'checked','')} {!IF(!(quotaSize>0),'disabled','')}" /><apex:outputtext escape="false" value="/>"/>
+	                                    <apex:outputPanel layout="none" rendered="{!IF(!(quotaSize>0),false,true)}">
+                                            <apex:selectList id="quotaList" value="{!quotaSelected}" multiselect="false" size="1" onchange="addQuotaCheck(this);" disabled="{!ISNULL(currentCredits.creditRule.XactlyExpress__QuotaID__c)}">
+    								            <apex:selectOptions value="{!QuotaList}"/>
+    								        </apex:selectList>
+    								        <script>
+    	                                        var quotaList = '{!$Component.quotaList}'.replace(/:/g,'\\:');
+    	                                    </script>
+                                        </apex:outputPanel>
+                                        <apex:outputPanel layout="none" rendered="{!IF(!(quotaSize>0),true,false)}">
+                                            <select disabled="disabled"></select>
+                                        </apex:outputPanel>
+                                        <apex:outputtext escape="false" value="<input type='radio' id='step2Radio2' name='step2Radios' onclick='changeToStep2Radio2();' " /><apex:outputtext escape="false" value="{!IF(ISNULL(currentCredits.creditRule.XactlyExpress__QuotaID__c),'checked','')}" /><apex:outputtext escape="false" value="/>"/>
+	                                    <label for="step2Radio2"> {!noQuota}</label>
+                                        <apex:inputHidden id="quotaOrNot" value="{!checkQuota}"/>
+                                        <script>
+                                            var checkQuota = '{!$Component.quotaOrNot}'.replace(/:/g,'\\:');
+                                        </script>
+	                                </div>
+                                    <apex:outputPanel layout="none" rendered="{!IF(!(quotaSize>0),false,true)}">
+    	                                <apex:inputHidden id="quotaId" value="{!currentCredits.creditRule.XactlyExpress__QuotaID__c}"/>
+    	                                <script>
+    	                                    var quotaId = '{!$Component.quotaId}'.replace(/:/g,'\\:');
+    	                                </script>
+                                    </apex:outputPanel>
+	                            </div>      
+	                            <div class="bm">
+	                                <div style="float: left;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/bl.png')}" /></div>
+	                                <div style="float: right;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/br.png')}" /></div>
+	                            </div>
+	                        </div>
+	                        <div class="box"  style="margin-top:10px">
+	                            <div class="tm">
+	                                <div style="float: left;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/tl.png')}" /></div>
+	                                <div style="float: right;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/tr.png')}" /></div>
+	                                <div style="clear:both"></div>
+	                            </div>
+	                            <div class="roundedBox">
+	                                <div class="boxHeader">
+	                                    <div class="PNovaBlack60c5 stepActionNumber">
+	                                     C
+	                                    </div>
+	                                    <div class="titleWrapper">  
+	                                        <div class="mainTitle PNovaSemiBold17c3">{!DealUpperLabel}</div>
+	                                        <div class="detailedTitle HelveticaRegular12c3">{!ValueDealSub}</div>
+	                                    </div>
+	                                    <div class="extraTitleStuff"></div>
+	                                    <div style="clear:both"></div>
+	                                </div>
+	                                
+	                                <div class="boxContent">
+                                       <apex:outputpanel layout="none" rendered="{!IF(currentCredits.creditRule.XactlyExpress__CalcType__c != CREDIT_CALC_TYPE_COUNT,true,false)}">
+                                          <input type="radio" name="toTypeSet" onclick="$('#' + calcTypeId)[0].value = '{!JSENCODE(CREDIT_CALC_TYPE_SUM)}';" checked="checked"/>
+	                                   </apex:outputpanel>
+	                                   <apex:outputpanel layout="none" rendered="{!IF(currentCredits.creditRule.XactlyExpress__CalcType__c != CREDIT_CALC_TYPE_COUNT,false,true)}">
+                                          <input type="radio" name="toTypeSet" onclick="$('#' + calcTypeId)[0].value = '{!JSENCODE(CREDIT_CALC_TYPE_SUM)}';"/>
+                                       </apex:outputpanel>
+	                                   {!$Label.SumTheValue} &nbsp;
+                                       <apex:selectList id="numDealAttribute" value="{!currentCredits.creditRule.XactlyExpress__DealAttributeID__c}" multiselect="false" size="1" onchange="$('.newDAOnlyNumeric').val('true');addFieldCheck(this);">
+                                            <apex:selectOptions value="{!DealList}"/>
+                                       </apex:selectList>
+                                       <apex:outputpanel layout="none" rendered="{!IF(currentCredits.creditRule.XactlyExpress__CalcType__c == CREDIT_CALC_TYPE_COUNT,true,false)}">
+                                          <input type="radio" name="toTypeSet" onclick="$('#' + calcTypeId)[0].value = '{!JSENCODE(CREDIT_CALC_TYPE_COUNT)}';" checked="checked"/>
+                                       </apex:outputpanel>
+                                       <apex:outputpanel layout="none" rendered="{!IF(currentCredits.creditRule.XactlyExpress__CalcType__c == CREDIT_CALC_TYPE_COUNT,false,true)}">
+                                          <input type="radio" name="toTypeSet" onclick="$('#' + calcTypeId)[0].value = '{!JSENCODE(CREDIT_CALC_TYPE_COUNT)}';" />
+                                       </apex:outputpanel>
+                                       {!$Label.xactlyexpress__Count}
+                                       <apex:inputHidden value="{!currentCredits.creditRule.XactlyExpress__CalcType__c}"  id="CalcType" />
+                                       <script type="text/javascript">
+                                            var calcTypeId = '{!$Component.CalcType}'.replace(/:/g,'\\:');
+                                            $('#' + calcTypeId)[0].value =  '{!IF(currentCredits.creditRule.CalcType__c != CREDIT_CALC_TYPE_COUNT,JSENCODE(CREDIT_CALC_TYPE_SUM),JSENCODE(CREDIT_CALC_TYPE_COUNT))}';
+                                            var selectNumDealAtributte = $('#' + '{!$Component.numDealAttribute}'.replace(/:/g,'\\:'))[0].value;
+                                       </script> 
+	                                </div>    
+	                            </div>      
+	                            <div class="bm">
+	                                <div style="float: left;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/bl.png')}" /></div>
+	                                <div style="float: right;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/br.png')}" /></div>
+	                            </div>
+	                        </div>
+	                        <div class="box" style="margin-top:10px">
+	                            <div class="tm">
+	                                <div style="float: left;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/tl.png')}" /></div>
+	                                <div style="float: right;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/tr.png')}" /></div>
+	                                <div style="clear:both"></div>
+	                            </div>
+	                            <div class="roundedBox">
+	                                <div class="boxHeader" style="height:60px;">
+	                                    <div class="PNovaBlack60c5 stepActionNumber">
+	                                     D
+	                                    </div>
+	                                    <div class="titleWrapper">  
+	                                        <div class="mainTitle PNovaSemiBold17c3">{!SourceOfCreditUpperLabel}</div>
+	                                        <div class="detailedTitle HelveticaRegular12c3">{!SourceOfCreditSub}</div>
+	                                    </div>
+	                                    <div class="extraTitleStuff"></div>
+	                                    <div style="clear:both"></div>
+	                                </div>
+	                                
+	                                <div class="boxContent">
+	                                    <div class="step4Min">
+		                                    <div class="selOptions optDirect" style="{!IF(currentCredits.creditRule.Type__c!='Direct','display:none;','')}">
+		                                        <div><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/iSoldItIcon.png')}" /></div>
+		                                        <div style="margin-left:38px;margin-top:-30px;position:absolute;">-"{!$Label.iSoldIt}"</div>
+		                                    </div>
+		                                    <div class="selOptions optRollup" style="{!IF(currentCredits.creditRule.Type__c!='Rollup','display:none;','')}">
+		                                        <div><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/subsSoldItIcon.png')}" /></div>
+		                                        <div style="margin-left:79px;margin-top:-72px;position:absolute;">-"{!$Label.subsSoldIt}"</div>
+		                                    </div>
+		                                    <div class="selOptions optTeam" style="{!IF(currentCredits.creditRule.Type__c!='Team','display:none;','')}">
+		                                        <div><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/teamSoldItIcon.png')}" /></div>
+		                                        <div style="margin-left:79px;margin-top:-93px;position:absolute;">-"{!$Label.teamSoldIt}"</div>
+		                                    </div>
+		                                    <div class="selOptions optOther" style="{!IF(currentCredits.creditRule.Type__c!='Other','display:none;','')}">
+		                                        <div><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/noMattersSoldItIcon.png')}" /></div>
+		                                        <div style="margin-left:132px;margin-top:-103px;position:absolute;">-"{!$Label.noMattersSoldIt}"</div>
+		                                    </div>
+		                                    <div style="cursor:pointer;" onclick="toggleView();">
+                                                <span class="buttonCurvy" style="margin-left:-12px;margin-top:10px;" onmouseover="jQuery(this).css('background-position','bottom');"  onmouseout="jQuery(this).css('background-position','top');">
+                                                   <apex:outputText style="padding-top:5px; text-align:center; width:100%;float: left;" value="{!$Label.viewOptions} &gt;&gt;"/>
+                                                </span>
+                                            </div>
+                                            <div class="selOptions optTeam" style="{!IF(currentCredits.creditRule.XactlyExpress__Type__c!='Team','display:none;','')}">
+		                                        <!-- Here goes the Team Edition-->
+		                                        <apex:outputPanel id="teamListBlock1" style="padding:10px 0 0 10px;float:left;" layout="block">
+                                                	<apex:selectList id="teamList1" value="{!currentCredits.creditRule.XactlyExpress__TeamID__c}" disabled="{!peopleOnPlan.size == 0 }" multiselect="false" size="1" onchange="ChangeTeam1();" style="width:140px;">
+                                                    	<apex:selectOptions value="{!teamSelectList}" />
+                                                    </apex:selectList>
+                                                </apex:outputPanel>
+                                                <script>
+                                                	var selectedTeam1 = '{!$Component.teamList1}'.replace(/:/g,'\\:');
+                                                </script>                                                           
+                                                 <div style="cursor:pointer;float:left;margin-left:10px;" onclick="editTeam1();">
+                                                     <span class="buttonCurvy" style="margin-left:-12px;margin-top:10px;" onmouseover="jQuery(this).css('background-position','bottom');"  onmouseout="jQuery(this).css('background-position','top');">
+                                                        <apex:outputText style="padding-top:5px; text-align:center; width:100%;float: left;" value="{!$Label.xactlyexpress__editTeam}"/>
+                                                     </span>
+                                                 </div>
+                                                 <div style="cursor:pointer;float:left;" onclick="openEditTeamPopup('{!plan.id}');">
+                                                     <span class="buttonCurvy" style="margin-left:-12px;margin-top:10px;" onmouseover="jQuery(this).css('background-position','bottom');"  onmouseout="jQuery(this).css('background-position','top');">
+                                                        <apex:outputText style="padding-top:5px; text-align:center; width:100%;float: left;" value="{!$Label.xactlyexpress__newTeam}"/>
+                                                     </span>
+                                                 </div>
+		                                    </div>
+		                                    <div class="selOptions optOther" style="{!IF(currentCredits.creditRule.Type__c!='Other','display:none;','')}">
+		                                        <!--  Here goes the Rule Edition-->		                                        
+                                                 <div style="cursor:pointer;" onclick="openCreateEditDealRule('{!plan.id}', '{!currentCredits.creditRule.id}');">
+		                                             <span class="buttonCurvy" style="margin-left:-12px;margin-top:10px;" onmouseover="jQuery(this).css('background-position','bottom');"  onmouseout="jQuery(this).css('background-position','top');">
+		                                                <apex:outputText style="padding-top:5px; text-align:center; width:100%;float: left;" value="{!$Label.xactlyexpress__EditRule}"/>
+		                                             </span>
+		                                         </div>
+		                                    </div>
+                                            <div style="clear:both;"></div>
+	                                    </div>
+	                                    <div class="step4Max" style="display:none;">
+	                                        <div class="leftCredits" style="width:47%;float:left;">
+	                                           <div style="padding-bottom: 5px; padding-top: 5px;" class="colorDivs Direct">
+	                                                <apex:outputpanel layout="none" rendered="{!IF(currentCredits.creditRule.XactlyExpress__Type__c=='Direct',true,false)}">
+			                                           <input type="radio" name="step4Radios" id="step4Radio1" value="Direct" onclick="selectedColor();$('#'+sourceCredit).val($(this).val());" checked="checked"/>
+			                                        </apex:outputpanel>
+			                                        <apex:outputpanel layout="none" rendered="{!IF(currentCredits.creditRule.XactlyExpress__Type__c=='Direct',false,true)}">
+                                                       <input type="radio" name="step4Radios" id="step4Radio1" value="Direct" onclick="selectedColor();$('#'+sourceCredit).val($(this).val());"/>
+                                                    </apex:outputpanel>
+			                                        <label for="step4Radio1"> {!$Label.Direct}</label>
+			                                        <div style="text-align: center;margin-left:-108px;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/iSoldItIcon.png')}" /></div>
+			                                        <div style="margin-left:132px;margin-top:-30px;position:absolute;">-"{!$Label.iSoldIt}"</div>
+		                                       </div>
+		                                       <hr/>
+		                                       <div style="padding-bottom: 5px; padding-top: 5px;" class="colorDivs Rollup">
+			                                        <apex:outputpanel layout="none" rendered="{!IF(currentCredits.creditRule.XactlyExpress__Type__c=='Rollup',true,false)}">
+                                                       <input type="radio" name="step4Radios" id="step4Radio2" value="Rollup" onclick="selectedColor();$('#'+sourceCredit).val($(this).val());" checked="checked"/>
+                                                    </apex:outputpanel>
+                                                    <apex:outputpanel layout="none" rendered="{!IF(currentCredits.creditRule.XactlyExpress__Type__c=='Rollup',false,true)}">
+                                                       <input type="radio" name="step4Radios" id="step4Radio2" value="Rollup" onclick="selectedColor();$('#'+sourceCredit).val($(this).val());"/>
+                                                    </apex:outputpanel>
+			                                        <label for="step4Radio2"> {!$Label.Rollup}</label>
+			                                        <div style="text-align: center;margin-left:-102px;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/subsSoldItIcon.png')}" /></div>
+			                                        <div style="margin-left:132px;margin-top:-72px;position:absolute;">-"{!$Label.subsSoldIt}"</div>
+		                                       </div>
+		                                       <hr/>
+		                                       <div style="padding-bottom: 5px; padding-top: 5px;" class="colorDivs Team">
+			                                        <apex:outputpanel layout="none" rendered="{!IF(currentCredits.creditRule.Type__c=='Team' && peopleOnPlan.size > 0,true,false)}">
+                                                       <input type="radio" name="step4Radios" id="step4Radio3" value="Team" onclick="selectedColor();$('#'+sourceCredit).val($(this).val());" checked="checked"/>
+                                                    </apex:outputpanel>
+                                                    <apex:outputpanel layout="none" rendered="{!IF(currentCredits.creditRule.XactlyExpress__Type__c=='Team' || peopleOnPlan.size == 0,false,true)}">
+                                                       <input type="radio" name="step4Radios" id="step4Radio3" value="Team" onclick="selectedColor();$('#'+sourceCredit).val($(this).val());"/>
+                                                    </apex:outputpanel>
+                                                    <apex:outputpanel layout="none" rendered="{!IF(peopleOnPlan.size > 0,false,true)}">
+                                                       <input type="radio" name="step4Radios" id="step4Radio3" value="Team" disabled="disabled"/>
+                                                    </apex:outputpanel>
+			                                        <label for="step4Radio3"> {!$Label.Team}</label>
+			                                        <div style="text-align: center;margin-left:-101px;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/teamSoldItIcon.png')}" /></div>
+			                                        <div style="margin-left:132px;margin-top:-93px;position:absolute;">-"{!$Label.teamSoldIt}"</div>
+		                                       </div>
+		                                       <hr/>
+		                                       <div style="padding-bottom: 5px; padding-top: 5px;" class="colorDivs Other">
+			                                        <apex:outputpanel layout="none" rendered="{!IF(currentCredits.creditRule.XactlyExpress__Type__c=='Other',true,false)}">
+                                                       <input type="radio" name="step4Radios" id="step4Radio4" value="Other" onclick="selectedColor();$('#'+sourceCredit).val($(this).val());" checked="checked"/>
+                                                    </apex:outputpanel>
+                                                    <apex:outputpanel layout="none" rendered="{!IF(currentCredits.creditRule.XactlyExpress__Type__c=='Other',false,true)}">
+                                                       <input type="radio" name="step4Radios" id="step4Radio4" value="Other" onclick="selectedColor();$('#'+sourceCredit).val($(this).val());"/>
+                                                    </apex:outputpanel>
+			                                        <label for="step4Radio4"> {!dealBasedLabel}</label>
+			                                        <div style="margin-left:-1px"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/noMattersSoldItIcon.png')}" /></div>
+			                                        <div style="margin-left:131px;margin-top:-103px;position:absolute;">-"{!$Label.noMattersSoldIt}"</div>
+		                                       </div>
+	                                        </div>
+	                                        <apex:inputHidden id="sourceCredit" value="{!currentCredits.creditRule.XactlyExpress__Type__c}"/>
+	                                        <script>
+			                                    var sourceCredit = '{!$Component.sourceCredit}'.replace(/:/g,'\\:');
+			                                </script>
+	                                        <div class="rightCredits" style="width:52%;float:left;border-left:1px solid #E8C9AE;padding-left:6px;">
+	                                            <div style="background-color:#f4f4f4; margin-left: -6px; height: 490px;display:none;" class="contDivs Direct">
+	                                               <center><div style="color:#CE641B;font-size:14pt;font-weight:bold;padding-top:16px;">Direct</div><hr style="width:90%"/></center>
+	                                               <div class="explanationImage">
+                                                       <img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/ExplanationDirect.jpg')}" />
+                                                   </div>
+	                                            </div>
+	                                            <div style="background-color:#f4f4f4; margin-left: -6px; height: 500px;display:none;" class="contDivs Rollup">
+	                                               <center><div style="color:#CE641B;font-size:14pt;font-weight:bold;padding-top:16px;">Rollup</div><hr style="width:90%"/></center>
+	                                               <div class="explanationImage">
+                                                       <img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/ExplanationRollup.jpg')}" />
+                                                   </div>
+	                                            </div>
+	                                            <div style="background-color:#f4f4f4; margin-left: -6px; height: 462px;display:none;" class="contDivs Team">
+	                                               <center><div style="color:#CE641B;font-size:14pt;font-weight:bold;padding-top:16px;">Team</div><hr style="width:90%"/></center>
+	                                               <div style="padding-top: 5px;">
+                                                       <div class="explanationImage">
+                                                           <img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/ExplanationTeam.jpg')}" />
+                                                       </div>
+                                                       
+                                                       <apex:outputPanel id="teamListBlock" style="padding:10px 0 0 10px;float:left;" layout="block">
+                                                           <apex:selectList id="teamList" value="{!currentCredits.creditRule.XactlyExpress__TeamID__c}" disabled="{!peopleOnPlan.size == 0 }" multiselect="false" size="1" onchange="ChangeTeam();" style="width:140px;">
+                                                                <apex:selectOptions value="{!teamSelectList}" />
+                                                           </apex:selectList>
+                                                       </apex:outputPanel>
+                                                       <script>
+                                                       		var selectedTeam = '{!$Component.teamList}'.replace(/:/g,'\\:');
+                                                       </script>
+                                                       <apex:actionFunction name="refreshTeamList" action="{!dummy}" rerender="teamListBlock, teamListBlock1"/>
+                
+                                                       <div style="padding:8px 0 0 10px;float:left;">
+                                                           <div style="cursor:pointer;" class="colorizeButton" onclick="editTeam();">
+															    <span class="buttonLeft"></span>
+															    <span class="buttonMiddle" style="padding: 0px 8px;">
+															        {!$Label.xactlyexpress__editTeam}
+															    </span>
+															    <span class="buttonRight"></span>
+															</div> 
+                                                       </div>
+                                                       
+                                                       <div style="padding:8px 0 0 10px;float:left;">
+                                                           <div style="cursor:pointer;" class="colorizeButton" onclick="openEditTeamPopup('{!plan.id}');">
+                                                                <span class="buttonLeft"></span>
+                                                                <span class="buttonMiddle" style="padding: 0px 8px;">
+                                                                    {!$Label.xactlyexpress__newTeam}
+                                                                </span>
+                                                                <span class="buttonRight"></span>
+                                                            </div>
+                                                       </div>
+                                                       
+	                                                   <div style="clear:both"></div> 
+	                                               </div>
+	                                            </div>
+	                                            <div style="background-color:#f4f4f4; margin-left: -6px; height: 462px;display:none;" class="contDivs Other">
+	                                               <center><div style="color:#CE641B;font-size:14pt;font-weight:bold;padding-top:16px;">{!$Label.CreateAndManageRules}</div><hr style="width:90%"/></center>
+	                                               <apex:outputPanel layout="none" id="rerenderPopupStatus">
+    	                                               <apex:inputHidden id="openPopup" value="{!openPopup}"/>    	                                               
+	                                               </apex:outputPanel>
+		                                           <script>
+		                                                var openPopup = '{!$Component.openPopup}';		                                               
+		                                           </script>
+		                                           <apex:outputPanel id="rerendercreditid">
+		                                           		<input type="hidden" id="creditsid" value="{!currentCredits.creditRule.id}"/>		                                           		
+		                                           </apex:outputPanel>
+										            
+	                                               <div>
+	                                                   <div style="float:right"> 
+	                                                       <div style="float:left" class="areaTitle filterLabel">{!$Label.ClickHere}</div>
+	                                                       <span class="btnToCenter btnAction" style="float:left;">
+	                                                           <span class="separateBtn" style="margin:0">
+	                                                           	   <div style="cursor:pointer;" onclick="openCreateEditDealRule('{!plan.id}', '{!currentCredits.creditRule.id}');">	                                                               
+	                                                                   <span class="rightBtnOrange">
+	                                                                       <span class="leftBtnOrange">
+	                                                                           <span style="color: white;" class="middleBtnOrange">
+	                                                                              >>
+	                                                                           </span>
+	                                                                       </span>
+	                                                                   </span>
+	                                                                </div>
+	                                                           </span>
+	                                                       </span>           
+	                                                   </div>
+	                                                   <div class="explanationImage">
+	                                                       <img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/ExplanationDeal.jpg')}" />
+	                                                   </div>
+	                                                   <div style="clear:both"></div> 
+	                                               </div>
+	                                            </div>
+	                                        </div>
+	                                        <div style="clear:both"></div>
+	                                    </div>
+	                                    <div  class="step4Max" style="display:none;cursor:pointer;" onclick="toggleView();">
+                                            <span class="buttonCurvy" style="margin-left:-12px;margin-top:10px;" onmouseover="jQuery(this).css('background-position','bottom');"  onmouseout="jQuery(this).css('background-position','top');">
+                                               <apex:outputText style="padding-top:5px; text-align:center; width:100%;float: left;" value="{!$Label.hideOptions} &gt;&gt;"/>
+                                            </span>
+                                        </div>
+                                        <div style="clear:both;"></div>
+	                                </div>    
+	                            </div>      
+	                            <div class="bm">
+	                                <div style="float: left;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/bl.png')}" /></div>
+	                                <div style="float: right;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/br.png')}" /></div>
+	                            </div>
+	                        </div>
+	                        <div class="box" style="margin-top:10px;margin-bottom:70px;;">
+	                            <div class="tm">
+	                                <div style="float: left;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/tl.png')}" /></div>
+	                                <div style="float: right;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/tr.png')}" /></div>
+	                                <div style="clear:both"></div>
+	                            </div>
+	                            <div class="roundedBox">
+	                                <div class="boxHeader" style="height:60px;">
+	                                    <div class="PNovaBlack60c5 stepActionNumber">
+	                                     E
+	                                    </div>
+	                                    <div class="titleWrapper">  
+	                                        <div class="mainTitle PNovaSemiBold17c3">{!FilterDealsUpper}</div>
+	                                        <div class="detailedTitle HelveticaRegular12c3">{!FilterDealsSub}</div>
+	                                    </div>
+	                                    <div class="extraTitleStuff"></div>
+	                                    <div style="clear:both"></div>
+	                                </div>
+	                                
+	                                <div class="boxContent" style="min-height: 20px;">
+                                        <div class="step5Min">
+	                                        <apex:actionFunction name="refreshAdvancedFormula" action="{!dummyRefresh}" rerender="advanceFormulaTraduction"/>
+	                                        <apex:outputpanel id="advanceFormulaTraduction">
+		                                        {!IF(currentCreditAdvanceFormulaTraduction!='','[','')}<span class="areaTitle"><apex:outputtext value="{!currentCreditAdvanceFormulaTraduction}" escape="false" style="color:#000000;"/></span>{!IF(currentCreditAdvanceFormulaTraduction!='',']','')}
+		                                    </apex:outputpanel>
+	                                    </div>
+	                                    <div class="step5Max" style="display:none;">
+	                                        
+	                                        <apex:actionFunction name="dummy" action="{!addCriteria}" oncomplete="addEventoChangeToCriterias();waitOff();introAsTab();criteriasHandler.setOperatorSelectValues();" rerender="fieldSetContainer"/>
+	                                        <apex:actionFunction name="deleteCriteriaAction" action="{!removeCriteria}" rerender="fieldSetContainer" oncomplete="criteriasHandler.updateAdvancedFormula();waitOff();criteriasHandler.setOperatorSelectValues();introAsTab();"/>
+	                                        
+	                                        <apex:outputPanel id="fieldSetContainer"> 
+					                            
+					                            <c:XactlySMBCriteriasComp id="criteriasComp" isAdvancedFormula="{!currentCredits.creditRule.XactlyExpress__IsAdvancedFormula__c}" criterias="{!currentCredits.criterias}" typeOptions="{!typeOptions}" criteriasInstance="{!criteriasInstance}"/>
+					                            
+		                                        <br/>
+	                                               <hr style="margin-left:6px;"/>
+	                                               <apex:outputPanel layout="block" styleClass="actionButtonWrapper" style="margin-top:-1px;">
+	                                                   <div class="actionButtonLeft" style="margin:0;"></div>
+	                                                       <a class="actionButtonMiddle" style="margin:0;color:#CE641B;" onclick="criteriasHandler.checkErrors();">
+	                                                             {!$Label.AddMoreCriteria}
+	                                                       </a>
+	                                                   <div class="actionButtonRight" style="margin:0;"></div>
+	                                               </apex:outputPanel>
+		                                        <apex:inputText id="deleteCriteriaKeyInput" value="{!criteriasInstance.deleteCriteriaKey}" style="display:none;" /> 
+				                                <div id="isThereContainer" style="clear:both;height:35px;">
+				                                    {!$Label.xactlyexpress__IsThere}<apex:inputCheckbox value="{!currentCredits.creditRule.XactlyExpress__IsAdvancedFormula__c}" id="isAdvFormula" onclick="criteriasHandler.toggleAdvFormulas()" />
+				                                    <br />
+				                                    <apex:inputField id="advancedFormula" styleClass="advancedFormula {!IF(currentCredits.creditRule.XactlyExpress__IsAdvancedFormula__c == true,'displayed','hidden')}" value="{!currentCredits.creditRule.XactlyExpress__AdvancedFormula__c}" />  
+				                                    <script>
+				                                    var advFormulaId = '{!$Component.advancedFormula}';
+				                                    </script>
+				                                </div>
+					                        </apex:outputPanel>
+	                                    </div>
+	                                    <div  style="cursor:pointer;" onclick="toggleFilters();">
+		                                    <span class="buttonCurvy" style="margin-left:-12px;margin-top:10px;" onmouseover="jQuery(this).css('background-position','bottom');"  onmouseout="jQuery(this).css('background-position','top');">
+		                                       <apex:outputText style="padding-top:5px; text-align:center; width:100%;float: left;" styleclass="edit_filters" value="{!$Label.editFilters} &gt;&gt;"/>
+		                                    </span>
+		                                </div>
+		                                <div style="clear:both;"></div>
+	                                </div>    
+	                            </div>      
+	                            <div class="bm">
+	                                <div style="float: left;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/bl.png')}" /></div>
+	                                <div style="float: right;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/br.png')}" /></div>
+	                            </div>
+	                        </div>
+	
+	                </apex:outputPanel>
+	            </apex:outputPanel>
+                <div style="clear:both;"></div>
+            </apex:outputPanel>
+            <!-- FOOTER  -->
+            <apex:outputPanel layout="block" styleClass="footer" rendered="{!isAdmin}" id="pFooter">
+                <apex:outputPanel layout="block" styleClass="previousStepWrapper" style="max-width:150px;">
+                    <div class="previousStepRight"></div>
+                    <a href="{!$Page.XactlySMBPlanCreateQuotaOverview}?step=3.1&id={!plan.Id}" class="previousStepMiddle" id="prevBtn">
+                        {!$Label.PreviousStep}
+                    </a>
+                    <div class="previousStepLeft"></div>
+                </apex:outputpanel>
+            	<script>
+            		function openPopupOnRefresh(){	             			
+						  if(document.getElementById(openPopup).value=='open'){
+							if(_isChrome){
+							    editTeamWindow.location.href = "{!$Page.XactlySMBCreateEditDealRule}?pid={!plan.id}&crid="+document.getElementById('creditsid').value;
+							}else{
+							    editTeamWindow.location.href = "{!$Page.XactlySMBCreateEditDealRule}?pid={!plan.id}&crid="+document.getElementById('creditsid').value;
+							}
+						  }
+				  	}
+            	</script>
+                <apex:outputPanel layout="block" styleClass="actionButtons" rendered="{!AND(OR(!ISNULL(creditId), !ISNULL(currentCredits)), !ISNULL(currentCredits))}">
+                    <apex:actionFunction name="saveCreditAction" action="{!save}"/>
+                    <apex:actionFunction name="saveCreditOpenPopup" action="{!saveOpenPopup}" rerender="leftPanel, rerenderPopupStatus, rerendercreditid, errorMsg" oncomplete="if(jQuery('#creditsid')[0].value == '') editTeamWindow.close(); else openPopupOnRefresh();waitOff();loadAccordion();"/>
+                    <apex:outputPanel layout="block" styleClass="actionButtonWrapper">
+	                    <div class="actionButtonLeft"></div>
+	                    <a href="javascript:;" onclick="rerenderNoCompare = false;if(!checkErrorsSave()){return false;};" id="saveBtn" class="actionButtonMiddle">
+	                        <apex:outputtext escape="false" value="{!$Label.xactlyexpress__SaveChanges}">
+	                           <apex:param value="{!URLFOR($Resource.XactlyExpress__XactlySMBResources ,'img/buttons/navigateSaveMiddle.gif')}" />
+	                        </apex:outputtext>
+	                    </a>
+	                    <div class="actionButtonRight"></div>
+	                </apex:outputpanel>
+	            
+	                <apex:outputPanel layout="block" styleClass="actionButtonWrapper">
+	                    <div class="actionButtonLeft"></div>
+                        <a href="javascript:;" class="actionButtonMiddle" onclick="discardChangesConfirm('{!$Page.XactlySMBPlanCreateCredits}?step=3&id={!JSENCODE(idPlan)}&credit={!JSENCODE(creditId)}');">
+                            <apex:outputtext escape="false" value="{!$Label.xactlyexpress__DiscardChanges}">
+                               <apex:param value="{!URLFOR($Resource.XactlyExpress__XactlySMBResources ,'img/buttons/navigateCancelMiddle.gif')}" />
+                            </apex:outputtext>
+                        </a>
+	                    <div class="actionButtonRight"></div>
+	                </apex:outputpanel>
+	            </apex:outputPanel>           
+	            <apex:outputPanel layout="block" styleClass="nextStepWrapper"  style="margin-right:100px;" rendered="{!AND(OR(!ISNULL(creditId), !ISNULL(currentCredits)), !ISNULL(currentCredits))}">
+	                <div class="nextStepLeft"></div>
+	                <apex:commandLink action="{!saveNext}" onclick="if(!(criteriasHandler.chkErrors(true) && criteriasHandler.checkCriterias(advFormulaId, true))){return false;};criteriasHandler.updateHiddenToSelectedValues();criteriasHandler.overrideAdvancedFormula();waitOn();savePageHandler.disableBottomBar();storeValues();"  styleClass="nextStepMiddle">
+	                     {!$Label.xactlyexpress__NextStep}
+	                </apex:commandLink>
+	                <div class="nextStepRight"></div>	                
+	            </apex:outputPanel>
+	            <apex:outputPanel layout="block" styleClass="nextStepWrapper" rendered="{!AND(OR(ISNULL(creditId), ISNULL(currentCredits)), ISNULL(currentCredits))}">
+	                <div class="nextStepLeft"></div>	               
+	                 	<apex:outputLink value="{!$Page.XactlyExpress__XactlySMBPlanCreateStep5}?id={!plan.id}&step=5" styleClass="nextStepMiddle">{!$Label.xactlyexpress__goToTheNextStep}</apex:outputLink>
+	                <div class="nextStepRight"></div>	                
+	            </apex:outputPanel>
+	        </apex:outputPanel>
+            
+            <c:XactlySMBNewQuota /> 
+            <c:XactlySMBNewNumericDealAtribute dealsLabel="{!currentSettings.deals}" /> 
+            <apex:actionFunction name="toReloadNewDA" action="{!genAttributeOptions}" rerender="fieldSetContainer" oncomplete="waitOff();"/>
+            
+             
+        </apex:form>
+        
+    </div>     
+    
+    <apex:includeScript value="{!URLFOR($Resource.XactlyExpress__CSN, 'jquery.js')}" />
+    <c:XactlySMBFooterScript /> 
+    
+    <script type="text/javascript" language="javascript" src="{!URLFOR($Resource.XactlySMBResources, 'js/jquery.curvycorners.min.js')}"></script>
+    <script type="text/javascript" language="javascript" src="{!URLFOR($Resource.XactlySMBResources, 'js/XactlySMBJavascript.js')}"></script>
+    <script type="text/javascript" language="javascript" src="{!URLFOR($Resource.XactlySMBResources, 'js/XactlySMBPlanCreate.js')}"></script>
+    <script type="text/javascript" src="{!URLFOR($Resource.XactlySMBResources ,'js/jquery.superbox-min.js')}"></script>
+    <script type="text/javascript" src="{!URLFOR($Resource.XactlySMBResources ,'js/jquery.tools.min.js')}"></script>
+    <apex:includeScript value="{!URLFOR($Resource.XactlyExpress__XactlySMBResources, 'js/criteriasHandler.js')}" />
+    
+    <script type="text/javascript">
+    	var rerenderNoCompare = true;
+    	$(document).ready(function() {
+			// setup ul.tabs to work as tabs for each div directly under div.panes
+			loadAccordion();
+			storeValues();
+			
+			var labelsArr = new Array();
+            labelsArr[0] = '{!$Label.AdvFormulaMissingParenthesis}';
+            labelsArr[1] = '{!$Label.advancedIsEmpty}';
+            labelsArr[2] = '{!$Label.AdvanceFormulaCheckLogicalStatement}';
+            labelsArr[3] = '{!$Label.AdvanceFormulaWrongChar}';
+            labelsArr[4] = '{!$Label.WrongDateFormatJS}';
+            labelsArr[5] = '{!$Label.errorsInCriteria}';
+            labelsArr[6] = '{!$Label.deleteAFilterCriteria}';
+            labelsArr[7] = '{!$Label.CriteriaNumberNotExists}';
+            labelsArr[8] = '{!$Label.CriteriaNegativeNumbers}';
+            labelsArr[9] = '{!$Label.incompleteAdvFmla}';
+            criteriasHandler.init('{!criteriasInstance.dealDateAttrId}','{!criteriasInstance.productAttrId}','{!criteriasInstance.accountAttrId}','{!criteriasInstance.salespersonAttrId}',labelsArr, '{!dateFirst}', '{!dateSeparator}');
+			addEventoChangeToCriterias();
+		});
+		
+		function ChangeTeam(){			
+			$("#"+selectedTeam1).val($("#"+selectedTeam).val());			
+		}
+		function ChangeTeam1(){
+			$("#"+selectedTeam).val($("#"+selectedTeam1).val());		
+		}
+		function addEventoChangeToCriterias(){
+            $('.criteriaAttributeSelect',$('#tableCriterias')).each(function(){
+                $(this).change(function(){
+	                    $('.newDAOnlyNumeric').val('false');
+	                    addFieldCheck(this);
+                });
+            })
+        }
+		
+		
+		
+        $(function(){
+            $.superbox.settings = {
+                closeTxt: "X",
+                loadTxt: "Loading...",
+                nextTxt: "Next",
+                prevTxt: "Previous"
+            };
+            $.superbox();
+        });
+    
+        function changeToStep1Radio1(){
+            $('#inputName').attr('disabled',true);
+            $('#inputName').val($('#'+quotaList).get(0).options[$('#'+quotaList).get(0).selectedIndex].text);
+            $('#'+creditName).val($('#'+quotaList).get(0).options[$('#'+quotaList).get(0).selectedIndex].text);
+        }
+        
+        function changeToStep1Radio2(){
+            $('#inputName').attr('disabled',false);
+            $('#'+creditName).val($('#inputName').val());
+        }
+        
+        function assignName(){
+            $('#'+creditName).val($('#inputName').val());
+        }
+        
+        function changeToStep2Radio1(){
+            $("input[name='step1Radios']").each(function(i) {
+                $(this).attr('disabled',false);
+            });
+            if(!$('#step1Radio1').attr('checked')){
+                $('#inputName').attr('disabled',false);
+            }
+            $('#'+quotaList).attr('disabled',false);
+            $('#'+quotaId).val($('#'+quotaList).val());
+            $('#'+checkQuota).val('true');
+        }
+        
+        function changeToStep2Radio2(){
+            $("input[name='step1Radios']").each(function(i) {
+                $(this).attr('disabled',true);
+            });
+            $('#step1Radio2').attr('checked','checked');
+            $('#inputName').attr('disabled',false);
+            $('#'+quotaList).attr('disabled',true);
+            $('#'+checkQuota).val('false');
+        }
+        
+        function updateQuotaName(){
+            if($('#step1Radio1').attr('checked')){
+                $('#inputName').val($('#'+quotaList).get(0).options[$('#'+quotaList).get(0).selectedIndex].text);
+                $('#'+creditName).val($('#'+quotaList).get(0).options[$('#'+quotaList).get(0).selectedIndex].text);
+            }
+            $('#'+quotaId).val($('#'+quotaList).val());
+        }
+        
+        function discard(){
+            window.location = '{!$Page.XactlySMBPlanCreateCredits}?step=2&id={!plan.id}&credit={!currentCredits.creditRule.id}';
+        }
+        
+        function selectedColor(){
+            var selected = $('input[name=step4Radios]:checked').val();
+            var divs = $('.colorDivs');
+            for(var i = 0; i < divs.length;i++){
+                if($(divs[i]).hasClass(selected)){
+                    $(divs[i]).css('background-color', '#f4f4f4');
+                }
+                else{
+                    $(divs[i]).css('background-color', '');
+                }
+            }
+            var cont = $('.contDivs');
+            for(var i = 0; i < cont.length;i++){
+                if($(cont[i]).hasClass(selected)){
+                    $(cont[i]).css('display', 'block');
+                }
+                else{
+                    $(cont[i]).css('display', 'none');
+                }
+            }
+        }
+        
+        function toggleView(){
+            if($('.step4Min').is(':visible')){
+                $('.step4Min').hide();
+                $('.step4Max').show();
+                selectedColor();                
+            }
+            else{
+                $('.step4Min').show();
+                $('.step4Max').hide();
+                var selected = $('input[name=step4Radios]:checked').val();
+                var divs = $('.selOptions');
+                for(var i = 0; i < divs.length;i++){
+                    if($(divs[i]).hasClass('opt'+selected)){
+                        $(divs[i]).show();
+                    }
+                    else{
+                        $(divs[i]).hide();
+                    }
+                }                
+            }
+        }
+        
+        function toggleFilters(){
+            if($('.step5Min').is(':visible')){
+                $('.step5Min').hide();
+                $('.step5Max').show();               
+                $('.edit_filters').html('{!$Label.hideFilters} &gt;&gt;'); 
+            }
+            else{
+                if(!criteriasHandler.checkCriterias(advFormulaId, true) || !criteriasHandler.chkErrors(true)){
+                    return;
+                }
+                $('.step5Min').show();
+                $('.step5Max').hide();               
+                $('.edit_filters').html('{!$Label.editFilters} &gt;&gt;');
+                criteriasHandler.updateHiddenToSelectedValues();
+                refreshAdvancedFormula();
+            }
+        }
+        
+        function validationTeam(){
+        	var teamOption= $('#step4Radio3').attr('checked');
+			if(teamOption){
+				if($('#'+selectedTeam)[0].value==''){
+					alert('You need select a Team');
+					return false;
+	
+				}else{
+					return true;
+				}		
+			}else{
+				return true;
+			}	
+        }
+        
+        function checkErrorsSave(){
+            if(!$('.step5Max').is(':visible')){
+               $('.step5Max').show();               
+            }
+            if(criteriasHandler.chkErrors() && criteriasHandler.checkCriterias(advFormulaId, true) && validationTeam()){
+                criteriasHandler.updateHiddenToSelectedValues();
+                criteriasHandler.overrideAdvancedFormula();
+                savePageHandler.disableBottomBar();
+                saveCreditAction();
+            }else{ 
+                return false;
+            }
+        }
+        
+        
+        function editTeam(){
+            var teamId = jQuery('select[id$="teamList"]').val();
+            if(teamId!=''){
+                openEditTeamPopup('{!plan.id}',teamId);
+            }else{
+                alert('{!$Label.selTeam}');
+            }
+        }
+        function editTeam1(){
+            var teamId = jQuery('select[id$="teamList1"]').val();
+            if(teamId!=''){
+                openEditTeamPopup('{!plan.id}',teamId);
+            }else{
+                alert('{!$Label.selTeam}');
+            }
+        }
+        var rerenderNoCompare = true;         
+        
+        window.onbeforeunload = function(){
+            if(compareValues(true,rerenderNoCompare) != undefined){
+                setTimeout("savePageHandler.enableBottomBar();",1000);
+            }
+            window.onunload = function() {savePageHandler.disableBottomBar();}
+            return compareValues(true,rerenderNoCompare);
+        }         
+        
+        function openEditTeamPopup(pid,teamId){
+           if(pid== ''){return;}
+           if(teamId== undefined){teamId = '';}
+           if(_isChrome){
+                editTeamWindow = window.open('{!$Page.XactlySMBCreateEditTeam}?pid=' + pid + '&teamId=' + teamId, 'CreateEditTeam','location=0,status=0,scrollbars=1,width=1030px,height=740px');
+           }else{
+                editTeamWindow = window.open('{!$Page.XactlySMBCreateEditTeam}?pid=' + pid + '&teamId=' + teamId, 'CreateEditTeam','location=0,status=0,scrollbars=1,width=1010px,height=640px');
+           }
+           //editTeamWindow.document.title = "Create/Edit Team";
+           editTeamWindow.moveTo(100,100);
+       }
+       
+       var noOpenDeal = {!IF(currentCredits.creditRule.Id == null || currentCredits.creditRule.Type__c!='Other' ,1,0)};                            
+       
+       function putClosePopup(){
+          document.getElementById(openPopup).value = 'Close';
+       }
+       
+       var editTeamWindow;
+       
+       function openCreateEditDealRule(pid, crid){
+           if(pid== ''){return;}
+           
+           if(criteriasHandler.chkErrors() && criteriasHandler.checkCriterias(advFormulaId, true) && validationTeam()){
+           
+           if(noOpenDeal){
+                if(confirm('{!$Label.saveDataBeforeOpenPopup}')){
+                    if(_isChrome){
+		                editTeamWindow = window.open('', 'CreateEditDealRule','location=0,status=0,scrollbars=1,width=1024px,height=744px');
+		            }else{
+		                editTeamWindow = window.open('', 'CreateEditDealRule','location=0,status=0,scrollbars=1,width=1024px,height=640px');
+		            }
+		            editTeamWindow.document.title = "Create/Edit Team";
+                    editTeamWindow.moveTo(100,100);
+                    waitOn();
+                    saveCreditOpenPopup();
+                }
+           }else{
+                if(_isChrome){
+                    editTeamWindow = window.open('{!$Page.XactlySMBCreateEditDealRule}?pid=' + pid + '&crid=' + crid, 'CreateEditDealRule','location=0,status=0,scrollbars=1,width=1050px,height=744px');
+                }else{
+                    editTeamWindow = window.open('{!$Page.XactlySMBCreateEditDealRule}?pid=' + pid + '&crid=' + crid, 'CreateEditDealRule','location=0,status=0,scrollbars=1,width=1024px,height=640px');
+                }
+                editTeamWindow.document.title = "Create/Edit Team";
+                editTeamWindow.moveTo(100,100);
+           }
+           }
+           else{
+           	return false;
+           }
+       }
+        
+          
+        
+        function confirmDelete(){
+            if({!PaymentsOnCredit} > 0){
+                alert('{!JSENCODE(cannotDeleteCreditLabel)}');
+                return false;
+            }
+            if({!QualifierOnCredit} > 0){
+                alert('{!JSENCODE(cannotDeleteCreditLabelQualifiers)}');
+                return false;
+            }
+            if(!confirm('{!JSENCODE(deleteCreditQuestLabel)}')){
+                return false
+            }
+            else{
+                return true;
+            }
+        }
+       
+         
+        function addQuotaCheck(obj){
+            if(obj.value == ''){
+            	obj.value = obj.options[0].value;
+                newQuotaSetter();
+                //obj.value = selectNumDealAtributte;
+            }else{
+                updateQuotaName();
+            }
+        }       
+        
+        function addFieldCheck(obj){
+	        if(obj.value == ''){
+	            newDealAttributeSetter();
+	            obj.value = selectNumDealAtributte;
+	        }else{
+	            selectNumDealAtributte = obj.value;
+	        }
+	    }
+    </script>
+</apex:page>

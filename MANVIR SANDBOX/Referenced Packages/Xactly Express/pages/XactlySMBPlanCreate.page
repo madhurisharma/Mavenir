@@ -1,0 +1,935 @@
+<!--  
+ Developed by Timba Software Corp. www.timbasoftware.com admin@timbasoftware.com
+ This page lists plans
+ @author Guillermo Freire <guillermo.freire@gmail.com>
+--> 
+<apex:page id="planCreate" controller="XactlyExpress.XactlySMBPlanController" sidebar="false" showHeader="false" standardStylesheets="true" action="{!redirectWhenAccessIsDenied}">
+ 
+   <!-- Custom Cursor Loader -->
+   <c:XactlySMBCursor />
+   <!-- Custom Cursor Loader -->
+    <title>{!$Label.ManagePlans} : {!$Label.PlanWizardStep1}</title>
+    <link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.XactlySMBResources ,'css/XactlySMBStyles.css')}" />
+    <link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.XactlySMBResources ,'css/XactlySMBPlanCreate.css')}" />  
+    <link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.XactlySMBResources ,'css/XactlySMBNumeratedBox.css')}" /> 
+    <link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.XactlySMBResources ,'modbubble/css/bubble.css')}" />
+    
+    <style>
+        
+        .planCreateContainer {
+            margin: 14px 60px 0 10px;
+        }
+        
+        ._errorMsg {
+            margin: 0px !important;
+        }
+        
+        div.tableContainer {     
+            width: 695px;
+            //max-height:160px;
+            //height: expression(this.scrollHeight > 356? "355px": "auto");
+            height:auto;
+            overflow:auto; 
+            _height: 355px;      
+            display: block; 
+            padding-: 1px;
+            margin: 0px auto 0px auto; 
+            white-space: nowrap; 
+        }
+        
+        .extraTitleStuffDoc {
+            float:right;
+            padding: 0px 5px 5px 0;
+        }
+        
+        .nextStepLeftDoc {
+           margin: 0px;
+           padding: 0px;
+           background: url("{!URLFOR($Resource.XactlySMBResources ,'img/buttons/navigateLeft.gif')}") no-repeat;
+           float: left;
+           width: 11px;
+           height: 27px;
+           margin-top: 8px;
+       }
+
+       .nextStepMiddleDoc {
+           margin: 0px;
+           padding: 0px;
+           background: url("{!URLFOR($Resource.XactlySMBResources ,'img/buttons/navigateMiddle.gif')}") repeat-x;
+           float: left;
+           height: 21px;
+           margin-top: 8px;
+           padding-top: 5px;
+           padding-right: 4px;
+           color: #3B6080;
+           font-weight: bold;
+           font-size: 11px;
+       }
+        
+        .nextStepRightDoc {
+            background:url("{!URLFOR($Resource.XactlySMBResources ,'img/buttons/EditPlanDocButton.png')}") no-repeat scroll 0 0 transparent;
+            float:left;
+            height:53px;
+            margin:0;
+            padding:0;
+            margin-top: 6px;
+            width:40px;
+        }
+        
+		.prevTextContainer {
+			clear:both;
+			margin-left:26px;
+			margin-top:-14px;
+			position:relative;
+		}    
+		
+		.prevTextContainer img {
+		    vertical-align:middle;
+		}		
+    </style>
+    
+    <c:XactlySMBShadows /> 
+    
+    <!-- PAGE WRAPPER --> 
+
+	    <div class="pageContent" id="pContent">
+	       	<apex:form id="planForm">
+                <apex:actionFunction action="{!savePlan}" name="saveRefreshFunction" rerender="headerId, mainId, errorMsg" oncomplete="waitOff();storeValues();">                  
+                    <apex:param name="toSave" value="1" />
+                </apex:actionFunction>  	       	
+	            <apex:actionFunction action="{!updateFiscalYear}" name="updateFiscalYear" rerender="startDate, endDate, accordionPlans,errorMsg" oncomplete="setLastEndDate(true);waitOff();introAsTab();"/>
+	            <apex:actionFunction action="{!updateErrors}" name="updatePeriods" rerender="startDate, endDate, accordionPlans,errorMsg" oncomplete="waitOff();introAsTab();"/>
+	            <apex:actionFunction action="{!changeSelectedYear}" name="changeFyscalYear" rerender="startDate, endDate, leftPanel,errorMsg,mainId" oncomplete="waitOff();">
+	                   <apex:param name="move" assignTo="{!fyscalYearOption}" value="" />
+                </apex:actionFunction>   
+	             
+	               
+	            <!-- HEADER -->
+	            <apex:outputPanel layout="block" id="headerId" styleClass="header">
+	                <c:XactlySMBHeader isAdmin="{!isAdmin}"  isActive="{!isActive}" nbrSeparator="{!nbrSeparator}" nbrDecimal="{!nbrDecimal}" currentUserOrSlected="{!currentUserOrSlected}" emulatingUserURLAppend="{!emulatingUserURLAppend}" selected="3"  wId="{!plan.Id}" wclabel="{!currentSettings.creditsPlural}" step="1" wlabel="{!currentSettings.dealsPlural}" wqlabel="{!currentSettings.quotasPlural}" wtype="plan" hlabel="{!$Label.xactlyexpress__EditPlanStepLabel}" stepHelp="PlanCreate" stepBreadcrumb="{!IF(NOT(ISNULL(plan.Id)), plan.Name + ' ' + $Label.xactlyexpress__Plan, '' )}" sPorcent="10"/>
+	            </apex:outputPanel>
+	        
+	            
+	            <!-- INSUFFICIENT PERMISSIONS -->
+	            <apex:outputPanel rendered="{!!isAdmin}">
+	                <c:XactlySMBErrorMsg error="{!$Label.xactlyexpress__InsufficientPermissions}" />
+	            </apex:outputPanel> 
+	 			
+	            <apex:outputPanel layout="block" styleclass="additionalContent" rendered="{!isAdmin && isActive}">    
+	                <c:XactlySMBChatterWall objectId="{!$User.Id}" showHeader="true" showWall="true" currentPage="{!$CurrentPage.Name}" />
+	            </apex:outputPanel>
+	            
+	            <!-- MAIN CONTENT -->
+	            <apex:outputPanel layout="block" id="mainId" style="padding-bottom:50px;" styleClass="mainContent" rendered="{!isAdmin}">
+	                <!-- LEFT PANEL -->
+	                <apex:outputPanel layout="block" styleClass="leftPanel" id="leftPanel"> 
+	                	<c:XactlySMBLeftPanelAccordeon currentSettings="{!currentSettings}" fiscalYear="{!plan.XactlyExpress__XCFiscalYearSettingsID__c}" currentPlan="{!planId}" planId="{!plan.id}" indexSelected="0" havePreviousYear="{!havePreviousYear}" namePreviousYear="{!namePreviousYear}" haveNextYear="{!haveNextYear}" nameNextYear="{!nameNextYear}"/>
+	                    <br/> 
+	                    <div>
+	                        <apex:outputPanel id="deletePlanCont" rendered="{!NOT(ISNULL(plan.Id))}">
+	                            <apex:commandLink id="deletePlan" action="{!deletePlan}" rendered="{!isDeletable}" onclick="setChange();return checkStatus('{!usedToPay}');">
+	                                <span class="buttonCurvy" onmouseover="jQuery(this).css('background-position','bottom');"  onmouseout="jQuery(this).css('background-position','top');">
+	                                     <span style="padding-top:5px; text-align:center; width:100%; float: left;"><apex:outputtext escape="false" value="{!$Label.xactlyexpress__DeletePlan}" styleclass="HelveticaRegular12c1"/></span>
+	                                </span>
+	                            </apex:commandLink>
+	                        </apex:outputPanel>
+	                    </div>
+	                    <br/>
+	                    <div>
+	                        <a href="{!$Page.XactlySMBPlanCreate}">
+	                            <span class="buttonCurvy" onmouseover="jQuery(this).css('background-position','bottom');"  onmouseout="jQuery(this).css('background-position','top');">
+	                                <span style="padding-top:5px;  text-align:center; width:100%; float: left;"><apex:outputtext escape="false" value="{!$Label.xactlyexpress__CreateNewPlan2}" styleclass="HelveticaRegular12c1"/></span>
+	                            </span>
+	                        </a>
+	                    </div>
+	                    <input type="Hidden" id="selectedIndexHidden" value="{!plan.name}" />
+	                    <br/>
+	                    <div>
+	                        <apex:actionFunction action="{!endplanSaveAs}" name="planSaveAs" rerender="accordionPlans, errorMsg, planSaveAsCheckPersist" oncomplete="waitOff();storeValues();" />
+	                        <apex:actionFunction action="{!savePlan}" name="saveFunction" rerender="accordionPlans, errorMsg, planSaveAsCheckPersist" oncomplete="waitOff();storeValues();">
+	                           <apex:param name="noRedirect" value="1" />
+	                        </apex:actionFunction>       
+     
+
+	                        <apex:outputPanel rendered="{!(NOT(ISNULL(plan.Id)))}"> 
+	                            <a href="javascript:;" onclick="javascript: delToShowWindow = window.open('{!$Page.XactlySMBPlanSaveAsPopup}?id={!JSENCODE(idPlan)}', 'PlanName','location=0,status=0,scrollbars=1,width=450px,height=350px');">
+	                                <span class="buttonCurvy" onmouseover="jQuery(this).css('background-position','bottom');"  onmouseout="jQuery(this).css('background-position','top');">
+	                                    <span style="padding-top:5px; text-align:center; width:100%;float: left;"><apex:outputtext escape="false" value="Save As" styleclass="HelveticaRegular12c1"/></span>
+	                                </span>
+	                            </a>
+	                        </apex:outputPanel>    
+
+	                    </div>
+	                                        
+	                </apex:outputPanel>
+	                
+	                <!-- CONTENT -->
+	                <apex:outputPanel layout="block" styleClass="content" id="content">
+	                    <!-- New name to save as  --> 
+	                    <apex:inputHidden value="{!newPlanName}"  id="newPlanName" />
+	                    <apex:inputHidden value="{!newPlanError}"  id="newPlanError" />
+	                    <apex:inputHidden value="{!errorMsg}"  id="errorMsgId" />
+	                    <apex:actionFunction name="resave" action="{!savePlan}" />
+	                    <script>
+	                        toResetDates = '{!$Component.toResetPayment}';
+	                        newPlanName = '{!$Component.newPlanName}';
+	                        newPlanError = '{!$Component.newPlanError}';
+	                        errorMsgId = '{!$Component.errorMsgId}';	                        
+	                    </script>
+	                    <div class="planCreateContainer">
+	                        <apex:outputPanel id="errorMsg" styleClass="_errorMsg">
+	                            <c:XactlySMBErrorMsg error="{!errorMsg}"/>
+	                        </apex:outputPanel>
+	                        <div>
+	                            <!-- STEP 1 -->
+	                            <div class="box">
+	                                <div class="tm">
+	                                    <div style="float: left;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/tl.png')}" /></div>
+	                                    <div style="float: right;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/tr.png')}" /></div>
+	                                    <div style="clear:both"></div>
+	                                </div>
+	                                <div class="roundedBox">
+	                                    <div class="boxHeader">
+	                                        <div class="PNovaBlack60c5 stepActionNumber">
+	                                         A
+	                                        </div>
+	                                        <div class="titleWrapper">  
+	                                            <div class="mainTitle PNovaSemiBold17c3">{!$Label.PlanName}</div>
+	                                            <div class="detailedTitle HelveticaRegular12c3">{!$Label.WhatIsPlanName}</div>
+	                                        </div>
+	                                        <div style="clear:both"></div>
+	                                    </div>
+	                                    
+	                                    <div class="boxContent">
+	                                        <div style="width:100%">
+	                                           <apex:inputField id="inputName" styleClass="inputName" value="{!plan.Name}" required="false" />
+	                                        </div>
+	                                        <div id="step1HidenSection" style="display:none;">  
+	                                            <div style="margin-top: 20px;">
+	                                                <apex:outputtext value="{!$Label.xactlyexpress__PlanDescription}" />:
+	                                                <div id="pDescriptionDiv">
+	                                                    <apex:inputField id="inputDescription" styleClass="inputDescription" value="{!plan.XactlyExpress__Description__c}"/>
+	                                                </div>    
+	                                            </div>  
+	                                            <div id="pTermsAndConditionsDiv" style="margin-top: 10px;">
+	                                                <apex:outputtext value="{!$Label.xactlyexpress__TermsAndConditions}" />:
+	                                                <apex:selectList id="TermsAndConditions" value="{!plan.XactlyExpress__TermsAndConditions__c}" multiselect="false" size="1">  
+	                                                    <apex:selectOptions value="{!TermsAndConditionsOptions}"/>
+	                                                </apex:selectList>                                                
+	                                            </div>
+	                                        </div>
+                                            <a href="javascript:;" onclick="hideShowPlanDocument();">
+                                                <span class="buttonCurvy" style="margin-left:-12px;margin-top:10px;" onmouseover="jQuery(this).css('background-position','bottom');"  onmouseout="jQuery(this).css('background-position','top');">
+                                                   <apex:outputText styleClass="descriptionBtn" style="padding-top:5px; text-align:center; width:100%;float: left;" escape="false" value="{!$Label.editDescription} &gt;&gt;"/>
+                                                </span>
+                                            </a>
+                                            <div style="clear:both;"></div>
+	                                    </div>    
+	                                </div>      
+	                                <div class="bm">
+	                                    <div style="float: left;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/bl.png')}" /></div>
+	                                    <div style="float: right;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/br.png')}" /></div>
+	                                </div>
+	                            </div>
+	                            <!-- STEP 2 -->
+	                            <div class="box" style="margin-top: 10px;">
+	                                <div class="tm">
+	                                    <div style="float: left;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/tl.png')}" /></div>
+	                                    <div style="float: right;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/tr.png')}" /></div>
+	                                    <div style="clear:both"></div>
+	                                </div> 
+	                                <div class="roundedBox">
+	                                    <div class="boxHeader">
+	                                        <div class="PNovaBlack60c5 stepActionNumber">
+	                                         B
+	                                        </div>
+	                                        <div class="titleWrapper">  
+	                                            <div class="mainTitle PNovaSemiBold17c3">{!$Label.PlanEffectiveDates}</div>
+	                                            <div class="detailedTitle HelveticaRegular12c3">{!$Label.PlanEffectiveDatesDesc}</div>
+	                                        </div> 
+	                                        <div class="extraTitleStuff">
+	                                        </div>
+	                                        <div style="clear:both"></div>
+	                                    </div>
+	                                    
+	                                    <div class="boxContent"> 
+	                                        <apex:selectList id="fiscalyearselect" value="{!plan.XactlyExpress__XCFiscalYearSettingsID__c}" onchange="waitOn();updateFiscalYear();" multiselect="false" size="1" required="false">
+	                                            <apex:selectOptions value="{!fiscalYearOptions}"/>
+	                                        </apex:selectList> 
+	                                        &nbsp;&nbsp;
+	                                        <apex:selectList value="{!planStartDate}" id="startDate" onchange="waitOn();updatePeriods();" multiselect="false" size="1">
+	                                            <apex:selectOptions value="{!periodsOptionsStart}" />
+	                                        </apex:selectList>
+	                                        &nbsp;&nbsp;
+	                                        <apex:selectList value="{!planEndDate}" id="endDate" onchange="waitOn();updatePeriods();" multiselect="false" size="1">
+	                                             <apex:selectOptions value="{!periodsOptionsEnd}" />
+	                                        </apex:selectList>
+	                                        <script>
+	                                           var startDate = '{!$Component.startDate}';
+	                                           var endDate = '{!$Component.endDate}';
+	                                        </script>  
+
+	                                         
+	                                    </div>    
+	                                </div>      
+	                                <div class="bm">
+	                                    <div style="float: left;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/bl.png')}" /></div>
+	                                    <div style="float: right;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/br.png')}" /></div>
+	                                </div>
+	                            </div>
+	                         
+	                               
+	                        <!-- STEP 3 -->
+	                            <div class="box" style="margin-top: 10px;margin-bottom:70px">
+	                                <div class="tm">
+	                                    <div style="float: left;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/tl.png')}" /></div>
+	                                    <div style="float: right;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/tr.png')}" /></div>
+	                                    <div style="clear:both"></div>
+	                                </div>
+	                                <div class="roundedBox">
+	                                    <div class="boxHeader">
+	                                        <div class="PNovaBlack60c5 stepActionNumber">
+	                                         C
+	                                        </div>
+	                                        <div class="titleWrapper">  
+	                                            <div class="mainTitle PNovaSemiBold17c3">{!$Label.PeopleAssignment}</div>
+	                                            <div class="detailedTitle HelveticaRegular12c3">{!$Label.PeopleAssignmentDesc}</div>
+	                                        </div>
+	                                        <div style="clear:both"></div>
+	                                    </div>
+	                                    
+	                                    <div class="boxContent" style="padding: 8px;">
+	                                        <!--  Add People Content -->
+	                                        <div style="width: 695px;">
+	                                            <apex:outputPanel id="dummy"></apex:outputPanel>  
+	                                            <apex:inputHidden id="selectedIndexHidden" value="{!ppm.selectedIndex}" />
+	                                            <apex:actionFunction name="submitComment" action="{!ppm.setComment}" rerender="commentBox, alphabeticalBox, jqueryEvents" oncomplete="waitOff();loadBubbles();introAsTab();reloadSalaryTics();" />
+	                                            <script>
+	                                                var hiddenCommentManualAdjId = '{!$Component.selectedIndexHidden}'; 
+	                                            </script>                   
+	                                            <div class="topTable"></div>
+	                                            <apex:outputPanel id="alphabeticalBox" styleClass="tableContainer" layout="block">                                 
+	                                                <apex:dataTable id="profilesTable" styleClass="commonTable" value="{!ppm.alphaList}" rowClasses="even,odd" var="p" headerClass="odd" style="width: 100%;">
+	                                                    <apex:column >
+	                                                        <apex:facet name="header">
+	                                                            <apex:outputpanel >
+	                                                                <input id="checkAllMaster" class="checkAllMaster" type="checkbox" onclick="checkAll(true);enableDisabledMaster();"/> 
+	                                                            </apex:outputpanel>
+	                                                        </apex:facet>
+	                                                        <apex:actionFunction status="savingChanges" name="submitPay" action="{!ppm.togglePay}" rerender="dummy, jqueryEvents" oncomplete="waitOff();loadBubbles();introAsTab();" />
+	                                                        <apex:inputCheckbox id="checkPeople" value="{!p.pp.XactlyExpress__Pay__c}" onchange="changePay(this);" styleClass="checkAllSlave"/>
+	                                                    </apex:column>  
+	                                                    <apex:column > 
+	                                                        <apex:facet name="header">
+	                                                             <div style="width:5px;"></div>
+	                                                        </apex:facet>
+	                                                        <div class="{!IF(p.pp.Comment__c=='','addCommentLink','editCommentLink')}" style="cursor:pointer;" onclick="addComment({!p.index});"></div>
+	                                                    </apex:column>
+	                                                    <apex:column styleClass="wideCells">
+	                                                        <apex:facet name="header">
+	                                                            <apex:outputpanel >
+	                                                                <apex:outputpanel rendered="{!IF(ppm.sortBy == 'UserId__r.FirstName', true, false)}">
+	                                                                    <img  src="{!IF(ppm.sortByDesc == true, URLFOR($Resource.XactlySMBResources, 'img/icons/arrowUp.png'), URLFOR($Resource.XactlySMBResources, 'img/icons/arrowDown.png'))}" />
+	                                                                </apex:outputpanel>
+	                                                                <apex:commandLink id="headerFirstName" onclick="waitOn();" oncomplete="waitOff();loadBubbles();introAsTab();reloadSalaryTics();" value="{!$Label.xactlyexpress__FirstName}" action="{!ppm.sortPeopleList}" rerender="alphabeticalBox, jqueryEvents">
+	                                                                    <apex:param name="sb" value="UserId__r.FirstName"/>
+	                                                                </apex:commandLink>
+	                                                            </apex:outputpanel>
+	                                                        </apex:facet>	                                                        
+	                                                        <c:XactlySMBLongTextBubble text="{!p.pp.ProfileId__r.UserId__r.FirstName}" maxLength="23" />
+	                                                    
+	                                                    </apex:column>
+	                                                    <apex:column styleClass="wideCells">
+	                                                        <apex:facet name="header">
+	                                                            <apex:outputpanel >
+	                                                                <apex:outputpanel rendered="{!IF(ppm.sortBy == 'UserId__r.LastName', true, false)}">
+	                                                                    <img  src="{!IF(ppm.sortByDesc == true, URLFOR($Resource.XactlySMBResources, 'img/icons/arrowUp.png'), URLFOR($Resource.XactlySMBResources, 'img/icons/arrowDown.png'))}" />
+	                                                                </apex:outputpanel>
+	                                                                <apex:commandLink id="headerLastName" onclick="waitOn();" oncomplete="waitOff();loadBubbles();introAsTab();reloadSalaryTics();" value="{!$Label.xactlyexpress__LastName}" action="{!ppm.sortPeopleList}" rerender="alphabeticalBox, jqueryEvents">
+	                                                                    <apex:param name="sb" value="UserId__r.LastName"/>
+	                                                                </apex:commandLink>
+	                                                            </apex:outputpanel>
+	                                                        </apex:facet>
+	                                                        
+	                                                        <c:XactlySMBLongTextBubble text="{!p.pp.ProfileId__r.UserId__r.LastName}" maxLength="23" />
+	                                                        
+	                                                    </apex:column>
+	                                                    <apex:column styleClass="wideCells">
+	                                                        <apex:facet name="header">
+	                                                            <apex:outputpanel >
+	                                                                <apex:outputpanel rendered="{!IF(ppm.sortBy == 'position', true, false)}">
+	                                                                    <img  src="{!IF(ppm.sortByDesc == true, URLFOR($Resource.XactlySMBResources, 'img/icons/arrowUp.png'), URLFOR($Resource.XactlySMBResources, 'img/icons/arrowDown.png'))}" />
+	                                                                </apex:outputpanel>
+	                                                                <apex:commandLink id="headerPosition" onclick="waitOn();" oncomplete="waitOff();loadBubbles();introAsTab();reloadSalaryTics();" value="{!$Label.xactlyexpress__RoleInIncent}" action="{!ppm.sortPeopleList}" rerender="alphabeticalBox, jqueryEvents">
+	                                                                    <apex:param name="sb" value="position"/>
+	                                                                </apex:commandLink>
+	                                                            </apex:outputpanel>
+	                                                        </apex:facet>
+	                                                        <c:XactlySMBLongTextBubble text="{!p.position}" maxLength="23" />
+	                                                    </apex:column>
+	                                                    <apex:column >
+	                                                            <apex:facet name="header">
+	                                                                <apex:outputpanel >
+	                                                                    <apex:outputpanel rendered="{!IF(ppm.sortBy == 'TIC__c', true, false)}">
+	                                                                        <img  src="{!IF(ppm.sortByDesc == true, URLFOR($Resource.XactlySMBResources, 'img/icons/arrowUp.png'), URLFOR($Resource.XactlySMBResources, 'img/icons/arrowDown.png'))}" />
+	                                                                    </apex:outputpanel>
+	                                                                    <apex:commandLink id="headerTic" onclick="waitOn();" oncomplete="waitOff();loadBubbles();introAsTab();reloadSalaryTics();" value="{!currentSettings.tic}" action="{!ppm.sortPeopleList}" rerender="alphabeticalBox, jqueryEvents">
+	                                                                        <apex:param name="sb" value="TIC__c"/>
+	                                                                    </apex:commandLink>
+	                                                                </apex:outputpanel>
+	                                                            </apex:facet>
+	                                                            <apex:actionFunction name="submitTIC" action="{!ppm.setTIC}" rerender="dummy, jqueryEvents" oncomplete="waitOff();loadBubbles();introAsTab();" />
+	                                                            <apex:inputField id="Tic" value="{!p.pp.XactlyExpress__TIC__c}" style="width:5em;" styleClass="ticInput tic{!p.index}" onchange="assingOte2(jQuery('#ote{!p.index}')[0],jQuery('.tic{!p.index}')[0],jQuery('.salary{!p.index}')[0]);"/>  
+	                                                    </apex:column>
+	                                                    <apex:column >
+	                                                            <apex:facet name="header">
+	                                                                <apex:outputpanel >
+	                                                                    <apex:outputpanel rendered="{!IF(ppm.sortBy == 'Salary__c', true, false)}">
+	                                                                        <img  src="{!IF(ppm.sortByDesc == true, URLFOR($Resource.XactlySMBResources, 'img/icons/arrowUp.png'), URLFOR($Resource.XactlySMBResources, 'img/icons/arrowDown.png'))}" />
+	                                                                    </apex:outputpanel>
+	                                                                    <apex:commandLink id="headerSalary" onclick="waitOn();" oncomplete="waitOff();loadBubbles();introAsTab();reloadSalaryTics();" value="{!$Label.xactlyexpress__Salary}" action="{!ppm.sortPeopleList}" rerender="alphabeticalBox, jqueryEvents">
+	                                                                        <apex:param name="sb" value="Salary__c"/>
+	                                                                    </apex:commandLink>
+	                                                                </apex:outputpanel>
+	                                                            </apex:facet>
+	                                                            <apex:inputField id="Salary" value="{!p.pp.XactlyExpress__Salary__c}" style="width:5em;" onchange="assingOte2(jQuery('#ote{!p.index}')[0],jQuery('.tic{!p.index}')[0],jQuery('.salary{!p.index}')[0]);" styleClass="salaryInput salary{!p.index}"/>  
+	                                                    </apex:column> 
+	                                                    <apex:column >
+	                                                            <apex:facet name="header">
+	                                                                <apex:outputpanel >
+	                                                                	 <apex:outputpanel rendered="{!IF(ppm.sortBy == 'Ote__c', true, false)}">
+	                                                                        <img  src="{!IF(ppm.sortByDesc == true, URLFOR($Resource.XactlySMBResources, 'img/icons/arrowUp.png'), URLFOR($Resource.XactlySMBResources, 'img/icons/arrowDown.png'))}" />
+	                                                                    </apex:outputpanel>
+	                                                                    <apex:commandLink id="headerOte" onclick="waitOn();" oncomplete="waitOff();loadBubbles();introAsTab();reloadSalaryTics();" value="{!$Label.xactlyexpress__OTE}" action="{!ppm.sortPeopleList}" rerender="alphabeticalBox, jqueryEvents">
+	                                                                        <apex:param name="sb" value="Ote__c"/>
+	                                                                    </apex:commandLink>
+	                                                                    
+	                                                                </apex:outputpanel>
+	                                                            </apex:facet>
+	                                                            <span id="ote{!p.index}">{!p.pp.XactlyExpress__Salary__c + p.pp.XactlyExpress__TIC__c}</span>
+	                                                    </apex:column>                                                                                                                                     
+	                                                </apex:dataTable>
+	                                            </apex:outputPanel>  
+	                                            <div class="bottomTable"></div>   
+	                                            <a href="{!$Page.XactlySMBSettingsUsers}?backTo=plans&planId={!plan.id}">
+	                                                <span class="buttonCurvy" style="margin-left:-12px;margin-top:10px;" onmouseover="jQuery(this).css('background-position','bottom');"  onmouseout="jQuery(this).css('background-position','top');">
+	                                                   <apex:outputText style="padding-top:5px; text-align:center; width:100%;float: left;" value="{!$Label.AddNewPeople} &gt;&gt;"/>
+	                                                </span>
+	                                            </a>
+	                                            <div style="clear:both;"></div>
+	                                            <!-- COMMENT  BOX -->
+	                                            <apex:outputPanel layout="block" id="commentBox">
+	                                                <apex:outputPanel layout="block" rendered="{!IF(ISNULL(ppm.toCommentProfile),false,true)}" styleClass="commentBox">
+	                                                    <div class="commentHeader">
+	                                                        <apex:outputText value="{!$Label.xactlyexpress__UsersComments}">
+	                                                             <apex:param value="{!ppm.toCommentProfile.pp.ProfileId__r.UserId__r.Name}" />
+	                                                             <apex:param value="'" />
+	                                                        </apex:outputText>
+	                                                        <apex:commandLink id="closeComment" action="{!ppm.closeComment}"  styleClass="commentBoxBtn" rerender="commentBox, alphabeticalBox, jqueryEvents" onclick="waitOn();checkCommentaryChanges();" oncomplete="waitOff();loadBubbles();introAsTab();reloadSalaryTics();" />               
+	                                                    </div>
+	                                                    <div>
+	                                                       <script>
+	                                                           actualCommentary = '{!JSENCODE(ppm.toCommentProfile.pp.Comment__c)}';
+	                                                       </script>
+	                                                        <apex:inputTextarea id="commentBody" value="{!ppm.toCommentProfile.pp.XactlyExpress__Comment__c}" styleClass="commentTextArea"/>                                
+	                                                    </div>
+	                                                </apex:outputPanel>
+	                                            </apex:outputPanel> 
+	                                            <input type="text" value="" style="display:none;" class="toSetCommentaryChanges"/>
+	                                         </div>    
+	                                    </div>    
+	                                </div>      
+	                                <div class="bm">
+	                                    <div style="float: left;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/bl.png')}" /></div>
+	                                    <div style="float: right;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/br.png')}" /></div>
+	                                </div>
+	                            </div>
+	                        </div>
+	                    </div>    
+	                </apex:outputPanel> 
+	                <div style="clear:both"></div>  
+	            </apex:outputPanel>
+	             
+	            <!-- FOOTER  -->
+	            <apex:outputPanel layout="block" styleClass="footer" rendered="{!isAdmin}" id="pFooter">
+	                <apex:outputPanel layout="block" styleClass="previousStepWrapper" style="max-width:260px;margin-right:150px;">
+	                   <div class="previousStepRight"></div>
+	                   <a href="{!$Page.XactlySMBPlanList}" class="previousStepMiddle" id="prevBtn" onclick="waitOn();setTimeout('waitOff()',4000);">
+		                  <div class="prevTextContainer">
+		                       <apex:outputtext escape="false" value="{!$Label.xactlyexpress__backToOverviewPL}">
+		                          <apex:param value="{!URLFOR($Resource.XactlyExpress__XactlySMBResources ,'img/buttons/orangeArrow.png')}"/>
+		                       </apex:outputtext>                                         
+		                  </div>
+	                   </a>
+	                   <div class=""></div>
+	                </apex:outputpanel>
+	                    
+	                <apex:outputPanel layout="block" styleClass="actionButtons">                        
+	                    <apex:outputPanel layout="block" styleClass="actionButtonWrapper">
+	                        <div class="actionButtonLeft"></div>
+	                        <apex:commandLink styleClass="actionButtonMiddle" id="saveBtn" action="{!savePlan}" onclick="storeValues();savePageHandler.disableBottomBar();">
+	                            <apex:outputtext escape="false" value="{!$Label.xactlyexpress__SaveChanges}">
+	                               <apex:param value="{!URLFOR($Resource.XactlyExpress__XactlySMBResources ,'img/buttons/navigateSaveMiddle.gif')}" />
+	                            </apex:outputtext>  
+	                        </apex:commandLink>
+	                        <div class="actionButtonRight"></div>    
+	                    </apex:outputpanel>
+	                    
+	                    <apex:outputPanel layout="block" styleClass="actionButtonWrapper">
+	                        <div class="actionButtonLeft"></div>
+	                        <a href="javascript:;" class="actionButtonMiddle" onclick="discardChangesConfirm(window.location.href);">
+	                            <apex:outputtext escape="false" value="{!$Label.xactlyexpress__DiscardChanges}">
+	                               <apex:param value="{!URLFOR($Resource.XactlyExpress__XactlySMBResources ,'img/buttons/navigateCancelMiddle.gif')}" />
+	                            </apex:outputtext>
+	                        </a>
+	                        <div class="actionButtonRight"></div>    
+	                    </apex:outputpanel>
+	                </apex:outputPanel>
+	            
+	                <apex:outputPanel layout="block" styleClass="nextStepWrapper" style="margin-right:100px;">
+	                    <div class="nextStepLeft"></div>
+	                    <apex:commandLink styleClass="nextStepMiddle" action="{!saveNext}"  onclick="storeValues();savePageHandler.disableBottomBar();">
+	                        {!$Label.xactlyexpress__NextStep}  
+	                    </apex:commandLink> 
+	                    <div class="nextStepRight"></div>
+	                </apex:outputPanel>
+	
+	            </apex:outputPanel>  
+	            
+	            <script>
+	                
+	                var end = new Object(); 
+	                <apex:repeat value="{!fiscalYearsList}" var="year">
+	                    end['{!year.Id}'] = '{!year.EndDate}';
+	                </apex:repeat>
+	                var start = new Object(); 
+	                <apex:repeat value="{!fiscalYearsList}" var="year">
+	                    start['{!year.Id}'] = '{!year.StartDate}';
+	                </apex:repeat>
+	            </script>           
+	        </apex:form>
+	    </div>  
+	    <apex:includeScript value="{!URLFOR($Resource.XactlyExpress__CSN, 'jquery.js')}" />
+        <c:XactlySMBFooterScript /> 
+	    
+	    <script type="text/javascript" src="{!URLFOR($Resource.XactlySMBResources ,'js/jquery-ui.min.js')}"></script>           
+	    <script type="text/javascript" src="{!URLFOR($Resource.XactlySMBResources ,'modbubble/js/jquery.codabubble.mod.js')}"></script>
+	
+	    <script type="text/javascript" language="javascript" src="{!URLFOR($Resource.XactlySMBResources, 'js/XactlySMBJavascript.js')}"></script>
+	    <script type="text/javascript" src="{!URLFOR($Resource.XactlySMBResources ,'js/jquery.superbox-min.js')}"></script>
+	    <script type="text/javascript" src="{!URLFOR($Resource.XactlySMBResources ,'js/jquery.tools.min.js')}"></script>
+
+        <apex:outputPanel rendered="{!toConfirmSaveInitPeriod}">
+            <script>
+                if( confirm('{!$Label.xactlyexpress__confirmResetCurrentPeriodToPlan}')){
+                    waitOn();
+                    saveRefreshFunction();
+                }
+            </script>  
+        </apex:outputPanel>	    
+	    <script type="text/javascript" charset="utf-8">
+        
+        function assingOte2(obj1,obj2,obj3){
+            obj1.innerHTML = formatNumber(parseFloat((parseFloat(unformatNumber(obj2.value))+parseFloat(unformatNumber(obj3.value))).toFixed(0)));                
+        }
+        
+        function hideShowPlanDocument () {
+            rerenderNoCompare = false;
+            var step1HidenSection = document.getElementById('step1HidenSection');
+            if (step1HidenSection.style.display == 'none') {
+                step1HidenSection.style.display = '';
+                jQuery('.pageContent')[0].style.overflow = 'visible';
+                jQuery('.descriptionBtn').text('{!$Label.hideDescription} >>');
+            }
+            else {
+                step1HidenSection.style.display = 'none';
+                jQuery('.pageContent')[0].style.overflow = 'hidden';
+                jQuery('.descriptionBtn').text('{!$Label.xactlyexpress__editDescription} >>');
+            }    
+            setTimeout('rerenderNoCompare = true', 500);
+        }
+        
+                   
+
+        jQuery(function(){
+            jQuery.superbox.settings = {
+                closeTxt: "X",
+                loadTxt: "Loading...",
+                nextTxt: "Next",
+                prevTxt: "Previous"
+            };
+            jQuery.superbox();
+        });
+    
+        function changeDates(){ 
+            if (fiscalYear.value != ''){
+                startDate.value = start[fiscalYear.value];
+                endDate.value = end[fiscalYear.value];
+            }
+        }
+            
+        function setDatesChanged(){
+            datesChanged = true;
+        } 
+        
+        
+        
+        
+        function disabledSalaryTics(){
+        	jQuery('.checkAllSlave').click(function(){      
+        		if(jQuery(this).attr('checked') == true){ 
+					jQuery(this).parent().siblings('td').children('.salaryInput').attr('disabled',false); 
+	        	   	jQuery(this).parent().siblings('td').children('.ticInput').attr('disabled',false); 
+			    }else { 
+			     	jQuery(this).parent().siblings('td').children('.salaryInput').attr('disabled','disabled'); 
+	        	   	jQuery(this).parent().siblings('td').children('.ticInput').attr('disabled','disabled'); 
+			    } 
+			})
+        }
+        
+        function enableDisabledMaster(){
+       		var cheched=jQuery('.checkAllMaster').attr('checked');
+       		for(i=0;i<= jQuery('.checkAllSlave').size();i++){
+        		if(cheched){
+        			jQuery('.salaryInput').eq(i).attr('disabled',false);
+        			jQuery('.ticInput').eq(i).attr('disabled',false);
+        		}else{
+        			jQuery('.salaryInput').eq(i).attr('disabled','disabled');
+        			jQuery('.ticInput').eq(i).attr('disabled','disabled');
+        		}
+        	}
+        }
+        
+       function enableSalaryTicsReady(){
+			jQuery('.ticInput').each(function(){  
+				var chechTic=jQuery(this).parent().siblings('td:first').children('.checkAllSlave').attr('checked')
+			   	if(chechTic == true){   		       
+			         jQuery(this).attr('disabled',false);     
+			    }else{;
+			         jQuery(this).attr('disabled','disabled');  
+			    }      
+			}); 
+			
+			jQuery('.salaryInput').each(function(){  
+				var chechSalary=jQuery(this).parent().siblings('td:first').children('.checkAllSlave').attr('checked')
+			   	if(chechSalary == true){   		       
+			    	jQuery(this).attr('disabled',false);     
+			   	}else{
+				    jQuery(this).attr('disabled','disabled');  
+		        }      
+			
+			}); 
+		}
+        
+        function reloadSalaryTics(){
+			jQuery('.ticInput').each(function(){  
+				var chechTic=jQuery(this).parent().siblings('td:first').children('.checkAllSlave').attr('checked')
+			   	if(chechTic == true){   		       
+			         jQuery(this).attr('disabled',false);     
+			    }else{;
+			         jQuery(this).attr('disabled','disabled');  
+			    }      
+			}); 
+			
+			jQuery('.salaryInput').each(function(){  
+				var chechSalary=jQuery(this).parent().siblings('td:first').children('.checkAllSlave').attr('checked')
+			   	if(chechSalary == true){   		       
+			    	jQuery(this).attr('disabled',false);     
+			   	}else{
+				    jQuery(this).attr('disabled','disabled');  
+		        }      
+			
+			}); 
+			jQuery('.ticInput').each(function(){  
+                jQuery(this).attr('maxlength', 14);              
+                if(nbrDecimal == ','){
+                   jQuery(this).val(formatNumber(parseFloat(unformatNumber(jQuery(this).val())).toFixed(0)).replace(/[,].*/,'').replace(/,/gi, ''));
+                }
+                else{
+                    jQuery(this).val(formatNumber(parseFloat(unformatNumber(jQuery(this).val())).toFixed(0)).replace(/[.].*/,'').replace(/\./gi, ''));
+                }
+            }); 
+            
+            jQuery('.ticInput').blur(function(event){
+                
+                assingOte(jQuery(this));
+                var trgt = jQuery(event.target);
+                if(nbrDecimal == ','){
+                   jQuery(this).val(formatNumber(parseFloat(unformatNumber(jQuery(this).val())).toFixed(0)).replace(/[,].*/,'').replace(/,/gi, ''));
+                }
+                else{
+                    jQuery(this).val(formatNumber(parseFloat(unformatNumber(jQuery(this).val())).toFixed(0)).replace(/[.].*/,'').replace(/\./gi, ''));
+                }
+            });
+            
+            jQuery('.ticInput').focus(function(event){
+                
+                var trgt = jQuery(event.target);
+                jQuery(this).val(unformatNumber(jQuery(this).val()));
+            });
+            
+            /*jQuery('.ticInput').keypress(function (e) {
+               
+               var c = String.fromCharCode(e.which);
+               if((e.which != 0) && (e.which != 8) && (c < '0' || c > '9' || c == ' ') ){ //&& (e.which != 32) 
+                   return false;
+               }
+               return true;                 
+            });*/
+            
+             jQuery('.salaryInput').each(function(){   
+               	var chechSalary=jQuery(this).parent().siblings('td:first').children('.checkAllSlave').attr('checked')
+               	if(chechSalary == true){
+               		jQuery(this).attr('disabled',false);     
+         		}else{
+         			jQuery(this).attr('disabled','disabled');  
+         		}
+               	
+                jQuery(this).attr('maxlength', 14);              
+                if(nbrDecimal == ','){
+                   jQuery(this).val(formatNumber(parseFloat(unformatNumber(jQuery(this).val())).toFixed(0)).replace(/[,].*/,'').replace(/,/gi, ''));
+                }
+                else{
+                    jQuery(this).val(formatNumber(parseFloat(unformatNumber(jQuery(this).val())).toFixed(0)).replace(/[.].*/,'').replace(/\./gi, ''));
+                }
+            }); 
+
+            jQuery('.salaryInput').blur(function(event){
+                
+                assingOte(jQuery(this));
+                
+                var trgt = jQuery(event.target);
+                if(nbrDecimal == ','){
+                   jQuery(this).val(formatNumber(parseFloat(unformatNumber(jQuery(this).val())).toFixed(0)).replace(/[,].*/,'').replace(/,/gi, ''));
+                }
+                else{
+                    jQuery(this).val(formatNumber(parseFloat(unformatNumber(jQuery(this).val())).toFixed(0)).replace(/[.].*/,'').replace(/\./gi, ''));
+                }
+            });
+            
+            jQuery('.salaryInput').focus(function(event){
+                
+                var trgt = jQuery(event.target);
+                jQuery(this).val(unformatNumber(jQuery(this).val()));
+            });
+            
+            /*jQuery('.salaryInput').keypress(function (e) {
+               
+               var c = String.fromCharCode(e.which);
+               if((e.which != 0) && (e.which != 8) && (c < '0' || c > '9' || c == ' ') ){ //&& (e.which != 32) 
+                   return false;
+               }
+               return true;                 
+            }); */       
+            
+            disabledSalaryTics();
+        }
+        
+        /**
+         * This function calculates OTE value 
+         */
+        function assingOte(obj){
+            //When the value is negative we redefine it to 0
+            if(obj.tagName == "INPUT"){
+		        if (obj.val().toString().search(/^[0-9]+$/) != 0){
+		           obj.val(0);
+		        }
+		        
+		        var otherValue = 0;
+		        
+		        obj.parents('tr').find('input:text').each(function(){
+	                if(jQuery(this).attr('class')!=obj.attr('class')){
+	                  otherValue = jQuery(this).val();
+	                }       
+	            });
+		         
+		        obj.parents('tr').find('span:last').html(formatNumber(parseFloat((parseFloat(unformatNumber(otherValue))+parseFloat(unformatNumber(obj.val()))).toFixed(0))));
+		    }
+        }
+        
+        
+        var saveBtn = function(){
+            setChange();
+            savePageHandler.disableBottomBar();
+        } 
+        
+        var discardChanges = function(){
+            setChange();
+            location.href = '/apex/XactlySMBPlanList';
+            
+        }
+   
+            
+        var currentYear = {!currentYear};
+        var i=0;
+        var salir = false;
+        
+        var firstInputs = new Array();
+        var firstSelects = new Array();
+        var firstTextareas = new Array();
+        
+        var _isIE = (navigator.userAgent.toLowerCase().indexOf('msie') != -1); 
+
+        function setInputs(){
+            var inputs = document.getElementsByTagName('input');
+            var selects = document.getElementsByTagName('select');
+            var textareas = document.getElementsByTagName('textarea');
+            for (var i=0; i<inputs.length; i++){
+                firstInputs[i] = inputs[i].value.replace('\'', '\'');
+            }
+            for (var i=0; i<selects.length; i++){
+                firstSelects[i] = selects[i].value.replace('\'', '\'');
+            }
+            for (var i=0; i<textareas.length; i++){
+                firstTextareas[i] = textareas[i].value.replace('\'', '\'');
+            }
+        }   
+        var changes = false;
+        var hrefUnload = false;
+        var rerenderNoCompare = true;
+        
+        window.onbeforeunload = function(){
+            if(compareValues(true,rerenderNoCompare) != undefined){
+                setTimeout("savePageHandler.enableBottomBar();",1000);
+            }
+            window.onunload = function() {savePageHandler.disableBottomBar();}
+            return compareValues(true,rerenderNoCompare);
+        }     
+     
+        function planSaveAsCheck(errorMsg, name){
+        	waitOn();
+        	document.getElementById(newPlanName).value = name;
+        	document.getElementById(newPlanError).value = errorMsg;
+        	document.getElementById(errorMsgId).value = errorMsg;
+        	planSaveAs();            
+        }
+
+        
+        function setLastEndDate(o){
+            
+            if('{!JSENCODE(planEndDate)}'==''){
+                document.getElementById(endDate).selectedIndex=document.getElementById(endDate).length - 1;
+            }
+            if(o){
+                document.getElementById(endDate).selectedIndex=document.getElementById(endDate).length - 1;
+            }
+        }
+        
+        function setChange(){
+            setInputs();
+            changes = false;
+        }
+        
+        function checkStatus(usedToPay){
+        
+            var name =document.getElementById('selectedIndexHidden').value;   
+
+            if(usedToPay == true){ 
+                alert('{!JSENCODE(AlertUsedToPay)}');
+                return false;
+            }else{
+                return confirm('{!JSENCODE(ConfirmDelete)}');  
+               
+            }
+        }
+
+    </script>   
+  
+    
+    <apex:outputpanel id="jqueryEvents">   
+        
+        <script type="text/javascript" language="javascript">           
+                
+            //var rerenderNoCompare = true;
+            var bubbleImagesPath = "{!URLFOR($Resource.XactlySMBResources ,'modbubble/images')}";
+             
+            function changePay(obj){
+               if(obj.checked == true){
+                    var inputPay = obj.parentNode.parentNode.childNodes[0].childNodes[1];
+                    inputPay.checked=true;
+                }
+            }
+            
+            
+            function addComment(id){
+                document.getElementById(hiddenCommentManualAdjId).value = id;
+                submitComment();
+                waitOn();
+            }
+            
+            function checkAll(isMaster){
+                var elementsChecked = jQuery('.checkAllSlave:not(:disabled)');
+                var elementMaster = jQuery('.checkAllMaster');
+                elementMaster = elementMaster[0];
+                if(!isMaster){
+                     elementMaster.checked= !(elementMaster.checked);
+                }
+                for(j=0;j < elementsChecked.length;j++) {
+                    elementCheck = elementsChecked[j];
+                    elementCheck.checked = elementMaster.checked;
+                }        
+            }  
+            
+            var actualCommentary = '';
+            function checkCommentaryChanges(){
+                if(actualCommentary != jQuery('.commentTextArea')[0].value){
+                    jQuery('.toSetCommentaryChanges')[0].value =jQuery('.toSetCommentaryChanges')[0].value + '1';
+                }
+            }
+        </script>
+        
+        
+    </apex:outputpanel>    
+    
+	<script type="text/javascript" charset="utf-8">
+    
+        jQuery(document).ready(function() {
+            // setup ul.tabs to work as tabs for each div directly under div.panes
+            loadAccordion();
+            
+            reloadSalaryTics();           
+            
+            loadBubbles();
+                
+            savePageHandler.storeBottomBarOnclickEvents(); 
+            savePageHandler.setExtraBottomBarClick();
+            
+            setLastEndDate();
+            setInputs();
+            storeValues();
+            introAsTab();
+            enableDisabledMaster();
+            enableSalaryTicsReady();
+
+	        if (document.getElementById(startDate).value == '' && document.getElementById(endDate).value == ''){
+    	        changeDates();
+        	}
+
+            if({!IF(errorMsg=LabelDateRangeError + '<br>','true','false')}){
+                if(confirm('{!$Label.errorInDatesRanges}')){
+                    document.getElementById(toResetDates).value = true;
+                    waitOn();
+                    jQuery('.XactlySMBErrorMsg')[0].innerHTML = '';
+                    resave();
+                    
+                }
+            }
+            
+            var ctrlDown = false;
+            var ctrlKey = 17, vKey = 86, cKey = 67;
+        
+	        $('.ticInput, .salaryInput').keyup(function(e){
+	            if (e.keyCode == ctrlKey) ctrlDown = false;
+	        });
+
+	        $('.ticInput, .salaryInput').keydown(function(e){
+	            var charCode = (e.which) ? e.which : event.keyCode;
+	            if(e.keyCode == ctrlKey) ctrlDown = true;
+	            if(charCode != 37 && charCode != 39 && (charCode > 31 && (charCode < 48 || charCode > 57) && (charCode < 95 || charCode > 105)) && !(ctrlDown && (charCode == vKey || e.keyCode == cKey))) return false;
+	        });
+            
+        });
+    
+    </script>
+    
+</apex:page>

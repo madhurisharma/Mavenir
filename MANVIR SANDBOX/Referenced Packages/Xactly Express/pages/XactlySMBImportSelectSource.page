@@ -1,0 +1,300 @@
+<apex:page controller="XactlyExpress.XactlySMBImportSelectSourceController" showHeader="false" sidebar="false">
+    <link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.XactlySMBResources ,'css/XactlySMBFontStyles.css')}" /> 
+    <style>
+        
+        body {
+            font-family: 'Helvetica', Arial, sans-serif !important;
+            margin: 0px !important;
+            padding: 0px !important;
+        }
+        body td{font-family: 'Helvetica', Arial, sans-serif !important;}
+        body .x-btn button, body .btn, body .btnImportant, body .btnDisabled, body .btnCancel, body .menuButton .menuButtonButton, body .menuButton .menuButtonMenu a, body .menuButton .menuButtonMenu input.theOption, h1, h2, h3, h4, h5, h6 {font-family: 'Helvetica', Arial, sans-serif !important;}
+        
+        .content {
+            font-size: 11px;
+            padding: 0px;
+            margin: 20px;
+            position:relative;
+            overflow: hidden;
+        }  
+        
+        a {
+            text-decoration: none;
+        }
+        
+        .btnAction {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btnAction input {
+            float: left;
+        }
+        
+        .btnAction .leftBtnOrange {
+            background:url({!URLFOR($Resource.XactlySMBResources, 'img/buttons/orange_button_left.png')}) transparent  no-repeat scroll 0 0;
+            float: left;
+            height:19px;
+            padding:0px 0px 0px 5px;
+            width:auto;
+        }
+        .btnAction .middleBtnOrange {
+            color: white;
+            font-size: 10px;
+            font-weight: bold;
+            padding: 3px 5px;
+            width: auto;
+        }
+        .btnAction .rightBtnOrange {
+            background: url({!URLFOR($Resource.XactlySMBResources, 'img/buttons/orange_button_right.png')}) transparent no-repeat scroll right center;
+            float:left;
+            height:19px;
+            padding:0px 5px 0px 0px;
+            width:auto;
+            margin-top: 1px;
+            margin-left: 5px;
+        }  
+        
+        .header {
+            background: url({!URLFOR($Resource.XactlySMBResources, 'img/layout/SearchBackgroundHeader.jpg')}) white repeat-x;
+            height: 28px;
+            margin: 0px;
+            padding: 0px;
+        }
+        
+        .topBorder {
+            background: url({!URLFOR($Resource.XactlySMBResources, 'img/layout/SearchBackgroundTopBorder.jpg')}) white repeat-x;
+            height: 9px;
+            margin: 0px;
+            padding: 0px;
+        }
+        
+        .bottomBorder {
+            background: url({!URLFOR($Resource.XactlySMBResources, 'img/layout/SearchBackgroundBottomBorder.jpg')}) white repeat-x;
+            height: 4px;
+            padding: 0px;
+            bottom: 69px;
+            right: 20px;
+            left: 20px;
+        }
+        
+        .xactlyLogo {
+            background: url({!URLFOR($Resource.XactlySMBResources, 'img/layout/SearchXactlyLogo.png')}) white no-repeat right bottom;
+            height: 59px;
+            width: 100%;
+            margin: 0px;
+            padding: 0px;
+            bottom: 10px;
+            right: 20px;
+        }
+        
+        .resultPanel {
+            overflow:auto;
+            height:300px;
+        }
+        
+        .titleLabel { 
+            color: #E26E1B;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        
+        .saveAndCancel {
+            padding: 20px 0px 0px 40px;
+            width: 200px;
+        }
+        
+        .importCategory {
+            font-weight: bold;
+            font-size: 14px;
+            color: #3B6080;
+        }
+        
+        .importCategoryOptions {
+            
+        }
+        
+        .optionsContainer {
+            border: 1px solid black; 
+            margin: 5px 20px;
+            padding: 20px;
+        }
+        
+        /*************** footer button styles ***************/
+        
+        /**
+		 * AO 02/11/10: this class is used to identify in JS which bottom bar button is "none"
+		 **/
+		div.displayNone{
+			display:none;
+			
+		}
+		
+		.btnAction .middleBtnSilver, .btnAction .middleBtnSilverDisabled {
+			font-size: 10px;
+			font-weight: bold;
+			padding: 3px 5px;
+			width: auto;
+		}
+		
+		/**
+		 * AO 02/10/10: I have changed the background property from this class to a gif image
+		 */
+		.btnAction .leftBtnSilver {
+			/*background:url(../img/buttons/silver_button_left.png) transparent  no-repeat scroll top left;*/
+			background:url({!URLFOR($Resource.XactlySMBResources, 'img/buttons/silver_button_left.gif')}) transparent  no-repeat scroll top left;
+			float: left;
+			height:19px;
+			padding:0px 0px 0px 5px;
+			width:auto;
+		}
+		
+		
+		/**
+		 * AO 02/10/10: I have changed the background property from this class to a gif image
+		 */
+		.btnAction .rightBtnSilver {
+			background: url({!URLFOR($Resource.XactlySMBResources, 'img/buttons/silver_button_right.gif')}) transparent no-repeat scroll right top;
+			/*background: url(../img/buttons/silver_button_right.png) transparent no-repeat scroll right top;*/
+			float:left;
+			height:19px;
+			padding:0px 5px 0px 0px;
+			width:auto;
+			margin-left: 5px;			
+		}
+		
+		/*************** end of footer button styles ***************/
+        
+    </style>
+    <div class="header"></div>
+    <div class="content">
+        <apex:form >
+            <apex:outputpanel layout="block">
+                <div class="titleLabel">
+                    <apex:outputtext value="{!$Label.xactlyexpress__WhatSourceYouUse}" />
+                </div>
+            </apex:outputpanel>
+            <br />
+            <br />
+            <div class="topBorder"></div>
+            <apex:outputpanel styleclass="resultPanel" layout="block" id="resultPanel">
+                <div class="optionsContainer">
+                    <div class="importCategory">
+                        <apex:outputtext value="{!$Label.xactlyexpress__ExternalCSVfile}" />
+                    </div>
+                    <div class="importCategoryOptions">
+                        <apex:outputpanel layout="none" rendered="{!IF(selectedOption == 'Import deals from an external file', true, false)}">
+                            <input id="importFromCSV" type="radio" value="Import deals from an external file" name="importSource" checked="checked" />
+                        </apex:outputpanel>
+                        <apex:outputpanel layout="none" rendered="{!IF(selectedOption == 'Import deals from an external file', false, true)}">
+                            <input id="importFromCSV" type="radio" value="Import deals from an external file" name="importSource"/>
+                        </apex:outputpanel>
+                        <label for="importFromCSV">{!$Label.xactlyexpress__ExternalCSVfile}</label>
+                    </div>
+                    <div class="importCategory">
+                        <apex:outputtext value="{!$Label.xactlyexpress__SalesforceObject}" />
+                    </div>
+                    <div class="importCategoryOptions">
+                        <apex:outputpanel layout="none" rendered="{!IF(selectedOption == 'Import deals from closed Salesforce.com opportunities', true, false)}">
+                            <input id="importFromOpptyProduct" type="radio" value="Import deals from closed Salesforce.com opportunities" name="importSource" checked="checked"/>
+                        </apex:outputpanel>
+                        <apex:outputpanel layout="none" rendered="{!IF(selectedOption == 'Import deals from closed Salesforce.com opportunities', false, true)}">
+                            <input id="importFromOpptyProduct" type="radio" value="Import deals from closed Salesforce.com opportunities" name="importSource" />
+                        </apex:outputpanel>
+                        <label for="importFromOpptyProduct">Opportunity Product</label>
+                        <br />
+                        <apex:outputpanel layout="none" rendered="{!IF(selectedOption == 'Import deals from opportunity', true, false)}">
+                            <input id="importFromOppty" type="radio" value="Import deals from opportunity" name="importSource" checked="checked"/>
+                        </apex:outputpanel>
+                        <apex:outputpanel layout="none" rendered="{!IF(selectedOption == 'Import deals from opportunity', false, true)}">
+                            <input id="importFromOppty" type="radio" value="Import deals from opportunity" name="importSource" />
+                        </apex:outputpanel>
+                        <label for="importFromOppty">Opportunity</label>
+                    </div>
+                </div> 
+            </apex:outputpanel>
+            <div class="bottomBorder"></div>
+            <div class="xactlyLogo">
+                <div class="btnToCenter btnAction saveAndCancel">
+                   <div class="separateBtn">                                          
+                       <apex:outputLink value="javascript:;" styleClass="saveBtn" id="saveBtn" onclick="selectSource();">
+                           <apex:outputPanel layout="block" styleClass="rightBtnOrange">
+	                    		<apex:outputPanel layout="block" styleClass="leftBtnOrange">
+		                       		<apex:outputPanel layout="block" styleClass="middleBtnOrange" style="color: white;">
+		                           		{!$Label.xactlyexpress__Save}
+		                           </apex:outputPanel>
+	                           </apex:outputPanel>
+							</apex:outputPanel>   
+							<apex:outputPanel layout="block" styleClass="rightBtnSilver displayNone">
+								<apex:outputPanel layout="block" styleClass="leftBtnSilver">
+									<apex:outputPanel layout="block" styleClass="middleBtnSilver">
+										{!$Label.xactlyexpress__Save}
+									</apex:outputPanel>
+								</apex:outputPanel>
+							</apex:outputPanel>
+                       </apex:outputLink>
+                   </div> 
+                   <div class="separateBtn">
+                       
+                       <apex:outputLink styleClass="discardChanges" value="javascript:;" onclick="window.close();">							
+	                    	<apex:outputPanel layout="block" styleClass="rightBtnOrange">
+	                    		<apex:outputPanel layout="block" styleClass="leftBtnOrange">
+		                       		<apex:outputPanel layout="block" styleClass="middleBtnOrange" style="color: white;">
+		                           		{!$Label.xactlyexpress__Cancel}
+		                           </apex:outputPanel>
+	                           </apex:outputPanel>
+							</apex:outputPanel>   
+							<apex:outputPanel layout="block" styleClass="rightBtnSilver displayNone">
+								<apex:outputPanel layout="block" styleClass="leftBtnSilver">
+									<apex:outputPanel layout="block" styleClass="middleBtnSilver">
+										{!$Label.xactlyexpress__Cancel}
+									</apex:outputPanel>
+								</apex:outputPanel>
+							</apex:outputPanel>       
+						</apex:outputLink>
+                       
+                   </div>
+               </div>
+            </div>
+        </apex:form>
+    </div>
+    
+    <apex:includeScript value="{!URLFOR($Resource.XactlyExpress__CSN, 'jquery.js')}" />
+    <c:XactlySMBFooterScript /> 
+    
+    <script type="text/javascript" src="{!URLFOR($Resource.XactlySMBResources, 'js/jquery-ui.min.js')}"></script>
+    <script type="text/javascript" language="javascript" src="{!URLFOR($Resource.XactlySMBResources, 'js/XactlySMBJavascript.js')}"></script>
+    
+    <script>
+    
+    	 $(document).ready(function() {
+         
+        	savePageHandler.setClassContainer('xactlyLogo');
+        	savePageHandler.storeBottomBarOnclickEvents();
+    		savePageHandler.setExtraBottomBarClick();
+        });
+       
+        var saveBtn = function(){
+		
+			savePageHandler.disableBottomBar();			        
+		
+	    }
+       
+        function selectSource () {
+            var sourceSelected = '';
+            var pageInputs = document.getElementsByTagName('input');
+            for (var i = 0; i < pageInputs.length; i++) {
+                var currentInput = pageInputs[i];
+                if (currentInput.type == 'radio' && currentInput.checked) {
+                    sourceSelected = currentInput.value;
+                }
+            }
+            
+            if (sourceSelected != '') {
+                window.opener.document.getElementById('importDealsFromInput').getElementsByTagName('input')[0].value = sourceSelected;
+                window.opener.changeSourceAction(sourceSelected);
+                window.close();
+            } 
+        }
+    </script>
+</apex:page>

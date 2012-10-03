@@ -1,0 +1,30 @@
+<apex:page controller="XactlyExpress.XactlySMBExportMapping" cache="true" sidebar="false" showHeader="false" standardStylesheets="false" contentType="application/vnd.ms-excel#Mappings.xls; charset=utf-8">
+    <table>
+        <thead>
+            <tr>
+                <th>{!$Label.xactlyexpress__ExpressObject}</th>
+                <th>{!$Label.xactlyexpress__ExternalCSV}</th>
+                <apex:repeat value="{!sources}" var="is">
+                    <th>{!is.Name}</th>
+                </apex:repeat>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>{!$Label.xactlyexpress__XCDealAttribute}</td>
+                <td>{!$Label.xactlyexpress__ExternalCSVfile}</td>
+                <apex:repeat value="{!sourcesNames}" var="sn">
+                    <td>{!sn}</td>
+                </apex:repeat>
+            </tr>
+            <apex:repeat value="{!attributesMapping}" var="elem">
+                <tr>
+                    <td>{!elem.dealA.Name}</td>
+                    <apex:repeat value="{!elem.mappings}" var="mapDes">
+                        <td>{!mapDes}</td>
+                    </apex:repeat>
+                </tr>
+            </apex:repeat>
+        </tbody>
+    </table>
+</apex:page>

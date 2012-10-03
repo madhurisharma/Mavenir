@@ -1,0 +1,571 @@
+<!--
+Developed by Timba Software Corp. www.timbasoftware.com admin@timbasoftware.com
+ This page defines plans
+ @author Juan Bessonart <jbessonart@timbasoftware.com>
+-->
+<apex:page id="XactlySMBReviewPlan" controller="XactlyExpress.XactlySMBPlanController" sidebar="false" showHeader="false" standardStylesheets="true" action="{!redirectWhenAccessIsDenied}"> 
+ 
+   <c:XactlySMBJitCharts />
+   <c:XactlySMBGauges />
+   
+   <!-- Custom Cursor Loader -->
+   <c:XactlySMBCursor />
+   <!-- Custom Cursor Loader -->
+    <title>{!$Label.ManagePlans}</title>
+    <link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.XactlySMBResources ,'css/XactlySMBStyles.css')}" />
+ 
+    <!-- MOVE TO THE COMMON CSS -->
+    <style>     
+        .leftBox { 
+            font-size:11px;
+            margin:15px 0px 10px 34px;
+            width:210px;
+        }
+        
+        .leftBox .boxTitle {
+            background:transparent url({!URLFOR($Resource.XactlySMBResources ,'img/layout/table_top_210w.png')}) no-repeat scroll 0 0;
+            font-weight:bold;
+            height:20px;
+            padding:2px 0 0 10px;
+        }
+             
+        .leftBox .boxFooter {
+            background:transparent url({!URLFOR($Resource.XactlySMBResources ,'img/layout/table_bottom_210w.png')}) no-repeat scroll 0 0;
+            height:15px;
+            width:210px;
+        }  
+        .planName{
+            color:#3B6080;
+            
+        }
+        
+        .scrollContent{
+        overflow:auto;
+        
+        }
+        
+        .rightJustify { 
+            text-align: right;
+        }
+    </style>
+    
+    <style>
+        .reviewPlanContent {
+            margin: 0px 15px;
+        }
+        
+        .reviewPlanContent .topSectionInfo  {
+            font-size: 13px;
+            font-weight: bold;
+        }
+        
+        .reviewPlanContent .topSectionInfo .topSectionLabel {
+            color: #3B6080;
+        }
+        
+        .reviewPlanContent .topSectionInfo .topSectionValue {
+            color: #BD5C19;
+        }
+        
+        .quotasTableWrapper {
+            margin-top: 10px;
+        }
+        
+        .topSection {
+            position: relative; 
+            overflow: hidden;
+            width: 760px;
+        }
+        
+        .bottomSection {
+            margin-top: 20px;
+            position: relative; 
+            overflow: hidden;
+            width: 760px;
+            margin-bottom:75px;
+        }
+        
+        .leftTopSection {
+            margin: 0px;
+            padding: 0px;
+            width: 460px;
+            float: left;
+            display: inline;
+        }
+        
+        .rightTopSection {
+            margin: 0px;
+            margin-left: 20px;
+            padding: 0px;
+            width: 180px;
+            float: left;
+            display: inline;
+        }
+        
+        div.quotasTopTable {
+            background:transparent url({!URLFOR($Resource.XactlySMBResources ,'img/layout/table_top_710w_no_title_bar.png')}) no-repeat scroll 0 0;
+            height:9px;
+            width: 460px;
+        }
+        
+        div.quotasBottomTable {
+            background:transparent url({!URLFOR($Resource.XactlySMBResources ,'img/layout/table_bottom_710w.png')}) no-repeat scroll 0 0;
+            height:9px;
+            width: 460px;
+        } 
+         
+        div.quotasTableContainer {
+            width: 460px;
+            border-left: 1px solid #D8D8D8;
+        } 
+        
+        div.quotasTableContainer table {
+            width: 100%;
+        } 
+        
+        div.quotasTableContainer table th {
+            border-right:1px solid #D8D8D8;
+            border-bottom:1px solid #D8D8D8;
+            color:#3B6080;
+            font-size:11px;
+            font-weight:bold;
+            padding:0.2em 1em;
+            text-align:center;
+        } 
+        
+        div.quotasTableContainer table td {
+            border-right:1px solid #D8D8D8;
+            padding: 3px;
+            vertical-align: bottom;
+        }
+        
+        .chartWrapper {
+            display:block; 
+            width:180px; 
+            height:auto;
+        }
+        
+        div.paymentsTopTable {
+            background:transparent url({!URLFOR($Resource.XactlySMBResources ,'img/layout/grayTopTable.png')}) repeat scroll 0 0;
+            height:9px;
+            width: 762px;
+        }
+        
+        div.paymentsInternalTable {
+            background:transparent url({!URLFOR($Resource.XactlySMBResources ,'img/layout/table_top_1000w_no_title_bar.png')}) no-repeat scroll 0 0;
+            height:9px;
+            width: 760px;
+        }
+        
+        div.paymentsBottomTable {
+            background:transparent url({!URLFOR($Resource.XactlySMBResources ,'img/layout/grayBottomTable.png')}) repeat scroll 0 0;
+            height:3px;
+            width: 762px;
+        } 
+        
+        div.paymentsTableContainer {
+            width: 760px;
+            border-left: 1px solid #D8D8D8;
+            padding: 0px;
+            margin: 0px;
+        } 
+        
+        div.paymentsTableContainer table {
+            width: 100%;
+        } 
+        
+        div.paymentsTableContainer table th {
+            border-right:1px solid #D8D8D8;
+            border-bottom:1px solid #D8D8D8;
+            color:#3B6080;
+            font-size:11px;
+            font-weight:bold;
+            padding:0.2em 1em;
+            text-align:center;
+        } 
+        
+        div.paymentsTableContainer table td.totalTD {
+            color:#3B6080;
+            font-size:11px;
+            font-weight:bold;
+            padding:0.2em 1em;
+            text-align:center;    
+        }
+        
+        div.paymentsTableContainer table td.measureName {
+            width: 240px;   
+        }
+        
+        div.paymentsTableContainer table td {
+            border-right:1px solid #D8D8D8;
+            padding: 3px;
+        } 
+        
+        tr.internalBorder {
+            margin: 0px;
+            height: 9px;
+            padding: 0px;
+        }
+        
+        tr.internalBorder td {
+            margin: 0px;
+            padding: 0px !important;
+        }
+        
+        .quotaPeriods {
+            text-align: right;
+            padding-right: 25px;
+        }       
+        
+        .prevTextContainer {
+            clear:both;
+            margin-left:5px;
+            margin-top:-14px;
+            position:relative;
+        } 
+        
+        .collapseArrowDown{
+	        padding-left:12px;
+	        cursor:pointer;
+	        background:url({!URLFOR($Resource.XactlySMBResources,'img/icons/collapseArrowDown.png')}) no-repeat;
+        }
+     
+        .collapseArrowRight{
+           padding-left:12px;
+           cursor:pointer;
+           background:url({!URLFOR($Resource.XactlySMBResources,'img/icons/collapseArrowRight.png')}) no-repeat;
+        }        
+    </style>
+    
+    <c:XactlySMBShadows />
+    
+    <!-- PAGE WRAPPER -->
+    <div class="pageContent" id="pContent" style="height: auto; min-height: 0px;">
+        <apex:form id="planForm">
+            <apex:actionFunction action="{!changeSelectedYear}" name="changeFyscalYear" rerender="startDate, endDate, leftPanel,errorMsg" oncomplete="waitOff();">
+                      <apex:param name="move" assignTo="{!fyscalYearOption}" value="" />
+            </apex:actionFunction> 
+
+            <!-- HEADER -->
+            <apex:outputPanel layout="block" styleClass="header">
+                <c:XactlySMBHeader isAdmin="{!isAdmin}"  isActive="{!isActive}" nbrSeparator="{!nbrSeparator}" nbrDecimal="{!nbrDecimal}" currentUserOrSlected="{!currentUserOrSlected}" emulatingUserURLAppend="{!emulatingUserURLAppend}" selected="3" wclabel="{!currentSettings.creditsPlural}" wId="{!plan.id}" step="5" wqlabel="{!currentSettings.quotasPlural}" wclabel="{!currentSettings.creditsPlural}" wlabel="{!currentSettings.dealsPluralCap}"  wtype="plan" hlabel="{!$Label.xactlyexpress__ReviewYourPlan}" stepHelp="PlanCreateStep6" stepBreadcrumb="{!plan.Name} {!$Label.xactlyexpress__Plan}"/>
+            </apex:outputPanel>
+            
+            <!-- INSUFFICIENT PERMISSIONS -->
+            <apex:outputPanel rendered="{!!isAdmin}">
+                <c:XactlySMBErrorMsg error="{!$Label.xactlyexpress__InsufficientPermissions}" />
+            </apex:outputPanel>
+            
+            <apex:outputPanel layout="block" styleclass="additionalContent" rendered="{!isAdmin && isActive}">    
+                <c:XactlySMBChatterWall objectId="{!$User.Id}" showHeader="true" showWall="true" currentPage="{!$CurrentPage.Name}"/>
+            </apex:outputPanel>
+		
+            <!-- MAIN CONTENT -->
+            <apex:outputPanel layout="block" style="padding-bottom:50px;" styleClass="mainContent" rendered="{!isAdmin}">
+                	
+                
+                <!-- LEFT PANEL -->
+            <apex:outputPanel id="leftPanel" layout="block" styleClass="leftPanel" style="min-height: 540px;">
+            		<c:XactlySMBLeftPanelAccordeon currentSettings="{!currentSettings}" fiscalYear="{!plan.XactlyExpress__XCFiscalYearSettingsID__c}" currentPlan="{!plan.id}" step="6" planId="{!plan.id}" currentQuota="{!pqm.currentQuota.id}" indexSelected="0" havePreviousYear="{!havePreviousYear}" namePreviousYear="{!namePreviousYear}" haveNextYear="{!haveNextYear}" nameNextYear="{!nameNextYear}"/>
+                </apex:outputPanel>
+ 
+                
+                <!-- CONTENT -->
+                <apex:outputPanel layout="block" styleClass="content scrollContent" style="height:auto;" rendered="{!IF(LEN(pr.expressionError)>0,false,true)}">
+                    
+                    <apex:outputPanel id="reviewPlanContent" layout="block" styleClass="reviewPlanContent" style="position:relative;overflow:auto;width:778px;">
+                                
+                        <!-- CONTENT -->
+                        <div class="topSection">
+                            <div class="leftTopSection">
+                                <div class="topSectionInfo">
+                                    <span class="topSectionLabel">{!$Label.TotalPeopleOnPlan}</span> : <span class="topSectionValue">{!pr.totalPeopleOnPlan}</span><br />
+                                    <span class="topSectionLabel"><apex:outputtext value="{!$Label.xactlyexpress__AverageTIC}"><apex:param value="{!currentSettings.tic}" /></apex:outputtext></span> : <span class="topSectionValue">{!pr.averageTIC}</span><br />
+                                </div>
+                                <div class="quotasTableWrapper">
+                                    <!-- Quota Table -->
+                                    <div class="quotasTopTable"></div>
+                                    <div id="quotasTableContainer" class="quotasTableContainer">
+                                        <apex:datatable id="quotasTable" value="{!pr.quotaList}" var="iter" headerClass="odd" ColumnClasses="column" rowClasses="odd,even">
+                                            <apex:column >
+                                                <apex:facet name="header">{!currentSettings.quotasPluralCap}</apex:facet>
+                                                <pre class="HelveticaRegularL15">{!iter.quota.name}</pre>
+                                                <apex:outputpanel styleclass="quotaPeriods" layout="block" rendered="{!IF(iter.quota.XactlyExpress__Frequency__c == 'Quarter', true, false)}">
+                                                     Q1 <br />
+                                                     Q2 <br />
+                                                     Q3 <br />
+                                                     Q4 <br />
+                                                </apex:outputpanel>
+                                                <apex:outputpanel styleclass="quotaPeriods" layout="block" rendered="{!IF(iter.quota.XactlyExpress__Frequency__c == 'Month', true, false)}">
+                                                     M1 <br />
+                                                     M2 <br />
+                                                     M3 <br />
+                                                     M4 <br />
+                                                     M5 <br />
+                                                     M6 <br />
+                                                     M7 <br />
+                                                     M8 <br />
+                                                     M9 <br />
+                                                     M10 <br />
+                                                     M11 <br />
+                                                     M12 <br />
+                                                </apex:outputpanel>
+                                                <apex:outputpanel styleclass="quotaPeriods" layout="block" rendered="{!IF(iter.quota.XactlyExpress__Frequency__c == 'SemiAnnual', true, false)}">
+                                                     H1 <br />
+                                                     H2 <br />
+                                                </apex:outputpanel>
+                                            </apex:column>
+                                            <apex:column styleclass="rightJustify">
+                                                <apex:facet name="header">{!$Label.xactlyexpress__Average}</apex:facet>
+                                                <apex:outputpanel rendered="{!IF(iter.quota.XactlyExpress__Frequency__c == 'Quarter', true, false)}">
+                                                    <apex:outputtext value="{!iter.quotaDetails.averageQ1S}" /> <br />
+                                                    <apex:outputtext value="{!iter.quotaDetails.averageQ2S}" /> <br />
+                                                    <apex:outputtext value="{!iter.quotaDetails.averageQ3S}" /> <br />
+                                                    <apex:outputtext value="{!iter.quotaDetails.averageQ4S}" /> <br />
+                                                </apex:outputpanel>
+                                                <apex:outputpanel rendered="{!IF(iter.quota.XactlyExpress__Frequency__c == 'Month', true, false)}">
+                                                    <apex:outputtext value="{!iter.quotaDetails.averageM1S}" /> <br />
+                                                    <apex:outputtext value="{!iter.quotaDetails.averageM2S}" /> <br />
+                                                    <apex:outputtext value="{!iter.quotaDetails.averageM3S}" /> <br />
+                                                    <apex:outputtext value="{!iter.quotaDetails.averageM4S}" /> <br />
+                                                    <apex:outputtext value="{!iter.quotaDetails.averageM5S}" /> <br />
+                                                    <apex:outputtext value="{!iter.quotaDetails.averageM6S}" /> <br />
+                                                    <apex:outputtext value="{!iter.quotaDetails.averageM7S}" /> <br />
+                                                    <apex:outputtext value="{!iter.quotaDetails.averageM8S}" /> <br />
+                                                    <apex:outputtext value="{!iter.quotaDetails.averageM9S}" /> <br />
+                                                    <apex:outputtext value="{!iter.quotaDetails.averageM10S}" /> <br />
+                                                    <apex:outputtext value="{!iter.quotaDetails.averageM11S}" /> <br />
+                                                    <apex:outputtext value="{!iter.quotaDetails.averageM12S}" /> <br />
+                                                </apex:outputpanel>
+                                                <apex:outputpanel rendered="{!IF(iter.quota.XactlyExpress__Frequency__c == 'Year', true, false)}">
+                                                    <apex:outputtext value="{!iter.quotaDetails.averageA1S}" /> <br />
+                                                </apex:outputpanel>
+                                            </apex:column>
+                                            <apex:column styleclass="rightJustify" >
+                                                <apex:facet name="header">{!$Label.xactlyexpress__Total}</apex:facet>
+                                                <apex:outputpanel rendered="{!IF(iter.quota.XactlyExpress__Frequency__c == 'Quarter', true, false)}">
+                                                    <apex:outputtext value="{!iter.quotaDetails.totalQ1S}" /> <br />
+                                                    <apex:outputtext value="{!iter.quotaDetails.totalQ2S}" /> <br />
+                                                    <apex:outputtext value="{!iter.quotaDetails.totalQ3S}" /> <br />
+                                                    <apex:outputtext value="{!iter.quotaDetails.totalQ4S}" /> <br />
+                                                </apex:outputpanel>
+                                                <apex:outputpanel rendered="{!IF(iter.quota.XactlyExpress__Frequency__c == 'Month', true, false)}">
+                                                    <apex:outputtext value="{!iter.quotaDetails.totalM1S}" /> <br />
+                                                    <apex:outputtext value="{!iter.quotaDetails.totalM2S}" /> <br />
+                                                    <apex:outputtext value="{!iter.quotaDetails.totalM3S}" /> <br />
+                                                    <apex:outputtext value="{!iter.quotaDetails.totalM4S}" /> <br />
+                                                    <apex:outputtext value="{!iter.quotaDetails.totalM5S}" /> <br />
+                                                    <apex:outputtext value="{!iter.quotaDetails.totalM6S}" /> <br />
+                                                    <apex:outputtext value="{!iter.quotaDetails.totalM7S}" /> <br />
+                                                    <apex:outputtext value="{!iter.quotaDetails.totalM8S}" /> <br />
+                                                    <apex:outputtext value="{!iter.quotaDetails.totalM9S}" /> <br />
+                                                    <apex:outputtext value="{!iter.quotaDetails.totalM10S}" /> <br />
+                                                    <apex:outputtext value="{!iter.quotaDetails.totalM11S}" /> <br />
+                                                    <apex:outputtext value="{!iter.quotaDetails.totalM12S}" /> <br />
+                                                </apex:outputpanel>
+                                                <apex:outputpanel rendered="{!IF(iter.quota.XactlyExpress__Frequency__c == 'Year', true, false)}">
+                                                    <apex:outputtext value="{!iter.quotaDetails.totalA1S}" /> <br />
+                                                </apex:outputpanel>
+                                            </apex:column>
+                                        </apex:datatable>
+                                    </div>
+                                    <div class="quotasBottomTable"></div>
+                                </div>
+                            </div>
+                            <div class="rightTopSection">
+                               <div class="chartWrapper">
+                                  
+                                                              
+                                   <c:XactlySMBChart values="{!pr.dataArrayForFlex}" cid="barchar1" type="Sales Results" />
+                                 
+                                             <!--                             
+                                  <object>
+                                      <param name="wmode" value="transparent" />
+                                      <embed 
+                                       wmode="transparent"
+                                      id="columnChartEmbed" 
+                                      width="100%" 
+                                      height="200px"
+                                      align="middle" 
+                                      type="application/x-shockwave-flash" 
+                                      src="{!$Resource.ReviewPlanChart}" 
+                                      pluginspage="http://www.adobe.com/go/getflashplayer" 
+                                      play="true" 
+                                      name="FlexSalesforce" 
+                                      loop="false" 
+                                      flashvars="planId={!plan.id}&session_id={!$Api.Session_ID}&server_url={!$Api.Partner_Server_URL_130}&namespace={!nameSpace}&dataArray={!pr.dataArrayForFlex}&planName={!IF(MAX(LEN(plan.Name),24) == 24, plan.Name, LEFT(plan.Name, 21) + '...')}" 
+                                      bgcolor="#FFFFFF" 
+                                      allowscriptaccess="always"
+                                     />
+                                   </object>
+                                      -->
+                        
+                               </div>
+                            </div>
+                          </div>
+                          
+                          <div class="bottomSection">
+                              <div class="paymentsTableWrapper">
+                                  <!-- Payments Table -->
+                                  <div class="paymentsTopTable"></div>
+                                  <div id="paymentsTableContainer" class="paymentsTableContainer">
+                                      <table cellpadding="0px" cellspacing="0px" id="paymentsTable">
+                                        <thead>
+                                            <tr class="odd">
+                                                <th>{!currentSettings.componentsPluralCap}</th>
+                                                <th>{!$Label.Budget}</th>
+                                                <th>{!$Label.At80Percent}</th>
+                                                <th>{!$Label.At100Percent}</th>
+                                                <th>{!$Label.At120Percent}</th>
+                                           </tr>
+                                        </thead>
+                                        <tbody>
+                                           <apex:variable var="tempId" value="" /> 
+                                           <apex:repeat value="{!pr.measureList}" var="iter">
+                                               <tr class="{!IF(tempId==iter.measure.Id, 'toHideShowRow' + iter.measure.Id,'')}" id="{!IF(tempId!=iter.measure.Id, 'toHideShowRow' + iter.measure.Id,'')}">
+                                                   <td class="measureName">
+                                                        <!--  <div class="{!IF(tempId!=iter.measure.Id && iter.haveQualifiers,'collapseArrowDown','')}" onclick="{!IF(tempId!=iter.measure.Id && iter.haveQualifiers,'toggleCollapseTree(this);','')}"><pre class="HelveticaRegularL15">{!iter.measure.name}</pre></div>-->
+                                                        <apex:outputPanel styleclass="{!IF(tempId!=iter.measure.Id && iter.haveQualifiers,'collapseArrowDown','')}" onclick="{!IF(tempId!=iter.measure.Id && iter.haveQualifiers,'toggleCollapseTree(this);','')}"><pre class="HelveticaRegularL15">     {!iter.measure.name}</pre></apex:outputPanel>
+                                                   </td>
+                                                   <td class="rightJustify">{!iter.budgetedSpendS}</td>
+                                                   <td class="rightJustify">{!iter.at80PercentS}</td>
+                                                   <td class="rightJustify">{!iter.at100PercentS}</td>
+                                                   <td class="rightJustify">{!iter.at120PercentS}</td>
+                                               </tr>
+                                               <apex:variable var="tempId" value="{!iter.measure.Id}" /> 
+                                           </apex:repeat>
+                                      
+                                        </tbody>
+                                      </table>   
+                                  </div>
+                                  <div class="paymentsBottomTable"></div>
+                              </div>
+                          </div>
+                        
+                    </apex:outputPanel>
+                </apex:outputpanel>
+                <apex:outputPanel layout="block" styleClass="content scrollContent" style="height:auto;" rendered="{!IF(LEN(pr.expressionError)>0,true,false)}">
+                    <div style="background-color:#FF0000;color:#FFFFFF;font-size:16px;font-weight:bold;margin-left:10px;margin-right:10px;margin-top:3px;padding:2px;">{!pr.expressionError}</div>              
+                </apex:outputpanel>
+            </apex:outputPanel>
+            
+            <!-- FOOTER  -->
+            <apex:outputPanel layout="block" styleClass="footer" rendered="{!isAdmin}" id="pFooter">
+                <apex:outputPanel layout="block" styleClass="previousStepWrapper" style="max-width:150px;">
+                <div class="previousStepRight"></div>
+                <a class="previousStepMiddle" href="{!$Page.XactlySMBPlanCreateStep5}?step=5&id={!plan.id}" onclick="savePageHandler.disableBottomBar();">
+                    {!$Label.PreviousStep}
+                </a>
+                <div class="previousStepLeft"></div>
+                </apex:outputpanel>   
+                
+                <apex:outputPanel layout="block" styleClass="actionButtons">
+                </apex:outputPanel>
+                
+                <apex:outputPanel layout="block" styleClass="nextStepWrapper" style="margin-right:100px;">
+                    <div class="actionButtonLeft"></div>
+                    <a href="{!$Page.XactlySMBCalculateStep2}" class="actionButtonMiddle">
+                        <div class="prevTextContainer">
+	                        <apex:outputtext escape="false" value="{!$Label.xactlyexpress__JumpImportData}">
+	                            <apex:param value="{!URLFOR($Resource.XactlyExpress__XactlySMBResources ,'img/buttons/orangeArrow.png')}"/>
+	                        </apex:outputtext>
+	                    </div>
+                    </a>
+                    <div class="actionButtonRight"></div>
+                </apex:outputPanel>
+            </apex:outputPanel>
+             
+            <script>
+                // Global Id vars
+                var quotasTableId = '{!$Component.quotasTable}';
+            </script>
+        </apex:form>
+        <div style="clear:both"></div>
+    </div>     
+    
+    <apex:includeScript value="{!URLFOR($Resource.XactlyExpress__CSN, 'jquery.js')}" />  
+    <c:XactlySMBFooterScript /> 
+    
+    <script type="text/javascript" language="javascript" src="{!URLFOR($Resource.XactlySMBResources, 'js/XactlySMBJavascript.js')}"></script>
+    <script type="text/javascript" src="{!URLFOR($Resource.XactlySMBResources ,'js/jquery.superbox-min.js')}"></script>
+    <script type="text/javascript" src="{!URLFOR($Resource.XactlySMBResources ,'js/jquery.tools.min.js')}"></script>
+    <script type="text/javascript">
+    	$(document).ready(function() {
+			// setup ul.tabs to work as tabs for each div directly under div.panes
+			loadAccordion();
+		});
+        $(function(){
+            $.superbox.settings = {
+                closeTxt: "X",
+                loadTxt: "Loading...",
+                nextTxt: "Next",
+                prevTxt: "Previous"
+            };
+            $.superbox();
+        });
+    </script>
+    <script>
+        $(document).ready(function () {  
+            if (document.getElementById(quotasTableId) != null) {
+                rows = document.getElementById(quotasTableId).getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+                for ( var i = 0; i < rows.length; i++ ) {
+                    if (i%2 == 0){
+                        $(rows[i]).addClass('even');
+                    }else{
+                        $(rows[i]).addClass('odd');
+                    } 
+                }
+            } 
+            
+            if (document.getElementById('paymentsTable') != null) {
+                rows = document.getElementById('paymentsTable').getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+                for ( var i = 0; i < rows.length; i++ ) {
+                    if (rows[i].className != 'totalTR' && rows[i].className != 'internalBorder') {
+                        if (i%2 == 0){
+                            $(rows[i]).addClass('even');
+                        }else{
+                            $(rows[i]).addClass('odd');
+                        } 
+                    }
+                }
+            }
+            
+          
+            
+        });
+        
+        function toggleCollapseTree(obj){
+            var className = '.'+$($(obj).parent()).parent().attr('id');
+            
+            var childList = $(className);
+            if($(obj).hasClass('collapseArrowDown')){
+                $(obj).removeClass('collapseArrowDown').addClass('collapseArrowRight');
+                childList.hide();
+            }
+            else{
+                $(obj).removeClass('collapseArrowRight').addClass('collapseArrowDown');                
+                $(className).show();
+                for(var i=0; i < childList.length; i++){
+                    var div = $($($(childList[i]).children()[0]).children()[0]);
+                    if(div.hasClass('collapseArrowRight')){
+                        div.removeClass('collapseArrowRight').addClass('collapseArrowDown');
+                    }
+                }
+                
+            }     
+            reColourTableRows();    
+        }    
+        
+        function reColourTableRows(){
+            var rows = $('tr', $('#paymentsTable tbody'));
+            var j=0;
+            for(var i=0; i < rows.length; i++){
+                if($(rows[i]).is(':visible') && rows[i].style.display!='none'){ 
+                    $(rows[i]).removeClass('odd').removeClass('even').addClass(j%2 == 1 ? 'odd' : 'even');
+                    j++;
+                }
+            }
+        }           
+        
+    </script>
+</apex:page>

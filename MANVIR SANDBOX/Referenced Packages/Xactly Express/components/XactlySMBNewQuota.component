@@ -1,0 +1,142 @@
+<apex:component controller="XactlyExpress.XactlySMBPlanQuotaManager"  allowDML="true"> 
+    <style>
+        #newQuota.xactlySuperBox div.close{
+            display: none;
+        }
+        #newQuota a div.closeBtn{
+            background: url({!URLFOR($Resource.XactlySMBResources ,'img/layout/closeBtnSearch.png')});
+            display:block;
+            float:right;
+            height:24px;
+            margin-left:-26px;
+            position:relative;
+            width:25px; 
+            top:-35px;
+            left:-5px;
+        }
+                      
+        .marginBtn {
+           display:inline;
+           float:left;
+           margin:5px 5px 0 0;
+           overflow:hidden;
+           padding:0;
+           position:relative;
+        }
+        
+        .newQuotaCont{
+           display:none;
+        }
+
+    </style>
+    
+        <input type="hidden" class="newQuotaCont" />
+        <div id='newQuota' style="display:none;height: 200px;margin-top: 100px;">
+            <div style="background-image: url('{!URLFOR($Resource.XactlySMBResources ,'img/layout/topOrange.png')}');margin-left:15px;margin-right:11px;">
+                <div style="float: left;margin-left:-15px;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/topLeftOrange.png')}"/></div>
+                <div style="float: right;margin-right:-15px;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/topRightOrange.png')}"/></div>
+                <div style="clear:both"></div>
+            </div> 
+       
+            <div style="width:100%;border-right:2px solid #D49761;border-left:2px solid #D49761;background-color:#FFF;">
+                 <div style="clear:both"></div>
+                <apex:outputPanel id="errorMsgQuota" layout="block" styleClass="errorScrollBox" style="margin-left:5px;padding-bottom:3px;">
+                   <c:XactlySMBErrorMsg error="{!errorMsg}"/>
+                   <script>
+                        var errorMsgPopDA = '{!errorMsg}';
+                   </script>
+                </apex:outputPanel>                      
+                 <div style="width: 310px;" class="box">
+                     <div class="tm">
+                         <div style="float: left;"><img src="{!URLFOR($Resource.XactlySMBResources ,'/img/layout/tl.png')}" /></div>
+                         <div style="float: right;"><img src="{!URLFOR($Resource.XactlySMBResources ,'/img/layout/tr.png')}" /></div>
+                         <div style="clear: both;"></div>
+                     </div>
+                     <div class="roundedBox" style="height:54px;width:308px;">
+                         <div style="clear:both"></div>
+                         <table cellpadding="0" cellspacing="0" style="width: 308px;" class="commonTable">
+                           <thead>
+                               <tr>
+                                   <th style="background-color: #FFFFFF;">
+                                        <apex:outputText value="{!$Label.xactlyexpress__quotaName}" style="text-transform:capitalize;">
+                                            <apex:param value="{!quotaTerminology}"/>
+                                        </apex:outputText>
+                                   </th>
+                               </tr>
+                           </thead>
+                           <tbody>
+                               <tr class="even">
+                                   <td><apex:inputText id="quotaName" value="{!currentQuota.Name}" style="width:280px;"/></td>                                   
+                               </tr>
+                           </tbody>
+                         </table>
+                     </div>
+                                    <script>
+                                                var quotaName = '{!$Component.quotaName}'.replace(/:/g,'\\:');
+                                   </script>                    
+                     <div>
+                         <div style="float: left;"><img src="{!URLFOR($Resource.XactlySMBResources ,'/img/layout/bl2.png')}" /></div>
+                         <div style="float: right;"><img src="{!URLFOR($Resource.XactlySMBResources ,'/img/layout/br2.png')}" /></div>
+                         <div style="float: left; background-color: rgb(231, 231, 231); width: 296px; height: 6px; border-bottom: 1px solid rgb(191, 191, 191);"></div>
+                     </div>                  
+                 </div>
+                <br/>
+                <apex:actionFunction name="saveQuota" action="{!saveLigth}" rerender="errorMsgQuota, quotaList, accordionQuotas" oncomplete="jQuery.superbox.refreshSuperboxContent();jQuery('#'+quotaName).val('');jQuery('.NDANumericType').attr('selectedIndex',0);if(errorMsgPopDA=='')jQuery.superbox.close();refreshDataAtributes();toReloadNewDA();"/>
+                               
+                <div id="newDAButtons" class="btnAction" style="clear:both; height:30px; margin-left:150px; margin-top:0px; padding-top:10px;">
+                    <div class="marginBtn">
+                        <div class="saveaDD" onclick="waitOn();jQuery.superbox.overrideSourceWithSuperboxContent();saveQuota();" style="cursor:pointer;">
+                            <div class="rightBtnSilver">
+                                <div class="leftBtnSilver">
+                                    <div class="middleBtnSilver">
+                                        {!$Label.Save_Return}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+        
+                    <div class="marginBtn">
+                        <div onclick="jQuery.superbox.close();" style="cursor:pointer;">
+                            <div class="rightBtnSilver">
+                                <div class="leftBtnSilver">
+                                    <div class="middleBtnSilver">
+                                        {!$Label.Cancel}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div style="background-image: url('{!URLFOR($Resource.XactlySMBResources ,'img/layout/bottomOrange.png')}');margin-left:15px;margin-right:11px;">
+               <div style="float: left;margin-left:-15px;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/bottomLeftOrange.png')}"/></div>
+               <div style="float: right;margin-right:-15px;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/bottomRightOrange.png')}"/></div>
+               <div style="clear:both"></div>
+            </div> 
+        </div>  
+        
+        <a id="newQuotaLink" rel="superbox[content#newQuota.xactlySuperBox][350][50]" href="#newQuota" onclick="jQuery('.hiddenResults').hide();" style="display:none"></a>
+        <script>
+            function newQuotaSetter(){
+                jQuery('#newQuotaLink').trigger('click');
+                setTimeout('clearCreateNewQuota()',500);
+            }
+            
+            /**
+             * clearCreateNewQuota is called when the popup is displayed.
+             * It deletes any error msg previously defined
+             */
+            function clearCreateNewQuota(){
+              var errorMsg = $innerbox.find('.errorMsg');
+                if(errorMsg!=undefined){
+                  errorMsg.html('');
+                }
+            }
+            
+            
+            
+        </script>
+
+    
+</apex:component>

@@ -1,0 +1,162 @@
+<apex:component controller="XactlyExpress.XactlySMBNewNumericDeal"  allowDML="true"> 
+    <apex:attribute name="dealsLabel" description="The Deals Label" type="String" required="false" access="public" assignTo="{!dealTermilonogy}"/>
+    <style>
+        #newDealAttribute.xactlySuperBox div.close{
+            display: none;
+        }
+        #newDealAttribute a div.closeBtn{
+            background: url({!URLFOR($Resource.XactlySMBResources ,'img/layout/closeBtnSearch.png')});
+            display:block;
+            float:right;
+            height:24px;
+            margin-left:-26px;
+            position:relative;
+            width:25px; 
+            top:-35px;
+            left:-5px;
+        }
+                      
+        .marginBtn {
+           display:inline;
+           float:left;
+           margin:5px 5px 0 0;
+           overflow:hidden;
+           padding:0;
+           position:relative;
+        }
+        
+        .newDAOnlyNumeric{
+           display:none;
+        }
+
+    </style>
+    
+        <input type="hidden" class="newDAOnlyNumeric" />
+        <div id='newDealAttribute' style="display:none;height: 200px;margin-top: 100px;">
+            <div style="background-image: url('{!URLFOR($Resource.XactlySMBResources ,'img/layout/topOrange.png')}');margin-left:15px;margin-right:11px;">
+                <div style="float: left;margin-left:-15px;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/topLeftOrange.png')}"/></div>
+                <div style="float: right;margin-right:-15px;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/topRightOrange.png')}"/></div>
+                <div style="clear:both"></div>
+            </div> 
+       
+            <div style="width:100%;border-right:2px solid #D49761;border-left:2px solid #D49761;background-color:#FFF;">
+                 <div style="clear:both"></div>
+	            <apex:outputPanel id="errorMsgPopDA" layout="block" styleClass="errorScrollBox" style="margin-left:5px;padding-bottom:3px;">
+	               <c:XactlySMBErrorMsg error="{!errorMsg}"/>
+	               <script>
+	                    var errorMsgPopDA = '{!errorMsg}';
+	               </script>
+	            </apex:outputPanel>                      
+                 <div style="width: 310px;" class="box">
+	                 <div class="tm">
+	                     <div style="float: left;"><img src="{!URLFOR($Resource.XactlySMBResources ,'/img/layout/tl.png')}" /></div>
+	                     <div style="float: right;"><img src="{!URLFOR($Resource.XactlySMBResources ,'/img/layout/tr.png')}" /></div>
+	                     <div style="clear: both;"></div>
+	                 </div>
+	                 <div class="roundedBox" style="height:54px;width:308px;">
+	                     <div style="clear:both"></div>
+		                 <table cellpadding="0" cellspacing="0" style="width: 308px;" class="commonTable">
+		                   <thead>
+			                   <tr>
+			                       <th style="width: 150px;background-color: #FFFFFF;">{!$Label.DealAttName}</th>
+		                           <th style="background-color: #FFFFFF;">{!$Label.DealAttType}</th>
+			                   </tr>
+		                   </thead>
+		                   <tbody>
+			                   <tr class="even">
+		                           <td><apex:inputText id="daName" value="{!newAttribute.XactlyExpress__DisplayName__c}"/></td>
+		                           <script>
+				                                var daName = '{!$Component.daName}'.replace(/:/g,'\\:');
+				                   </script>
+		                           <td>
+		                           
+                                        <apex:selectList value="{!newAttribute.XactlyExpress__DataType__c}" multiselect="false" size="1" onchange="jQuery('.NDAmasterType').val(this.value);" styleClass="NDANumericType">
+                                            <apex:selectOptions value="{!dealAttributesTypesNumeric}"/>
+                                        </apex:selectList>   
+		                                <apex:selectList value="{!newAttribute.XactlyExpress__DataType__c}" multiselect="false" size="1"  styleClass="NDAmasterType">
+		                                    <apex:selectOptions value="{!dealAttributesTypes}"/>
+		                                </apex:selectList>                      
+		                                
+		                                     
+		                           </td>
+			                   </tr>
+		                   </tbody>
+		                 </table>
+	                 </div>
+                     <div>
+                         <div style="float: left;"><img src="{!URLFOR($Resource.XactlySMBResources ,'/img/layout/bl2.png')}" /></div>
+                         <div style="float: right;"><img src="{!URLFOR($Resource.XactlySMBResources ,'/img/layout/br2.png')}" /></div>
+                         <div style="float: left; background-color: rgb(231, 231, 231); width: 296px; height: 6px; border-bottom: 1px solid rgb(191, 191, 191);"></div>
+                     </div>	                 
+                 </div>
+                <br/>
+            
+                <apex:actionFunction name="saveDA" action="{!saveNewAttribute}" rerender="errorMsgPopDA, numDealAttribute,newDealAttribute" oncomplete="jQuery.superbox.refreshSuperboxContent();jQuery('#'+daName).val('');jQuery('.NDANumericType').attr('selectedIndex',0);if(errorMsgPopDA=='')jQuery.superbox.close();refreshDataAtributes();toReloadNewDA();"/>
+	                           
+	            <div id="newDAButtons" class="btnAction" style="clear:both; height:30px; margin-left:150px; margin-top:0px; padding-top:10px;">
+	                <div class="marginBtn">
+	                    <div class="saveaDD" onclick="waitOn();jQuery.superbox.overrideSourceWithSuperboxContent();saveDA();" style="cursor:pointer;">
+	                        <div class="rightBtnSilver">
+	                            <div class="leftBtnSilver">
+	                                <div class="middleBtnSilver">
+	                                    {!$Label.Save_Return}
+	                                </div>
+	                            </div>
+	                        </div>
+	                    </div>
+	                </div>
+	    
+	                <div class="marginBtn">
+	                    <div onclick="jQuery.superbox.close();" style="cursor:pointer;">
+	                        <div class="rightBtnSilver">
+	                            <div class="leftBtnSilver">
+	                                <div class="middleBtnSilver">
+	                                    {!$Label.Cancel}
+	                                </div>
+	                            </div>
+	                        </div>
+	                    </div>
+	                </div>
+	            </div>
+            </div>
+            <div style="background-image: url('{!URLFOR($Resource.XactlySMBResources ,'img/layout/bottomOrange.png')}');margin-left:15px;margin-right:11px;">
+               <div style="float: left;margin-left:-15px;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/bottomLeftOrange.png')}"/></div>
+               <div style="float: right;margin-right:-15px;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/bottomRightOrange.png')}"/></div>
+               <div style="clear:both"></div>
+            </div> 
+        </div>  
+        
+        <a id="newDealAttributeLink" rel="superbox[content#newDealAttribute.xactlySuperBox][350][50]" href="#newDealAttribute" onclick="jQuery('.hiddenResults').hide();" style="display:none"></a>
+		<script>
+		    function newDealAttributeSetter(){
+		        jQuery('#newDealAttributeLink').trigger('click');
+		        setTimeout('clearCreateNewDealAttr()',500);
+		        
+		        if(jQuery('.newDAOnlyNumeric').val() != 'true'){
+		          jQuery('.NDANumericType').hide();
+                  jQuery('.NDAmasterType').show();
+		        }else{
+                  jQuery('.NDANumericType').show();
+                  jQuery('.NDAmasterType').hide();                  
+		        }
+		    }
+		    
+		    /**
+		     * clearCreateNewDealAttr is called when the popup is displayed.
+		     * It deletes any error msg previously defined
+		     */
+		    function clearCreateNewDealAttr(){
+		      var errorMsg = $innerbox.find('.errorMsg');
+                if(errorMsg!=undefined){
+                  errorMsg.html('');
+                }
+                jQuery('.NDANumericType').trigger('change');
+                
+		    }
+		    
+		    
+		    
+		</script>
+
+    
+</apex:component>

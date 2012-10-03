@@ -1,0 +1,96 @@
+<apex:component controller="XactlyExpress.XactlySMBLeftPanelAccordeon">
+<apex:attribute name="planId" description="the plan" type="Id" required="true" assignTo="{!planId}" />
+<apex:attribute name="fiscalYear" description="the FY" type="Id" required="true" assignTo="{!currentFiscalYear}" />
+<apex:attribute name="currentPlan" description="Current Plan" type="Id" required="false" assignTo="{!crrntPlan}"/>
+<apex:attribute name="step" description="Current step" type="String" required="false" assignTo="{!step}"/>
+<apex:attribute name="currentQuota" description="Current Quota" type="Id" required="false"/>
+<apex:attribute name="currentCredit" description="Current Credit" type="Id" required="false"/>
+<apex:attribute name="currentPayment" description="Current Payment" type="Id" required="false"/>
+<apex:attribute name="indexSelected" description="Initial Tab Selected" type="String" required="false"/>
+<apex:attribute name="havePreviousYear" description="If the drop down has a previous year" type="Boolean" required="false" assignTo="{!havePrevious}"/> 
+<apex:attribute name="haveNextYear" description="If the drop down has a Next year" type="Boolean" required="false" assignTo="{!haveNext}"/> 
+<apex:attribute name="namePreviousYear" description="Name of previous year" type="String" required="false" assignTo="{!namePreviousYear}"/> 
+<apex:attribute name="nameNextYear" description="Name of Next year" type="String" required="false" assignTo="{!nameNextYear}"/> 
+
+
+<apex:attribute name="currentSettings" description="ACL Current settings" type="XactlyExpress.XactlySMBSettings" assignTo="{!currentSettings}" required="false"/>
+
+<style>
+    #bgCont{
+        width:100%;
+        height:1px;
+        overflow:visible;
+    }
+    #bgAcc{
+        background: url({!URLFOR($Resource.XactlySMBResources ,'img/layout/AccBG.png')}) no-repeat center;
+        height:443px;
+        width:100%;
+    }
+	#accordion{
+		border: 1px solid #BFBFBF;
+		margin: 15px 15px 0 15px;
+        width:236px;
+	}
+	#accordion .titles{
+		background: url({!URLFOR($Resource.XactlySMBResources ,'img/layout/backgroundAccordeon.png')}) repeat-x scroll 0 0 #CCCCCC;
+		border-color:#FFFFFF #FFFFFF #DDDDDD;
+		border-style: solid;
+		border-width:1px;1
+		cursor: pointer;		
+		margin:0;
+		padding:5px 15px;
+		display: block;		
+	}
+	#accordion div.pane{
+		width:100%;
+	}
+	.current{
+		background: #AE0245;
+	}
+
+	.bottonDiv {
+	   height: 15px;
+	   margin: 0;
+	   padding: 0;
+	   clear: both;
+	   width: 200px;
+	}
+</style>
+<script>
+	function loadAccordion () {
+		jQuery('#accordion').tabs('#accordion div.pane', {tabs: '.titles', effect: 'slide', initialIndex: {!indexSelected}});
+		jQuery('#accordion > .titles').css('cursor', 'pointer');
+	}
+</script>
+    <div id="bgCont">
+        <div id='bgAcc'></div>
+    </div>
+    <c:XactlySMBLeftPanelPlans fiscalYear="{!currentFiscalYear}" currentPlan="{!planId}" step="{!step}" havePreviousYear="{!havePrevious}" namePreviousYear="{!namePreviousYear}" haveNextYear="{!haveNext}" nameNextYear="{!nameNextYear}"/>
+	<div id="accordion">
+	    <div class="titles PNovaSemiBold14c2" style="display:none;"></div>
+		<div class="pane" style="display:none;"> 
+          <apex:outputPanel layout="block">
+          </apex:outputPanel>
+        </div>		
+		<div class="titles PNovaSemiBold14c2">{!QuotasLabel}</div>
+		<div class="pane">
+		  <apex:outputPanel layout="block" id="accordionQuotas">
+		      <c:XactlySMBLeftPanelQuotas currentSettings="{!currentSettings}" planId="{!planId}" currentQuota="{!IF(currentQuota!=null, currentQuota,'')}"/>
+		  </apex:outputPanel>
+		</div>		
+		<div class="titles PNovaSemiBold14c2">{!CreditsLabel}</div>
+		<div class="pane">
+		  <apex:outputPanel layout="block" id="accordionCredits">
+		      <c:XactlySMBLeftPanelCredits currentSettings="{!currentSettings}" planId="{!planId}" currentCredit="{!IF(currentCredit!=null, currentCredit,'')}"/>
+		  </apex:outputPanel>
+		</div>
+		<div class="titles PNovaSemiBold14c2">{!PaymentsLabel}</div>
+		<div class="pane">
+		  <apex:outputPanel layout="block" id="accordionPayments">
+		      <c:XactlySMBLeftPanelPayments planId="{!planId}" currentPayment="{!IF(currentPayment!=null, currentPayment,'')}"/>
+		  </apex:outputPanel>
+		</div>
+	</div>
+	<div class="bottonDiv"></div>
+	
+</apex:component>

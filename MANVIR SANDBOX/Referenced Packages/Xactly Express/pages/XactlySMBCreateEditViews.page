@@ -1,0 +1,903 @@
+<!--
+Developed by Timba Software Corp. www.timbasoftware.com admin@timbasoftware.com
+This page lists plans
+@author Dario Levy <dlevy@timbasoftware.com>
+-->
+<apex:page id="dealDetails" controller="XactlyExpress.XactlySMBCreateEditViews" sidebar="false" showHeader="false" standardStylesheets="true" action="{!redirectWhenAccessIsDenied}">
+    <c:XactlySMBCursor />
+    <title>{!$Label.Calculate}: {!statusLabel}</title>
+    <link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.XactlySMBResources ,'css/XactlySMBStyles.css')}" />
+    <link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.XactlySMBResources ,'css/slider.css')}" />
+    <apex:includeScript value="{!URLFOR($Resource.XactlyExpress__CSN, 'jquery.js')}" />
+    <style>
+    	
+    	#tableCriterias .valueCell select{
+    		width:auto;
+    	}
+    
+        .tableWrapper{
+            margin:23px 0 0 21px;
+            width:1015px;
+            position:relative;
+            margin-bottom:70px;
+        }
+        
+        .tableWrapper .tHeader{
+            width:100%;
+            position:relative;
+        }
+        
+        .tableWrapper .tContent {
+            border-top:1px solid #EDEDED;
+            border-left:1px solid #EDEDED;
+            border-right:1px solid #EDEDED;
+            width:100%;
+            position:relative;
+        }
+        
+        .tableWrapper .tContent .stepTitle{
+            background-color:#E2E7EF;
+            width:1009px;
+            height:25px;
+            padding-left:6px;
+            padding-top:3px;
+        }
+        
+        .tableWrapper .tContent .stepTitle .stepText{
+        	font-family:"ProximaNovaSemiBold";
+            font-weight:bold;
+            font-size:16px;
+        }
+        
+        .tableWrapper .tContent .stepContent{
+            margin-bottom:10px;
+            margin-left:20px;
+            margin-top:10px;
+            width:98%;
+        }
+        
+        .tableWrapper .tFooter{
+            width:100%;
+            height:25px;
+            background:transparent url({!URLFOR($Resource.XactlyExpress__XactlySMBResources,'img/layout/bottomBgTable.png')});
+            border:1px solid #EDEDED;
+            position:relative;
+        }
+    
+        .dateFormat {
+            display:none;
+        }
+        
+        .errorMsg {           
+            background:none repeat scroll 0 0 #FFFFFF;
+            border:1px solid #CC0000;
+            color:#CC0000;
+        }      
+    
+    </style>
+
+    <c:XactlySMBShadows />
+
+    <!-- PAGE WRAPPER -->
+    <div class="pageContent" style="{!IF((emulatingUser || isEmulatedManager || isSalesRep || isManager), 'padding:50px 0', '')}" id="pContent">
+ 
+        <!-- HEADER -->
+            
+        <apex:form id="theForm">
+            <script>
+                var attrTypes = new Object();
+                <apex:repeat value="{!attributeTypes}" var="at">        
+                    attrTypes['{!at.s}'] = '{!at.typ}';        
+                </apex:repeat>
+                var keyAttrs = new Object();
+                <apex:repeat value="{!keyAttrs}" var="at">        
+                    keyAttrs['{!at.s}'] = '{!at.typ}';        
+                </apex:repeat>
+                var isDealAttrRequiredAttrs = new Object();
+                <apex:repeat value="{!isDealAttrRequired}" var="at">        
+                    isDealAttrRequiredAttrs['{!at.s}'] = {!at.required};        
+                </apex:repeat>
+                
+                
+            </script>
+            <apex:inputField value="{!dummyDeal.XactlyExpress__DealDate__c}" id="dummyElemennt" required="false" style="display:none;"/>
+            <apex:outputPanel layout="block" styleClass="header" rendered="{!AND(isAdmin,!isEmulatedManager,!emulatingUser)}" id="pContent">
+                <c:XactlySMBHeader isAdmin="{!isAdmin}"  isActive="{!isActive}" nbrSeparator="{!nbrSeparator}" nbrDecimal="{!nbrDecimal}" currentUserOrSlected="{!currentUserOrSlected}" emulatingUserURLAppend="{!emulatingUserURLAppend}" selected="{!IF(Section == 'deals','2','5')}"  wqlabel="{!currentSettings.quotasPlural}" wclabel="{!currentSettings.creditsPlural}" wlabel="{!currentSettings.dealsPluralCap}" step="{!IF(Section == 'deals','2','5')}" wtype="calculate"  hlabel="{!statusLabel}" stepHelp="IF(Section == 'deals','CalculateStep3','CalculateManagePayments')}"/>
+            </apex:outputPanel>
+            
+            <apex:outputPanel layout="block" styleClass="header" rendered="{!OR(isEmulatedManager,isSalesRep,isManager,emulatingUser)}" style="{!IF((isSalesRep || isManager || emulatingUser || isEmulatedManager), 'height:45px', '')}">
+                <c:XactlySMBSalesRepHeader id="salesRepHeader" lastClosedPeriod="{!lastClosedPeriod}" isEmulatedManager="{!isEmulatedManager}" isManager="{!isManager}" isSalesAdmin="{!isSalesAdmin}" isAdmin="{!isAdmin}"  isActive="{!isActive}" nbrSeparator="{!nbrSeparator}" nbrDecimal="{!nbrDecimal}" currentUserOrSlected="{!currentUserOrSlected}" emulatingUserURLAppend="{!emulatingUserURLAppend}" dealsLabel="{!currentSettings.dealsPluralCap}" selected="2" emulatingUserURLAppend="{!emulatingUserURLAppend}" hlabel="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean ac mi eget est semper feugiat."/>
+            </apex:outputPanel>
+            
+            <apex:outputPanel layout="block" styleclass="additionalContent" rendered="{!Section == 'deals' && isAdmin && !isEmulatedManager && !emulatingUser}">    
+                <c:XactlySMBChatterWall objectId="{!$User.Id}" showHeader="true" showWall="true" currentPage="{!$CurrentPage.Name}"/>
+            </apex:outputPanel>
+            
+            <apex:outputPanel layout="block" styleclass="additionalContent" style="" rendered="{!isEmulatedManager || isSalesRep || isManager || emulatingUser}">    
+                <c:XactlySMBChatterWall objectId="{!$User.Id}" showHeader="true" showWall="true" currentPage="editViewsDashboards"/>
+            </apex:outputPanel>
+             
+            <apex:outputPanel layout="block" styleclass="additionalContent" rendered="{!Section == 'payMHR'}">    
+                <c:XactlySMBChatterWall objectId="{!$User.Id}" showHeader="true" showWall="true" currentPage="editViewsMHR"/>
+            </apex:outputPanel>
+             
+            <!-- MAIN CONTENT -->
+            <apex:outputPanel layout="block" styleClass="mainContent">
+                <!-- CONTENT -->
+                <apex:outputPanel layout="block" styleClass="content" style="width:100%;">
+                    <apex:outputPanel id="errorMsg" layout="block" styleClass="errorScrollBox" style="width:100%">
+                        <apex:outputPanel layout="block" rendered="{!errorMsg!=''}" style="width:100%">
+                            <c:XactlySMBErrorMsg error="{!errorMsg}" errStyle="background:#FF0000;color:#FFFFFF;font-size:16px;font-weight:bold;overflow:auto;max-height:100px;"/>
+                        </apex:outputPanel>
+                    </apex:outputPanel>
+                    
+                    <apex:outputPanel id="tableWrapper" styleclass="tableWrapper" layout="block">
+                        <div class="tHeader">
+                            <div style="background-image: url('{!URLFOR($Resource.XactlyExpress__XactlySMBResources ,'img/layout/topBgTable.png')}');margin-left:5px;margin-right:3px;">
+                                <div style="float: left;margin-left:-5px;"><img src="{!URLFOR($Resource.XactlyExpress__XactlySMBResources ,'img/layout/topLeftCurvy.png')}"/></div>
+                                <apex:outputText value="{!statusLabel}" style="float:left;font-size:11pt;font-weight:bolder;margin-left:5px;margin-top:10px;"/>
+                                <div style="float: right;margin-right:-5px;"><img src="{!URLFOR($Resource.XactlyExpress__XactlySMBResources ,'img/layout/topRightCurvy.png')}"/></div>
+                                <div style="float:right;margin-right:5px;margin-top:13px;"><span style="color:#FF0000;">*</span><apex:outputText value=" = {!$Label.xactlyexpress__RequiredInformation}"/></div>
+                                <div style="clear:both"></div>
+                            </div> 
+                        </div>
+                        <div class="tContent">
+                            <div class="stepTitle">
+                                <apex:outputText value="{!$Label.xactlyexpress__viewsStep1}" styleclass="stepText"/>
+                            </div>
+                            <div class="stepContent">
+                                {!$Label.xactlyexpress__viewName} <apex:inputField id="nameInput" value="{!currentView.name}"/> <span style="color:#FF0000;">*</span><br/><br/>
+                                <apex:outputPanel rendered="{!!ISNULL(currentView.id)}" layout="none">
+                                    <table>
+                                        <tr>
+                                            <td>
+                                                <apex:outputText styleClass="areaTitle" value="{!$Label.xactlyexpress__createdBy}"/>
+                                            </td>
+                                            <td>
+                                                {!currentView.CreatedBy.Name} &nbsp;
+                                                <apex:outputText value="{0,date,MM/dd/yyyy HH:mm a}">
+                                                    <apex:param value="{!currentView.CreatedDate}" />
+                                                </apex:outputText>
+                                            </td>
+                                            <td>
+                                                <apex:outputText style="margin-left:30px;" styleClass="areaTitle" value="{!$Label.xactlyexpress__modifiedBy}"/>
+                                            </td>
+                                            <td>
+                                                {!currentView.LastModifiedBy.Name} &nbsp;
+                                                <apex:outputText value="{0,date,MM/dd/yyyy HH:mm a}">
+                                                    <apex:param value="{!currentView.LastModifiedDate}" />
+                                                </apex:outputText>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </apex:outputPanel>                                    
+                            </div>
+                            <div class="stepTitle">
+                                <apex:outputText value="{!$Label.xactlyexpress__viewsStep2}" styleclass="stepText"/>
+                            </div>
+                            
+                  
+                            <div class="stepContent">
+                            
+                            	<apex:outputpanel layout="none" rendered="{!isDealView}">
+                                <apex:outputText value="{!$Label.xactlyexpress__filterByOwner}:" style="font-weight:bolder;"/><br/><br/>
+                                <div>
+                                    <apex:outputpanel layout="none" rendered="{!currentView.XactlyExpress__Visibility__c}">
+                                        <input type="radio" name="visibilityRadios" id="radio1" onclick="$('#'+viewVisibility).val(true);" checked="checked" />
+                                    </apex:outputpanel>
+                                    <apex:outputpanel layout="none" rendered="{!NOT(currentView.XactlyExpress__Visibility__c)}">
+                                        <input type="radio" name="visibilityRadios" id="radio1" onclick="$('#'+viewVisibility).val(true);" />
+                                    </apex:outputpanel>
+                                    <label for="radio1">
+                                        <apex:outputText rendered="{!Section == 'deals'}" value="{!$Label.xactlyexpress__MyDeals}">
+                                            <apex:param value="{!currentSettings.dealsPluralCap}"/>
+                                        </apex:outputText>
+                                        <apex:outputText rendered="{!Section == 'payMHR'}" value="{!$Label.xactlyexpress__myReleases}"/>
+                                    </label>
+                                    
+                                    <apex:outputpanel layout="none" rendered="{!NOT(currentView.XactlyExpress__Visibility__c)}">
+                                        <input type="radio" name="visibilityRadios" id="radio2" onclick="$('#'+viewVisibility).val(false);" checked="checked" />
+                                    </apex:outputpanel>
+                                    <apex:outputpanel layout="none" rendered="{!currentView.XactlyExpress__Visibility__c}">
+                                        <input type="radio" name="visibilityRadios" id="radio2" onclick="$('#'+viewVisibility).val(false);" />
+                                    </apex:outputpanel>
+                                    
+                                    <label for="radio1">
+                                        <apex:outputText rendered="{!Section == 'deals'}" value="{!$Label.xactlyexpress__AllDeals}">
+                                            <apex:param value="{!currentSettings.dealsPluralCap}"/>
+                                        </apex:outputText>
+                                        <apex:outputText rendered="{!Section == 'payMHR'}" value="{!$Label.xactlyexpress__allReleases}"/>
+                                    </label>
+                                    <apex:inputHidden value="{!currentView.XactlyExpress__Visibility__c}" id="viewVisibility"/>
+                                    <script>
+                                        var viewVisibility = '{!$Component.viewVisibility}'.replace(/:/g,'\\:');;
+                                    </script>
+                                </div>
+                                </apex:outputpanel> 
+                                
+                                <br/><apex:outputText value="{!$Label.xactlyexpress__filterByAddFields}:" style="font-weight:bolder;"/><br/><br/>
+                                
+                                <apex:outputpanel layout="none" rendered="{!!isDealView}">
+                                	&nbsp;
+                                </apex:outputpanel> 
+                                
+                                <apex:actionFunction name="deleteCriteriaAction" action="{!removeCriteria}" rerender="fieldSetContainer" oncomplete="criteriasHandler.updateAdvancedFormula();waitOff();criteriasHandler.setOperatorSelectValues();introAsTab();"/>
+                                <apex:actionFunction name="dummy" action="{!addCriteria}" oncomplete="waitOff();criteriasHandler.setOperatorSelectValues();introAsTab();" rerender="fieldSetContainer"/>
+                                <apex:outputPanel id="fieldSetContainer">
+
+                                    <apex:outputpanel layout="none" rendered="{!isDealView}">
+                                    <c:XactlySMBCriteriasComp id="critComp" isAdvancedFormula="{!currentView.XactlyExpress__IsAdvancedFormula__c}" criterias="{!criterias}" typeOptions="{!typeOptions}" criteriasInstance="{!criteriasInstance}" />
+                                    </apex:outputpanel> 
+                                    
+                                    <apex:outputpanel layout="none" rendered="{!!isDealView}">
+                                    <c:XactlySMBCriteriasPaymentComp currentView="{!currentView}" paymentFilters="{!paymentFilters}" paymentsColumnOptions="{!paymentsColumnOptions}" paymentsPeriodOperatorsOptions="{!paymentsPeriodOperatorsOptions}" paymentsPeriodOptions="{!paymentsPeriodOptions}" yearsOptions="{!yearsOptions}" selectedYear="{!selectedYear}" />
+                                    </apex:outputpanel> 
+                                    
+                                    <br/>
+                                    
+                                    <hr style="margin-left:-20px;width:1016px;"/>
+                                    
+                                    <apex:outputPanel layout="block" styleClass="actionButtonWrapper" style="margin-top:-1px;">
+                                        <div class="actionButtonLeft" style="margin:0;"></div>
+                                            <a class="actionButtonMiddle" style="margin:0;color:#CE641B;" onclick="criteriasHandler.checkErrors();">
+                                                  {!$Label.AddMoreCriteria}
+                                            </a>
+                                        <div class="actionButtonRight" style="margin:0;"></div>
+                                    </apex:outputPanel>
+                                    
+                                    <apex:inputText id="deleteCriteriaKeyInput" value="{!criteriasInstance.deleteCriteriaKey}" style="display:none;" /> 
+                                    <div id="isThereContainer" style="clear:both;height:35px;">
+                                        {!$Label.xactlyexpress__IsThere}<apex:inputCheckbox value="{!currentView.XactlyExpress__IsAdvancedFormula__c}" id="isAdvFormula" onclick="criteriasHandler.toggleAdvFormulas()" /> 
+                                        <br />
+                                        <apex:inputField id="advancedFormula" styleClass="advancedFormula {!IF(currentView.XactlyExpress__IsAdvancedFormula__c == true,'displayed','hidden')}" value="{!currentView.XactlyExpress__AdvancedFormula__c}" />  
+                                        <script>
+                                        var advFormulaId = '{!$Component.advancedFormula}';
+                                        </script>
+                                    </div>
+                                </apex:outputPanel>
+                            </div>                            
+                                              
+                            
+                            <div class="stepTitle">
+                                <apex:outputText value="{!$Label.xactlyexpress__viewsStep3}" styleclass="stepText"/>
+                            </div>
+                            <div class="stepContent" style="margin-bottom:0px;">
+                                <div style="float:left;">
+                                    <div style="text-align:center;font-size:10px;font-weight:bold;"><apex:outputText value="{!$Label.xactlyexpress__availableFields}"/></div>
+                                    <SELECT id="hiddenDeals" NAME="hiddenDeals" multiple="multiple" SIZE="15" style="width:160px;">
+                                        <apex:repeat value="{!hiddenDA}" var="hDA">
+                                            <OPTION VALUE="{!hDA.daId}">{!hDA.daName}</OPTION>
+                                        </apex:repeat>
+                                    </SELECT>
+                                </div>
+                                <div style="float:left;margin-top:70px;margin-left:25px;margin-right:25px;">
+                                    <div style="text-align:center;">
+                                        <a href="javascript:;" onclick="moveOptions($('#hiddenDeals')[0],$('#visibleDeals')[0]);">
+                                            <apex:outputText value="{!$Label.xactlyexpress__Add}"/><br/>
+                                            <apex:image url="{!URLFOR($Resource.XactlyExpress__XactlySMBResources, 'img/buttons/btnAdd.png')}"/>
+                                        </a>
+                                    </div>
+                                    <br/>
+                                    <div style="text-align:center;">
+                                        <a href="javascript:;" onclick="moveOptions($('#visibleDeals')[0],$('#hiddenDeals')[0],'control');sortlist($('#hiddenDeals')[0]);">
+                                            <apex:image url="{!URLFOR($Resource.XactlyExpress__XactlySMBResources, 'img/buttons/btnRemove.png')}"/><br/>
+                                            <apex:outputText value="{!$Label.xactlyexpress__removeCap}"/>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div style="float:left;">
+                                    <div style="text-align:center;font-size:10px;font-weight:bold;"><apex:outputText value="{!$Label.xactlyexpress__selectedFields}"/></div>
+                                    <SELECT id="visibleDeals" NAME="visibleDeals" multiple="multiple" SIZE="15" style="width:160px;">
+                                        <apex:repeat value="{!visibleDA}" var="hDA">
+                                            <OPTION VALUE="{!hDA.daId}">{!hDA.daName}</OPTION>
+                                        </apex:repeat>
+                                    </SELECT>
+                                </div>
+                                <div style="float:left;margin-top:34px;margin-left:25px;">
+                                    <div style="text-align:center;">
+                                        <a href="javascript:;" onclick="topOrBottom($('#visibleDeals')[0], 'top');">
+                                            <apex:outputText value="{!$Label.xactlyexpress__Top}"/><br/>
+                                            <apex:image url="{!URLFOR($Resource.XactlyExpress__XactlySMBResources, 'img/buttons/btnTop.png')}"/>
+                                        </a>
+                                    </div>
+                                    <div style="text-align:center;">
+                                        <a href="javascript:;" onclick="moveBlock($('#visibleDeals')[0], 'up');">
+                                            <apex:outputText value="{!$Label.xactlyexpress__Up}"/><br/>
+                                            <apex:image url="{!URLFOR($Resource.XactlyExpress__XactlySMBResources, 'img/buttons/btnUp.png')}"/>
+                                        </a>
+                                    </div>
+                                    <br/>
+                                    <div style="text-align:center;">
+                                        <a href="javascript:;" onclick="moveBlock($('#visibleDeals')[0], 'down');">
+                                            <apex:image url="{!URLFOR($Resource.XactlyExpress__XactlySMBResources, 'img/buttons/btnDown.png')}"/><br/>
+                                            <apex:outputText value="{!$Label.xactlyexpress__Down}"/>
+                                        </a>
+                                    </div>
+                                    <div style="text-align:center;">
+                                        <a href="javascript:;" onclick="topOrBottom($('#visibleDeals')[0], 'bottom');">
+                                            <apex:image url="{!URLFOR($Resource.XactlyExpress__XactlySMBResources, 'img/buttons/btnBottom.png')}"/><br/>
+                                            <apex:outputText value="{!$Label.xactlyexpress__Bottom}"/>
+                                        </a>
+                                    </div>
+                                </div>
+                                <apex:inputHidden value="{!sortedDA}" id="sortedList"/>
+                                <script>
+                                    var sortedList = '{!$Component.sortedList}';
+                                </script>
+                                <div style="clear:both;height:10px;"></div>
+                            </div>
+                            
+                            
+                            
+                            <div class="stepTitle">
+                            <apex:outputText value="{!$Label.xactlyexpress__viewsStep4}" styleclass="stepText"/>
+                            </div>
+                            <div class="stepContent">
+                                <table id="widthsTable" cellpadding="5px;">
+                                    <apex:repeat value="{!visibleDA}" var="vDA">
+                                        <tr class="tr-{!JSENCODE(vDA.daId)}">
+                                            <td><div style="display:none;">{!JSENCODE(vDA.daId)}</div>  <apex:outputText value="{!vDA.daName}"/>
+                                            </td>
+                                            <td><div style="width:100px;" class="slider-range-min"></div></td><td><apex:outputText value="{!FLOOR(vDA.cWidth)}" styleclass="widthAmount" style="border:0; background:none; color:#f6931f;"/></td>
+                                        </tr>
+                                    </apex:repeat>
+                                </table>
+                            </div>
+                        <apex:outputPanel layout="none" rendered="{!isAdmin && Section == 'deals' && !emulatingUser}">
+                            <div class="stepTitle">
+                                <apex:outputText value="{!$Label.xactlyexpress__viewsStep5}" styleclass="stepText"/>
+                            </div>
+                            <div class="stepContent">
+                                <apex:outputpanel layout="none" rendered="{!currentView.XactlyExpress__Permissions__c}">
+                                    <input type="radio" name="createModPermRadios" id="radio1-2" onclick="$('#'+viewPermissions).val(true);" checked="checked" />
+                                </apex:outputpanel>
+                                <apex:outputpanel layout="none" rendered="{!NOT(currentView.XactlyExpress__Permissions__c)}">
+                                    <input type="radio" name="createModPermRadios" id="radio1-2" onclick="$('#'+viewPermissions).val(true);" />
+                                </apex:outputpanel>
+                                <label for="radio1-2">
+                                    <apex:outputText value="{!$Label.xactlyexpress__VisibleOnlyToMe}"/>
+                                </label>
+                                <apex:outputpanel layout="none" rendered="{!NOT(currentView.XactlyExpress__Permissions__c)}">
+                                    <input type="radio" name="createModPermRadios" id="radio2-2" onclick="$('#'+viewPermissions).val(false);" checked="checked" />
+                                </apex:outputpanel>
+                                <apex:outputpanel layout="none" rendered="{!currentView.XactlyExpress__Permissions__c}">
+                                    <input type="radio" name="createModPermRadios" id="radio2-2" onclick="$('#'+viewPermissions).val(false);" />
+                                </apex:outputpanel>
+                                
+                                <label for="radio2-2">
+                                    <apex:outputText value="{!$Label.xactlyexpress__VisibleToAllUsers}"/>
+                                </label>
+                                <apex:inputHidden value="{!currentView.XactlyExpress__Permissions__c}" id="viewPermissions"/>
+                                <script>
+                                    var viewPermissions = '{!$Component.viewPermissions}'.replace(/:/g,'\\:');;
+                                </script>
+                            </div>
+                        </apex:outputPanel>
+                        </div>
+                        <div class="tFooter">
+                        </div>
+                    </apex:outputPanel>
+                    
+                </apex:outputPanel><!-- END CONTENT -->
+                <div style="clear:both;"></div>
+            </apex:outputPanel><!-- END CONTENTWRAPPER -->
+            
+            <!-- FOOTER  -->
+            <apex:outputPanel layout="block" styleClass="footer" id="pFooter">
+               
+                <apex:outputPanel layout="block" styleClass="previousStepWrapper" style="max-width:150px;">
+                </apex:outputpanel>
+                    
+                    
+                    
+                    
+                <apex:outputPanel layout="block" styleClass="actionButtons">                        
+                    <apex:outputPanel layout="block" styleClass="actionButtonWrapper">
+                        <div class="actionButtonLeft"></div>
+                        <apex:inputHidden value="{!createNew}" id="createNewView"/>
+                      
+                        <apex:actionFunction name="save" action="{!save}" rerender="errorMsg" onComplete="waitOff();"/>
+
+                        <a href="javascript:;" onclick="checkErrorsSave(false);" class="actionButtonMiddle">
+                            <apex:outputtext escape="false" value="{!$Label.xactlyexpress__Save}">
+                               <apex:param value="{!URLFOR($Resource.XactlyExpress__XactlySMBResources ,'img/buttons/navigateSaveMiddle.gif')}" />
+                            </apex:outputtext>  
+                        </a>
+                        <div class="actionButtonRight"></div>    
+                    </apex:outputpanel>
+                    
+                    <script>
+                      var createNewView = '{!$Component.createNewView}'.replace(/:/g,'\\:');;
+                    </script>
+                
+                    <apex:outputPanel layout="block" styleClass="actionButtonWrapper">
+                        <div class="actionButtonLeft"></div>
+<!--                        <apex:actionFunction name="saveNew" action="{!saveNew}"/>-->
+                        <a href="javascript:;" onclick="checkErrorsSave(true);" class="actionButtonMiddle">
+                            <apex:outputtext escape="false" value="{!$Label.xactlyexpress__saveAndNew}">
+                               <apex:param value="{!URLFOR($Resource.XactlyExpress__XactlySMBResources ,'img/buttons/navigateSaveMiddle.gif')}" />
+                            </apex:outputtext>  
+                        </a>
+                        <div class="actionButtonRight"></div>    
+                    </apex:outputpanel>
+                    
+                    <apex:outputPanel layout="block" rendered="{!!ISNULL(currentView.Id)}" styleClass="actionButtonWrapper">
+                        <div class="actionButtonLeft"></div>
+                        <a href="javascript:;" onclick="checkErrorsSave('SaveAs');" class="actionButtonMiddle">
+                            <apex:outputtext escape="false" value="{!$Label.xactlyexpress__SaveAs}">
+                               <apex:param value="{!URLFOR($Resource.XactlyExpress__XactlySMBResources ,'img/buttons/navigateSaveMiddle.gif')}" />
+                            </apex:outputtext>  
+                        </a>
+                        <div class="actionButtonRight"></div>    
+                    </apex:outputpanel>
+                    
+                    <apex:outputPanel layout="block" styleClass="actionButtonWrapper">
+                        <div class="actionButtonLeft"></div>
+                        <a href="{!IF(Section == 'payments', $Page.XactlySMBDashRepMyPayments, IF(Section == 'deals',IF(OR(emulatingUser,isManager,isSalesRep),$Page.XactlySMBDashRepMyDeals,$Page.XactlySMBCalculateStep3),IF(Section == 'payMHR',$Page.XactlySMBCalculateManagePaymentsMHR,'')))}{!IF(LEN(emulatingUserURLAppend)>0,IF(!ISNULL($CurrentPage.parameters.id), '?'&emulatingUserURLAppend&'&vwId='&$CurrentPage.parameters.id ,'?'&emulatingUserURLAppend),IF(!ISNULL($CurrentPage.parameters.id), '?vwId='&$CurrentPage.parameters.id, ''))}" class="actionButtonMiddle">
+                            <apex:outputtext escape="false" value="{!$Label.xactlyexpress__Cancel}">
+                               <apex:param value="{!URLFOR($Resource.XactlyExpress__XactlySMBResources ,'img/buttons/navigateSaveMiddle.gif')}" />
+                            </apex:outputtext>  
+                        </a>
+                        <div class="actionButtonRight"></div>    
+                    </apex:outputpanel>
+
+                </apex:outputPanel>
+            
+                <apex:outputPanel layout="block" styleClass="nextStepWrapper" style="margin-right:100px;">
+                </apex:outputPanel>
+            </apex:outputPanel>
+            
+        </apex:form>
+    </div>      
+    <c:XactlySMBFooterScript /> 
+    <script type="text/javascript" src="{!URLFOR($Resource.XactlySMBResources, 'js/jquery-ui.min.js')}"></script>
+    <script type="text/javascript" language="javascript" src="{!URLFOR($Resource.XactlySMBResources, 'js/XactlySMBJavascript.js')}"></script>
+    <script type="text/javascript" src="{!URLFOR($Resource.XactlySMBResources ,'js/jquery.superbox-min.js')}"></script>
+    <apex:includeScript value="{!URLFOR($Resource.XactlyExpress__XactlySMBResources, 'js/criteriasHandler.js')}" />
+    
+    <script type="text/javascript">    
+    	
+    	var periodForJS = '{!JSENCODE(periodForJS)}';
+    	var yearsPeriods = new Array();
+    	
+    	function loadPeriodForJS(){
+    		if(jQuery.trim(periodForJS) != ''){
+    			var l1 = periodForJS.split(';#;');
+    			for(var i = 0; i < l1.length; i++){
+    			
+    				var l2 = l1[i].split('[#]');
+    				var _year = l2[0];
+    				var _periods = l2[1].split(':#:');
+    				var _tmp = new Array();
+    				
+    				for(var k = 0; k < _periods.length; k++){
+    					_tmp[_tmp.length] = {
+    						id: _periods[k].split('$#$')[0],
+    						label: _periods[k].split('$#$')[1]    						
+    					};
+    				}
+    				var j = yearsPeriods.length;
+    				yearsPeriods[j] = {
+    					year:_year,
+    					periods : _tmp
+    				};
+    			}    		
+    		}
+    	
+    	}    	
+    	
+    	function changeYearPeriod(_year, _cont, _op){
+    			for(var i = 0; i < yearsPeriods.length; i++){
+					if(yearsPeriods[i].year == _year.value){
+						
+						_cont.style.display = 'block';
+						$(_cont).find('option').each(function(){
+							
+								for(var j = 0; j < yearsPeriods[i].periods.length; j++){
+								
+									if(this.value == yearsPeriods[i].periods[j].id){
+										$(this).show();
+										_cont.value = this.value;
+										break;
+									}
+									else{
+										$(this).hide();
+									}
+								}	
+								
+						});
+					}    				
+    			}
+                if(_op.value == 'Year'){
+                    _cont.style.display = 'none';
+                }
+    	}
+    	
+    	function changeInitialYearPeriod(_year, _cont){
+    			
+    		_cont = document.getElementById(_cont);
+    		_year = document.getElementById(_year);
+    				
+    			for(var i = 0; i < yearsPeriods.length; i++){
+    				
+					if(yearsPeriods[i].year == _year.value){
+					
+						_cont.style.display = 'block';
+						
+						$(_cont).find('option').each(function(){
+							
+								for(var j = 0; j < yearsPeriods[i].periods.length; j++){
+								
+									if(this.value == yearsPeriods[i].periods[j].id){
+										$(this).show();
+										break;
+									}
+									else{
+										$(this).hide();
+									}
+								}	
+								
+						});
+							
+					}    				
+    				
+    			}
+    	
+    	}
+    	
+    	function changePeriod(_field, _type, _year, _cont){
+    	    
+    		if((_field.value == 'Period' && _type.value == 'Date') || _field.value == 'Year'){
+
+    			for(var i = 0; i < yearsPeriods.length; i++){
+    				
+					if(yearsPeriods[i].year == _year.value){
+					
+						_cont.style.display = 'block';
+						
+						
+
+						$(_cont).find('option').each(function(){
+							
+								for(var j = 0; j < yearsPeriods[i].periods.length; j++){
+								
+									if(this.value == yearsPeriods[i].periods[j].id){
+										$(this).show();
+										break;
+									}
+									else{
+										$(this).hide();
+									}
+								}	
+								
+						});
+							
+					}    				
+    				
+    			}
+    		    if(_field.value == 'Year'){
+                     _cont.style.display = 'none';
+                     $(_year).show();
+                }
+    		}
+    	
+    	}
+    	
+   
+    
+    </script>
+        
+    <script type="text/javascript">    
+    
+        $(function(){
+            $.superbox.settings = {
+                closeTxt: "X",
+                loadTxt: "Loading...",
+                nextTxt: "Next",
+                prevTxt: "Previous"
+            };
+            $.superbox();
+            makeSliderWidth();
+        });
+    
+        function makeSliderWidth(){
+            $(".slider-range-min").each(function() {
+                var value = parseInt($(".widthAmount",$(this).parent().parent()).text());
+                $(this).slider({
+                    range: "min",
+                    value: value,
+                    min: 90,
+                    max: 200,
+                    slide: function(event, ui) {
+                        $(".widthAmount",$(this).parent().parent()).text(ui.value);
+                    }
+                });
+            });
+        }
+        
+        $(document).ready(function(){
+            sortlist($('#hiddenDeals')[0]);
+            
+            var labelsArr = new Array();
+            labelsArr[0] = '{!$Label.AdvFormulaMissingParenthesis}';
+            labelsArr[1] = '{!$Label.advancedIsEmpty}';
+            labelsArr[2] = '{!$Label.AdvanceFormulaCheckLogicalStatement}';
+            labelsArr[3] = '{!$Label.AdvanceFormulaWrongChar}';
+            labelsArr[4] = '{!$Label.WrongDateFormatJS}';
+            labelsArr[5] = '{!$Label.errorsInCriteria}';
+            labelsArr[6] = '{!$Label.deleteAFilterCriteria}';
+            labelsArr[7] = '{!$Label.CriteriaNumberNotExists}';
+            labelsArr[8] = '{!$Label.CriteriaNegativeNumbers}';
+            labelsArr[9] = '{!$Label.incompleteAdvFmla}';
+            criteriasHandler.init('{!criteriasInstance.dealDateAttrId}','{!criteriasInstance.productAttrId}','{!criteriasInstance.accountAttrId}','{!criteriasInstance.salespersonAttrId}',labelsArr, '{!dateFirst}', '{!dateSeparator}');
+
+            loadPeriodForJS();
+        }); 
+    
+        function sortlist(lb) {
+            arrTexts = new Array();
+            arrVals = new Object();
+            
+            for(i=0; i < lb.length; i++) {
+                arrTexts[i] = lb.options[i].text;
+                arrVals[lb.options[i].text] = lb.options[i].value;
+            }
+            
+            arrTexts.sort();
+            
+            for(i=0; i < lb.length; i++) {
+                lb.options[i].text = arrTexts[i];
+                for(key in arrVals){
+                    if(key == arrTexts[i]){
+                        lb.options[i].value = arrVals[key];
+                    }
+                }
+            }
+        }   
+        
+        function resultList(lb) {
+            var test = '';
+            arrVals = new Array();
+            for(i=0; i<lb.length; i++) {
+                arrVals[i] = lb.options[i].value.replace('%', '\\%');
+            }
+            for(i=0; i<lb.length; i++) {
+                var cWidth = $('.widthAmount', $('.tr-'+arrVals[i])).text();
+                test += test == ''? arrVals[i] + ';' + cWidth : ',' + arrVals[i] + ';' + cWidth;
+            }
+            return test;
+        }
+        
+        function topOrBottom(obj, dir){
+            var mapIdsWidths = new Object();
+            var widthsTrs = $('tr',$('#widthsTable'));
+            for(var i = 0; i <= widthsTrs.length ; i++){
+                var trId = $($('div',$('td',$(widthsTrs[i]))[0])[0]).text();
+                var trWidth = $($('span',$('td',$(widthsTrs[i]))[2])[0]).text();
+                mapIdsWidths[trId] = trWidth;
+                $(widthsTrs[i]).remove();
+            }
+            if(dir == 'top'){
+                var elems = new Object();
+                var quant = 0;
+                for(var i = 0; i < obj.options.length; i++){
+                    if(obj.options[i].selected){
+                        elems[obj.options[i].value] = obj.options[i].text;
+                        quant++;
+                    }
+                }
+                for(var i = 0; i < obj.options.length; i++){
+                    if(!obj.options[i].selected){
+                        elems[obj.options[i].value] = obj.options[i].text;
+                    }
+                }
+                var iter = 0;
+                for(key in elems){
+                    obj.options[iter].value = key;
+                    obj.options[iter].text = elems[key];
+                    if(iter<quant){
+                        obj.options[iter].selected = true;
+                    }
+                    else{
+                        obj.options[iter].selected = false;
+                    }
+                    iter++;
+                }
+            }
+            else{
+                var elems = new Object();
+                var quant = 0;
+                for(var i = 0; i < obj.options.length; i++){
+                    if(!obj.options[i].selected){
+                        elems[obj.options[i].value] = obj.options[i].text;
+                    }
+                }
+                for(var i = 0; i < obj.options.length; i++){
+                    if(obj.options[i].selected){
+                        elems[obj.options[i].value] = obj.options[i].text;
+                        quant++;
+                    }
+                }
+                var iter = 0;
+                for(key in elems){
+                    obj.options[iter].value = key;
+                    obj.options[iter].text = elems[key];
+                    iter++;
+                }
+                for(var i = obj.options.length - 1; i > -1; i--){
+                    if(quant > 0){
+                        obj.options[i].selected = true;
+                    }
+                    else{
+                        obj.options[i].selected = false;
+                    }
+                    quant--;
+                }
+            }
+            for(var i = 0 ; i < obj.options.length ; i++){
+                var selValue = obj.options[i].value;
+                var selText = obj.options[i].text;
+                $('#widthsTable').append('<tr class="tr-' + selValue + '"><td><div style="display:none;">' + selValue + '</div><div>' + selText + '</div></td><td><div style="width:100px;" class="slider-range-min"></div></td><td><span class="widthAmount" style="border:0; background:none; color:#f6931f;">' + mapIdsWidths[selValue] + '</span></td></tr>');
+            }
+            makeSliderWidth();
+        }
+        
+        function moveBlock(obj, direction){
+            var increment = -1;
+            if(direction == 'up')
+                increment = -1;
+            else
+                increment = 1;
+                
+                
+            var mapIdsWidths = new Object();
+            var widthsTrs = $('tr',$('#widthsTable'));
+            for(var i = 0; i <= widthsTrs.length ; i++){
+                var trId = $($('div',$('td',$(widthsTrs[i]))[0])[0]).text();
+                var trWidth = $($('span',$('td',$(widthsTrs[i]))[2])[0]).text();
+                mapIdsWidths[trId] = trWidth;
+                $(widthsTrs[i]).remove();
+            }
+            if(increment == 1){
+                for(var i = obj.options.length -1; i > -1  ; i--){
+                    if(obj.options[i].selected){
+                        if(i == obj.options.length -1){
+                            if(obj.options[obj.options.length -2].selected){
+                                obj.options[i].selected = false;
+                            }
+                        }
+                        else{
+                            var selValue = obj.options[i].value;
+                            var selText = obj.options[i].text;
+                            obj.options[i].value = obj.options[i + increment].value
+                            obj.options[i].text = obj.options[i + increment].text
+                            obj.options[i].selected = false
+                            obj.options[i + increment].value = selValue;
+                            obj.options[i + increment].text = selText;
+                            obj.options[i + increment].selected = true;
+                        }
+                    }
+                }
+            }
+            else{
+                for(var i = 0 ; i < obj.options.length ; i++){
+                    if(obj.options[i].selected){
+                        if(i == 0){
+                            if(obj.options[1].selected){
+                                obj.options[i].selected = false;
+                            }
+                        }
+                        else{
+                            var selValue = obj.options[i].value;
+                            var selText = obj.options[i].text;
+                            obj.options[i].value = obj.options[i + increment].value
+                            obj.options[i].text = obj.options[i + increment].text
+                            obj.options[i].selected = false
+                            obj.options[i + increment].value = selValue;
+                            obj.options[i + increment].text = selText;
+                            obj.options[i + increment].selected = true;
+                        }
+                    }
+                }
+            }
+            
+            for(var i = 0 ; i < obj.options.length ; i++){
+                var selValue = obj.options[i].value;
+                var selText = obj.options[i].text;
+                $('#widthsTable').append('<tr class="tr-' + selValue + '"><td><div style="display:none;">' + selValue + '</div><div>' + selText + '</div></td><td><div style="width:100px;" class="slider-range-min"></div></td><td><span class="widthAmount" style="border:0; background:none; color:#f6931f;">' + mapIdsWidths[selValue] + '</span></td></tr>');
+            }
+            makeSliderWidth();
+        }
+    
+        function addOption(theSel, theText, theValue){
+            var newOpt = new Option(theText, theValue);
+            var selLength = theSel.length;
+            theSel.options[selLength] = newOpt;
+        }
+
+        function deleteOption(theSel, theIndex){ 
+            var selLength = theSel.length;
+            if(selLength>0){
+                theSel.options[theIndex] = null;
+            }
+        }
+
+        function moveOptions(theSelFrom, theSelTo, controlQuant){
+            var selLength = theSelFrom.length;
+            var selectedText = new Array();
+            var selectedValues = new Array();
+            var selectedCount = 0;
+            var aux = false;
+            var den = false;
+            if(selLength > 1 || theSelFrom.id == "hiddenDeals"){
+            for(i=selLength-1; i>=0; i--){
+                if(theSelFrom.options[i].selected && (selectedCount < (selLength - 1) || theSelFrom.id == "hiddenDeals")){
+                    if(keyAttrs[theSelFrom.options[i].value] != 'key'){
+                        //selectedText[selectedCount] = theSelFrom.options[i].text.replace(/</gi,"&lt;").replace(/>/gi,"&gt;");
+                        selectedText[selectedCount] = theSelFrom.options[i].text;
+                        selectedValues[selectedCount] = theSelFrom.options[i].value;
+                        if(controlQuant == 'control'){
+                            $('.tr-'+theSelFrom.options[i].value).remove();
+                        }
+                        deleteOption(theSelFrom, i);
+                        selectedCount++;
+                    }
+                    else{
+                        aux = true;
+                    }
+                }
+                else{
+                	if(selectedCount >= (selLength - 1) && theSelFrom.id == "visibleDeals"){
+                		den = true;
+                	}
+                }
+            }
+            for(i=selectedCount-1; i>=0; i--){
+                addOption(theSelTo, selectedText[i], selectedValues[i]);
+                if(controlQuant != 'control'){
+                    $('#widthsTable').append('<tr class="tr-' + selectedValues[i] + '"><td><div style="display:none;">' + selectedValues[i] + '</div><div>' + selectedText[i] + '</div></td><td><div style="width:100px;" class="slider-range-min"></div></td><td><span class="widthAmount" style="border:0; background:none; color:#f6931f;">150</span></td></tr>');
+                }
+            }
+            if(aux && controlQuant == 'control'){
+                alert('{!JSENCODE($Label.atLeastOneElm)}');
+            }
+            makeSliderWidth();
+            
+            }
+            else{
+            	if(theSelFrom.id == "visibleDeals"){
+	            	den = true;
+	            }
+            }
+            
+            if(den){
+            	alert('{!JSENCODE($Label.atLeastOneSelectedField)}');
+            }
+        }
+        
+       
+        
+        function checkErrorsSave(next){
+            if(criteriasHandler.chkErrors()&&criteriasHandler.checkCriterias(advFormulaId, true)){
+                criteriasHandler.updateHiddenToSelectedValues();
+                criteriasHandler.overrideAdvancedFormula();
+                document.getElementById(sortedList).value = resultList($('#visibleDeals')[0]);
+                waitOn();
+                if(next == 'SaveAs'){
+                    $('#'+createNewView).val('saveAs');
+                }else if(next){
+                    $('#'+createNewView).val('saveNew');
+                }else {
+                    $('#'+createNewView).val('save');
+                }
+                save();
+            }else{ 
+                return false;
+            }
+        }
+        
+    </script>
+    
+
+    
+</apex:page>

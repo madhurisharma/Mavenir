@@ -1,0 +1,206 @@
+<apex:page controller="XactlyExpress.XactlySMBAccountPopupController" showHeader="false" sidebar="false" action="{!redirectWhenAccessIsDenied}">
+    
+    <link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.XactlySMBResources ,'css/XactlySMBFontStyles.css')}" />
+    <style>
+            
+		body{
+			margin: 0px !important;
+			padding: 0px !important;
+		}
+
+        .content {
+            font-size: 11px;
+            padding: 0px;
+            margin: 20px;
+            position:relative;
+            overflow: hidden;
+        }  
+        
+        a {
+            text-decoration: none;
+        }
+        
+        .btnAction {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btnAction input {
+            float: left;
+        }
+        
+        .btnAction .leftBtnOrange {
+		    background:url({!URLFOR($Resource.XactlySMBResources, 'img/buttons/orange_button_left.png')}) transparent  no-repeat scroll 0 0;
+		    float: left;
+		    height:19px;
+		    padding:0px 0px 0px 5px;
+		    width:auto;
+		}
+		.btnAction .middleBtnOrange {
+		    color: white;
+		    font-size: 10px;
+		    font-weight: bold;
+		    padding: 3px 5px;
+		    width: auto;
+		}
+		.btnAction .rightBtnOrange {
+		    background: url({!URLFOR($Resource.XactlySMBResources, 'img/buttons/orange_button_right.png')}) transparent no-repeat scroll right center;
+		    float:left;
+		    height:19px;
+		    padding:0px 5px 0px 0px;
+		    width:auto;
+		    margin-top: 1px;
+            margin-left: 5px;
+		}  
+		
+		.searchLabel {
+            float: left;
+            font-size: 12px;
+            font-weight: bold;
+            margin-top: 2px;
+            margin-right: 5px;
+		}
+		
+		.header {
+            background: url({!URLFOR($Resource.XactlySMBResources, 'img/layout/SearchBackgroundHeader.jpg')}) white repeat-x;
+            height: 28px;
+            margin: 0px;
+            padding: 0px;
+		}
+		
+		.topBorder {
+            background: url({!URLFOR($Resource.XactlySMBResources, 'img/layout/SearchBackgroundTopBorder.jpg')}) white repeat-x;
+            height: 9px;
+            margin: 0px;
+            padding: 0px;
+        }
+        
+        .bottomBorder {
+            background: url({!URLFOR($Resource.XactlySMBResources, 'img/layout/SearchBackgroundBottomBorder.jpg')}) white repeat-x;
+            height: 4px;
+            padding: 0px;
+            bottom: 69px;
+            right: 20px;
+            left: 20px;
+        }
+        
+        .xactlyLogo {
+            background: url({!URLFOR($Resource.XactlySMBResources, 'img/layout/SearchXactlyLogo.png')}) white no-repeat right bottom;
+            height: 59px;
+            width: 100%;
+            margin: 0px;
+            padding: 0px;
+            bottom: 10px;
+            right: 20px;
+        }
+        
+        .resultPanel {
+            overflow:auto;
+            height:300px;
+        }
+    </style>
+    <apex:includeScript value="{!URLFOR($Resource.XactlyExpress__CSN, 'jquery.js')}" />
+    <div class="header"></div>
+    <div class="content">
+	    <apex:form >
+	        <apex:outputpanel styleclass="btnAction" layout="block">
+	            <apex:actionFunction name="searchAccounts" action="{!searchAccounts}" rerender="resultPanel,goToPage1" />
+	            <span class="searchLabel">{!$Label.xactlyexpress__Search} : </span> 
+		        <apex:inputText value="{!searchCriteria}" id="criteria"/>
+		        <a href="javascript:;" onclick="validateCriteriaLength('{!$Component.criteria}');">
+                    <div class="rightBtnOrange">
+                        <div class="leftBtnOrange">
+                            <div class="middleBtnOrange">
+                                {!$Label.xactlyexpress__Go}
+                            </div>
+                        </div>
+                    </div>
+		        </a>
+	        </apex:outputpanel>
+	        <br />
+	        <br />
+	        <apex:actionFunction name="goToPage" action="{!goToPage}" rerender="resultPanel" oncomplete="waitOff();"/>
+            <apex:outputPanel id="goToPage1" layout="block">
+                <apex:outputPanel layout="block" rendered="{!noRows}">
+                    {!$Label.xactlyexpress__GoToPage}
+                    <apex:selectList size="1" value="{!currentPage}" multiSelect="false" onchange="goToPage();" id="pageSelect1">
+                          <apex:selectOptions value="{!pagesOptions}" />
+                    </apex:selectList>
+                </apex:outputPanel>
+            </apex:outputPanel>
+	        <div class="topBorder"></div>
+	        <apex:outputpanel styleclass="resultPanel" layout="block" id="resultPanel">
+	            <apex:outputpanel id="noResults" rendered="{!IF(searchResultCount == 0, true, false)}">
+	                <apex:outputtext value="{!$Label.xactlyexpress__NoResultCriteria}">
+                        <apex:param value="Accounts" />
+                    </apex:outputtext>
+                    <strong>{!searchCriteria}</strong>
+	            </apex:outputpanel>
+	            
+	            <apex:outputpanel id="results" rendered="{!IF(searchResultCount > 0, true, false)}">
+	                <apex:repeat value="{!searchResult}" var="iter">
+	                    <a href="javascript:;" onclick='selectAccount("{!iter.id}","{!iter.name}");'>
+	                        <apex:outputtext value="{!iter.Name}" />
+	                    </a>
+	                    <br />
+	                </apex:repeat>
+	            </apex:outputpanel>
+	            <br />
+	            <apex:outputpanel id="limitOfResults" rendered="{!IF(searchResultCount == 200, true, false)}">
+	                {!$Label.xactlyexpress__SearchLimitExceded}
+	            </apex:outputpanel>
+	        </apex:outputpanel>
+	        <div class="bottomBorder"></div>
+            <div class="xactlyLogo"></div>
+	    </apex:form>
+    </div>
+    <apex:includeScript value="{!URLFOR($Resource.XactlyExpress__CSN, 'jquery.js')}" />
+    <c:XactlySMBFooterScript /> 
+    <script>
+        function validateCriteriaLength (criteriaInput) {
+            var criteriaInput = document.getElementById(criteriaInput);
+            var result = true;
+            if (criteriaInput != null) {
+                var criteriaValue = criteriaInput.value;
+                criteriaValue = criteriaValue.replace(/\s/gi, '');
+                criteriaValue = criteriaValue.replace(/\*/gi, '')
+                if (criteriaValue.length < 2) {
+	                alert("{!$Label.SearchCriteriaShort}");
+	                result = false;
+	            }
+            }   
+            if (result) {
+                searchAccounts();
+            } 
+        }
+        
+        var dealIndex = '{!dealIndex}';
+        var onFilter = {!onFilter};
+        var onManageDeals = '{!JSENCODE(onManageDeals)}';
+        
+        function selectAccount (accountId, accountName) {
+            if (onFilter) {
+                window.opener.document.getElementById(dealIndex + '-accountFilter').getElementsByTagName('input')[0].value = accountName;
+                if( window.opener.document.getElementById(dealIndex + '-accountFilter').getElementsByTagName('input')[1] != undefined){
+		            window.opener.document.getElementById(dealIndex + '-accountFilter').getElementsByTagName('input')[1].value = accountId;
+		            window.opener.document.getElementById(dealIndex + '-productFilter').getElementsByTagName('input')[0].value = accountName;
+	                window.opener.document.getElementById(dealIndex + '-productFilter').getElementsByTagName('input')[1].value = accountId;
+                }else{
+                    window.opener.myJQuery('.' + dealIndex + '-accountId')[0].value = accountId;
+                }
+	        }
+	        else {
+                window.opener.document.getElementById(dealIndex + '-account').getElementsByTagName('input')[0].value = accountName;
+                if( window.opener.document.getElementById(dealIndex + '-account').getElementsByTagName('input')[1] != undefined){
+                    window.opener.document.getElementById(dealIndex + '-account').getElementsByTagName('input')[1].value = accountId;
+                }else{
+                    window.opener.myJQuery('.' + dealIndex + '-accountId')[0].value = accountId;
+                }
+                if(onManageDeals == 'dls'){
+                    window.opener.changeAccount(dealIndex);
+                }
+	        }
+            window.close(); 
+        }
+    </script>
+</apex:page>

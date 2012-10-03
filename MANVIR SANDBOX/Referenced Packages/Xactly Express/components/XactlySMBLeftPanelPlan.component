@@ -1,0 +1,45 @@
+<!--
+Developed by Timba Software Corp. www.timbasoftware.com admin@timbasoftware.com
+ This component displays a custom left panel with contextual help and actions
+ @author Dario Levy <dlevy@timbasoftware.com>
+-->
+<apex:component controller="XactlyExpress.XactlySMBLeftPanelPlan">
+    <style> 
+	    .orangeLi{
+	       color:#BD5C19;
+	       font-weight: bold;
+	    }
+	    
+    </style>
+    <apex:attribute name="currentFiscalYear" description="The Current Fiscal Year" type="String" access="public" assignTo="{!currentFiscalYear}" />
+    <apex:attribute name="currentUserId" description="The Current User" type="String" access="public" assignTo="{!currentUserId}" />
+    <apex:attribute name="currentPlanId" description="The Current Plan" type="String" access="public" assignTo="{!currentPlanId}" />
+    <apex:attribute name="currentFiscalYearName" description="The Current FYS Name" type="String" access="public" assignTo="{!currentFiscalYearName}" />
+      
+    <apex:outputPanel id="changePlanSelection" layout="block" style="margin-top:15px; height:100px; overflow:auto;">
+            <div class="areaTitle" style="margin-bottom:5px;margin-top:5px;">
+                <apex:outputtext value="{!currentFiscalYearName}" />
+            </div> 
+            <apex:outputpanel layout="block" rendered="{!IF(planList.size == 0, false, true)}">
+                <apex:repeat value="{!planList}" var="iter">   
+	                <div style="margin-bottom:5px;margin-top:5px;margin-left:5px ">
+		                <div>
+		                    <apex:outputPanel layout="block" rendered="{!IF(iter.id==currentPlanId,'false','true')}">
+			                    <div>
+			                        <a href="{!$Page.XactlyExpress__XactlySMBPlanCreate}?id={!iter.id}">
+			                            {!iter.name}
+			                        </a>
+			                    </div>
+		                    </apex:outputPanel>
+		                    <apex:outputPanel rendered="{!IF(iter.id==currentPlanId,'true','false')}" style="margin-bottom:5px;margin-top:5px;">
+		                        <apex:OutputText value="{!iter.name}" styleclass="orangeLi"/>
+		                    </apex:outputPanel>
+		                </div>
+	                </div>
+                </apex:repeat>                 
+            </apex:outputpanel>
+            <apex:outputpanel rendered="{!IF(planList.size == 0, true, false)}">
+                <apex:outputtext value="{!$Label.xactlyexpress__NoPlansForThisYear}"  style="font-size: 7pt; margin-left: 6px;font-style:italic; "/> 
+            </apex:outputpanel>
+    </apex:outputPanel>
+</apex:component>

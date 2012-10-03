@@ -1,0 +1,61 @@
+<!--
+Developed by Timba Software Corp. www.timbasoftware.com admin@timbasoftware.com
+ This page defines Settings
+ @author Juan Bessonart <jbessonart@timbasoftware.com>
+-->
+<apex:page id="XactlySMBHomePage" controller="XactlyExpress.XactlySMBHomePageController" sidebar="false" showHeader="false" standardStylesheets="true" action="{!redirectWhenAccessIsDenied}">
+  
+   <!-- Custom Cursor Loader --> 
+   <c:XactlySMBCursor />
+   <!-- Custom Cursor Loader -->
+    <title>{!$Label.XactlyExpress}</title>
+     <script>        
+            var bubbleImagesPath = "{!URLFOR($Resource.XactlySMBResources ,'modbubble/images')}";
+    </script>     
+    <link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.XactlySMBResources ,'css/XactlySMBStyles.css')}" /> 
+	
+	<c:XactlySMBShadows />
+	
+    <!-- PAGE WRAPPER -->
+	<div class="pageContent" style="padding: 0px;" id="pContent">
+	
+		 <!-- MAIN CONTENT --> 
+		 
+		 <!-- SECTION TITLE -->
+		<div class="error">
+			<!-- INSUFFICIENT PERMISSIONS --> 
+			<apex:outputText rendered="{!OR(NOT(isAdmin), NOT(isActive))}">
+				<c:XactlySMBErrorMsg error="{!$Label.xactlyexpress__InsufficientPermissions}" />
+			</apex:outputText>
+		</div>
+		
+		<c:XactlySMBHomePageSlideShow fiscalYear="{!currentPeriod.XactlyExpress__FiscalYearSettings__c}"/>		
+		<c:XactlySMBFooterStandard />
+		<apex:form >
+			<c:XactlySMBPlanListToQuota fiscalYear="{!currentPeriod.XactlyExpress__FiscalYearSettings__c}"  /> 
+		</apex:form>
+	</div>  
+	
+	<apex:includeScript value="{!URLFOR($Resource.XactlyExpress__CSN, 'jquery.js')}" />
+    <c:XactlySMBFooterScript /> 
+	
+    <script type="text/javascript" language="javascript" src="{!URLFOR($Resource.XactlySMBResources, 'js/XactlySMBJavascript.js')}"></script>
+    <script type="text/javascript" language="javascript" src="{!URLFOR($Resource.XactlySMBResources, 'js/jquery.tools.min.js')}"></script>
+    <script type="text/javascript" src="{!URLFOR($Resource.XactlySMBResources ,'js/jquery.superbox-min.js')}"></script>
+     <script type="text/javascript">
+     	$J = jQuery.noConflict();
+        $J(function(){
+            $J.superbox.settings = {
+                closeTxt: "X",
+                loadTxt: "Loading...",
+                nextTxt: "Next",
+                prevTxt: "Previous"
+            };
+            $J.superbox();
+        });
+        $J(document).ready(function(){
+        	loadSlideShow();
+        });
+        var deActiveWrapper = 0; //Avoid running the function ActiveWrapper();
+    </script>
+</apex:page>

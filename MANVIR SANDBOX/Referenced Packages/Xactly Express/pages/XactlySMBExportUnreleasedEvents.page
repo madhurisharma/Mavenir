@@ -1,0 +1,4 @@
+<apex:page controller="XactlyExpress.XactlySMBCalculateManagePaymentsMHR" cache="true" sidebar="false" showHeader="false" standardStylesheets="false" contentType="text/csv#UnreleasedEvents.csv">
+<!-- <apex:repeat value="{!unreleasedEvents}" var="iter"><apex:outputtext escape="false" value="{!iter.line}" /></apex:repeat> -->
+<apex:outputtext escape="false" value="{!csvContent}"/>
+</apex:page>

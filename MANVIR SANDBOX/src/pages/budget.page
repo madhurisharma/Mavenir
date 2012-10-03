@@ -1,0 +1,57 @@
+<apex:page standardController="Opportunity" extensions="BudgetController"  showHeader="false" sidebar="false">
+    
+    <script src="/soap/ajax/15.0/connection.js" type="text/javascript"></script>
+    <script src="/soap/ajax/15.0/apex.js" type="text/javascript"></script>
+    <apex:includeScript value="{!URLFOR($Resource.jquery, 'lib/jquery.min.js')}"/>
+    <apex:includeScript value="{!URLFOR($Resource.jquery, 'jquery.handsontable.js')}"/>
+    <!-- <apex:includeScript value="{!URLFOR($Resource.jquery, 'lib/bootstrap-typeahead.js')}"/>
+    <apex:includeScript value="{!URLFOR($Resource.jquery, 'lib/jquery.autoresize.js')}"/>
+    <apex:includeScript value="{!URLFOR($Resource.jquery, 'lib/jQuery-contextMenu/jquery.contextMenu.js')}"/>
+    <apex:includeScript value="{!URLFOR($Resource.jquery, 'lib/jQuery-contextMenu/jquery.ui.position.js')}"/>
+     -->
+    <apex:stylesheet value="{!URLFOR($Resource.jquery, 'lib/jQuery-contextMenu/jquery.contextMenu.css')}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.jquery, 'jquery.handsontable.css')}"/>
+<style> 
+        .dataTable th {
+            text-align: left;
+        } 
+    </style>
+    <button name="saveBudget" style="margin:0px 5px 1px 500px">Save</button>
+    <div id="budgetConsole" class="console"> </div>
+   <div id="budgetgrid" class="dataTable" style="width: 1200px; height: 300px; overflow: scroll"></div>
+
+
+<script>
+
+    //var t$ = jQuery.noConflict();
+    sforce.connection.sessionId = "{!$Api.Session_ID}";
+    var $container = $("#budgetgrid");
+    var $parent = $container.parent();
+    var $console = $("#budgetConsole");
+    $container.handsontable({
+      rows: {!noOfRows},
+      cols: {!noOfCols},
+      colHeaders: [{!colHeaders}],
+      rowHeaders: [{!rowHeaders}],  
+      undo: true
+      
+    });
+    var data = {!JSONBudget};
+   
+
+  $("#budgetgrid").handsontable("loadData", data);
+  var handsontable = $container.data('handsontable');
+
+  //TODO: Set first column for name as readonly
+  
+  $parent.find('button[name=saveBudget]').click(function () {
+    var updatedData = handsontable.getData();   
+    
+    var resp = sforce.apex.execute("BudgetController", "save", {oppId: "{!Opportunity.Id}", JSONBudget:updatedData});
+    $console.text(resp);
+  });
+  
+    
+</script>
+
+</apex:page>

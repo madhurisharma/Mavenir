@@ -1,0 +1,54 @@
+<!--
+ Developed by Timba Software Corp. www.timbasoftware.com admin@timbasoftware.com
+ This component displays the plan wizard links
+ @author Guillermo Freire <guillermo.freire@gmail.com>
+-->
+<apex:component >
+    <apex:attribute name="step" description="The current step" type="Integer" required="false" access="public"/>
+    <link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.XactlySMBResources ,'css/XactlySMBTDocsWizardSteps.css')}" />
+	<style>
+		.subSecStepWizard{
+			text-align:center;
+			vertical-align:middle;
+			margin-right:25px;
+			margin-left:-5px;
+			margin-top:15px;
+			max-width:80px;
+			max-height:30px;
+		}
+        .wizardBtn:hover .subSecStepWizard{color:#015BA7}
+        
+	</style>
+
+    <apex:outputPanel styleclass="wizardContainer" layout="block" >
+        
+        <div class="wizardBtn">
+	        <a href="{!$Page.XactlySMBTermsAndConditions}">
+	            <div class="leftWizardBtn {!IF(step = 1,'leftWizardBtnActive1','leftWizardBtnInactive1')}">
+	            </div>
+	            <div class="middleWizardBtn{!IF(step = 1,'Active','')}1">
+	            	<p class="subSecStepWizard {!IF(step = 1,' HelveticaRegular12c4',' HelveticaRegular12c2')}" style="margin-top:8px;">
+	                    {!$Label.TermsAndConditions}
+	                </p>
+	            </div>
+	            <div class="rightWizardBtn{!IF(step = 1,'Active','')}">
+	            </div>
+	        </a>  
+        </div>
+        <div class="wizardBtn">
+	        <a href="{!$Page.XactlySMBPlanDocument}">
+	            <div class="leftWizardBtn {!IF(step = 2,'leftWizardBtnActive2','leftWizardBtnInactive2')}">
+	            </div>
+	            <div class="middleWizardBtn{!IF(step = 2,'Active','')}2">
+	            	<p class="subSecStepWizard {!IF(step = 2,' HelveticaRegular12c4',' HelveticaRegular12c2')}" style="margin-top:8px;">
+	                    {!$Label.ExportPlanDocuments}
+	                   </p>
+	            </div>
+	            <div class="rightWizardBtn{!IF(step = 2,'Active','')}">
+	            </div>
+	        </a>
+        </div>
+        <div style="clear:both;height:1px;"></div>
+    </apex:outputPanel>
+    
+</apex:component>

@@ -1,0 +1,110 @@
+<!--
+ Developed by Timba Software Corp. www.timbasoftware.com admin@timbasoftware.com
+ This component displays the plan wizard links
+ @author Guillermo Freire <guillermo.freire@gmail.com>
+-->
+<apex:component >
+	<apex:attribute name="step" description="The current step" type="Integer" required="false" access="public"/>
+	<apex:attribute name="dealsLabel" description="The Deal Label" type="String" required="false" access="public"/>
+	
+	<link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.XactlySMBResources ,'css/XactlySMBCalculateWizardSteps.css')}" /> 
+	<style>
+		.subSecStepWizard{
+			text-align:center;
+			vertical-align:middle;
+			margin-right:25px;
+			margin-left:-5px;
+			margin-top:15px;
+			max-width:80px;
+			max-height:30px;
+		}
+		
+		.wizardBtn:hover .subSecStepWizard{color:#015BA7}
+		
+	</style>
+	<apex:outputPanel styleclass="wizardContainer" layout="block" >
+        <div class="wizardBtn">
+			<apex:outputLink value="{!$Page.XactlyExpress__XactlySMBCalculateStep2}">
+				<div class="leftWizardBtn {!IF(step = 1,'leftWizardBtnActive1','leftWizardBtnInactive1')}">
+				</div>
+				<div class="middleWizardBtn{!IF(step = 1,'Active','')}1">
+						<p class="subSecStepWizard   {!IF(step = 1,' HelveticaRegular12c4',' HelveticaRegular12c2')}" style="{!IF(dealsLabel = 'Opportunities','margin-top:8px;','')}">
+					     <apex:outputtext value="{!$Label.xactlyexpress__CalculateWizardStep1}">
+					         <apex:param value="{!dealsLabel}" />
+					     </apex:outputtext>
+					     </p>
+				</div>
+				<div class="rightWizardBtn{!IF(step = 1,'Active','')}">
+				</div> 
+			</apex:outputLink>
+		</div>
+        <div class="wizardBtn">
+			<apex:outputLink value="{!$Page.XactlyExpress__XactlySMBCalculateStep3}">
+				<div class="leftWizardBtn {!IF(step = 2,'leftWizardBtnActive2','leftWizardBtnInactive2')}">
+				</div>
+				<div class="middleWizardBtn{!IF(step = 2,'Active','')}2">
+						<p class="subSecStepWizard  {!IF(step = 2,' HelveticaRegular12c4',' HelveticaRegular12c2')}" style="{!IF(dealsLabel = 'Opportunities','margin-top:8px;','')}">
+					     <apex:outputtext value="{!$Label.xactlyexpress__CalculateWizardStep2}">
+		                     <apex:param value="{!dealsLabel}" />
+		                 </apex:outputtext>
+		                 </p>
+				</div>
+				<div class="rightWizardBtn{!IF(step = 2,'Active','')}">
+				</div>
+			</apex:outputLink>
+		</div>
+        <div class="wizardBtn">
+			<apex:outputLink value="{!$Page.XactlyExpress__XactlySMBCalculateCalculate}">
+	            <div class="leftWizardBtn {!IF(step = 3,'leftWizardBtnActive3','leftWizardBtnInactive3')}">
+	            </div>
+	            <div class="middleWizardBtn{!IF(step = 3,'Active','')}3">
+	            		<p class="subSecStepWizard   {!IF(step = 3,' HelveticaRegular12c4',' HelveticaRegular12c2')}">
+	                    <apex:outputtext value="{!$Label.xactlyexpress__CalculateWizardStep3}" />
+	                    </p>
+	            </div>
+	            <div class="rightWizardBtn{!IF(step = 3,'Active','')}">
+	            </div>
+	        </apex:outputLink>
+		</div>
+        <div class="wizardBtn">
+	        <a href="{!$Page.XactlyExpress__XactlySMBCalculateManageAttainments}">
+	            <div class="leftWizardBtn {!IF(step = 4,'leftWizardBtnActive4','leftWizardBtnInactive4')}">
+	            </div>
+	            <div class="middleWizardBtn{!IF(step = 4,'Active','')}4">
+	            		<p class="subSecStepWizard   {!IF(step = 4,' HelveticaRegular12c4',' HelveticaRegular12c2')}" style="margin-top:8px;">
+	                    <apex:outputtext style="margin-left: -5px;" value="{!$Label.xactlyexpress__CalculateWizardStep4}" />
+	                    </p>
+	            </div>
+	            <div class="rightWizardBtn{!IF(step = 4,'Active','')}">
+	            </div>
+	        </a>
+        </div>
+        <div class="wizardBtn">
+	        <a href="{!$Page.XactlyExpress__XactlySMBCalculateManagePayments}">
+	            <div class="leftWizardBtn {!IF(step = 5,'leftWizardBtnActive5','leftWizardBtnInactive5 ')}">
+	            </div>
+	            <div class="middleWizardBtn{!IF(step = 5,'Active','')}5">
+	            		<p class="subSecStepWizard   {!IF(step = 5,' HelveticaRegular12c4',' HelveticaRegular12c2')}" style="margin-top:8px;">
+	                    <apex:outputtext value="{!$Label.xactlyexpress__CalculateWizardStep5}" />
+	                    </p>
+	            </div>
+	            <div class="rightWizardBtn{!IF(step = 5,'Active','')}">
+	            </div>
+	        </a>
+        </div>
+        <div class="wizardBtn">
+	        <a href="{!$Page.XactlyExpress__XactlySMBCalculatePayroll}">
+	            <div class="leftWizardBtn {!IF(step = 6,'leftWizardBtnActive6','leftWizardBtnInactive6')}">
+	            </div>
+	            <div class="middleWizardBtn{!IF(step = 6,'Active','')}6">
+	            		<p class="subSecStepWizard   {!IF(step = 6,' HelveticaRegular12c4',' HelveticaRegular12c2')}">
+	                    <apex:outputtext value="{!$Label.xactlyexpress__CalculateWizardStep6}" />
+	                    </p>
+	            </div>
+	            <div class="rightWizardBtn{!IF(step = 6,'Active','')}">
+	            </div>
+	        </a> 
+		</div>
+		<div style="clear:both;height:1px;"></div>
+	</apex:outputPanel>	
+</apex:component>

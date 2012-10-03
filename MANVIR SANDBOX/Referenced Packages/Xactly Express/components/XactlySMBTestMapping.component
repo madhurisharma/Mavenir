@@ -1,0 +1,288 @@
+<apex:component id="testMappingComp" controller="XactlyExpress.XactlySMBTestMapping" allowDML="true">	
+ <style>
+    .containerLeft{
+        background: url({!URLFOR($Resource.XactlyExpress__XactlySMBResources,'img/layout/leftBackSquare.png')});
+    }          
+    .contentTM {
+        font-size: 11px;
+        padding: 0px;
+        position:relative;
+        overflow: hidden;
+        float:left;
+        margin-top:10px;
+    }     
+    .superboxTMFooter { 
+        float:left;
+        background: url({!URLFOR($Resource.XactlyExpress__XactlySMBResources,'img/layout/sch_winBot.png')}) transparent no-repeat right bottom;
+        height: 52px;
+        width: 995px;
+        margin: 0px;
+        margin-left:5px;
+    }
+    .superboxTMTop{
+        background: url({!URLFOR($Resource.XactlyExpress__XactlySMBResources,'img/layout/sch_winTop.png')}) no-repeat;
+        height:25px;
+        margin-left:5px;
+        width:996px;
+    }
+    .superboxTMBody{
+        background-color:#FFFFFF;
+        border-left:3px solid #A7A9AC;
+        border-right:3px solid #A7A9AC;
+        margin-left:5px;
+        width:989px;
+        float: left;
+        padding-top: 5px;
+    }
+    .leftDivSquare {
+        float:left;
+        background: url({!URLFOR($Resource.XactlyExpress__XactlySMBResources,'img/layout/leftBackSquare.png')}) transparent no-repeat right bottom;
+        height: 517px;
+        width: 493px;
+        margin-left: 20px;
+        margin-bottom: 40px;
+        margin-top: 45px;
+    }
+    .leftDivSquare1 {
+        float:left;
+        background: url({!URLFOR($Resource.XactlyExpress__XactlySMBResources, 'img/layout/leftBackSquare1.png')}) transparent no-repeat right bottom;
+        height: 517px;
+        width: 493px;
+        margin-left: 20px;
+        margin-bottom: 40px;
+        margin-top: 45px;
+    }
+    .rightDivSquare {
+        float:left;
+        display:inline;
+        background: url({!URLFOR($Resource.XactlyExpress__XactlySMBResources, 'img/layout/rightBackSquare.png')}) transparent no-repeat right bottom;
+	    height: 518px;
+	    width: 438px;
+        margin-top: 45px;
+        
+    }        
+    .titleDataMappingTest{
+	    color: #54829E;
+	    font-size: 22px;
+	    margin-left: 25px;
+    }    
+    .leftLetterContainer{
+        float: left;
+        margin: 50px 0 0 30px;
+        width: 50px;
+    }
+    .lettersSeparator{
+        clear: both;
+        height: 60px;
+    }    
+    .titleOfBox{
+	    color: #8A8A8A;
+	    font-size: 27px;
+	    font-weight: bolder;
+	    margin-left: 131px;
+	    margin-top: 27px;
+    }    
+    .titleOfTiem{
+        width: 300px;
+        font-size: 18px;
+    }    
+    .bodyTextItem{
+	    height: 69px;
+	    margin: 0 0 20px;
+	    width: 230px;
+    }    
+</style>
+<div id="testMapping" style="display:none;">
+	<apex:actionFunction name="doTest" action="{!doTest}" rerender="contentTM" onComplete="AfterTest();">
+		<apex:param name="firstParam" assignTo="{!selectedMapping}" value="" />                               	                             	                              	                           
+		<apex:param name="secondParam" assignTo="{!selectedObjectId}" value="" />
+	</apex:actionFunction>
+	<apex:actionFunction name="NoTestDone" action="{!NoTestDone}" rerender="contentTM" onComplete="jQuery.superbox.refreshSuperboxContent();waitOff();"></apex:actionFunction>	
+	<apex:actionFunction name="RefreshOptions" action="{!RefreshOptions}" rerender="contentTM" onComplete="RefreshOptionsComplete();"></apex:actionFunction>
+	<apex:outputPanel styleclass="contentTM" id="contentTM"> 			
+    	<div class="superboxTMTop"></div>
+        <div class="superboxTMBody">
+        	<span class="titleDataMappingTest">
+            	{!$Label.DataMappingTest}
+            </span>
+            <div style="clear:both;"></div>
+            <apex:outputPanel styleclass="{!IF(testDone,'leftDivSquare','leftDivSquare1')}" id="leftside"> 		    
+		    	<div class="titleOfBox">{!$Label.SelectCriteria}</div> 
+		        <div class="leftLetterContainer">
+					<div class="PNovaBlack60c5 stepActionNumber "> 
+	                	A
+	                </div>
+	                <div class="lettersSeparator"></div>
+                    <div class="PNovaBlack60c5 stepActionNumber"> 
+						B
+					</div>
+					<div class="lettersSeparator"></div>
+					<div class="PNovaBlack60c5 stepActionNumber"> 
+						C
+					</div>
+				</div>
+                <div class="leftLetterContainer" style="margin: 60px 0pt 0pt 10px;">
+					<div class="mainTitle PNovaSemiBold17c3 titleOfTiem"> 
+						{!$Label.SelectMappingToTest}
+					</div>
+					<div class="bodyTextItem">
+						<apex:selectList value="{!selectedMapping}" id="MappingNames" style="margin: 10px;" size="1" multiselect="false" onChange="MappingNameChanged();">
+							<apex:selectOptions value="{!MappingNames}"/> 
+						</apex:selectList>   
+						<script>								
+							var MappingNames = '{!$Component.MappingNames}'; 								
+						</script>                              	
+					</div>
+                    <div class="mainTitle PNovaSemiBold17c3 titleOfTiem" style=" margin-top: 30px;"> 
+                    	{!$Label.SelectObjectToTest}
+                    </div>
+                    <div class="bodyTextItem">
+                    	<div style="margin-top:10px;">
+							<apex:inputText styleclass="selectedObject" id="selectedObjectName" value="{!selectedObjectName}" style="width:85%;background-color:#dcdcdc;color: #000000;cursor: default;" onClick="this.blur();"/>
+							<apex:inputText styleclass="selectedObject" id="selectedObjectId" style="display:none;" value="{!selectedObjectId}"/>                         															      
+							<apex:image id="magnifier" url="{!URLFOR($Resource.XactlyExpress__XactlySMBResources,'img/icons/magnifier.png')}" style="cursor:pointer;" onClick="openSearchObjectPopup();" />
+							<script>									
+								var selectedObjectName = '{!$Component.selectedObjectName}'; 								
+								var selectedObjectId = '{!$Component.selectedObjectId}';	
+								var magnifier = '{!$Component.magnifier}'.replace(/:/g,'\\:');									
+							</script>           
+						</div>                     
+					</div>  					
+					<div class="mainTitle PNovaSemiBold17c3 titleOfTiem" style="margin-top: 30px;">  
+						{!$Label.ClickButtonBelowToTest}
+					</div>
+					<div class="bodyTextItem" style="cursor:pointer;" onClick="jQuery(this).unbind('click');this.style.cursor='default';DoBeforeTest();doTest(document.getElementById(MappingNames).value, document.getElementById(selectedObjectId).value);">
+						<div style="font-weight:bold;color:#FFFFFF;width:182px;height:43px;background-image:url({!URLFOR($Resource.XactlySMBResources,'img/buttons/OrangeButton1.png')});background-repeat:no-repeat;padding-left:30px;padding-top:13px;margin-top:30px;font-size:14px;">{!$Label.TestMyMapping}</div>
+					</div>
+				</div>                            			
+			</apex:outputPanel>    			
+			<apex:outputPanel styleclass="rightDivSquare" id="rightside" layout="block" rendered="{!testDone}">				
+				<apex:outputPanel id="withError" rendered="{!NOT(ISNULL(errorMsg))}">
+					<div class="titleOfBox">{!$Label.ErrorOnMapping}</div> 
+	                <table class="dealAttributeTable"   cellpadding="0" cellspacing="0" style="margin-left: 15px;margin-top: 20px;width: 400px;">	                	
+						<tbody>
+							<tr class="independentRow" style="height: 32px;">
+								<td class="contectTableData" style="color:#7A7B7E;padding-left: 15px;">{!errorMsg}</td>								
+							</tr>							
+						</tbody>
+					</table>		
+				</apex:outputPanel>   
+				<apex:outputPanel id="noError" rendered="{!ISNULL(errorMsg)}">
+					<div class="titleOfBox">{!$Label.ViewResults}</div> 
+	                <table class="dealAttributeTable"   cellpadding="0" cellspacing="0" style="margin-left: 15px;margin-top: 20px;width: 400px;">
+	                	<thead>
+							<tr class="tableHeader">
+								<th style="color:#525353;">{!$Label.ExpressFieldName}</th>
+								<th style="color:#525353;border-right:0px">{!$Label.MappingName}</th> 
+							</tr>
+						</thead>
+						<tbody> 
+							<apex:variable var="rowindex" value="{!1}"/>     
+							<apex:repeat id="reptable_row" value="{!table_row}" var="t_r">
+								<tr class="independentRow" style="height: 32px;{!IF(attributeName = t_r.field_name, '', 'display:none;')}">
+									<td class="contectTableData" style="color:#7A7B7E;padding-left: 15px;">{!t_r.field_name}</td>
+									<td class="contectTableData" style="color:#477896;padding-left: 15px;border-right:0px;font-weight: bold;">{!t_r.mapping_name}</td>
+								</tr>
+								<tr class="odd" style="{!IF(attributeName = t_r.field_name, 'display:none;', IF(CEILING(mod(rowindex,2))==0, 'display:none;', ''))}">
+									<td class="contectTableData" style="color:#7A7B7E;padding-left: 15px;">
+									{!t_r.field_name}									
+									</td>
+		                            <td class="contectTableData" style="color:#7A7B7E;padding-left: 15px;border-right:0px">{!t_r.mapping_name}</td>
+								</tr>
+								<tr class="even" style="{!IF(attributeName = t_r.field_name, 'display:none;', IF(CEILING(mod(rowindex,2))==0, '', 'display:none;'))}">
+									<td class="contectTableData" style="color:#7A7B7E;padding-left: 15px;">
+									{!t_r.field_name}									
+									</td>
+									<td class="contectTableData" style="color:#7A7B7E;padding-left: 15px;border-right:0px">{!t_r.mapping_name}</td>
+								</tr>		
+								<apex:variable var="rowindex" value="{!IF(attributeName = t_r.field_name, rowindex, rowindex + 1)}"/>																											  
+							</apex:repeat>							
+						</tbody>
+					</table>		
+				</apex:outputPanel>                      									
+			</apex:outputPanel> 
+		</div>    
+		<script>
+			function MappingNameChanged(){	
+			  	jQuery.superbox.overrideSourceWithSuperboxContent();	  	
+			  	document.getElementById(selectedObjectName).value='';
+			  	document.getElementById(selectedObjectId).value='';
+			  	jQuery.superbox.refreshSuperboxContent();
+			  	if ('{!testDone}' == 'true'){			  		
+			  		waitOn();
+			  		NoTestDone();
+			  	}		  			  			  	
+		  }	
+		  function ObjectChanged(){
+		  	jQuery.superbox.overrideSourceWithSuperboxContent();	  				  	
+			if ('{!testDone}' == 'true'){				
+			  	waitOn();
+			  	NoTestDone();
+			}		  	
+		  }          
+		</script>
+        <apex:outputpanel layout="block" id="superboxTMFooter" styleClass="superboxTMFooter">
+			<div class="btnAction">
+				<apex:outputLink styleClass="discardChanges" value="javascript:;" onclick="jQuery.superbox.close();">                         
+					<apex:outputPanel styleClass="rightBtnOrangeNew"  style="margin-left: 450px;margin-top: 11px;">
+						<apex:outputPanel styleClass="leftBtnOrangeNew">
+							<apex:outputPanel styleClass="middleBtnOrangeNew">
+								{!$Label.xactlyexpress__Close}
+							</apex:outputPanel>
+						</apex:outputPanel>
+					</apex:outputPanel>       
+				</apex:outputLink>
+			</div> 
+		</apex:outputpanel>
+	</apex:outputPanel>
+</div>
+	<a id="testMappingLink" rel="superbox[content#testMapping.xactlySuperBox][1000][700]" href="#testMapping" onclick="jQuery('.hiddenResults').hide();" style="display:none;"></a>
+	<script>
+		 $(document).ready(function() {
+			$(".close").hide();								
+		 });
+         function showTestMapping(){
+           waitOn();
+           RefreshOptions();           
+         } 
+                  
+         function clearTestMapping(){
+           var errorMsg = $innerbox.find('.errorMsg');
+             if(errorMsg!=undefined){
+               errorMsg.html('');
+             }
+         }   
+         function openSearchObjectPopup(){
+         	jQuery.superbox.overrideSourceWithSuperboxContent();         	
+         	var o = document.getElementById(MappingNames).value.split('_')[1];
+            if(_isChrome){
+                accountsWindow = window.open('/apex/XactlySMBSearchObjectPopup?o='+o,document.getElementById(MappingNames).value,'location=0,status=0,scrollbars=1,width=700px,height=550px');
+            }else{
+                accountsWindow = window.open('/apex/XactlySMBSearchObjectPopup?o='+o,document.getElementById(MappingNames).value,'location=0,status=0,scrollbars=1,width=700px,height=500px');
+            }
+            accountsWindow.moveTo(100,100);
+          }  
+          function DoBeforeTest(){
+          	waitOn();
+          	jQuery.superbox.overrideSourceWithSuperboxContent();
+          	document.getElementById(MappingNames).disabled=true;
+          	jQuery('#'+magnifier).unbind('click');
+          	jQuery('#'+magnifier).hide();
+          	jQuery.superbox.refreshSuperboxContent();
+          }
+          
+          function AfterTest(){		          	
+		  	jQuery.superbox.refreshSuperboxContent();
+		    waitOff();       	
+		  }   		
+		  function RefreshOptionsComplete(){		  	
+		  	document.getElementById(selectedObjectName).value='';		  	
+			document.getElementById(selectedObjectId).value='';	
+            jQuery('#' + MappingNames.replace(/:/g,'\\:')).val(jQuery('.topTableElement')[0].innerHTML);   
+					
+		  	waitOff();		  	
+		  	jQuery('#testMappingLink').trigger('click');
+		  }
+		  	                                       
+    </script>          
+</apex:component>

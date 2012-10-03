@@ -1,0 +1,818 @@
+<apex:page controller="XactlyExpress.XactlySMBCalculateAdjustPayPopup" showHeader="false" sidebar="false"  action="{!redirectWhenAccessIsDenied}">
+    <link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.XactlySMBResources ,'css/XactlySMBFontStyles.css')}" />
+
+<c:XactlySMBCursor />
+
+<title>{!$Label.xactlyexpress__AdjustPayment}</title>
+<style>
+		body{
+			margin: 0px !important;
+			padding: 0px !important;
+		}
+        img{
+        	border:0 none;
+        }
+        
+        .content {
+            font-size: 11px;
+            padding: 0px;
+            margin: 20px;
+            position:relative;
+            overflow: hidden;
+        }  
+        
+        a {
+            text-decoration: none;
+        }
+        
+        .btnAction {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btnAction input {
+            float: left;
+        } 
+        
+        .btnAction .leftBtnOrange {
+            background:url({!URLFOR($Resource.XactlyExpress__XactlySMBResources, 'img/buttons/orange_button_left.png')}) transparent  no-repeat scroll 0 0;
+            float: left;
+            height:19px;
+            padding:0px 0px 0px 5px;
+            width:auto;
+        }
+        .btnAction .middleBtnOrange {
+            color: white;
+            font-size: 10px;
+            font-weight: bold;
+            padding: 3px 5px;
+            width: auto;
+        }
+        .btnAction .rightBtnOrange {
+            background: url({!URLFOR($Resource.XactlyExpress__XactlySMBResources, 'img/buttons/orange_button_right.png')}) transparent no-repeat scroll right center;
+            float:left;
+            height:19px;
+            padding:0px 5px 0px 0px;
+            width:auto;
+            margin-top: 1px;
+            margin-left: 5px;
+        }          
+        
+        .header {
+            background: url({!URLFOR($Resource.XactlyExpress__XactlySMBResources, 'img/layout/SearchBackgroundHeader.jpg')}) white repeat-x;
+            height: 28px;
+            margin: 0px;
+            padding: 0px;
+        }
+        
+        .topBorder {
+            background: url({!URLFOR($Resource.XactlyExpress__XactlySMBResources, 'img/layout/SearchBackgroundTopBorder.jpg')}) white repeat-x;
+            height: 9px;
+            margin: 0px;
+            padding: 0px;
+        }
+        
+        .bottomBorder {
+            background: url({!URLFOR($Resource.XactlyExpress__XactlySMBResources, 'img/layout/SearchBackgroundBottomBorder.jpg')}) white repeat-x;
+            height: 4px;
+            padding: 0px;
+            bottom: 69px;
+            right: 20px;
+            left: 20px;
+            position: absolute;
+        }
+        
+        .xactlyLogo {
+            background: url({!URLFOR($Resource.XactlyExpress__XactlySMBResources, 'img/layout/SearchXactlyLogo.png')}) white no-repeat right bottom;
+            height: 59px;
+            width: 100%;
+            margin: 0px;
+            padding: 0px;
+            bottom: 10px;
+            right: 20px;
+            position: absolute;
+        }
+        
+        #adjustIcon{
+            float:left;
+            margin-left:10px;
+            width:57px;
+            height:57px;
+            background: url({!URLFOR($Resource.XactlyExpress__XactlySMBResources, 'img/icons/adjustPaymentBigIcon.png')}) no-repeat;
+        }
+        
+        #centerContainer{
+            margin-left:auto
+            margin-top:auto;            
+        }
+        
+        .rightAligned{
+            text-align:right;
+        }
+        
+        .rightAligned input{
+            text-align:right;
+        }
+        
+        .collapseArrowDown{
+        padding-left:12px;
+        cursor:pointer;
+        background:url({!URLFOR($Resource.XactlyExpress__XactlySMBResources,'img/icons/collapseArrowDown.png')}) no-repeat;
+        
+     }
+     
+     .collapseArrowRight{
+        padding-left:12px;
+        cursor:pointer;
+        background:url({!URLFOR($Resource.XactlyExpress__XactlySMBResources,'img/icons/collapseArrowRight.png')}) no-repeat;
+     }
+    
+    .indent1{
+        margin-left:10px;
+    }
+    
+    .indent2{
+        margin-left:30px;
+    }
+    
+    table tr td{
+        padding:5px;
+     }
+     
+     table tr th{
+        padding:5px;
+     }
+     
+     table{
+        border-collapse: collapse;
+     }
+    
+     table td{
+        border-right: 1px solid #888888;
+     }
+     
+     table th{
+        border-right: 1px solid #888888;
+     }
+     
+     table tr.odd{
+        background-color: #E5E5E5;
+     }
+     
+     table tr.even{
+        background-color: #CECECE;
+     }
+     
+     table thead tr{
+        background-color: #CECECE;
+        color: #426E83;
+        border-bottom: 1px solid #000000;
+     }
+     
+    .addCommentLink {
+		-moz-background-clip:border;
+		-moz-background-inline-policy:continuous;
+		-moz-background-origin:padding;
+		background:transparent url({!URLFOR($Resource.XactlyExpress__XactlySMBResources, 'img/buttons/noCommentBtn.png')}) no-repeat scroll 0 0;
+		display:block;
+		height:16px;
+		width:18px;
+	}
+	.editCommentLink {
+		-moz-background-clip:border;
+		-moz-background-inline-policy:continuous;
+		-moz-background-origin:padding;
+		background:transparent url({!URLFOR($Resource.XactlyExpress__XactlySMBResources, 'img/buttons/commentBtn.png')}) no-repeat scroll 0 0;
+		display:block;
+		height:16px;
+		width:18px;
+	}
+	.commentBox {
+		height:80px;
+		margin:auto;
+		width:100%;
+		margin-top:10px;
+	}
+	.commentTextArea {
+		height:50px;
+		width:657px;
+	}
+	.commentHeader {
+		-moz-background-clip:border;
+		-moz-background-inline-policy:continuous;
+		-moz-background-origin:padding;
+		background:white none repeat scroll 0 0;
+		border:1px solid black;
+		padding:6px;
+		position:relative;
+	}
+	.commentBoxBtn {
+		-moz-background-clip:border;
+		-moz-background-inline-policy:continuous;
+		-moz-background-origin:padding;
+		background:transparent url({!URLFOR($Resource.XactlyExpress__XactlySMBResources, 'img/buttons/closeComment.png')}) no-repeat scroll 0 0;
+		float:right;
+		height:25px;
+		position:absolute;
+		right:10px;
+		width:25px;
+	}
+	
+	/*************** footer button styles ***************/
+        
+        /**
+		 * AO 02/11/10: this class is used to identify in JS which bottom bar button is "none"
+		 **/
+		div.displayNone{
+			display:none;
+			
+		}
+		
+		.btnAction .middleBtnSilver, .btnAction .middleBtnSilverDisabled {
+			font-size: 10px;
+			font-weight: bold;
+			padding: 3px 5px;
+			width: auto;
+		}
+		
+		/**
+		 * AO 02/10/10: I have changed the background property from this class to a gif image
+		 */
+		.btnAction .leftBtnSilver {
+			/*background:url(../img/buttons/silver_button_left.png) transparent  no-repeat scroll top left;*/
+			background:url({!URLFOR($Resource.XactlyExpress__XactlySMBResources, 'img/buttons/silver_button_left.gif')}) transparent  no-repeat scroll top left;
+			float: left;
+			height:19px;
+			padding:0px 0px 0px 5px;
+			width:auto;
+		}
+		
+		
+		/**
+		 * AO 02/10/10: I have changed the background property from this class to a gif image
+		 */
+		.btnAction .rightBtnSilver {
+			background: url({!URLFOR($Resource.XactlyExpress__XactlySMBResources, 'img/buttons/silver_button_right.gif')}) transparent no-repeat scroll right top;
+			/*background: url(../img/buttons/silver_button_right.png) transparent no-repeat scroll right top;*/
+			float:left;
+			height:19px;
+			padding:0px 5px 0px 0px;
+			width:auto;
+			margin-left: 5px;			
+		}
+		
+		/*************** end of footer button styles ***************/
+        
+		.previousStepWrapper {
+			display:inline;
+			float:left;
+			margin-left:34px;
+			margin-top:2px;
+			width:290px;
+		}
+		.previousStepLeft {
+			background:url({!URLFOR($Resource.XactlyExpress__XactlySMBResources, '/img/buttons/navigatePreviousLeft.gif')}) no-repeat scroll 0 0 transparent;
+			float:left;
+			height:53px;
+			margin:0;
+			padding:0;
+			width:40px;
+		}
+		.previousStepMiddle {
+			background:url({!URLFOR($Resource.XactlyExpress__XactlySMBResources, '/img/buttons/navigateMiddle.gif')}) repeat-x scroll 0 0 transparent;
+			color:#3B6080;
+			float:left;
+			font-size:11px;
+			font-weight:bold;
+			height:27px;
+			margin:21px 0 0;
+			padding:5px 0 0;
+		}
+		.previousStepRight {
+			background:url({!URLFOR($Resource.XactlyExpress__XactlySMBResources, '/img/buttons/navigateRight.gif')}) no-repeat scroll 0 0 transparent;
+			float:left;
+			height:27px;
+			margin:21px 0 0;
+			padding:0;
+			width:11px;
+		}
+		.actionButtons {
+			display:inline;
+			float:left;
+			margin-top:-30px;
+			margin-right:10px;
+			font-size:75%;
+		}
+		.actionButtonWrapper {
+			display:inline;
+			float:left;
+			margin:0 10px 0 0;
+			overflow:hidden;
+			padding:0;
+			position:relative;
+		}
+		.actionButtonLeft {
+			background:url({!URLFOR($Resource.XactlyExpress__XactlySMBResources, '/img/buttons/navigateLeft.gif')}) no-repeat scroll 0 0 transparent;
+			float:left;
+			height:27px;
+			margin:21px 0 0;
+			padding:0;
+			width:11px;
+		}
+		.actionButtonMiddle {
+			background:url({!URLFOR($Resource.XactlyExpress__XactlySMBResources, '/img/buttons/navigateMiddle.gif')}) repeat-x scroll 0 0 transparent;
+			color:#3B6080;
+			float:left;
+			font-size:11px;
+			font-weight:bold;
+			height:27px;
+			margin:21px 0 0;
+			padding:5px 0 0;
+		}
+
+		.actionButtonRight {
+			background:url({!URLFOR($Resource.XactlyExpress__XactlySMBResources, '/img/buttons/navigateRight.gif')}) no-repeat scroll 0 0 transparent;
+			float:left;
+			height:27px;
+			margin:21px 0 0;
+			padding:0;
+			width:11px;
+		}
+		.actionButtonMiddle img {
+			margin:-3px 0 0;
+			padding:0;
+			vertical-align:middle;
+		}        
+        
+    </style>
+    <apex:form id="mainPopup">
+	    <div class="header"></div>
+	    <apex:outputPanel styleclass="content" id="content" layout="block">
+        
+	        <div id="centerContainer">
+	        
+	            <apex:outputPanel id="errorMsg" layout="block" styleClass="errorScrollBox" style="margin-top:0;">
+                    <apex:outputPanel layout="block" style="color:#FF0000;height:30px;" rendered="{!errorMsg!=''}"><apex:outputText value="{!errorMsg}"  escape="false"/></apex:outputPanel>
+                </apex:outputPanel>   
+	        
+		        <div id="adjustIcon"></div>
+		        <div style="float:left;margin-top:20px;">
+		            <span style="font-size:15px;font-weight:bold;color:#D88045;margin-left:10px">{!$Label.Adjustments}</span> {!$Label.For} 
+		            
+		            
+		            <apex:selectList value="{!currentProfile}" onchange="if(checkChange()){ changeProfileAF(); waitOn();}" multiSelect="false" size="1">
+		                <apex:selectOptions value="{!profilesList}"/>
+		            </apex:selectList>
+		            {!$Label.xactlyexpress__In} 
+		            
+		            <apex:selectList value="{!currentMonth}" onchange="if(checkChange()){ changeMonthAF(); waitOn();}" multiSelect="false"  size="1">
+		                <apex:selectOptions value="{!monthsList}"/>
+		            </apex:selectList>
+		            
+		            <apex:selectList value="{!currentYear}" onchange="if(checkChange()){ changeYearAF(); waitOn();}" multiSelect="false" size="1">
+		                <apex:selectOptions value="{!yearsList}"/>
+		            </apex:selectList>            
+		        </div>
+		        <div style="clear:both; margin-bottom:10px" />
+		        
+		        <apex:inputHidden id="toCommentManualAdjId" value="{!toCommentManualAdjId}" />
+	            <script>
+	                var hiddenCommentManualAdjId = '{!$Component.toCommentManualAdjId}'; 
+	            </script>
+	            <apex:actionFunction name="commentManualAdjAF" action="{!commentManualAdj}" rerender="commentBox" oncomplete="commentManualAdjOnComplete();"/>
+	            
+	            <apex:outputPanel layout="block" style="overflow:auto; height:330px; font-size:10pt" id="treeContainer">
+		            <script>
+	                    var treeContainer = '#{!$Component.treeContainer}'.replace(/:/g,'\\:'); 
+	                </script>
+	                <apex:outputpanel rendered="{!ISNULL(measure)}">
+	                   {!$Label.xactlyexpress__NoPaymentsFilter}
+	                </apex:outputpanel>    
+	                
+	                <table style="width:100%;{!IF(NOT(ISNULL(measure)), '', 'display:none;')}" id="paymentsTable">
+		                <thead>
+		                    <tr>
+		                        <th></th>
+		                        <th style="width:30%">{!currentProfilePeriod}</th>
+	                            <th>{!$Label.CalculatedPayment}</th>
+	                            <th>{!$Label.ManualAdjustment}</th>
+	                            <th>{!$Label.TotalPayment}</th>
+		                    </tr>
+		                </thead>
+		                <tbody>
+		                    <tr class="even">
+		                        <td></td>
+		                        <td>{!$Label.TotalPayout}</td>
+		                        <td class="rightAligned">{!ptn.paymentS}</td>
+		                        <td class="rightAligned">{!ptn.manualAdjS}</td>
+		                        <td class="rightAligned">{!ptn.totalPaymentS}</td>
+		                    </tr>
+		                    
+		                    <apex:repeat value="{!ptn.ptnl}" var="planNode">	                    
+		                    
+		                        <tr id="collapse{!planNode.Id}">
+		                            <td></td>
+		                            <td>
+		                                <div class="collapseArrowDown" onclick="toggleCollapseTree(this);">
+		                                    {!planNode.name}
+		                                </div>
+		                            </td>
+		                            <td class="rightAligned">{!planNode.paymentS}</td>
+		                            <td class="rightAligned">{!planNode.manualAdjS}</td>
+		                            <td class="rightAligned">{!planNode.totalPaymentS}</td>
+		                        </tr>
+		                    
+		                        <apex:repeat value="{!planNode.ptnl}" var="payrollCatNode">                   
+		                            
+		                            <tr id="collapse{!payrollCatNode.Id}" class="collapse{!planNode.Id}">
+		                                <td></td>
+		                                <td>
+		                                    <div class="collapseArrowDown indent1" onclick="toggleCollapseTree(this);">
+		                                        {!payrollCatNode.name}
+		                                    </div>
+		                                </td>
+		                                <td class="rightAligned">{!payrollCatNode.paymentS}</td>
+		                                <td class="rightAligned">{!payrollCatNode.manualAdjS}</td>
+		                                <td class="rightAligned">{!payrollCatNode.totalPaymentS}</td>
+		                            </tr>
+		                            
+		                            <apex:repeat value="{!payrollCatNode.ptnl}" var="measureNode">	                            
+		                            
+		                                <tr id="collapse{!measureNode.Id}" class="collapse{!planNode.Id} collapse{!payrollCatNode.Id}">
+		                                    <td>
+		                                       <a class="{!IF(ISNULL(measureNode.manAdj.Comment__c),'addCommentLink','editCommentLink')}" href="javascript:commentManualAdj('{!measureNode.id}')" />
+		                                    </td>
+		                                    <td>
+		                                        <div class="indent2">
+		                                            {!measureNode.name}
+		                                        </div>
+		                                    </td>
+		                                    <td class="rightAligned">{!measureNode.paymentS}</td>
+		                                    <td class="rightAligned">	                                     
+		                                       <apex:inputText value="{!measureNode.manualAdjS}" onblur="recalculateTable(this);" style="{!IF(measureNode.editable, '', 'display:none;')}" /><!-- rendered="{!measureNode.editable}"/> -->
+		                                       <apex:outputPanel style="{!IF(measureNode.editable, 'display:none;', '')}"><!-- rendered="{!!measureNode.editable}">-->{!measureNode.manualAdjS}</apex:outputPanel>
+		                                    </td>
+		                                    <td class="rightAligned">{!measureNode.totalPaymentS}</td>
+		                                </tr>
+		                                
+		                            </apex:repeat>                                              
+		                        </apex:repeat>                                          
+		                    </apex:repeat>                                          
+		                </tbody>
+		            </table>   
+	            </apex:outputPanel>
+	            	            
+				<apex:outputPanel layout="block" id="commentBox"  style="display:none">
+				    <script>
+	                   var commentBox = '{!$Component.commentBox}'.replace(/:/g,'\\:'); 
+	                </script>
+				    <apex:outputPanel layout="block" rendered="{!!ISNULL(toCommentManualAdj)}" styleClass="commentBox">
+				    <div class="commentHeader">
+				        <apex:outputText value="{!toCommentTitleManualAdj}" />  
+				        <apex:commandLink action="{!closeComment}" styleClass="commentBoxBtn" onclick="waitOn();" rerender="treeContainer,commentBox" oncomplete="closeCommentOnComplete();"/>              
+				    </div>
+				    <div>
+				        <apex:inputTextarea value="{!toCommentManualAdj.XactlyExpress__Comment__c}" styleClass="commentTextArea"/>
+				    </div>
+				    </apex:outputPanel>
+				</apex:outputPanel>
+	            
+	            <apex:actionFunction name="commentLiabilityAF" action="{!commentLiability}" rerender="liaCommentBox, liabilitiesContainer" oncomplete="commentLiabilityOnComplete();"/>
+	            <apex:outputPanel style="{!IF(NOT(ISNULL(measure)), '', 'visibility: hidden;')}" layout="block" id="liabilitiesContainer">
+	                <div style="height:3px;background:#D97231; margin-top:15px; margin-bottom:10px" />
+		            <table style="width:100%">
+		                    <thead>
+		                        <tr>
+		                            <th></th>
+		                            <th style="width:30%">{!currentProfilePeriod}</th>
+		                            <th>
+			                            <apex:outputText value="{!$Label.xactlyexpress__BeginningLiability}">
+					                        <apex:param value="{!currentSettings.liabilityCap}"/>
+					                    </apex:outputText>
+					                </th>
+		                            <th>
+		                              <apex:outputText value="{!$Label.xactlyexpress__CurrentPeriodLiability}">
+							              <apex:param value="{!currentSettings.liabilityCap}"/>
+							          </apex:outputText>
+							        </th>
+		                            <th>{!$Label.xactlyexpress__ManualAdjustment}</th>
+		                            <th>
+		                                <apex:outputText value="{!$Label.xactlyexpress__EndingLiability}">
+							                <apex:param value="{!currentSettings.liabilityCap}"/>
+							            </apex:outputText>
+							        </th>
+		                        </tr>
+		                    </thead>
+		                    <tbody>
+		                        <apex:repeat value="{!liabilities}" var="lia">
+			                        <tr class="odd">
+			                            <td><a class="{!IF(ISNULL(lia.l.Comment__c),'addCommentLink','editCommentLink')}" href="javascript:commentLiability()" /></td>
+			                            <td>
+				                            <apex:outputText value="{!$Label.xactlyexpress__LiabilityBalance}">
+									            <apex:param value="{!currentSettings.liabilityCap}"/>
+									        </apex:outputText>
+									    </td>
+			                            <td class="rightAligned">{!lia.balanceS}</td>
+			                            <td class="rightAligned currentPeriodLiabilityCell">{!lia.currentPeriodLiabilityS}</td>
+			                            <td class="rightAligned">
+			                              <apex:inputText value="{!lia.l.XactlyExpress__Adjustment__c}" onblur="recalculateLiabilityRow();" styleClass="liabilityAdjustment" style="{!IF(lia.editable, '', 'display:none;')}" /><!-- rendered="{!lia.editable}"/> -->
+	                                      <apex:outputPanel style="{!IF(lia.editable, 'display:none;','')}" ><!-- rendered="{!!lia.editable}"> -->{!lia.l.XactlyExpress__Adjustment__c}</apex:outputPanel>
+			                            </td>
+			                            <td class="rightAligned">{!lia.totalLiability}</td>
+			                        </tr>
+		                        </apex:repeat>	          
+		                    </tbody>
+		             </table>
+		         </apex:outputPanel>
+		         
+		         <apex:outputPanel layout="block" id="liaCommentBox" style="display:none">
+		         <script>
+                    var liaCommentBox = '{!$Component.liaCommentBox}'.replace(/:/g,'\\:'); 
+                 </script>
+	                <apex:outputPanel layout="block" rendered="{!!ISNULL(toCommentLiability)}" styleClass="commentBox">
+	                   <div class="commentHeader">
+	                        &nbsp;
+	                        <a href="javascript:closeLiabilityComment();" class="commentBoxBtn" />
+	                        <apex:actionFunction name="closeLiabilityCommentAF" action="{!closeLiabilityComment}"  rerender="liaCommentBox, liabilitiesContainer" oncomplete="closeLiabilityCommentOnComplete();" />              
+	                   </div>
+	                   <div>
+	                       <apex:inputTextarea value="{!toCommentLiability.XactlyExpress__Comment__c}" styleClass="commentTextArea"/>
+	                   </div>
+	                </apex:outputPanel>
+	            </apex:outputPanel>
+	        </div>
+	        
+	        <apex:actionFunction name="changeProfileAF" action="{!changeProfile}" rerender="content,errorMsg" oncomplete="waitOff();reColourTableRows();" />
+		    <apex:actionFunction name="changeMonthAF" action="{!changeMonth}" rerender="content,errorMsg" oncomplete="waitOff();reColourTableRows();" />
+		    <apex:actionFunction name="changeYearAF"  action="{!changeYear}" rerender="content,errorMsg" oncomplete="waitOff();reColourTableRows();" />
+	    </apex:outputPanel>
+	    <div style="clear:both;"></div> 
+	    <div class="bottomBorder"></div>
+	    <div class="xactlyLogo">
+	       <div class="btnToCenter btnAction" style="padding: 20px 0 0 40px;">
+              	<apex:outputPanel layout="block" styleClass="actionButtons">                        
+                      <div class="actionButtonLeft"></div>
+                      <apex:commandLink styleClass="actionButtonMiddle" action="{!save}" rerender="content,errorMsg" oncomplete="reColourTableRows();waitOff();recalculateTable();" onclick="ChangesWillNotBeSaved=true;waitOn();">
+                            <apex:outputtext escape="false" value="{!$Label.xactlyexpress__SaveChanges}"> 
+                               <apex:param value="{!URLFOR($Resource.XactlyExpress__XactlySMBResources ,'img/buttons/navigateSaveMiddle.gif')}" />
+                            </apex:outputtext> 
+                      </apex:commandLink>
+                      <div class="actionButtonRight"></div>    
+                </apex:outputpanel>
+                
+              	<apex:outputPanel layout="block" styleClass="actionButtons">                        
+                      <div class="actionButtonLeft"></div>
+                        <a href="javascript:;" class="actionButtonMiddle" onclick="discardChangesConfirm(window.location.href);">
+                            <apex:outputtext escape="false" value="{!$Label.xactlyexpress__DiscardChanges}">
+                               <apex:param value="{!URLFOR($Resource.XactlyExpress__XactlySMBResources ,'img/buttons/navigateCancelMiddle.gif')}" />
+                            </apex:outputtext>
+                        </a>
+                      <div class="actionButtonRight"></div>    
+                </apex:outputpanel>
+            </div>
+	    </div>
+    </apex:form>
+    <apex:includeScript value="{!URLFOR($Resource.XactlyExpress__CSN, 'jquery.js')}" />
+    <c:XactlySMBFooterScript />     
+    <script type="text/javascript" language="javascript" src="{!URLFOR($Resource.XactlySMBResources, 'js/XactlySMBJavascript.js')}"></script>
+    <script type="text/javascript" charset="utf-8">
+    
+    var $J = jQuery.noConflict();
+    
+    var rerenderNoCompare = true;
+    var ChangesWillNotBeSaved = true;
+    var nbrSeparator = "{!nbrSeparator}";
+    var nbrDecimal = "{!nbrDecimal}";        
+    
+    storeValues();
+
+    
+    $J(document).ready(function(){
+    	savePageHandler.setClassContainer('xactlyLogo');
+        savePageHandler.storeBottomBarOnclickEvents();
+        reColourTableRows();
+        window.document.title = "{!$Label.CalculateWizardStep5}: {!$Label.AdjustPayment}";
+    });
+
+    function checkChange(){
+        if(!ChangesWillNotBeSaved){
+            return confirm('{!$Label.changesLost}');
+        }else{
+            return true;
+        }
+    }
+        
+    
+    function toggleCollapseTree(obj){
+        var className = '.'+$J($J(obj).parent()).parent().attr('id');
+        
+        var childList = $J(className);
+        if($J(obj).hasClass('collapseArrowDown')){
+            $J(obj).removeClass('collapseArrowDown').addClass('collapseArrowRight');
+            childList.hide();
+        }
+        else{
+            $J(obj).removeClass('collapseArrowRight').addClass('collapseArrowDown');                
+            $J(className).show();
+            for(var i=0; i<childList.length; i++){
+                var div = $J($J($J(childList[i]).children()[0]).children()[0]);
+                if(div.hasClass('collapseArrowRight')){
+                    div.removeClass('collapseArrowRight').addClass('collapseArrowDown');
+                }
+                var div2 = $J($J($J(childList[i]).children()[1]).children()[0]);
+                if(div2.hasClass('collapseArrowRight')){
+                    div2.removeClass('collapseArrowRight').addClass('collapseArrowDown');
+                }
+            }     
+                   
+        }     
+        reColourTableRows();       
+    }
+    
+    function reColourTableRows(){
+        var rows = $J('tr',$J('tbody',$J('#paymentsTable')));
+        var j=0;
+        for(var i=0; i<rows.length; i++){
+            if($J(rows[i]).is(':visible')){
+                if(!_isIE7){
+                    $J(rows[i]).removeClass('odd').removeClass('even').addClass(j%2 == 0 ? 'odd' : 'even');
+                    j++;
+                }
+                else{
+                    if($J(rows[i]).css('display')=='block'){
+                        $J(rows[i]).removeClass('odd').removeClass('even').addClass(j%2 == 0 ? 'odd' : 'even');
+                        j++;
+                    }    
+                }
+            }
+        }
+    }
+    
+    function recalculateTable(obj){
+        
+        $J(obj).val(formatNumber(parseFloat(systemFormatNumber($J(obj).val())).toFixed(2)));
+        
+        var rows = $J('tr',$J('tbody',$J('#paymentsTable')));   
+        ChangesWillNotBeSaved = false;   
+        for(var i=0; i < rows.length; i++){
+            var row = $J(rows[i]);
+            var middleCell = $J(row.children()[3]);
+            
+            var hasInput = false;
+            var children = middleCell.children();
+            for(var x=0; x < children.length; x++){
+                var inp = children.get(x);
+                if(inp.tagName.toLowerCase() == 'input'){ hasInput = true; }
+            }
+            if(!hasInput){
+                middleCell.html('0.0');
+            }
+            $J(row.children()[4]).html('0.0');
+            
+        }
+        var totalPayoutRow = $J($J('#paymentsTable tbody tr')[0]);
+        var totalPayoutManual = $J(totalPayoutRow.children()[3]);
+        var totalPayoutTotal = $J(totalPayoutRow.children()[4]);
+        var inputs = $J('#paymentsTable input');        
+        for(var i=0; i < inputs.length; i++){
+            
+            var input = $J(inputs[i]);
+
+            /*if(isNaN(String(input.val()).replace(/,/g, ''))){
+                alert('{!$Label.PleaseEnterValidNumber}');
+                return;
+            }*/ 
+            
+            input.val(unformatNumber(input.val()));
+            var val = parseFloat(input.val());
+            var cell = $J(input.parent());
+            var row = cell.parent();
+            var pattern = /collapse\d\d?/g
+            var result= $J(row).attr('class').match(pattern);
+            var parent1 = $J('#'+result[0]);
+            var parent2 = $J('#'+result[1]);
+            var totalPayment = parseFloat(unformatNumber(cell.prev().html()))+val;            
+            
+            totalPayment = parseFloat(totalPayment.toFixed(2));
+            
+            cell.next().html(formatNumber(totalPayment));
+            
+            var parent1NewValue3 = parseFloat(unformatNumber($J(parent1.children()[3]).html())) + val;
+            var parent2NewValue3 = parseFloat(unformatNumber($J(parent2.children()[3]).html())) + val;
+            var totalPayoutManualNewValue = parseFloat(unformatNumber(totalPayoutManual.html())) + val;
+            var parent1NewValue4 = parseFloat(unformatNumber($J(parent1.children()[4]).html())) + totalPayment;
+            var parent2NewValue4 = parseFloat(unformatNumber($J(parent2.children()[4]).html())) + totalPayment;
+            var totalPayoutTotalNewValue = parseFloat(unformatNumber(totalPayoutTotal.html())) + totalPayment;
+            
+            parent1NewValue3 = parent1NewValue3.toFixed(2);
+            parent2NewValue3 = parent2NewValue3.toFixed(2);
+            totalPayoutManualNewValue = totalPayoutManualNewValue.toFixed(2);
+            parent1NewValue4 = parent1NewValue4.toFixed(2);
+            parent2NewValue4 = parent2NewValue4.toFixed(2);
+            totalPayoutTotalNewValue = totalPayoutTotalNewValue.toFixed(2);
+            
+            $J(parent1.children()[3]).html(formatNumber(parent1NewValue3));
+            $J(parent2.children()[3]).html(formatNumber(parent2NewValue3));
+            totalPayoutManual.html(formatNumber(totalPayoutManualNewValue));
+            $J(parent1.children()[4]).html(formatNumber(parent1NewValue4));            
+            $J(parent2.children()[4]).html(formatNumber(parent2NewValue4));
+            totalPayoutTotal.html(formatNumber(totalPayoutTotalNewValue));
+        }
+        totalPayoutTotal = parseFloat(unformatNumber(totalPayoutTotal.html()));
+        totalPayoutTotal = totalPayoutTotal < 0 ? totalPayoutTotal*-1 : 0.0;
+        
+        totalPayoutTotal = totalPayoutTotal.toFixed(2);
+        
+        $J('.currentPeriodLiabilityCell').html(formatNumber(totalPayoutTotal));
+        recalculateLiabilityRow();
+        
+    }
+    
+    function commentManualAdj(manualAdjId){
+        document.getElementById(hiddenCommentManualAdjId).value = manualAdjId;
+        waitOn();
+        commentManualAdjAF();
+    }
+    
+    function commentManualAdjOnComplete(){
+        waitOff();
+        if($J('#'+liaCommentBox).is(':visible')){
+            $J(treeContainer).height(150);
+        }
+        else{
+            $J(treeContainer).height(242);
+        }       
+        $J('#'+commentBox).show(); 
+    }
+    
+    /*function closeComment(){
+        waitOn();
+        closeCommentAF();
+    }*/
+    
+    function closeCommentOnComplete(){
+        waitOff();
+        if($J('#'+liaCommentBox).is(':visible')){
+            $J(treeContainer).height(242);
+        }
+        else{
+            $J(treeContainer).height(330);
+        }
+        reColourTableRows();
+        $J('#'+commentBox).hide(); 
+    }
+    
+    function recalculateLiabilityRow(){
+        if($J('.liabilityAdjustment').length == 0){return;}
+        var obj = $J('.liabilityAdjustment').get(0);
+        obj.value = unformatNumber(obj.value);
+        var val = parseFloat(unformatNumber(obj.value));
+        var cell = $J($J(obj).parent());
+	    var totalPayment = parseFloat(unformatNumber(cell.prev().html()))+parseFloat(unformatNumber(cell.prev().prev().html()))+val;
+        
+        //totalPayment = totalPayment.toFixed(2);
+        
+        cell.next().html(formatNumber(totalPayment)); 
+    }
+    
+    function commentLiability(){
+        waitOn();
+        commentLiabilityAF();
+    }
+    
+    function commentLiabilityOnComplete(){
+        waitOff();
+        if($J('#'+commentBox).is(':visible')){
+            $J(treeContainer).height(150);
+        }
+        else{
+            $J(treeContainer).height(242);
+        }
+        $J('#'+liaCommentBox).show(); 
+    }
+    
+    function closeLiabilityComment(){
+        waitOn();
+        closeLiabilityCommentAF();
+    }
+    
+    function closeLiabilityCommentOnComplete(){
+        waitOff();
+        if($J('#'+commentBox).is(':visible')){
+            $J(treeContainer).height(242);
+        }
+        else{
+            $J(treeContainer).height(330);
+        }
+        $J('#'+liaCommentBox).hide(); 
+    }
+    
+    window.onbeforeunload = function(){
+        window.opener.waitOn();
+        window.opener.loadDetailAF();
+        window.opener.reloadAll();
+       
+    };
+    
+    </script>
+</apex:page>

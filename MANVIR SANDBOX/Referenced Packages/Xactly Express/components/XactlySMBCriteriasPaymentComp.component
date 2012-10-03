@@ -1,0 +1,100 @@
+<apex:component controller="XactlyExpress.XactlySMBCriteriasComp">
+    <apex:attribute name="currentView" description="currentView" type="XactlyExpress__XCView__c" required="true" />
+    <apex:attribute name="paymentFilters" description="List of Payments Filters" type="XactlyExpress.XactlySMBCriteriaPayment[]" required="true" />
+    <apex:attribute name="paymentsColumnOptions" description="paymentsColumnOptions" type="SelectOption[]" required="true" />
+    <apex:attribute name="yearsOptions" description="yearsOptions" type="SelectOption[]" required="true" />
+    <apex:attribute name="selectedYear" description="selectedYear" type="String" required="true" />
+    <apex:attribute name="paymentsPeriodOptions" description="paymentsPeriodOptions" type="SelectOption[]" required="true" />
+    <apex:attribute name="paymentsPeriodOperatorsOptions" description="paymentsPeriodOperatorsOptions" type="SelectOption[]" required="true" />
+
+    <div style="margin-top:10px;max-height:265px;overflow:auto" id="tableCrtieriasContainer">
+	    <table id="tableCriterias">
+	        <tbody id="tableCriteriasBody">
+	            <apex:variable var="iterIndex" value="{!1}"/>
+	            <apex:repeat value="{!paymentFilters}" var="p">
+	                <tr class="criteriaRow">
+	                    <td><div class="inputCriteria" style="margin-right:20px;">{!ROUND(iterIndex,0)}</div></td>
+	                    <td>
+	                        <div class="inputCriteria" style="margin-right:20px;">
+	                            <a href="javascript:;" style="color:#CE641B;font-size:7pt;font-weight:bolder;" onclick="criteriasHandler.updateHiddenToSelectedValues();criteriasHandler.removeCriteria('{!$Component.deleteCriteriaKeyInput}','{!p.Index}', '{!$Component.advancedFormula}');">
+	                                <apex:outputText value="{!$Label.xactlyexpress__REMOVE}"/>
+	                            </a>    
+	                        </div>
+	                    </td>
+	                                            
+	                    <td class="dealAttrCell">
+	                        <apex:selectList id="selectAttr" style="margin-right:20px;" value="{!p.p.XactlyExpress__Field__c}" multiselect="false" size="1" styleClass="criteriaAttributeSelect" onchange="criteriasHandler.criteriaAttributeChange(document.getElementById(selectAttr{!ROUND(iterIndex,0)}),document.getElementById(dataType{!ROUND(iterIndex,0)}));jQuery('.errorMsg',jQuery(this).parent().parent()).remove(); changePeriod(document.getElementById(selectAttr{!ROUND(iterIndex,0)}),document.getElementById(dataType{!ROUND(iterIndex,0)}), document.getElementById(yearsOptions{!ROUND(iterIndex,0)}), document.getElementById(periodsOptionsConteiner{!ROUND(iterIndex,0)}));">
+	                            <apex:selectOptions value="{!paymentsColumnOptions}" />
+	                        </apex:selectList>
+	                        <script>
+	                            var selectAttr{!ROUND(iterIndex,0)} = '{!$Component.selectAttr}';
+	                        </script>
+                            
+	                    </td>
+	                    
+	                    <td class="operatorCell">
+	                        <apex:selectList value="{!p.p.XactlyExpress__Operator__c}" multiselect="false" size="1" styleClass="strOps hiddenOpSelect{!IF((p.FieldType == 'String'),' displayed',' hidden')}" onchange="criteriasHandler.hiddenOpChange(this);criteriasHandler.toogleValueCell(this);" style="margin-right:20px;">
+	                            <apex:selectOptions value="{!comparatorOptions}" />
+	                        </apex:selectList>
+	                        
+	                        <apex:selectList value="{!p.p.XactlyExpress__Operator__c}" multiselect="false" size="1" styleClass="nonStrOps hiddenOpSelect{!IF(p.FieldType == 'Currency',' displayed',' hidden')}" onchange="criteriasHandler.hiddenOpChange(this);criteriasHandler.toogleValueCell(this);" style="margin-right:20px;">
+	                            <apex:selectOptions value="{!NonStrcomparatorOptions}" />
+	                        </apex:selectList>
+	                        
+                        	<apex:selectList value="{!p.p.XactlyExpress__Operator__c}" multiselect="false" size="1" styleClass="dateByCurrPrdOps hiddenOpSelect{!IF((p.FieldType == 'Date' && p.p.XactlyExpress__Field__c == 'Period')  || p.p.XactlyExpress__Field__c == 'Year' ,' displayed',' hidden')}" onchange="criteriasHandler.hiddenOpChange(this);criteriasHandler.toogleValueCell(this);" style="margin-right:20px;">
+                            	<apex:selectOptions value="{!paymentsPeriodOperatorsOptions}" />
+                        	</apex:selectList>
+                        
+	                        <apex:inputHidden value="{!p.p.XactlyExpress__Operator__c}" />
+	                    </td>
+	                    <td class="valueCell"> 
+	                    	<div style="display:inline">
+	                        	<apex:inputText id="decimalC" onblur="criteriasHandler.formatNbr(this, document.getElementById(dataType{!ROUND(iterIndex,0)}));criteriasHandler.chkVal(this, document.getElementById(dataType{!ROUND(iterIndex,0)}));" styleClass="numberInputCriteria inputCriteria{!IF(OR(p.FieldType == 'Currency', p.FieldType == 'Decimal'),' displayed',' hidden')}" value="{!p.DecimalValue}"  style="width:100px !important;width:100px;margin-right:20px;" onclick="criteriasHandler.clrErr(this);"/>
+							</div>
+
+	                    	<div style="display:inline">
+                        		<apex:selectList id="yearsOptions" multiselect="false" size="1" value="{!p.SelectedYear}" styleClass="dateInputCriteria {!IF((p.FieldType == 'Date' && p.p.XactlyExpress__Field__c == 'Period')  || p.p.XactlyExpress__Field__c == 'Year' ,' displayed',' hidden')}" onchange="changeYearPeriod(this, document.getElementById(periodsOptionsConteiner{!ROUND(iterIndex,0)}),  document.getElementById(selectAttr{!ROUND(iterIndex,0)}));" >
+                            		<apex:selectOptions value="{!yearsOptions}" />
+                        		</apex:selectList>
+	                        	<script>
+	                            	var yearsOptions{!ROUND(iterIndex,0)} = '{!$Component.yearsOptions}';
+	                            	{!IF(p.FieldType == 'Date' && p.p.Field__c == 'Period',' setTimeout(\"changeInitialYearPeriod(yearsOptions' + TEXT(ROUND(iterIndex,0)) + ', periodsOptionsConteiner' + TEXT(ROUND(iterIndex,0)) + ')\", 2000); ','')}
+	                        	</script>
+	                        	
+							</div>
+	                        <apex:selectList multiselect="false" size="1" value="{!p.blankOrNot}" styleClass="blankNotBlankCriteria {!IF((p.FieldType == 'String' || p.FieldType == 'Date') && p.p.XactlyExpress__Operator__c == 'blankOrNot',' displayed',' hidden')}">
+    	                        <apex:selectOptions value="{!blankNotBlankOptions}" />
+        	                </apex:selectList>
+							
+							<div style="display:inline">
+	                        	<apex:inputText id="stringC" styleClass="stringInputCriteria inputCriteria{!IF((p.FieldType == 'String' && p.p.XactlyExpress__Operator__c != 'blankOrNot'),' displayed',' hidden')}" value="{!p.p.XactlyExpress__StrValue__c}" style="width:100px !important;width:100px;margin-right:20px;" onclick="criteriasHandler.clrErr(this);" />
+	                    	</div>
+	                    	
+	                        <apex:inputHidden value="{!p.FieldType}" id="dataType"/>
+	                        <script>
+	                            var dataType{!ROUND(iterIndex,0)} = '{!$Component.dataType}';
+	                        </script>	                        	                        	                        
+	                    </td>
+	                    <td>
+	                    	<div style="display:inline">
+                        		<apex:selectList id="periodsOptionsConteiner" style="{!IF(p.FieldType == 'Date' && p.p.XactlyExpress__Field__c == 'Period', 'display:block', 'display:none')};" multiselect="false" size="1" value="{!p.p.XactlyExpress__XCPeriod__c}" onclick="changeInitialYearPeriod({!'yearsOptions' + TEXT(ROUND(iterIndex,0))}, {!'periodsOptionsConteiner' + TEXT(ROUND(iterIndex,0))} , selectAttr{!ROUND(iterIndex,0)})">
+                            		<apex:selectOptions value="{!paymentsPeriodOptions}" />
+                        		</apex:selectList>	                    	
+							</div>
+	                        <script>
+	                            var periodsOptionsConteiner{!ROUND(iterIndex,0)} = '{!$Component.periodsOptionsConteiner}';
+	                        </script>	                        	                        	                        
+	                    </td>
+	                    <td class="operatorAndOrCell" style="display:{!IF(!currentView.IsAdvancedFormula__c,'block','none')}">
+	                        <apex:selectList styleClass="operatorSelectClass" multiselect="false" size="1" onchange="criteriasHandler.refreshCriteriaOperator(this, '{!$Component.advancedFormula}');" value="{!p.p.XactlyExpress__NextOperator__c}" style="{!IF(ROUND(iterIndex,0)!=paymentFilters.size,'','display:none;')}">
+	                            <apex:selectOptions value="{!booleanOperatorOptions}" />
+	                        </apex:selectList>
+	                    </td>
+	                </tr>
+	            <apex:variable var="iterIndex" value="{!iterIndex + 1}"/>
+	            </apex:repeat> 
+	        </tbody>
+	    </table>
+	</div>
+    
+</apex:component>

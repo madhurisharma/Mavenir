@@ -1,0 +1,5 @@
+<apex:page showHeader="false" sidebar="false" >
+<style>
+    body{background: transparent; margin:0; padding:0;}
+</style><img src="{!URLFOR($Resource.XactlySMBResources, 'img/waitCursor.gif')}" />
+</apex:page>

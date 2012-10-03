@@ -1,0 +1,255 @@
+<apex:page id="importLog" controller="XactlyExpress.XactlySMBImportLogController" sidebar="false" showHeader="false" standardStylesheets="true"  action="{!redirectWhenAccessIsDenied}">
+    <c:XactlySMBCursor />
+    <link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.XactlySMBResources ,'css/XactlySMBFontStyles.css')}" /> 
+    <style>
+         
+        body {font-family: 'Helvetica', Arial, sans-serif !important;}
+        body td{font-family: 'Helvetica', Arial, sans-serif !important;}
+        body .x-btn button, body .btn, body .btnImportant, body .btnDisabled, body .btnCancel, body .menuButton .menuButtonButton, body .menuButton .menuButtonMenu a, body .menuButton .menuButtonMenu input.theOption, h1, h2, h3, h4, h5, h6 {font-family: 'Helvetica', Arial, sans-serif !important;}
+        
+         
+         table tr td{
+            padding:5px;
+            text-align:left;
+         }
+          
+         table tr th{
+            padding:5px;
+         }
+         table thead tr{
+            background-color: #F4F8FB;
+            color: #426E83;
+            border-bottom: 1px solid #000000;
+         }
+         
+         table{
+            border-collapse: collapse;
+         }  
+         
+         a, a:hover { 
+            cursor:pointer;
+            text-decoration:none;
+            color:#446076;
+         } 
+         
+         .leftSidePanel{
+            width:715px;
+            margin:20px;
+            padding-left: 6px;
+            padding-right: 6px;
+         }
+                 
+        .tableContainer{
+            clear:both;
+            padding-left:30px;
+            padding-top:10px;
+            padding-right:30px;
+        }   
+        .tableBottonsContiner{
+           width:215px;
+           float:right;
+           padding-top:5px;
+        }
+         
+         table td{
+            border-right: none;
+         }  
+         
+         table th{
+            border-right: none;
+         }
+         
+         .even{
+            background-color: #F4F8FB;
+            height:30px;
+         }
+         
+         .odd{
+            background-color: #FFFFFF;
+            height:30px;
+         }
+         
+         .selected{
+            background-color: #CECECE;
+         }   
+         
+         .topTble{
+            background:transparent url({!URLFOR($Resource.XactlySMBResources,'img/layout/table_top_1000w_no_title_bar.png')}) no-repeat scroll 0 0;
+            height: 9px;
+            width: 510px;
+            margin-top:1px;
+         }
+         
+         .errorCel{
+            color:#FF0000;
+            font-weight:bold;
+         }
+         .bottomTble{
+            background:transparent url({!URLFOR($Resource.XactlySMBResources,'img/layout/table_top_1000w_no_title_bar.png')}) no-repeat scroll 0 0;
+            height: 9px;
+            width: 510px;
+         }   
+         
+  
+        .filtersDetails{
+            float:left;
+            margin-left:136px;
+            margin-top:10px;
+            overflow:hidden;
+            position:relative;
+            width:350px;
+        }     
+        
+        .xactlyLogoContainer {
+            height: 59px;
+            width: 720px;
+            margin: 0px;
+            padding: 0px;
+            bottom: 10px;
+            right: 20px;
+            position: absolute;
+        }     
+        .xactlyLogo{
+            background: url({!URLFOR($Resource.XactlySMBResources, 'img/layout/SearchXactlyLogo.png')}) white no-repeat right bottom;
+            border-top:  3px solid #D5D7D8;
+            margin-left:10px;
+            height: 59px;
+            position: relative;
+            
+        }
+        
+        .importPanelTitle{
+            font-family: 'ProximaNovaSemiBold' !important;
+            float:left;
+            color:#ffffff;
+            font-size:15px;
+            margin-bottom:4px;
+            float:left;
+        }                
+    </style>
+    <apex:form id="theImportForm"> 
+        <div class="leftSidePanel">
+           <div style="background-color:#A4B8CB;padding:5px;" id="roundedCornerBlue">    
+              <div class="importPanelTitle">
+                {!$Label.ImportLog}
+              </div>
+              <div style="float:right; margin-right:10px">
+                  {!$Label.GoToPage}
+                  <apex:actionFunction name="goToPageAF" action="{!goToPage}" />
+                  <apex:selectList multiselect="false" size="1" value="{!currentPage}" onchange="goToPage();">
+                      <apex:selectOptions value="{!pages}" />
+                  </apex:selectList>
+              </div>
+
+              <div style="clear:both;"></div>
+              <div>      
+             <center>
+             <div class="topTble" style="width:100%"></div>
+                 <div style="width:700px;height:400px;overflow:auto;background-color:#FFFFFF" id="tableCont">                 
+                      <table style="width:100%;">
+                          <thead style="height: 30px;">
+                              <tr class="odd">
+                                  <th>{!$Label.Source}</th>
+                                  <th>{!$Label.Statuss}</th>
+                                  <th>{!$Label.timeImported}</th>
+                                  <th>{!$Label.Total}</th>
+                                  <th>{!$Label.xactlyexpress__Successful}</th>
+                                  <th>{!$Label.Errors}</th>
+                                  <th>{!$Label.Duplicates}</th>
+                              </tr>
+                          </thead> 
+                          <tbody>
+                          <apex:variable var="rowCount" value="{!1}"/>
+                          <apex:repeat value="{!processes}" var="rd"> 
+                                  <tr class="{!IF(rowCount = 0, 'odd','even')}">
+                                      <td>{!IF(rd.proccessObj.XactlyExpress__ImportSource__c == SETTINGS_CSV, $Label.xactlyexpress__ExternalCSVfile , rd.proccessObj.XactlyExpress__ImportSource__c)}</td>
+                                      <td>
+                                          <apex:outputText value="{!$Label.xactlyexpress__InProgress}" rendered="{!rd.proccessObj.XactlyExpress__Status__c == 'Running'}" />
+                                          <apex:outputText value="{!$Label.xactlyexpress__Successful}" rendered="{!rd.proccessObj.XactlyExpress__Status__c == 'Finished'}" />
+                                          <apex:outputPanel rendered="{!rd.proccessObj.XactlyExpress__Status__c == 'Failed'}" >
+                                             <a href="{!$Page.XactlySMBImportErrorPopup}?id={!rd.proccessObj.Id}" class="errorCel">
+                                               {!$Label.Error}
+                                             </a>
+                                          </apex:outputPanel>                                                     
+                                      </td>
+                                      <td>
+                                         {!rd.formatedDate}
+                                      </td>
+                                      <td>
+                                           <apex:outputText value="{0,number,#}">
+                                                <apex:param value="{!rd.proccessObj.XactlyExpress__ImportRowsProcessed__c}" />
+                                           </apex:outputText> 
+                                      </td>
+                                      <td>
+                                           <apex:outputText value="{0,number,#}">
+                                                <apex:param value="{!rd.proccessObj.XactlyExpress__ImportRowsCreated__c}" />
+                                           </apex:outputText>                                       
+                                      </td>
+                                      <td>
+                                        <apex:outputPanel rendered="{!rd.proccessObj.XactlyExpress__Status__c == 'Failed' && rd.proccessObj.XCImportErrors__r.size==0}" >
+                                           {!$Label.xactlyexpress__NotApplies}
+                                        </apex:outputPanel>
+                                        <apex:outputPanel rendered="{!rd.proccessObj.XactlyExpress__Status__c != 'Failed' || rd.proccessObj.XCImportErrors__r.size!=0}" >
+                                           <apex:outputText value="{0,number,#}">
+                                                <apex:param value="{!rd.proccessObj.XCImportErrors__r.size}" />
+                                           </apex:outputText> 
+                                       </apex:outputPanel>
+                                      </td>
+                                      <td>
+                                           <apex:outputLink rendered="{!0!=FLOOR(rd.proccessObj.XactlyExpress__ImportRowsDuplicated__c)}" value="XactlySMBImportLinkToDeals" id="theLink">
+                                                {!FLOOR(rd.proccessObj.XactlyExpress__ImportRowsDuplicated__c)}
+                                                <apex:param name="id" value="{!rd.proccessObj.Id}"/>
+                                           </apex:outputLink>
+                                           <apex:outputText rendered="{!0==FLOOR(rd.proccessObj.XactlyExpress__ImportRowsDuplicated__c)}" value="0" /> 
+                                             
+                                      </td>
+                                  </tr>
+                                 <apex:variable var="rowCount" value="{!(rowCount * -1) + 1}"/>
+                           </apex:repeat>
+                                  <!-- tr class="{!IF(rowCount = 0, 'odd','even')}" style="height: auto;">    
+                                      <td>&nbsp;</td>
+                                      <td>&nbsp;</td>
+                                      <td>&nbsp;</td>      
+                                      <td>&nbsp;</td>                                                         
+                                      <td>&nbsp;</td>      
+                                      <td>&nbsp;</td>     
+                                      <td>&nbsp;</td>     
+                                  </tr-->
+                          </tbody>
+                      </table>   
+                    </div>
+                <div class="bottomTble" style="width:100%"></div>
+           </center>
+        </div>
+    </div>
+    </div>
+    
+    <div class="xactlyLogoContainer"><div class="xactlyLogo"></div></div>
+    
+    </apex:form>
+    <apex:includeScript value="{!URLFOR($Resource.XactlyExpress__CSN, 'jquery.js')}" />
+    <c:XactlySMBFooterScript /> 
+    
+    <script type="text/javascript" language="javascript" src="{!URLFOR($Resource.XactlySMBResources, 'js/XactlySMBJavascript.js')}"></script>
+    <script type="text/javascript" language="javascript" src="{!URLFOR($Resource.XactlySMBResources, 'js/jquery.curvycorners.min.js')}"></script>
+    <script type="text/javascript">
+        $('#roundedCornerBlue').corner({
+            tl: { radius: 5 },
+            tr: { radius: 5 },
+            bl: { radius: 5 },
+            br: { radius: 5 },
+            antiAlias: true
+        });    
+        
+ 
+        $(document).ready(function(){
+    
+        });
+              
+    
+        function goToPage(){
+           waitOn();
+           goToPageAF();
+        }
+    </script>
+</apex:page>

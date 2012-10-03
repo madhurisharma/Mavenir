@@ -1,0 +1,634 @@
+<apex:component controller="XactlyExpress.XactlySMBDashboardLeftSidebar">
+    <apex:attribute name="CisManager" description="Derminate if the user is Manager" type="Boolean" required="true" assignTo="{!isManager}"/>
+    <apex:attribute name="CcurrentPeriod" description="Derminate current Period" type="XactlyExpress__XCPeriod__c" required="true" assignTo="{!currentPeriod}"/>
+    <apex:attribute name="CcurrentProfileId" description="Derminate current Period" type="Id" required="true" assignTo="{!currentProfileId}"/>
+    <apex:attribute name="CcurrentSettings" description="Derminate current settings" type="XactlyExpress.XactlySMBSettings" required="true" assignTo="{!currentSettings}"/>
+    <apex:attribute name="ClastClosedPeriod" description="Derminate last calculated Period" type="XactlyExpress__XCPeriod__c" required="true" assignTo="{!lastClosedPeriod}"/>
+    <apex:attribute name="CcurrentSttgs" description="Derminate current settings" type="XactlyExpress__XCSettings__c" required="true" assignTo="{!currentSttgs}"/>
+    <apex:attribute name="Csubordinates" description="Derminate list of subordinates" type="id[]" required="true" assignTo="{!subs}"/>
+    <apex:attribute name="currentSettingsAttach" description="Derminate currentSettingsAttach" type="String" required="true" assignTo="{!currentSettingsAttach}"/>
+    <apex:attribute name="CisAdmin" description="Derminate if the user is admin" type="Boolean" required="true" assignTo="{!isAdmin}"/>
+    
+    
+ 
+         <style>
+            .clear{
+                clear:both;
+            } 
+            
+            ul li, ol li {
+                margin-left: 0;
+                padding-left: 0;
+            }
+            
+            
+            .mainContent .leftPanel{
+                overflow: visible !important;
+                border-right:none !important;
+            }
+            
+	        .mainContent .ResumeDash .cornerUL{
+	            float:left;
+	            width: 10px;
+	            height: 10px;
+	            background: url( {!URLFOR($Resource.XactlyExpress__XactlySMBResources, 'img/layout/cornerPanelLeftUL.png')}) no-repeat; 
+	            margin-left:-10px;
+	            margin-top:-10px;
+	        }
+	         
+	        .mainContent .ResumeDash .cornerUR{
+	            float:right; 
+	            width: 10px;
+	            height: 10px;
+	            background: url( {!URLFOR($Resource.XactlyExpress__XactlySMBResources, 'img/layout/cornerPanelLeftUR.png')}) no-repeat; 
+	            margin-right:-10px;
+	            margin-top:-10px;
+	        }
+	        
+	        .mainContent .ResumeDash .cornerBL{
+	            float:left;
+	            width: 10px;
+	            height: 10px;
+	            background: url( {!URLFOR($Resource.XactlyExpress__XactlySMBResources, 'img/layout/cornerPanelLeftBL.png')}) no-repeat; 
+	            margin-left:-10px;
+	        }
+	        
+	        .mainContent .ResumeDash .cornerBR{
+	            float:right;
+	            width: 10px;
+	            height: 10px;
+	            background: url( {!URLFOR($Resource.XactlyExpress__XactlySMBResources, 'img/layout/cornerPanelLeftBR.png')}) no-repeat; 
+	            margin-right:-10px;  
+	        }
+    
+	        .leftPanel .ResumeDash{
+	            padding:10px;
+	            margin: 10px;
+	            background:#DDE7EC;
+	            color: #787A7D;
+	        }
+	        
+	        .leftPlanBox {
+	            margin: 15px 0px 10px 0px;
+	        }
+	        
+	        .CategoryBoxTitle:first-child{
+	            border-top:none !important;
+	        }
+	        
+	        .CategoryBoxTitle:last{
+	            border:3px solid #9BB5C6 !important;
+	        }
+	        
+	        .CategoryBoxTitle{
+	            height: 20px;    
+	            border-top:2px solid #D1DADF;
+	            padding-top:5px;
+	        }
+	        
+	        .CategoryBoxTitleFirst{
+	            height: 20px;    
+	            border-bottom:2px solid #D1DADF;
+	            padding:5px 0 2px;
+	        }
+	        
+	        .CategoryBoxTitleLast{
+	            height: 20px;    
+	            border-top:3px solid #93AFC1;
+	            padding-top:5px;
+	            margin:20px 0 6px 0;
+	            padding-top:15px;
+	        }
+	        
+	        
+	        .CategoryBoxTitleFirst .planTitle{
+	            color:#497896; 
+	            font-size:16px; 
+	            padding-left:5px;
+	            font-weight:bold;
+	        }    
+	        
+	        .CategoryBoxTitleLast .planTitle{
+	            color:#497896; 
+	            font-size:16px; 
+	            padding-left:5px;
+	            font-weight:bold;
+	        }  
+	        
+	        .CategoryBoxTitle span{
+	            float:left;
+	        }
+	        
+	        .AdditionalBoxContent{
+	            padding: 10px 0 0 10px;
+	            font-size:14px;
+	            color: #707174;
+	        }
+	        
+	        .CategoryBoxContent{
+	            float:left;
+	            width:100%;
+	        }
+	        
+	        .CategoryBoxContent ul{
+	            list-style: none;
+	        }
+	        
+	        .CategoryBoxContent li{
+	            margin-bottom:7px;    
+	        }
+	        
+	        .firstListCategory{
+	            padding-left: 0px;
+	            padding-top: 5px;
+	            margin:15px 0 17px;
+	        }
+	        
+	        .firstListCategory li{
+	            padding-left:20px;
+	        }
+	        
+	        #secondListCategory{
+	            padding-left:0px;
+	            padding-top:5px;
+	            padding-top:5px;
+	        }
+	        
+	        .ResumeDash .dataValues{
+	            color:#497896;
+	            float:right;
+	        }
+	        
+	        .firstListCategory .dataValuesGray{
+                float:right;
+	        }
+	        
+	        .ResumeDash .dataValuesGray{
+	             float:right;
+	        }
+	        
+	        .arrowCategory{
+	            background: url( {!URLFOR($Resource.XactlyExpress__XactlySMBResources, 'img/icons/arrowDownCatBlack.png')})no-repeat;
+	            float:left;
+	            height:11px;
+	            width:10px;
+	            margin-top:6px;
+	        }
+	        
+	        .arrowCategoryBlue{
+	            background: url( {!URLFOR($Resource.XactlyExpress__XactlySMBResources, 'img/icons/arrowDownCatBlue.png')}) no-repeat scroll 0 0 transparent;
+	            float:left;
+	            height:11px;
+	            width:10px;
+	            margin-top:3px;
+	        }
+	        
+	        .arrowRightCategoryBlue{
+	            background: url( {!URLFOR($Resource.XactlyExpress__XactlySMBResources, 'img/icons/arrowDownCatBlue.png')}) no-repeat scroll 0 -12px transparent;
+	            float:left;
+	            height:11px;
+	            width:10px;
+	            margin-top:3px;
+	        }
+	        
+	        .arrowRightCategory{
+	            background: url( {!URLFOR($Resource.XactlyExpress__XactlySMBResources, 'img/icons/arrowRightCatBlack.png')}) no-repeat;
+	            float:left;
+	            height:11px;
+	            width:10px;
+	            margin-top:3px;
+	        }
+	        
+	        .loopCategory{
+	            background: url( {!URLFOR($Resource.XactlyExpress__XactlySMBResources, 'img/icons/loopCategory.png')}) no-repeat;
+	            float:right;
+	            height:23px;
+	            width:23px;
+	            margin-top:-2px;
+	        }
+         
+         
+	        /* DropDown YearMonth */
+	        .createNew{         
+	            cursor:pointer !important;
+	            text-decoration:none !important;
+	            font-size:8pt;
+	            text-align:right;
+	            display:block;
+	            margin-right:5px;
+	        }
+	        
+	        .NotCompared{
+	            font-family:'ProximaNovaRegular';
+	            font-size: 14px;
+	            font-weight:normal;
+	            color: #3C6E8E; 
+	            float:left;
+	            width:220px;
+	            margin-top:12px;
+	            margin-left:12px;
+	            cursor:pointer;
+	        }
+	        
+	        #planContainer{
+	           margin-left: auto;
+	           margin-right: auto;
+	           margin-bottom: 5px;
+	           width:244px;
+	        }
+	        .plansDropDown{
+	            display:none;
+	            z-index:100;
+	            position: absolute;
+	            margin-top:22px;
+	            margin-left:22px;
+	            *margin-left:-213px;
+	        }
+	        .plansDropDownTop{
+	            background: url({!URLFOR($Resource.XactlyExpress__XactlySMBResources, 'img/layout/dropDownCustomTopBig2.png')}) no-repeat;
+	            float: left;
+	            height: 24px;
+	            margin: -20px;
+	            width: 244px;
+	        }
+	        .plansDropDownBottom{
+	            background: url({!URLFOR($Resource.XactlyExpress__XactlySMBResources, 'img/layout/dropDownCustomBottomBig2.png')}) no-repeat;
+	            height: 16px;
+	            margin: 0 -20px -50px;
+	            width: 244px;
+	        }
+	        .plansDropDownBody{
+	            background-color: #FFFFFF;
+	            border-left: 2px solid #9A9A9A;
+	            border-right: 2px solid #9A9A9A;
+	            margin: -10px -20px 0;
+	            padding: 0 0 0 20px;
+	            width: 147px;
+	            min-height: 45px;
+	        }
+	        
+	        .classPeriodsDropDownItamFirst{
+	            color:#757679;
+                height: 25px;
+                margin-left: -15px;
+                padding: 2px 5px 0;
+                cursor: pointer;
+	        }
+	        
+	        .classPlansDropDownItam{
+	            color:#757679;
+	            height: 25px;
+	            margin-left: 0px;
+	            padding: 2px 5px 0;
+	            cursor: pointer;
+	        }
+	        .classPeriodsDropDownItam1{
+	            margin-bottom: 10px;
+	            margin-left: 0px;
+	            font-family: Helvetica';
+	            font-size: 12px;
+	            color: #3e6e91;
+	            width:125px;
+	        }
+	        .classPlansDropDownItam:HOVER{
+	            background: url({!URLFOR($Resource.XactlyExpress__XactlySMBResources, 'img/layout/selItemBack.png')}) no-repeat;
+	            color: #ffffff;
+	        }
+	        
+	        .periodsDropDownCont{
+	            background: url({!URLFOR($Resource.XactlyExpress__XactlySMBResources ,'img/layout/planDropdownDash2.png')}) no-repeat center;
+	            color: #6d6e71; 
+	            font-size: 11px;
+	            font-weight: bold;
+	            text-align: left;
+	            height:36px;
+	            width:170px;
+	        }
+	        
+	        .disableYear{
+				font-family:Helvetica;
+				color:#d9dada;
+				font-size:11px;
+				cursor:auto;
+	        }
+	        
+	        .disablePeriod{
+                font-family:Helvetica;
+                color:#d9dada;
+                font-size:11px;
+                cursor:auto;
+            }
+            
+            .resourceItem{
+                float:left;
+				height:100%;
+				padding-top:10px;
+				width:100%;
+            }
+            
+			.resurceDetailText{
+                float:left;
+				padding-top:4px;
+			}
+			
+			            
+            
+         </style>   
+            
+         <!-- LEFT PANEL -->  
+                <apex:outputPanel layout="block" styleClass="leftPanel" id="leftPanel" style="margin-bottom:70px;">
+                    <apex:actionFunction name="previousYear" action="{!getPreviousYear}" reRender="leftPanel" oncomplete="fixDots();loadPodByYear();disablePrevAndNext();collapseArrow();loadBubbles();">           
+		                <apex:param name="param1" assignTo="{!prevNext}" value="" />
+		            </apex:actionFunction>
+		            
+		            <apex:actionFunction name="changeSelectedPeriod" action="{!changePeriod}" reRender="leftPanel" oncomplete="fixDots();loadPodByPeriod();disablePrevAndNext();collapseArrow();loadBubbles();">  
+                      <apex:param name="param2" assignTo="{!prevNext}" value="" />
+                    </apex:actionFunction>
+                    
+                    
+                    <div class="leftPlanBox">
+	                    <apex:outputpanel layout="none" rendered="{!IF(currentSettingsAttach == null, true, false)}">
+	                      <img src="{!URLFOR($Resource.XactlySMBResources, 'img/layout/FillerImageForSalesReps.jpg')}" alt="" class="chartImg" />
+	                    </apex:outputpanel>
+	                    <apex:outputpanel layout="none" rendered="{!IF(currentSettingsAttach == null, false, true)}">
+	                      <img src="/servlet/servlet.FileDownload?file={!currentSettingsAttach}" alt="" class="chartImg" />
+	                    </apex:outputpanel>      
+                    </div>
+                    
+                    <div class="ResumeDash">
+                        <div class="cornerUL"></div> 
+                        <div class="cornerUR"></div>      
+                        
+                        <div id="planContainer">  
+                            <apex:inputHidden id="periodId" value="{!crrntPeriodId}"/>
+                            <apex:inputHidden id="periodName" value="{!selectedPeriodName}"/>
+                            <apex:inputHidden id="selectedperiodId" value="{!selectedPeriodId}"/>
+                            <apex:inputHidden id="fyscalYearSelectedId" value="{!selectedFiscalYearId}"/>
+                            <apex:inputHidden id="fyscalYearSelected" value="{!selectedFiscalYearName}"/>   
+                            <apex:inputHidden id="previousFiscalYearName" value="{!previousFiscalYearName}"/>   
+                            <apex:inputHidden id="nextFiscalYearName" value="{!nextFiscalYearName}"/>   
+                            <apex:inputHidden id="previousFiscalYear" value="{!previousfiscalYear}"/>  
+                            <apex:inputHidden id="nextFiscalYear" value="{!nextfiscalYear}"/>   
+                                                         
+                            <script>  
+                               var periodId = '#{!$Component.periodId}'.replace(/:/g,'\\:');
+                               var periodName = '#{!$Component.periodName}'.replace(/:/g,'\\:');
+                               var fyscalYearSelectedId = '#{!$Component.fyscalYearSelectedId}'.replace(/:/g,'\\:');
+                               var fyscalYearSelected = '#{!$Component.fyscalYearSelected}'.replace(/:/g,'\\:');
+                               var previousFiscalYearName = '#{!$Component.fyscalYearSelected}'.replace(/:/g,'\\:');
+                               var nextFiscalYearName = '#{!$Component.fyscalYearSelected}'.replace(/:/g,'\\:');
+                               var previousFiscalYear = '#{!$Component.previousFiscalYear}'.replace(/:/g,'\\:');
+                               var nextFiscalYear = '#{!$Component.nextFiscalYear}'.replace(/:/g,'\\:');                               
+                            </script>
+                            
+                            <div class="periodsDropDownCont">
+                                <div class="NotCompared" onclick="showPlansMenu();">   <c:XactlySMBLongTextBubble maxLength="15" text="{!selectedPeriodName} {!selectedFiscalYear.Name}"/> </div>
+                                <div class="plansDropDown">
+                                    <div class="plansDropDownTop"></div>
+                                    <div class="plansDropDownBody">
+                                        <div class="classPeriodsDropDownItam1">  {!selectedPeriodName} {!selectedFiscalYear.Name}</div>
+                                        <div class="classPeriodsDropDownItamFirst"> <span>  {!$Label.FiscalYear} {!selectedFiscalYear.Name}</span></div> 
+
+									    <apex:repeat id="periodList" value="{!periodList}" var="iter" >
+											
+											
+											<!--Show all periods less than the current period -->
+											<apex:outputPanel rendered="{!IF(iter.pId!=currentPeriod.Id,'true','false')}">
+                                                <div id="{!iter.pId}" onclick="selectPlanOpt('{!iter.pId}',this);" class="classPlansDropDownItam" > 
+                                                    <span>{!iter.Name}</span>
+                                                </div> 
+											</apex:outputPanel>
+											
+											
+											<!--Show the last Closed period and disable the current - When the Current Period is not the first period -->
+											<apex:outputPanel rendered="{!AND(Not(currentSttgs.XactlyExpress__ShowCurrentPeriod__c), iter.pId==currentPeriod.Id, currentSttgs.XactlyExpress__XCFirstPeriodID__c!=currentPeriod.Id)}">
+                                                <div id="{!iter.pId}" class="classPlansDropDownItam disablePeriod " > 
+                                                    <span>{!iter.Name}</span>
+                                                </div> 
+                                            </apex:outputPanel>
+                                            
+
+                                           <!-- Show the current Period if showCurrenPeriod is equal to true or showCurrenPeriod is equal to False and the first period is the current period-->
+                                            <apex:outputPanel rendered="{!OR(AND(currentSttgs.XactlyExpress__ShowCurrentPeriod__c, iter.pId==currentPeriod.Id), AND(Not(currentSttgs.XactlyExpress__ShowCurrentPeriod__c), iter.pId==currentPeriod.Id, currentSttgs.XactlyExpress__XCFirstPeriodID__c==currentPeriod.Id))}">
+                                                <div id="{!iter.pId}" onclick="selectPlanOpt('{!iter.pId}',this);" class="classPlansDropDownItam" > 
+                                                    <span>{!iter.Name}</span>
+                                                </div> 
+                                            </apex:outputPanel>
+											
+	                                    </apex:repeat>
+                                    
+	                                    <div class="classPeriodsDropDownItamFirst classPeriodsPreviousYear" onclick="if(jQuery(this).hasClass('disableYear')){return false;}else{previousYear('Back');waitOn();}"> <span>  &lt;&lt; {!$Label.PreviousYear} ({!previousFiscalYearName})</span></div> 
+	                                    <div class="classPeriodsDropDownItamFirst classPeriodsNextYear" onclick="if(jQuery(this).hasClass('disableYear')){return false;}else{previousYear('Next');waitOn();}"> <span>  &gt;&gt; {!$Label.NextYear} ({!nextFiscalYearName})</span></div>                                     
+                                    </div>
+                                    <div class="plansDropDownBottom"></div>
+                                </div>
+                            </div>
+                        </div> 
+	                    <apex:repeat value="{!plans}" var="iterPlanXX">
+	                        <div class="CategoryBoxTitleFirst" style="border-top:none">                                
+                                    <a class="arrowRightCategoryBlue"></a> 
+                                    <a style="float:left;" href="{!$Page.XactlySMBDashRepPlanDetails}?id={!iterPlanXX.pl.p.id}{!IF(LEN(userToShow) > 0,'&userId='&userToShow,'')}" onclick="waitOn();">
+                                       <span class="planTitle">
+                                       <c:XactlySMBLongTextBubble wrappStyle="display:inline;" text="{!iterPlanXX.pl.p.Name}" maxLength="23" />
+                                    	</span>
+                                    </a> 
+                                    <apex:outputPanel style="float:right;width:23px;height:23px;" layout="block" rendered="{!OR(iterPlanXX.pl.p.XactlyExpress__Description__c=='',iterPlanXX.pl.p.XactlyExpress__Description__c==null)}">
+                                        <a class="loopCategory trigger"></a> <div class="clear"> </div>         
+                                        <div class="bubble_html" style="display:none;"> 
+                                               {!iterPlanXX.pl.p.Name}
+                                        </div>    
+                                    </apex:outputPanel> 
+                                                                                                    
+                                    <apex:outputPanel style="float:right;width:23px;height:23px;" layout="block" rendered="{!And(iterPlanXX.pl.p.XactlyExpress__Description__c!='',iterPlanXX.pl.p.XactlyExpress__Description__c!=null)}">     
+                                        <a class="loopCategory trigger"></a> <div class="clear"> </div>         
+                                        <div class="bubble_html" style="display:none;"> 
+                                             <apex:outputText value="{!iterPlanXX.pl.p.XactlyExpress__Description__c}"/>         
+                                        </div>    
+                                    </apex:outputPanel>
+	                                
+                                </div>
+	                         
+	                         <div class="categoriesContent">
+	                         <apex:repeat value="{!iterPlanXX.pl.payrollCategories}" var="pc">
+		                         <div class="CategoryBoxContent CategoryHidden" stylCategoryBoxTitleFirste="border-bottom:2px solid #D1DADF">
+		                           <ul class="firstListCategory" style="margin-top:0px">
+		                               <li> 
+		                               <a class="arrowCategory"></a>
+		                               <span> &nbsp;&nbsp;{!pc.name} </span> <span class="dataValuesGray" style="display:none;"> {!pc.totalCompensationS} </span>
+		                                    <ul id="secondListCategory"> 			                                      
+		                                       <apex:repeat value="{!pc.measures}" var="measure">
+		                                            <li> <span> 
+				                                       <c:XactlySMBLongTextBubble wrappStyle="display:inline;" text="{!measure.name}" maxLength="25" />
+		                                            </span> <span class="dataValues"> {!measure.totalCompensation} <span style="color:red;">{!IF(measure.manualAdjustment!=0, ' *', '  ')}</span></span></li>
+		                                       </apex:repeat>	
+		                                    </ul>  
+		                               </li>
+		                              
+		                           </ul>
+		                        </div>                           
+	                        	<div class="clear"></div>
+	                        </apex:repeat> 
+	                        </div>
+	                  </apex:repeat>                        
+	                  <div class="AdditionalBoxContent CategoryHidden">                    
+	                  	<span>{!$Label.TotalPayment}</span> <span class="dataValuesGray"> {!StotalPayPlusManual} <span style="color:red;">{!IF(ExistManualAdj, ' *', '  ')}</span></span><div class="clear"></div>
+	                    <span>{!$Label.YTDPayment}</span>  <span class="dataValuesGray"> {!StotalYTDPay}<span style="color:red;">{!if(manualAdjForYear != 0.0,' *','')}</span> </span>
+	                  </div> 
+	                  <div class="clear"></div> 
+	                  <div class="CategoryBoxTitleLast">
+	                  	<a class="arrowRightCategoryBlue"></a> <span class="planTitle"> {!$Label.BalanceInformation}</span> 
+	                  </div>
+                      <div class="CategoryBoxContent CategoryHiddenLast">
+	                  	<ul id="thirdListCategory">
+	                    	<li> <span>{!$Label.HoldBalance} </span> <span class="dataValues"> {!StotalBalance} </span> </li>
+	                        <li> 
+		                        <apex:outputText value="{!$Label.xactlyexpress__LiabilityBalance}">
+		                        	<apex:param value="{!currentSettings.liabilityCap}"/>
+		                        </apex:outputText> <span class="dataValues">{!Sliability}</span>
+	                        </li>	                                	
+	                    </ul>
+	                  </div>   
+	                  <div class="clear"></div>
+	                  <div class="cornerBL"></div> 
+	                  <div class="cornerBR"></div>      
+	             	</div>
+	             	
+	             	<div class="ResumeDash">
+                      <div class="cornerUL"></div> 
+                      <div class="cornerUR"></div>      
+                        
+                      <div class="CategoryBoxTitleFirst">
+                        <span class="planTitle">Resources</span> 
+                      </div>
+                      <div class="CategoryBoxContent CategoryHiddenResources" style="margin: 20px 0px;">
+                         <div class="resourceItem">
+                            <img style="float:left; width: 25px; height:25px;" src="{!URLFOR($Resource.XactlySMBResources, 'img/icons/excelIcon.png')}" />
+                            <a style="color:#658CA6; font-size:13px;" href="{!$Page.XactlySMBCommStmt}?userId={!selectedPeople}&prd={!selectedPeriodId}&noDeals=true"> <span class="resurceDetailText"> Summary Commission Statement </span></a>
+                         </div>
+                         <div class="clear"></div>
+                         
+                         <div class="resourceItem">
+                            <img style="float:left; width: 25px; height:25px;" src="{!URLFOR($Resource.XactlySMBResources, 'img/icons/excelIcon.png')}" />
+                            <a style="color:#658CA6; font-size:13px;" href="{!$Page.XactlySMBCommStmt}?userId={!selectedPeople}&prd={!selectedPeriodId}"> <span class="resurceDetailText"> Detailed Commission Statement </span></a>
+                         </div>
+                      </div>   
+                      <div class="clear"></div>
+                      <div class="cornerBL"></div> 
+                      <div class="cornerBR"></div>      
+                    </div>
+                </apex:outputPanel>
+                
+                <script type="text/javascript" src="{!URLFOR($Resource.XactlySMBResources, 'modbubble/js/jquery.codabubble.mod.js')}"></script>
+                <script type="text/javascript" charset="utf-8">
+    
+					jQuery(document).ready(function (){   
+					   collapseArrow();   
+					   disablePrevAndNext();	
+					   loadBubbles();				  
+					});             
+                    
+                    function collapseArrow(){                  
+				                jQuery('.arrowCategory, .arrowRightCategory').click(function(){
+				                    if($(this).hasClass('arrowCategory')){
+				                        $(this).addClass('arrowRightCategory');
+				                        $(this).removeClass('arrowCategory');
+				                        $(this).parent().find('ul').fadeOut();
+				                        $(this).parent().find('.dataValuesGray').show();
+				                    }else{
+				                        $(this).addClass('arrowCategory');
+				                        $(this).removeClass('arrowRightCategory');
+				                        $(this).parent().find('ul').fadeIn();
+				                        $(this).parent().find('.dataValuesGray').hide();
+				                    }
+				                });
+				                
+				                jQuery('.arrowCategoryBlue, .arrowRightCategoryBlue').click(function(){
+				                    if($(this).hasClass('arrowCategoryBlue')){
+				                        $(this).addClass('arrowRightCategoryBlue');
+				                        $(this).removeClass('arrowCategoryBlue');
+				                        if($(this).parent().hasClass('CategoryBoxTitleFirst')){
+				                             $(this).parent().next().fadeIn();
+				                        }else{
+				                            $('.CategoryHiddenLast').fadeIn();
+				                        }
+				                        
+				                    }else{
+				                        $(this).addClass('arrowCategoryBlue');
+				                        $(this).removeClass('arrowRightCategoryBlue');
+				                        if($(this).parent().hasClass('CategoryBoxTitleFirst')){
+                                             $(this).parent().next().fadeOut();
+                                        }else{
+                                            $('.CategoryHiddenLast').fadeOut();
+                                        }
+				                    }
+				                });
+                    } 
+                
+                    function showPlansMenu(){
+                        setTimeout("jQuery('.plansDropDown').fadeIn('fast')",100);
+                    }
+                    
+                    $('body').click(function() {
+			           if(jQuery('.plansDropDown').css('display')=='block'){
+			               jQuery('.plansDropDown').fadeOut('fast');
+			           }
+			        }); 
+			        
+			         function selectPlanOpt(id,obj){
+			            waitOn();
+			            jQuery(periodId).val(id);
+			            jQuery('.plansDropDown').fadeOut();			            
+			            jQuery(periodName).val(jQuery(obj).text());
+			            changeSelectedPeriod('');
+			        }
+			        
+			        function fixDots(){			        	
+			        	var auxtext = jQuery(periodName).val() +' '+ jQuery(fyscalYearSelected).val();			        	
+			        	while (auxtext.substr(0,1)==' '){			        		
+			        		auxtext = auxtext.substring(1);
+			        	}			        		        	
+			        	if (auxtext.length>14){
+			        		auxtext = auxtext.substring(0,14) + '...';
+			        	}
+			        	jQuery('.trigger', '.NotCompared').html(auxtext);			 
+			        	
+			        	var previousYearText=(jQuery(fyscalYearSelected).val()-1).toString();
+                        var nextYearText=(parseInt(jQuery(fyscalYearSelected).val())+1).toString();
+                        jQuery('.classPeriodsPreviousYear').html('&lt;&lt;{!JSENCODE($Label.PreviousYear)} '+ previousYearText);
+                        jQuery('.classPeriodsNextYear').html('&gt;&gt;{!JSENCODE($Label.NextYear)} '+ nextYearText);       				        	        
+			        }
+			        function loadPodByPeriod(){
+			            if(typeof periodIdInput=="undefined"){
+                            waitOff();
+			            }else{
+                            if($('#sortable2 #'+periodIdInput)!= "undefined"){
+                                refreshPods($(periodId).val());     
+                            }
+			            }  
+		            } 
+			        			        
+			        function loadPodByYear(){
+			            if(typeof fiscalYearIdInput=="undefined"){
+                            waitOff(); 
+			            }else{
+		                    if($('#sortable2 #'+fiscalYearIdInput)!= "undefined"){
+								$(fiscalYearIdInput).val($(fyscalYearSelectedId).val());
+								refreshPodsByYear($(fyscalYearSelectedId).val(),$(periodId).val());      
+	                        }else{
+	                            waitOff();
+	                        }
+	                    }     
+		            } 			        			        			        			        
+			        function disablePrevAndNext(){
+			            if(jQuery(previousFiscalYear).val()=='false'){
+			                jQuery('.classPeriodsPreviousYear').addClass('disableYear');			                
+			            }
+			            
+			            if(jQuery(nextFiscalYear).val()=='false'){
+                            jQuery('.classPeriodsNextYear').addClass('disableYear');                            
+			            }
+
+			        }                
+                </script>
+  <!-- End Default Content REMOVE THIS -->
+</apex:component>

@@ -1,0 +1,6 @@
+<apex:component >
+    <apex:attribute name="num" description="The step number" type="Integer" required="false"/>
+    <apex:attribute name="label" description="The label" type="String" required="false"/>
+    <div style="clear:both;"></div>
+    <span class="importStepNumber">{!num}</span><span class="importStepLabel" id="stepActionLabel{!num}">{!label}</span>
+</apex:component>

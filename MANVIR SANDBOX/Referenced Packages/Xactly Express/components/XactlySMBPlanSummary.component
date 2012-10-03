@@ -1,0 +1,38 @@
+<apex:component >
+    <apex:attribute name="ctl" description="The parent controller" type="XactlyExpress.XactlySMBPlanController" required="true" access="public"/>
+    
+    <link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.XactlySMBResources ,'css/XactlySMBMeasureList.css')}" />
+    
+    <style>
+        .orangeLi{
+	       color:#BD5C19;
+	       font-weight: bold;
+	    }
+    </style>
+    
+    <apex:outputPanel id="editMeasuresContainer" layout="block">
+        <div id="measuresContainer">
+            <div class="measuresTitle">
+                <apex:outputtext value="{!$Label.xactlyexpress__SelectAPlan}" />
+            </div>  
+            <div class="measuresContent">
+                <apex:outputpanel rendered="{!IF(ctl.pr.planList.size == 0, false, true)}">
+                    <apex:outputpanel >
+                       <apex:repeat value="{!ctl.pr.planList}" var="iter">
+                           <a href="{!$Page.XactlySMBReviewPlan}?step=6&id={!iter.id}" class="{!IF(iter.id==ctl.plan.id,'orangeLi','measuresListLinks')}">
+                               {!iter.name}
+                           </a>
+                           <br />
+                       </apex:repeat>
+                   </apex:outputpanel>
+                   
+                </apex:outputpanel>
+                <apex:outputpanel rendered="{!IF(ctl.pr.planList.size == 0, true, false)}">
+                    <apex:outputtext value="{!$Label.xactlyexpress__NoPlansForThisYear}" /> 
+                </apex:outputpanel>
+            </div>  
+            <div class="measuresBottom">
+            </div>
+        </div>   
+    </apex:outputPanel>
+</apex:component>

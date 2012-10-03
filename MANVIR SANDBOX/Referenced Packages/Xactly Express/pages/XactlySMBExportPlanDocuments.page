@@ -1,0 +1,251 @@
+<!--
+ Developed by Timba Software Corp. www.timbasoftware.com admin@timbasoftware.com
+ This page lists plans
+ @author Guillermo Freire <guillermo.freire@gmail.com>
+-->
+<apex:page controller="XactlyExpress.XactlySMBPlanDocumentController" cache="true" sidebar="false" showHeader="false" standardStylesheets="false" contentType="application/msword#{!documentName}.doc; charset=utf-8">
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+	<apex:repeat value="{!alphaList}" var="crrtAlpha">
+		<center><div style="font-weight: bold;font-size:16pt;">{!crrtAlpha.pp.ProfileId__r.UserId__r.CompanyName}</div></center>
+		<hr size='10'/>
+		<center><div style="font-weight: bold;font-size:12pt;">{!FiscalYearName}&nbsp;{!crrtAlpha.pp.PlanId__r.Name}</div></center>
+		<center><div style="font-size:12pt;">{!$Label.compensationPlan}</div></center>
+		<br />
+		<center><div style="font-size:10pt;font-style:italic;">{!$Label.EffectiveFrom}&nbsp;{!crrtAlpha.StartDate}&nbsp;{!$Label.to}&nbsp;{!crrtAlpha.EndDate}</div></center>
+		<br /><br />
+		<table cellpadding="3">
+		    <tr>
+		        <td>
+		            <div style="font-weight: bold;font-size:11pt;">{!$Label.Name}:</div>
+		        </td>
+		        <td>
+		            <div style="font-weight: bold;font-size:11pt;">{!crrtAlpha.pp.ProfileId__r.UserId__r.FirstName}&nbsp;{!crrtAlpha.pp.ProfileId__r.UserId__r.LastName}</div>
+		        </td>
+		    </tr>
+		        <tr>
+		        <td>
+		            <div style="font-weight: bold;font-size:11pt;">{!$Label.RoleInIncent}:</div>
+		        </td>
+		        <td>
+		            <div style="font-weight: bold;font-size:11pt;">{!crrtAlpha.pp.ProfileId__r.UserId__r.UserRole.RollupDescription}</div>
+		        </td>
+		    </tr>
+		</table> 
+		<br />
+		<div style="font-weight: bold;font-size:11pt;">{!$Label.SUMMARY}</div>   
+		<br />
+        <div style="font-size:11pt;">{!crrtAlpha.pp.PlanId__r.Description__c}</div>
+        <br />
+        <apex:repeat value="{!crrtAlpha.Annual}" var="annualQuota">
+            <table border="1" cellspacing="0" cellpadding="3" bordercolor="#404040">
+                <tr>
+                    <td>
+                        <font color="#0070c0"><font face="Arial, serif"><b>{!annualQuota.QuotaId__r.Name}</b></font></font>
+                    </td>
+                    <td>
+                        <font color="#0070c0"><font face="Arial, serif"><b>{!$Label.Annual}</b></font></font>
+                    </td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td style="text-align:right">
+                        {!annualQuota.AnnualAmount__c}
+                    </td>
+                </tr>
+            </table>
+            <br />
+        </apex:repeat>
+        <apex:repeat value="{!crrtAlpha.Quarterly}" var="quarterlyQuota">
+            <table border="1" cellspacing="0" cellpadding="3" bordercolor="#404040">
+                <tr>
+                    <td>
+                        <font color="#0070c0"><font face="Arial, serif"><b>{!quarterlyQuota.quotaDetail.QuotaId__r.Name}</b></font></font>
+                    </td>
+                    <td>
+                        <font color="#0070c0"><font face="Arial, serif"><b>Q1</b></font></font>
+                    </td>
+                    <td>
+                        <font color="#0070c0"><font face="Arial, serif"><b>Q2</b></font></font>
+                    </td>
+                    <td>
+                        <font color="#0070c0"><font face="Arial, serif"><b>Q3</b></font></font>
+                    </td>
+                    <td>
+                        <font color="#0070c0"><font face="Arial, serif"><b>Q4</b></font></font>
+                    </td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td style="text-align:right">
+                        {!quarterlyQuota.Q1Amount}
+                    </td>
+                    <td style="text-align:right">
+                        {!quarterlyQuota.Q2Amount}
+                    </td>
+                    <td style="text-align:right">
+                        {!quarterlyQuota.Q3Amount}
+                    </td>
+                    <td style="text-align:right">
+                        {!quarterlyQuota.Q4Amount}
+                    </td>
+                </tr>
+            </table>
+            <br />
+        </apex:repeat>
+        <apex:repeat value="{!crrtAlpha.Monthly}" var="monthlyQuota">
+            <table border="1" cellspacing="0" cellpadding="3" bordercolor="#404040">
+                <tr>
+                    <td>
+                        <font color="#0070c0"><font face="Arial, serif"><b>{!monthlyQuota.quotaDetail.QuotaId__r.Name}</b></font></font>
+                    </td>
+                    <td>
+                        <font color="#0070c0"><font face="Arial, serif"><b>{!$Label.Monthly}&nbsp;{!$Label.Amount}</b></font></font>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <font color="#0070c0"><font face="Arial, serif"><b>M1</b></font></font>
+                    </td>
+                    <td style="text-align:right">
+                        {!monthlyQuota.M1Amount}
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <font color="#0070c0"><font face="Arial, serif"><b>M2</b></font></font>
+                    </td>
+                    <td style="text-align:right">
+                        {!monthlyQuota.M2Amount}
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <font color="#0070c0"><font face="Arial, serif"><b>M3</b></font></font>
+                    </td>
+                    <td style="text-align:right">
+                        {!monthlyQuota.M3Amount}
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                       <font color="#0070c0"><font face="Arial, serif"><b>M4</b></font></font>
+                    </td>
+                    <td style="text-align:right">
+                        {!monthlyQuota.M4Amount}
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <font color="#0070c0"><font face="Arial, serif"><b>M5</b></font></font>
+                    </td>
+                    <td style="text-align:right">
+                        {!monthlyQuota.M5Amount}
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <font color="#0070c0"><font face="Arial, serif"><b>M6</b></font></font>
+                    </td>
+                    <td style="text-align:right">
+                        {!monthlyQuota.M6Amount}
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <font color="#0070c0"><font face="Arial, serif"><b>M7</b></font></font>
+                    </td>
+                    <td style="text-align:right">
+                        {!monthlyQuota.M7Amount}
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <font color="#0070c0"><font face="Arial, serif"><b>M8</b></font></font>
+                    </td>
+                    <td style="text-align:right">
+                        {!monthlyQuota.M8Amount}
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <font color="#0070c0"><font face="Arial, serif"><b>M9</b></font></font>
+                    </td>
+                    <td style="text-align:right">
+                        {!monthlyQuota.M9Amount}
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <font color="#0070c0"><font face="Arial, serif"><b>M10</b></font></font>
+                    </td>
+                    <td style="text-align:right">
+                        {!monthlyQuota.M10Amount}
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <font color="#0070c0"><font face="Arial, serif"><b>M11</b></font></font>
+                    </td>
+                    <td style="text-align:right">
+                        {!monthlyQuota.M11Amount}
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <font color="#0070c0"><font face="Arial, serif"><b>M12</b></font></font>
+                    </td>
+                    <td style="text-align:right">
+                        {!monthlyQuota.M12Amount}
+                    </td>
+                </tr>
+            </table>
+            <br />
+        </apex:repeat>
+        <br />
+        <apex:outputPanel rendered="{!IF(crrtAlpha.pp.PlanId__r.TermsAndConditions__r.XactlyExpress__TermsAndConditions__c=='',false,true)}">
+            <br style="page-break-before:always" />
+        </apex:outputPanel>
+        <div style="font-weight: bold;font-size:11pt;">{!$Label.ExportTermsTitle}</div>
+        <br />
+        <div><apex:outputText escape="false" value="{!crrtAlpha.pp.PlanId__r.TermsAndConditions__r.XactlyExpress__TermsAndConditions__c}"/></div>
+        <br />
+        <div style="font-size:11pt;">{!$Label.IAgreeTerms}</div>
+        <br />
+        <br />
+        <br />
+        <table width="100%" border="0">
+            <tr>
+                <td style="border-bottom:1px solid">
+                    &nbsp;
+                </td>
+            </tr>
+        </table>
+        <table width="100%" border="0">
+            <tr>
+                <td style="text-align:left;"><div style="font-size:11pt;">{!$Label.Signature}</div>
+                </td>
+                <td style="text-align:right;"><div style="font-size:11pt;">{!$Label.Date}</div>
+                </td>
+            </tr>
+        </table>
+        <br />
+        <br />
+        <br />
+        <table width="100%" border="0">
+            <tr>
+                <td style="border-bottom:1px solid">
+                    &nbsp;
+                </td>
+            </tr>
+        </table>
+        <table width="100%" border="0">
+            <tr>
+                <td style="text-align:left;"><div style="font-size:11pt;">{!$Label.printedName}</div>
+                </td>
+                <td style="text-align:right;"><div style="font-size:11pt;">{!$Label.Date}</div>
+                </td>
+            </tr>
+        </table>
+		<br style="page-break-before:always" />
+	</apex:repeat>
+</apex:page>

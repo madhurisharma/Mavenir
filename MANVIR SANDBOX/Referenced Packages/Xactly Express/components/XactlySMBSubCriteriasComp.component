@@ -1,0 +1,364 @@
+<apex:component id="subcriteriasComponent" controller="XactlyExpress.XactlySMBCriteriasComp">
+    <apex:attribute name="showOrNot" description="hide/show" type="boolean" />
+    <apex:attribute name="rowCount" description="rowCount" type="integer" />
+    <apex:attribute name="sysFuncHelp" description="sysFuncHelp" type="XactlyExpress.XactlySMBSystemFunctionHelper[]"/>
+    <apex:attribute name="iterIndex" description="iterIndex" type="integer" />
+    <apex:attribute name="formulaOptions" description="formulaOptions" type="SelectOption[]"/>
+    <apex:attribute name="CreditListQuota" description="CreditListQuota" type="SelectOption[]"/>
+    <apex:attribute name="FUNCTION_TYPE_ATTAINMENT" description="FUNCTION_TYPE_ATTAINMENT" type="String"/>
+    <apex:attribute name="FUNCTION_TYPE_CREDIT" description="FUNCTION_TYPE_CREDIT" type="String"/>
+    <apex:attribute name="MEASURE_FORMULA_QUOTA" description="MEASURE_FORMULA_QUOTA" type="String"/>
+    <apex:attribute name="CreditList" description="CreditList" type="SelectOption[]"/>
+    <apex:attribute name="periodOptions" description="periodOptions" type="SelectOption[]"/>
+    <apex:attribute name="operatorsOptions" description="operatorsOptions" type="SelectOption[]"/>
+    <apex:attribute name="isAdvFormula" description="isAdvFormula" type="boolean" />
+    <apex:attribute name="isFormula" description="isFormula" type="boolean" />
+    <apex:attribute name="humanReadableSystemFunction" description="humanReadableSystemFunction" type="String"/>
+    <apex:attribute name="systemFieldOptions" description="systemFieldOptions" type="SelectOption[]"/>
+    <apex:attribute name="dataFieldOptions" description="dataFieldOptions" type="SelectOption[]"/>
+    <apex:attribute name="showWtespce" description="showWtespce" type="boolean"/>
+
+    <div class="{!if(showOrNot,'displayed','hidden')} formulaTab">
+	    <div style="width:935px;{!if(showWtespce,'width:740px;','')}padding-left:5px;">
+	        <div>
+	            <div class="criteriasPanelTopLeft{!IF(rowCount = 0, 'Gray','White')}"></div>
+	            <div style="border-top:1px solid #DEDEDE;background-color:#FAFAFA;float:left;height:18px;width:772px;{!if(showWtespce,'width:686px','')}"></div>
+	            <apex:outputPanel layout="block" rendered="{!!showWtespce}" style="background-color: #FAFAFA;float: left; height: 19px; width: 109px;"/>
+	            <div class="criteriasPanelTopRight{!IF(rowCount = 0, 'Gray','White')}"></div>
+	            <div style="clear: both;"></div>
+	        </div>
+	        <div style="background-color:#FAFAFA;border-left:1px solid #DEDEDE;width:100%;">
+	            <div class="criteriasPanelMiddleRight{!IF(rowCount = 0, 'Gray','White')}">
+	                <div style="width: 925px;{!if(showWtespce,'width:730px;','')}" class="subCriteriaContainer">
+	                
+	                    <apex:variable var="iterIndexSubCrit" value="{!1}"/>
+	                    <apex:variable var="rowCountSubCrit" value="{!0}"/>
+	                    <apex:repeat id="repsysFuncHelp" value="{!sysFuncHelp}" var="subCrit">
+	                        
+	                        <div class="{!IF(rowCountSubCrit = 0, 'even','odd')} criteriaRowSubCrit">
+	                            <div style="float: left;padding-right: 5px;text-align: right;width: 40px;">
+	                                <div class="letter">{!subCrit.currentAlphaLabel}</div>
+	                            </div>
+	                            
+	                            <div class="typeCell" style="float:left;">
+	                               <apex:selectList id="selectTypeSubCrit" value="{!subCrit.sf.functionType}" multiselect="false" size="1" styleClass="typeSelect selectTypeSubCrit{!ROUND(iterIndexSubCrit,0)}" onchange="changeSubQualifierType(this);criteriasHandler.reloadFrequenciesMain(document.getElementById(selectCreditQuotaSubCrit_{!ROUND(iterIndex,0)}_{!ROUND(iterIndexSubCrit,0)}), {!ROUND(iterIndexSubCrit,0)}, this);">
+	                                   <apex:selectOptions value="{!formulaOptions}" />
+	                               </apex:selectList>
+	                               <script>
+	                                   var selectTypeSubCrit{!ROUND(iterIndexSubCrit,0)} = '{!$Component.selectTypeSubCrit}';
+	                               </script>
+	                            </div>
+	                           
+	                            <div class="dealAttrCellSubCrit" style="padding-left:7px;float:left;">
+	                               
+	                                <apex:outputpanel layout="none">
+	                                   <apex:selectList styleclass="selectCreditQuotaSubCrit subPercentToQuotaCreditId{!ROUND(iterIndexSubCrit,0)}" id="selectCreditQuotaSubCrit" value="{!subCrit.creditRuleIdQ}" multiselect="false" size="1" style="{!IF(subCrit.sf.functionType != FUNCTION_TYPE_ATTAINMENT && subCrit.sf.functionType != FUNCTION_TYPE_QUOTA && subCrit.sf.functionType != MEASURE_FORMULA_QUOTA,'display:none;','')}" onchange="criteriasHandler.reloadFrequencies(this, {!ROUND(iterIndexSubCrit,0)});">
+	                                       <apex:selectOptions value="{!CreditListQuota}" />
+	                                   </apex:selectList>
+	                                   <script>
+	                                       var selectCreditQuotaSubCrit_{!ROUND(iterIndex,0)}_{!ROUND(iterIndexSubCrit,0)} = '{!$Component.selectCreditQuotaSubCrit}';
+	                                   </script>
+	                                </apex:outputpanel>
+	                                  
+	                                <apex:outputpanel layout="none" rendered="{!IF(CreditList.size > 0,true,false)}">
+	                                   <apex:selectList styleclass="selectCreditSubCrit subCreditResultCreditId{!ROUND(iterIndexSubCrit,0)}" id="selectCreditSubCrit" value="{!subCrit.creditRuleId}" multiselect="false" size="1" style="{!IF(subCrit.sf.functionType != FUNCTION_TYPE_CREDIT,'display:none;','')}">
+	                                       <apex:selectOptions value="{!CreditList}" />
+	                                   </apex:selectList>
+	                                   <script>
+	                                       var selectCreditSubCrit_{!ROUND(iterIndexSubCrit,0)}_{!ROUND(iterIndex,0)} = '{!$Component.selectCreditSubCrit}';
+	                                   </script>
+	                                </apex:outputpanel>
+	                                
+	                                <apex:outputpanel layout="none" rendered="{!IF(CreditList.size > 0,true,false)}">
+	                                   <apex:inputText id="numericValue" value="{!subCrit.sf.numeric}" style="{!IF(subCrit.sf.numeric == null,'display:none;','')}" onblur="if(isNaN(this.value))jQuery(this).val('0.00')"/>
+	                                </apex:outputpanel>
+	                                
+	                                <apex:outputpanel layout="none" rendered="{!IF(CreditList.size > 0,true,false)}">
+	                                   <apex:inputText id="percentValue" value="{!subCrit.sf.percent}" style="{!IF(subCrit.sf.percent == null,'display:none;','')}" onblur="if(isNaN(this.value))jQuery(this).val('0.00')"/>
+	                                </apex:outputpanel>
+	                                
+	                                <apex:outputpanel layout="none" rendered="{!IF(CreditList.size > 0,true,false)}">
+	                                   <apex:selectList id="selectSystemField" value="{!subCrit.sf.systemField}" multiselect="false" size="1" style="{!IF(subCrit.sf.functionType != $Label.xactlyexpress__system_Field,'display:none;','')}">
+	                                       <apex:selectOptions value="{!systemFieldOptions}" />
+	                                   </apex:selectList>
+	                                </apex:outputpanel>
+	                                
+	                                <apex:outputpanel layout="none" rendered="{!IF(CreditList.size > 0,true,false)}">
+	                                   <apex:selectList id="selectDataField" value="{!subCrit.sf.dataField}" multiselect="false" size="1" style="{!IF(subCrit.sf.functionType != $Label.xactlyexpress__data_Field,'display:none;','')}">
+	                                       <apex:selectOptions value="{!dataFieldOptions}" />
+	                                   </apex:selectList>
+	                                </apex:outputpanel>
+	                                
+	                                
+	                                
+	                            </div>
+	                            <div style="padding-left:7px;float:left;" class="frequency">
+	                               <span id="selectedCreditSubCrit{!ROUND(iterIndexSubCrit,0)}">
+	                                   <select name = "MonthSub{!ROUND(iterIndexSubCrit,0)}" onchange="criteriasHandler.setFrequency(this);" class="Month{!ROUND(iterIndexSubCrit,0)}" style="{!IF((subCrit.sf.functionType == FUNCTION_TYPE_ATTAINMENT || subCrit.sf.functionType == MEASURE_FORMULA_QUOTA) && subCrit.CreditFreq == 'Month','','display:none;')}">
+	                                       <apex:outputpanel layout="none" rendered="{!IF(subCrit.Frequency == 'MTD',true,false)}">
+	                                          <option value="MTD" selected="selected">{!$Label.MonthlyToDate}</option>
+	                                       </apex:outputpanel>
+	                                       <apex:outputpanel layout="none" rendered="{!IF(subCrit.Frequency == 'MTD',false,true)}">
+	                                          <option value="MTD">{!$Label.xactlyexpress__MonthlyToDate}</option>
+	                                       </apex:outputpanel>
+	                                       
+	                                       <apex:outputpanel layout="none" rendered="{!IF(subCrit.Frequency == 'QTD',true,false)}">
+	                                          <option value="QTD" selected="selected">{!$Label.QuarterlyToDate}</option>
+	                                       </apex:outputpanel>
+	                                       <apex:outputpanel layout="none" rendered="{!IF(subCrit.Frequency == 'QTD',false,true)}">
+	                                          <option value="QTD" >{!$Label.QuarterlyToDate}</option>
+	                                       </apex:outputpanel>
+	                                       
+	                                       <apex:outputpanel layout="none" rendered="{!IF(subCrit.Frequency == 'YTD',true,false)}">
+	                                          <option value="YTD" selected="selected">{!$Label.AnnualToDate}</option>
+	                                       </apex:outputpanel>
+	                                       <apex:outputpanel layout="none" rendered="{!IF(subCrit.Frequency == 'YTD',false,true)}">
+	                                          <option value="YTD">{!$Label.xactlyexpress__AnnualToDate}</option>
+	                                       </apex:outputpanel>
+	                                       
+	                                       <apex:outputpanel layout="none" rendered="{!IF(subCrit.Frequency == 'QTD-M',true,false)}">
+	                                          <option value="QTD-M" selected="selected">{!$Label.QTDMonthly}</option>
+	                                       </apex:outputpanel>
+	                                       <apex:outputpanel layout="none" rendered="{!IF(subCrit.Frequency == 'QTD-M',false,true)}">
+	                                          <option value="QTD-M">{!$Label.xactlyexpress__QTDMonthly}</option>
+	                                       </apex:outputpanel>
+	                                       
+	                                       <apex:outputpanel layout="none" rendered="{!IF(subCrit.Frequency == 'YTD-M',true,false)}">
+	                                          <option value="YTD-M" selected="selected">{!$Label.YTDMonthlyLarge}</option>
+	                                       </apex:outputpanel>
+	                                       <apex:outputpanel layout="none" rendered="{!IF(subCrit.Frequency == 'YTD-M',false,true)}">
+	                                          <option value="YTD-M">{!$Label.xactlyexpress__YTDMonthlyLarge}</option>
+	                                       </apex:outputpanel>
+	                                       
+	                                       <apex:outputpanel layout="none" rendered="{!IF(subCrit.Frequency == 'YTD-Q',true,false)}">
+	                                          <option value="YTD-Q" selected="selected">{!$Label.YTDQuarterlyLarge}</option>
+	                                       </apex:outputpanel>
+	                                       <apex:outputpanel layout="none" rendered="{!IF(subCrit.Frequency == 'YTD-Q',false,true)}">
+	                                          <option value="YTD-Q">{!$Label.xactlyexpress__YTDQuarterlyLarge}</option>
+	                                       </apex:outputpanel>
+	                                   </select>
+	                                   
+	                                   <select name = "QuarterSub{!ROUND(iterIndexSubCrit,0)}" onchange="criteriasHandler.setFrequency(this);" class="Quarter{!ROUND(iterIndexSubCrit,0)}" style="{!IF(OR(AND(subCrit.sf.functionType != FUNCTION_TYPE_ATTAINMENT,subCrit.sf.functionType != MEASURE_FORMULA_QUOTA),subCrit.CreditFreq != 'Quarter'),'display:none;','')}">
+	                                       <apex:outputpanel layout="none" rendered="{!IF(subCrit.Frequency == 'QTD',true,false)}">
+	                                          <option value="QTD" selected="selected">{!$Label.QuarterlyToDate}</option>
+	                                       </apex:outputpanel>
+	                                       <apex:outputpanel layout="none" rendered="{!IF(subCrit.Frequency == 'QTD',false,true)}">
+	                                          <option value="QTD">{!$Label.xactlyexpress__QuarterlyToDate}</option>
+	                                       </apex:outputpanel>
+	                                       
+	                                       <apex:outputpanel layout="none" rendered="{!IF(subCrit.Frequency == 'YTD',true,false)}">
+	                                          <option value="YTD" selected="selected">{!$Label.AnnualToDate}</option>
+	                                       </apex:outputpanel>
+	                                       <apex:outputpanel layout="none" rendered="{!IF(subCrit.Frequency == 'YTD',false,true)}">
+	                                          <option value="YTD">{!$Label.xactlyexpress__AnnualToDate}</option>
+	                                       </apex:outputpanel>
+	                                       
+	                                       <apex:outputpanel layout="none" rendered="{!IF(subCrit.Frequency == 'YTD-Q',true,false)}">
+	                                          <option value="YTD-Q" selected="selected">{!$Label.YTDQuarterlyLarge}</option>
+	                                       </apex:outputpanel>
+	                                       <apex:outputpanel layout="none" rendered="{!IF(subCrit.Frequency == 'YTD-Q',false,true)}">
+	                                          <option value="YTD-Q">{!$Label.xactlyexpress__YTDQuarterlyLarge}</option>
+	                                       </apex:outputpanel>
+	                                   </select>
+	                                   
+	                                   <select name = "YearSub{!ROUND(iterIndexSubCrit,0)}" onchange="criteriasHandler.setFrequency(this);" class="Year{!ROUND(iterIndexSubCrit,0)}" style="{!IF(OR(AND(subCrit.sf.functionType != FUNCTION_TYPE_ATTAINMENT,subCrit.sf.functionType != MEASURE_FORMULA_QUOTA),subCrit.CreditFreq != 'Year'),'display:none;','')}">
+	                                       <apex:outputpanel layout="none" rendered="{!IF(subCrit.Frequency == 'YTD',true,false)}">
+	                                          <option value="YTD" selected="selected">{!$Label.AnnualToDate}</option>
+	                                       </apex:outputpanel>
+	                                       <apex:outputpanel layout="none" rendered="{!IF(subCrit.Frequency == 'YTD',false,true)}">
+	                                          <option value="YTD">{!$Label.xactlyexpress__AnnualToDate}</option>
+	                                       </apex:outputpanel>
+	                                   </select>
+	                                   
+	                                   <select name = "CreditSub{!ROUND(iterIndexSubCrit,0)}" onchange="criteriasHandler.setFrequency(this);" class="Credit{!ROUND(iterIndexSubCrit,0)}" style="{!IF(subCrit.sf.functionType != FUNCTION_TYPE_CREDIT,'display:none;','')}">
+	                                       <apex:outputpanel layout="none" rendered="{!IF(subCrit.Frequency == 'MTD',true,false)}">
+	                                          <option value="MTD" selected="selected">{!$Label.MonthlyToDate}</option>
+	                                       </apex:outputpanel>
+	                                       <apex:outputpanel layout="none" rendered="{!IF(subCrit.Frequency == 'MTD',false,true)}">
+	                                          <option value="MTD">{!$Label.xactlyexpress__MonthlyToDate}</option>
+	                                       </apex:outputpanel>
+	                                       
+	                                       <apex:outputpanel layout="none" rendered="{!IF(subCrit.Frequency == 'QTD',true,false)}">
+	                                          <option value="QTD" selected="selected">{!$Label.QuarterlyToDate}</option>
+	                                       </apex:outputpanel>
+	                                       <apex:outputpanel layout="none" rendered="{!IF(subCrit.Frequency == 'QTD',false,true)}">
+	                                          <option value="QTD">{!$Label.xactlyexpress__QuarterlyToDate}</option>
+	                                       </apex:outputpanel>
+	                                       
+	                                       <apex:outputpanel layout="none" rendered="{!IF(subCrit.Frequency == 'YTD',true,false)}">
+	                                          <option value="YTD" selected="selected">{!$Label.AnnualToDate}</option>
+	                                       </apex:outputpanel>
+	                                       <apex:outputpanel layout="none" rendered="{!IF(subCrit.Frequency == 'YTD',false,true)}">
+	                                          <option value="YTD">{!$Label.xactlyexpress__AnnualToDate}</option>
+	                                       </apex:outputpanel>
+	                                   </select>
+	                                   
+	                                   <apex:inputHidden id="hiddenFreqSubCrit" value="{!subCrit.Frequency}" />
+	                                   
+	                                   <script>
+	                                       var hiddenFreqSubCrit_{!ROUND(iterIndex,0)}_{!ROUND(iterIndexSubCrit,0)} = '{!$Component.hiddenFreqSubCrit}';
+	                                   </script>
+	                               </span>
+	                           </div>
+	                           
+	                            <div style="padding-left:7px;float:left;" class="periods {!IF(subCrit.sf.functionType == FUNCTION_TYPE_ATTAINMENT || subCrit.sf.functionType == FUNCTION_TYPE_CREDIT,'displayed','hidden')}" >
+	                                <apex:selectList id="subCritPrd" value="{!subCrit.period}" multiselect="false" size="1">
+	                                    <apex:selectOptions value="{!periodOptions}" />
+	                                </apex:selectList>
+	                           </div>
+	                            
+	                            <apex:outputPanel styleclass="percentSymbol {!IF(OR(subCrit.sf.functionType == FUNCTION_TYPE_ATTAINMENT,subCrit.sf.functionType == $Label.xactlyexpress__percent_Value),'displayed','hidden')}" style="float:left;margin-left: 5px;margin-right: 10px;">
+                                   %
+                                </apex:outputPanel>
+	                            
+	                            <div class="operatorCellSubCrit" style="padding-left:7px;float:left;">
+	                                <apex:selectList id="subCritOp" value="{!subCrit.sf.operator}" multiselect="false" size="1" styleClass="hiddenOpSelect{!IF(ROUND(iterIndexSubCrit,0) != sysFuncHelp.size && isAdvFormula == false,' displayed',' hidden')}">
+	                                    <apex:selectOptions value="{!operatorsOptions}" />
+	                                </apex:selectList>
+	                            </div>
+	                            <div style="width:33px;float:left;">
+	                                <div style="padding-right:15px;text-align:right">
+	                                    <a href="javascript:;" style="color:#CE641B;font-size:7pt;font-weight:bolder;" onclick="{!if(showWtespce,'jQuery.superbox.overrideSourceWithSuperboxContent();','')}criteriasHandler.updateHiddenToSelectedValues();criteriasHandler.removeSubCriteria({!ROUND(iterIndex-1,0)},{!ROUND(iterIndexSubCrit-1,0)}, 'criteriaRowSubCrit');">
+	                                        <img src="{!URLFOR($Resource.XactlySMBResources ,'img/buttons/delete_small.png')}" />
+	                                    </a>    
+	                                </div>
+	                            </div>
+	                        </div>
+	                        
+	                        <apex:variable var="iterIndexSubCrit" value="{!iterIndexSubCrit + 1}"/>
+	                        <apex:variable var="rowCountSubCrit" value="{!(rowCountSubCrit * -1) + 1}"/>   
+	                    </apex:repeat>
+	                    
+	                    
+	                </div>
+	                <div style="padding: 5px 10px 10px 0pt;">
+	                    <div style="padding-left:50px;">
+	                        <div style="width: 800px;{!if(showWtespce,'width:610px;','')} border-top: 1px solid #d4d5d6; float: right;"></div>
+	                        <div class="btnAction" style="float: left; margin-top: -2px;">
+	                            <a href="javascript:;" onclick="criteriasHandler.clrErr(jQuery('.tableCriterias'){!if(showWtespce,'[1]','')});{!if(showWtespce,'jQuery.superbox.overrideSourceWithSuperboxContent();','')}criteriasHandler.checkErrors('criteriaRowSubCrit',{!ROUND(iterIndex-1,0)});">
+	                                <span class="rightBtnSilverNew">
+	                                    <span class="leftBtnSilverNew">
+	                                        <span class="middleBtnSilverNew">
+	                                            {!$Label.AddField}
+	                                        </span> 
+	                                    </span>
+	                                </span> 
+	                            </a>                      
+	                        </div>
+	                        
+	                        <div id="isThereContainer" style="clear:both;">
+	                            {!$Label.IsThere}<apex:inputCheckbox id="isAdvSubFormula" value="{!isAdvFormula}" onclick="criteriasHandler.switchAdvFormulas(this)" />
+	                                <br />
+	                            <apex:inputCheckbox id="isFormula" value="{!isFormula}" style="display:none;" />
+	                            <apex:inputText id="humanReadableSystemFunction" value="{!humanReadableSystemFunction}" styleClass="{!IF(isAdvFormula != false,' displayed',' hidden')}" onkeyup="criteriasHandler.onKeyUpSetUpperCase(event,this)" onkeypress="criteriasHandler.disableNumericValuesInput(event)" />
+	                        </div>
+	                    </div>
+	                 </div>
+	            </div>
+	            <div style="clear: both;"></div>
+	        </div>
+	        <div>
+	            <div class="criteriasPanelBottomLeft{!IF(rowCount = 0, 'Gray','White')}"></div>
+	            <div class="criteriasPanelBottomMiddle{!IF(rowCount = 0, 'Gray','White')}"></div>
+	            <div class="criteriasPanelBottomRight{!IF(rowCount = 0, 'Gray','White')}"></div>
+	            <div style="clear: both;"></div>
+	        </div>                              
+	    </div>
+	</div>
+	<script>
+	   function changeSubQualifierType(selectTypeSubCrit){
+                
+       var selectedType = jQuery(selectTypeSubCrit);
+       var dealAttrCellSubCrit = selectedType.parent().next('.dealAttrCellSubCrit');
+    
+       if(selectedType.val() == '{!JSENCODE(FUNCTION_TYPE_ATTAINMENT)}'){
+           selectedType.parent().nextAll('.frequency').show();
+           
+           //ony when size is 0 (when all selects are hidden), we show the first select
+           if(selectedType.parent().nextAll('.frequency').find('select:visible').size() == 0){
+			    selectedType.parent().nextAll('.frequency').find('select:first').show();
+		   }
+           
+           dealAttrCellSubCrit.find('select[id$="selectCreditQuotaSubCrit"]').show();
+           dealAttrCellSubCrit.find('select[id$="selectCreditSubCrit"]').hide();
+           dealAttrCellSubCrit.find('select[id$="selectSystemField"]').hide();
+           dealAttrCellSubCrit.find('select[id$="selectDataField"]').hide();
+           dealAttrCellSubCrit.find('input[id$="numericValue"]').hide();
+           dealAttrCellSubCrit.find('input[id$="percentValue"]').hide();
+           selectedType.parent().nextAll('.periods').show();
+           selectedType.parent().nextAll('.percentSymbol').show();
+       }else if(selectedType.val() == '{!JSENCODE(MEASURE_FORMULA_QUOTA)}'){
+           selectedType.parent().nextAll('.frequency').show();
+           
+           if(selectedType.parent().nextAll('.frequency').find('select:visible').size() == 0){
+			    selectedType.parent().nextAll('.frequency').find('select:first').show();
+		   }
+           
+           dealAttrCellSubCrit.find('select[id$="selectCreditQuotaSubCrit"]').show();
+           dealAttrCellSubCrit.find('select[id$="selectCreditSubCrit"]').hide();
+           dealAttrCellSubCrit.find('select[id$="selectSystemField"]').hide();
+           dealAttrCellSubCrit.find('select[id$="selectDataField"]').hide();
+           dealAttrCellSubCrit.find('input[id$="numericValue"]').hide();
+           dealAttrCellSubCrit.find('input[id$="percentValue"]').hide();
+           selectedType.parent().nextAll('.periods').hide();
+           selectedType.parent().nextAll('.percentSymbol').hide();
+       }else if(selectedType.val() == '{!JSENCODE(FUNCTION_TYPE_CREDIT)}'){
+           selectedType.parent().nextAll('.frequency').show();
+           
+           if(selectedType.parent().nextAll('.frequency').find('select:visible').size() == 0){
+			    selectedType.parent().nextAll('.frequency').find('select:first').show();
+		   }
+           
+           dealAttrCellSubCrit.find('select[id$="selectCreditQuotaSubCrit"]').hide();
+           dealAttrCellSubCrit.find('select[id$="selectCreditSubCrit"]').show();
+           dealAttrCellSubCrit.find('select[id$="selectSystemField"]').hide();
+           dealAttrCellSubCrit.find('select[id$="selectDataField"]').hide();
+           dealAttrCellSubCrit.find('input[id$="numericValue"]').hide();
+           dealAttrCellSubCrit.find('input[id$="percentValue"]').hide();
+           selectedType.parent().nextAll('.periods').show();
+           selectedType.parent().nextAll('.percentSymbol').hide();
+       }else if(selectedType.val() == '{!$Label.system_Field}'){
+           selectedType.parent().nextAll('.frequency').hide();
+           dealAttrCellSubCrit.find('select[id$="selectCreditQuotaSubCrit"]').hide();
+           dealAttrCellSubCrit.find('select[id$="selectCreditSubCrit"]').hide();
+           dealAttrCellSubCrit.find('select[id$="selectSystemField"]').show();
+           dealAttrCellSubCrit.find('select[id$="selectDataField"]').hide();
+           dealAttrCellSubCrit.find('input[id$="numericValue"]').hide();
+           dealAttrCellSubCrit.find('input[id$="percentValue"]').hide();
+           selectedType.parent().nextAll('.periods').hide();
+           selectedType.parent().nextAll('.percentSymbol').hide();
+       }else if(selectedType.val() == '{!$Label.data_Field}'){
+           selectedType.parent().nextAll('.frequency').hide();
+           dealAttrCellSubCrit.find('select[id$="selectCreditQuotaSubCrit"]').hide();
+           dealAttrCellSubCrit.find('select[id$="selectCreditSubCrit"]').hide();
+           dealAttrCellSubCrit.find('select[id$="selectSystemField"]').hide();
+           dealAttrCellSubCrit.find('select[id$="selectDataField"]').show();
+           dealAttrCellSubCrit.find('input[id$="numericValue"]').hide();
+           dealAttrCellSubCrit.find('input[id$="percentValue"]').hide();
+           selectedType.parent().nextAll('.periods').hide();
+           selectedType.parent().nextAll('.percentSymbol').hide();
+       }else if(selectedType.val() == '{!$Label.percent_Value}'){
+           selectedType.parent().nextAll('.frequency').hide();
+           dealAttrCellSubCrit.find('select[id$="selectCreditQuotaSubCrit"]').hide();
+           dealAttrCellSubCrit.find('select[id$="selectCreditSubCrit"]').hide();
+           dealAttrCellSubCrit.find('select[id$="selectSystemField"]').hide();
+           dealAttrCellSubCrit.find('select[id$="selectDataField"]').hide();
+           dealAttrCellSubCrit.find('input[id$="numericValue"]').hide();
+           dealAttrCellSubCrit.find('input[id$="percentValue"]').show();
+           selectedType.parent().nextAll('.periods').hide();
+           selectedType.parent().nextAll('.percentSymbol').show();
+       }else{//Numeric Value
+           selectedType.parent().nextAll('.frequency').hide();
+           dealAttrCellSubCrit.find('select[id$="selectCreditQuotaSubCrit"]').hide();
+           dealAttrCellSubCrit.find('select[id$="selectCreditSubCrit"]').hide();
+           dealAttrCellSubCrit.find('select[id$="selectSystemField"]').hide();
+           dealAttrCellSubCrit.find('select[id$="selectDataField"]').hide();
+           dealAttrCellSubCrit.find('input[id$="numericValue"]').show();
+           dealAttrCellSubCrit.find('input[id$="percentValue"]').hide();
+           selectedType.parent().nextAll('.periods').hide();
+           selectedType.parent().nextAll('.percentSymbol').hide();
+       }
+           
+    }	    
+	</script>
+</apex:component>

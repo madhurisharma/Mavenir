@@ -1,0 +1,201 @@
+<apex:page id="XactlySMBHelpAndInformation" controller="XactlyExpress.XactlySMBHelpAndInformationController" sidebar="false" showHeader="false" standardStylesheets="true" action="{!redirectWhenAccessIsDenied}">
+    <c:XactlySMBCursor />
+    <title>{!$Label.HelpAndInfo}</title>
+    <link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.XactlySMBResources ,'css/XactlySMBDashboardStyles.css')}" />
+    
+    <style>
+        
+        .leftSummaryBox {
+            margin: 20px 0px 10px 34px;
+        }
+        
+        .SummaryBox{
+            width:210px;
+            margin-right:1em;
+        }
+         
+        .SummaryBoxTitle{
+            border: none;
+            padding-left:1em;
+            background:transparent url({!URLFOR($Resource.XactlySMBResources ,'img/layout/table_top_210w.png')}) left top no-repeat;
+            height:20px;
+            font-size: 10px;
+            font-weight: bold;
+            padding: 2px 0 0 10px;          
+        }
+        
+        .SummaryBoxFooter{
+            background:transparent url({!URLFOR($Resource.XactlySMBResources ,'img/layout/table_bottom_210w.png')}) left top no-repeat;
+            height:20px;
+            text-align:right;           
+        }
+        
+        .SummaryBoxContent {
+            border-left: 1px solid rgb(204,204,204);
+            border-right: 1px solid rgb(204,204,204);
+            width: 187px;
+            background: rgb(255,255,255);
+            font-size: 12px;
+            padding: 10px 10px 15px 10px;
+            *padding-bottom: 0px;
+        }
+        
+        .helpByScreenHeader {
+            margin: 0px;
+            padding: 0px;
+            text-align: center;
+            color: #3B6080;
+            margin-top: 30px;
+            margin-bottom: 20px;
+        }
+        
+        .helpByScreenHeader .section {
+            font-size: 12px;
+            font-weight: bold;
+            margin: 0px;
+            padding: 0px;
+        }
+        
+        .helpContent {
+            margin: 0px;
+            padding: 0px;
+        }
+        
+        .mainSummaryBox {
+            margin: 20px 0px 10px 34px;
+            width: 710px;
+        }
+        
+        .mainSummaryBox .SummaryBox{
+            margin-right:1em;
+        }
+         
+        .mainSummaryBox .SummaryBoxTitle{
+            border: none;
+            padding-left:1em;
+            background:transparent url({!URLFOR($Resource.XactlySMBResources ,'img/layout/table_top_710w_with_title.png')}) left top no-repeat;
+            height:20px;
+            font-size: 11px;
+            font-weight: bold;
+            padding: 2px 0 0 10px;          
+        }
+        
+        .mainSummaryBox .SummaryBoxFooter{
+            background:transparent url({!URLFOR($Resource.XactlySMBResources ,'img/layout/table_bottom_710w_with_title.png')}) left top no-repeat;
+            height:20px;
+            text-align:right;           
+        }
+        
+        .mainSummaryBox .SummaryBoxContent {
+            border-left: 1px solid rgb(204,204,204);
+            border-right: 1px solid rgb(204,204,204);
+            background: rgb(255,255,255);
+            font-size: 12px;
+            padding: 10px 10px 40px 10px;
+            height: 455px; 
+            width: 687px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            position: relative;
+        }
+        
+        .SummaryBoxContent a {
+            color: #3B6080;
+            text-decoration:underline;
+        }
+        
+		#XactlySMBHeader{
+		    background-position:top !important;
+		    height:36px !important;
+		}    
+    </style> 
+    
+    <c:XactlySMBShadows />
+    
+    <!-- PAGE WRAPPER -->  
+    <div class="pageContent" id="pContent">
+        <apex:form >
+            <!-- HEADER -->
+            <apex:outputPanel layout="block" styleClass="header" style="position:static;">
+                <c:XactlySMBHeader isAdmin="{!isAdmin}"  isActive="{!isActive}" nbrSeparator="{!nbrSeparator}" nbrDecimal="{!nbrDecimal}" currentUserOrSlected="{!currentUserOrSlected}" wqlabel="{!currentSettings.quotasPlural}" wclabel="{!currentSettings.creditsPlural}" wlabel="{!currentSettings.dealsPluralCap}" emulatingUserURLAppend="{!emulatingUserURLAppend}" selected="8" />  
+            </apex:outputPanel>
+            
+            
+            
+            <!-- MAIN CONTENT -->
+            <apex:outputPanel layout="block" styleClass="mainContent">
+                
+                <div class="help">
+                    <a style="float:left; margin-top: 10px;"href="javascript: helpWindow = window.open('{!$Page.XactlySMBHelp}?page=HelpAndInformation', 'Help','location=0,status=0,scrollbars=1,width=700px,height=500px'); helpWindow.moveTo(100,100);" class="orangeLink">
+                    {!$Label.HowDoesThisPageWork}
+                    </a>
+                    <a href="javascript: helpWindow = window.open('{!$Page.XactlySMBHelp}?page=HelpAndInformation', 'Help','location=0,status=0,scrollbars=1,width=700px,height=500px'); helpWindow.moveTo(100,100);"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/icons/help_button.png')}"/>
+                    </a>
+                </div>
+                <!-- LEFT PANEL -->
+                <apex:outputPanel layout="block" styleClass="leftPanel">
+                    <div class="leftSummaryBox">
+                        <div class="SummaryBoxTitle">
+                            {!$Label.HelpAndInfoCategories}
+                        </div>
+                        <div id="leftMenuContent" class="SummaryBoxContent">                                             
+                            {!$Label.WaitLoading}...    
+                        </div>
+                        <div class="SummaryBoxFooter"></div>
+                    </div>
+                </apex:outputPanel>
+                
+                <!-- CONTENT -->
+                <apex:outputPanel layout="block" styleClass="content">
+                    <div class="helpByScreenHeader">
+                        <div class="section">
+                            {!$Label.HelpByScreen}
+                        </div>
+                        <div> 
+                            {!$Label.ViewHelpPage}
+                        </div>    
+                    </div>
+                    
+                    <div class="mainSummaryBox">
+                        <div class="SummaryBoxTitle">
+                            
+                        </div>
+                        <div id="mainHelpAndInfoContent" class="SummaryBoxContent">                                             
+                            {!$Label.WaitLoading}...   
+                        </div>
+                        <div class="SummaryBoxFooter"></div>
+                    </div>
+                </apex:outputPanel>
+            </apex:outputPanel>
+            
+            <!-- FOOTER  -->
+            <apex:outputPanel layout="block" styleClass="footer" rendered="{!isAdmin}" id="pFooter">
+                
+            </apex:outputPanel>         
+        </apex:form>
+    </div>
+    <apex:includeScript value="{!URLFOR($Resource.XactlyExpress__CSN, 'jquery.js')}" />
+    <c:XactlySMBFooterScript /> 
+    
+    <script type="text/javascript" language="javascript" src="{!URLFOR($Resource.XactlySMBResources, 'js/XactlySMBJavascript.js')}"></script>
+    <script>
+        
+        window.onload = function(){
+                $.ajaxSetup({
+	                beforeSend: function(x) {
+	                    if(x && x.overrideMimeType) {
+	                        x.overrideMimeType('text/html; charset=iso-8859-1');
+	                    }
+	                }
+	            });
+                var pageName = '{!pageName}';
+	            $("#leftMenuContent").load("{!URLFOR($Resource.BestPracticesAndHelpContent, currentUserLang + '/leftMenu.txt')}");        
+	            if (pageName != null && pageName != '') {
+	                $("#mainHelpAndInfoContent").load("{!URLFOR($Resource.BestPracticesAndHelpContent, currentUserLang + '/' + pageName + '.txt')}");
+	            }  
+	            else {
+	                $("#mainHelpAndInfoContent").load("{!URLFOR($Resource.BestPracticesAndHelpContent, currentUserLang + '/home.txt')}");
+	            }
+        };
+    </script>  
+</apex:page>

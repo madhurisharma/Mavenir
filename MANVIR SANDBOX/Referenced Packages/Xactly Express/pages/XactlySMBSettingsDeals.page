@@ -1,0 +1,2751 @@
+<!--
+Developed by Timba Software Corp. www.timbasoftware.com admin@timbasoftware.com
+ This page defines Settings
+ @author Juan Bessonart <jbessonart@timbasoftware.com>
+--> 
+<apex:page id="XactlySMBSettingsDeals" controller="XactlyExpress.XactlySMBSettingsDealsController" title="" sidebar="false" showHeader="false" standardStylesheets="true" action="{!pageAction}">
+    
+   <!-- Custom Cursor Loader -->
+   <c:XactlySMBCursor />
+   <!-- Custom Cursor Loader -->
+    <title>{!titleLabel}</title>
+    <script>        
+            var bubbleImagesPath = "{!URLFOR($Resource.XactlySMBResources ,'modbubble/images')}";
+    </script>  
+    <link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.XactlySMBResources ,'css/XactlySMBStyles.css')}" />
+    <link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.XactlySMBResources ,'css/XactlySMBPlanCreate.css')}" />
+    <link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.XactlySMBResources ,'popup/css/jqpopup.css')}"/>
+    <link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.XactlySMBResources ,'modbubble/css/bubble.css')}" />
+    <link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.XactlySMBResources ,'css/XactlySMBNumeratedBox.css')}" />
+
+    
+    <script type="text/javascript" language="javascript" src="{!URLFOR($Resource.XactlySMBResources, 'js/jQueryOverflow.js')}"></script>
+    <script type="text/javascript" src="{!URLFOR($Resource.XactlySMBResources ,'modbubble/js/jquery.codabubble.mod.js')}"></script>
+    
+    <script type="text/javascript" src="{!URLFOR($Resource.XactlySMBResources, 'js/XactlySMBJavascript.js')}"></script>
+    <script type="text/javascript" src="{!URLFOR($Resource.XactlySMBResources, 'js/XactlySMBPlanCreate.js')}"></script>
+    <script type="text/javascript" src="{!URLFOR($Resource.XactlySMBResources, 'popup/js/jqDnR.min.js')}"></script>
+    <script type="text/javascript" src="{!URLFOR($Resource.XactlySMBResources, 'popup/js/jquery.jqpopup.min.js')}"></script>
+    <script type="text/javascript" src="{!URLFOR($Resource.XactlySMBResources, 'js/jquery-ui.min.js')}"></script>
+    <script type="text/javascript" src="{!URLFOR($Resource.XactlySMBResources ,'js/jquery.superbox-min.js')}"></script>
+    
+ <style>
+        .close{
+            display:block;
+        }
+        .tableWrapper{
+            margin:23px 0 0 21px;
+            width:1032px;
+            position:relative;
+        }
+        
+        .tableWrapper .tHeader{
+            width:100%;
+            position:relative;
+        }
+        
+        .tableWrapper .tHeader .headerLeftSide{
+            margin-top:8px;
+            width:40%;
+            float:left;
+        }
+        
+        .tableWrapper .tHeader .headerRightSide{
+            margin-top:8px;
+            width:60%;
+            float:left;
+            text-align:right;
+        }
+        
+        .tableWrapper .tHeader .headerRightSide a{
+            padding-left:5px;
+            padding-right:5px;
+        }
+        
+        .tableWrapper .tContent {
+            width:100%;
+            position:relative;
+        }
+        
+        .tableWrapper .tFooter{
+            width:100%;
+            height:25px;
+            background:transparent url({!URLFOR($Resource.XactlySMBResources,'img/layout/bottomBgTable.png')});
+            border:1px solid #EDEDED;
+            position:relative;
+        }
+        
+        .tableWrapper .tFooter .footerLeftSide {
+            width:40%;
+            float:left;
+            margin-top:3px;
+        }
+        
+        .tableWrapper .tFooter .prevNextWrapp {
+            width:20%;
+            margin-top:3px;
+            float:left;
+        }
+        
+        .tableWrapper .tFooter .footerRightSide {
+            width:40%;
+            float:left;
+            margin-top:3px;
+            text-align:right;
+        }
+        
+        div.tableContainer {
+            overflow: hidden;
+        }
+        
+        #cellsTable td{
+            border-right:1px solid #C2DFFF;
+            padding:0;
+            margin:0;
+        }
+        
+        #dealsTable td{
+            border-right:1px solid #C2DFFF;
+        }
+        
+        .rowsTable td{
+            border-right:1px solid #C2DFFF;
+        }
+        
+        #rowsHeaders{
+            border-right:1px solid #C2DFFF;
+        }
+        
+        .FixedCelsTable {  
+            width: 1200px;
+            position: relative;
+            left:0px;
+            *background-position:left;
+            width: 100%;
+        }
+        .FixedCelsTable .tablesHolder .toolbar{
+            height:40px;
+            margin-left:10px;
+            text-align:center;
+        }
+        .FixedCelsTable .tablesHolder .scroller{
+            width:99%;
+            height:100px;
+            overflow:auto;
+            position:absolute;
+        }
+        
+        .FixedCelsTable .tablesHolder .recordsList{
+            width: 97%; 
+            height: 420px;
+            _height: 300px;
+            overflow:hidden;
+        }
+        .FixedCelsTable .tablesHolder .recordsList .rows{
+            float:left;
+            margin-top:-1px;
+            width:100px;
+            margin-left:-1px;
+            position:relative;
+            *margin-top:0px;
+            *margin-left:0px;
+        }
+        .FixedCelsTable .tablesHolder .recordsList .rows .rowsHeader{
+            position:absolute;
+            left:0px;
+            margin-top:0px;
+            height:30px;
+        }
+        .FixedCelsTable .tablesHolder .recordsList .rows .rowsScroll{
+            position:absolute;
+            margin-top: 25px;
+            left: 0px;
+            height:280px;
+            overflow:hidden;
+        }
+        .FixedCelsTable .tablesHolder .recordsList .colsContainer{
+            position:relative;
+        }       
+        .FixedCelsTable .tablesHolder .recordsList .colsContainer .columns{
+            margin-left: 100px;
+            margin-top:0px !important;
+            overflow: hidden;
+            left:0px;
+            width:700px;
+            position:absolute;
+            *margin-left: 0px;          
+            *margin-top: 0px;
+        }
+        .FixedCelsTable .tablesHolder .recordsList .cellContainer{
+            position:relative;
+        }
+        .FixedCelsTable .tablesHolder .recordsList .cellContainer .cells{
+            margin-left:100px;
+            margin-top:24px;
+            overflow: hidden;
+            width:700px;
+            position:absolute;
+            height:280px;
+            *margin-left:0px;
+            *margin-top:25px;          
+        }   
+        
+        .FixedCelsTable .tablesHolder .recordsList .objectHeaders td{
+            font-weight:bold;
+            text-align: center;
+        } 
+        
+        .FixedCelsTable .tablesHolder .recordsList .objectHeaders td.fixed{
+            font-weight:bold;
+            padding: 5px 0px;
+            text-align: center;
+            border-right: 0px;
+        }
+        
+        .FixedCelsTable .tablesHolder .recordsList .dataRow td{
+            height: 33px;
+            text-align: center;
+            padding: 0px;
+            overflow:hidden;
+        }   
+        .FixedCelsTable .tablesHolder .recordsList .whiteCells td{
+            text-align:left;
+        }
+        
+        .actionBtnContainer {
+            display:block;
+            float:left;
+            height:25px;
+            overflow:hidden;
+            width:25px;
+        }
+        
+        .dateFormat {
+            display:none;
+        }
+        
+        .editablePositive{
+            color:#8BB201;
+            font-weight: bold;
+            text-align:right;
+        }
+        
+        .editableNegative{
+            color:#FF1114;
+            font-weight: bold;
+            text-align:right;
+        }
+        
+        .evenNonEditable td{
+             height:34px;
+             background:#DFBDA7;
+         }
+         
+         .oddNonEditable td{
+             height:34px;
+             background:#F4CEB5;
+         }
+         
+         .btnCenter{
+             background:  url({!URLFOR($Resource.XactlySMBHome ,'img/buttons/homeButtonBackground.png')}) repeat-x;
+             padding-bottom:10px;
+             padding-top:6px;
+             float:left;
+             font-size:13px;
+             font-weight:bold;
+             padding-bottom:10px;
+             padding-top:6px;
+             color: #4888B8;
+         }
+         .btnt{
+             float:left;
+         }
+         
+      
+        
+    </style>
+    
+    <style>     
+        .alert {
+           display:none;
+           position:absolute;
+           top:1px;
+           left:1px;
+           width:300px;
+           background-color:white;
+           border-style:solid;
+           border-width:1px;
+           padding:15px 20px 5px 20px;
+           z-index:2;
+         }
+        .aboveLeftLinks {
+            float: left;
+            margin-left: 10px; 
+            margin-top: 10px;
+        } 
+         
+        .aboveLeft {
+            width: 400px;
+        }
+         
+        .settingSection { 
+            position: relative;
+            overflow: hidden;
+            margin: 30px;
+            padding: 0px;
+        }
+        
+        .settingSection .settingLabel {
+            margin: 10px;
+            padding: 0px;
+        }
+        
+        .settingSection .settingValue {
+            margin: 10px;
+            padding: 0px;
+            margin-left: 200px;
+        }
+        
+        .settingSection .helpCorner {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+        
+        .footer .btnDisabled {
+            margin-right:70px;
+        }
+        
+        .dealAttributesDataTable thead tr th{
+            padding:0.2em 1em;
+            text-align:center;
+        }
+        
+        .dealAttributesDataTable tbody tr td{
+            padding: 5px 2px 0px 5px;
+        }
+        
+        .odd{
+            height: 30px;
+        }
+        .even{
+            height: 31px;
+        }
+        
+        .dealAttributesDataTable {
+            width: 670px;
+            position: relative;
+            overflow: hidden;
+        } 
+        
+        .dealAttributesDataTable tr td.centerColumn {
+            text-align: center;
+        }
+        
+        .descriptionWrapper {
+            width: 230px;
+            margin: 0px;
+            padding: 0px;
+        }
+        
+        .descriptionWrapper textarea {
+            width: 220px;
+            height: 60px;
+            margin: 0px;
+            padding: 0px;
+        }
+        
+        .descriptionColumn {
+            width: 315px;
+        }
+        
+        .blueLink {
+            color:#0F0FFF;
+            font-weight:bold;
+        }
+        
+        .newAttributeHeader {
+            position: relative;
+            overflow: hidden;
+            margin: 0px;
+            margin-bottom: 10px;
+            padding: 0px;
+            clear: both;
+            border-bottom-style:solid;
+            border-bottom-width:thin;
+            font-weight:bold;
+        }
+        
+        .fieldSection {
+            position: relative;
+            overflow: hidden;
+            margin: 10px 5px;
+            padding: 0px;
+            clear: both;
+        }
+        
+        .fieldSection .fieldLabel {
+            float: left;
+            width: 180px;
+        }
+        
+        .fieldSection .fieldLabelLong {
+            float: left;
+            width: 360px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .fieldSection .fieldInput {
+            float: left;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        
+        .fieldSection .fieldInput textArea {
+            width: 250px;
+            height: 100px;
+        }
+        
+        .newAttributeLink {
+            text-align:right; 
+            margin: 5px 10px 0px 0px; 
+            padding: 0px;
+        }
+        
+        .actionBtns {
+            position: relative;
+            overflow: hidden;
+            clear: both;
+            margin-bottom: 10px;
+            margin-left: 135px;
+            height: 30px;
+        }
+        
+        .actionBtns .saveBtn {
+            float: left;
+            display: inline;
+            margin: 0px 5px;
+        }
+        
+        .actionBtns .closeBtn {
+            float: right;
+            margin-right: 20px;
+            display: inline;
+        }
+        
+        .newAttributeContent {
+            width: 500px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        *html .ieFixInput {
+            margin-left: 5px;
+        }
+              
+        #isCommissionablePopUp input{
+            visibility: hidden;
+        }
+        
+        .dealContent  {
+            margin-left:32px;
+            margin-top:0px;
+            width:1000px;
+        }
+          .overflow{
+            text-overflow: ellipsis;
+            -o-text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
+         }
+        
+        .tableWrapper {
+            background:none repeat scroll 0 0 white;
+            border-bottom:1px solid #D8D8D8;
+            border-top:1px solid #D8D8D8;
+            margin:0 0 0 5px;
+            max-height:260px;
+            min-height:47px;
+            overflow:auto;
+            padding:0;
+            position:relative;
+            width:688px;
+            clear:both;
+        }
+
+        div.bottomTable {
+            background: url({!URLFOR($Resource.XactlySMBResources ,'img/layout/grayBottomTable.png')});
+            height: 3px;
+            width:688px;
+            margin-left:5px;
+        }
+        
+        .newAttributeFormWrapper { 
+            margin: 0px;
+            padding: 0px;
+            margin-left: 10px;
+        }
+        
+        .centeredBox{
+            width:600px;
+            margin-top:20px; 
+            padding:0px 20px 20px 100px;            
+        }
+        
+        .displayBlockMap { 
+            display:;
+        }
+        
+        .displayNoneMap {
+            display:none;
+        }
+        
+
+ 
+        .arrowsWrapper {
+            height: 12px;
+            width: 31px;
+            margin: 0px; 
+            padding: 0px; 
+        }
+        
+        .imgArrowLink {
+            line-height: 12px;
+            float: left;
+            height: 12px;
+            width: 11px;
+            margin: 0px 2px;
+            padding: 0px;
+        }
+        
+        .imgArrowLink img { 
+            height: 12px;
+            width: 11px;
+            margin: 0px;
+            padding: 0px;
+        }
+        .error{
+        }
+        .mainContent{
+        }
+        
+        .importFromRadio{
+          width:770px;
+          margin-left:50px;
+        }
+        
+        
+        .leftPanelTitle{
+            color:#CE641B;
+            float:left;
+            font-family:verdana;
+            font-size:10pt;
+            font-weight:bolder;
+            margin-left:0;
+            margin-top:2px;
+        }
+        
+        .leftPanelMenuItem{
+            margin-bottom:16px;
+        }
+        
+        .stepActionNumber{    
+            color:#808080;
+            float:left;
+            font-family:verdana;
+            font-size:250%;
+            font-weight:bold;
+            margin-top:-10px;
+            width:25px;
+        }        
+
+        .dealAttributeTable {
+            border-top: 2px solid #226FBD;
+            float: left;
+            width: 838px;
+        }
+        
+        .dealAttributeTable img {
+            border: 0px;
+        }
+        
+        .dealAttributeTable td{
+            border-right: 1px solid #888888;
+         }
+         
+         .dealAttributeTable th{
+            border-right: 1px solid #888888;
+            color:#3B6F8E;
+            font-size:11px;
+            font-weight: bolder;
+            height:21px;
+            padding:0 12px 3px;
+          }
+         
+         .dealAttributeTable tr.odd{
+            background-color: #FFFFFF;
+         }
+         
+         .dealAttributeTable tr.even{
+            background-color: #E7E7E7;
+         }
+         
+         .dealAttributeTable thead tr{
+            background-color: #CECECE;
+            color: #426E83;
+            border-bottom: 1px solid #000000;
+         }
+        
+         .contectTableData{
+            padding: 1px 1px 1px 5px;
+         }
+         
+         .editMode{
+            display:none;
+         }
+         
+         .viewMode{
+            display:display;
+            height: 20px;
+            overflow: hidden;
+            white-space: nowrap;
+          }
+          
+          .tableDAWrapper{
+            background: url({!URLFOR($Resource.XactlySMBResources ,'img/layout/tableFrame.png')}) no-repeat;
+            padding: 1px 10px 24px 7px;
+            float: left;
+          }
+          
+          .bubble_html{
+            display:none;
+          }
+          .importSourceValue{
+            display:none;
+          }
+    </style>
+    
+    <!-- NEW DESIGN STYLES -->
+    <style>
+        .dealAttributeMainTable {
+            margin: 0px 10px;
+            padding: 0px;
+            position: relative;
+            overflow: hidden;
+            width: 1046px;
+            margin-bottom:10px;
+        }
+        
+        .toEllipsis{
+            overflow: hidden;
+            text-overflow: ellipsis;
+            -o-text-overflow: ellipsis;
+            
+        }
+        
+        .dealAttributeMainTable .titleLeft {
+            border-right: 1px solid #BBBBBB;
+            color: #E26E1B;
+            font-size: 18px;
+            font-weight: bold;
+            height: 25px;
+            margin: 0px;
+            padding: 4px;
+            padding-left: 0px;
+        }
+        
+        .dealAttributeMainTable .titleRight {
+            color: #E26E1B;
+            font-size: 18px;
+            font-weight: bold;
+            height: 25px;
+            margin: 0px;
+            padding: 4px;
+            padding-left: 20px;
+        }
+        
+        .setupOverview {
+            color: #E26E1B;
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 7px;
+        }
+        
+        .setupOverviewLabel {
+            margin-bottom: 7px;
+        }
+        
+        .dealAttributeMainTable .dealAttributeList {
+            border-right: 1px solid #BBBBBB;
+            border-top: 1px solid #BBBBBB;
+            margin: 0px;
+            padding: 10px 10px 10px 0px;
+        }
+        
+        .dealAttributeMainTable .dealAttributeButtons {
+            border-left: 1px solid #BBBBBB;
+            border-top: 1px solid #BBBBBB;
+            height: 200px;
+            margin: 0px;
+            padding: 10px 10px 10px 20px;
+        }
+        
+        .dealAttributeMainTable .dealAttributeStadistics {
+            border-top: 1px solid #BBBBBB;
+            height: 245px;
+            margin: 0px;
+            padding: 10px 10px 10px 20px;
+        }
+        
+        .dealAttributeMainTable .attributesWrapper {
+            margin: 0px 0px 0px 30px;
+            padding: 0px;
+        }
+        
+        .dealAttributeMainTable .dealAttributeStadistics table{
+            width: 280px;
+            border-bottom: 1px solid #BBBBBB;
+            background-color: white;
+        }
+        
+        .dealAttributeMainTable .dealAttributeStadistics table td {
+            border-left: 1px solid #BBBBBB;
+            padding: 5px;
+        }
+        
+        .dealAttributeMainTable .dealAttributeStadistics table td.headerSt {
+            border-left: 1px solid #BBBBBB;
+            border-bottom: 1px solid #BBBBBB;
+            border-top: 1px solid #BBBBBB;
+            color: #3D607C;
+            font-weight: bold;
+        }
+        
+        .dealAttributeMainTable .dealAttributeStadistics table td.lastCellSt {
+            border-right: 1px solid #BBBBBB;
+        }
+        
+        .dealAttributeMainTable .dealAttributeStadistics table td.rightJustifySt {
+            text-align: right;
+        }
+        
+        .dealAttrStep {
+            position: relative;
+            overflow: hidden;
+            margin: 0px 0px 20px 0px;        
+        }
+        
+        .dealAttrStep .stepActionLabel {
+            float: left;
+        }
+        
+        .dealAttrStep .stepActionNumber {
+            margin-top: -6px;
+            float: left;
+        }
+        
+        .dealAttrStep .btnAction {
+            margin-left: 10px;
+            float: left;
+            cursor:pointer;
+        }
+        
+        .addNewDABtn {
+            position: relative;
+            overflow: hidden;
+            padding: 0px;
+            margin: 3px 0px 10px 0px;
+        }
+        
+        .commentBox {
+            width: 660px !important;
+            margin: 5px 0px !important;
+        }
+        
+        .commentTextPanel {
+            width: 648px;
+            padding: 5px;
+            background: white;
+            border: 1px solid #7F9DB9;
+            height: 50px;
+            margin-top: 1px;
+        }
+        
+        .commentTextArea {
+            width: 656px !important;
+        }
+        
+        .textInput{
+            width: 100%; 
+        }
+        
+        .tableHeader{
+            background: url({!URLFOR($Resource.XactlySMBResources, 'img/layout/sch_tableHeader.png')}) repeat-x;
+            height: 24px;
+        }
+        
+        .topLeftPanel{
+            background: url({!URLFOR($Resource.XactlySMBResources, 'img/layout/lateralMenuTop.png')}) repeat-x;
+            height: 13px;
+            width: 171px;    
+        }
+        .bodyLeftPanel{
+            background: url({!URLFOR($Resource.XactlySMBResources, 'img/layout/lateralMenuBody.png')}) no-repeat scroll -2px 0 #DBDBDB;
+            border-left: 2px solid #DBDBDB;
+            border-right: 2px solid #DBDBDB;
+            padding: 10px 3px 30px 5px;
+            width: 159px;
+        }
+        
+        .bottomLeftPanel{
+            background: url({!URLFOR($Resource.XactlySMBResources, 'img/layout/lateralMenuBottom.png')}) repeat-x;
+            height: 13px;
+            width: 171px;   
+        }
+        
+        
+        .importSrcItem{
+            font-size: 11px;
+            height: 17px;
+            margin: 10px 0 0 10px;
+            padding: 2px 0 2px 4px;
+            width: 148px;
+            color:#6F7073;
+            cursor: pointer;
+        } 
+        
+        .importSrcItem:hover{
+            font-size: 11px;
+            height: 17px;
+            margin: 10px 0 0 10px;
+            padding: 2px 0 2px 4px;
+            width: 148px;
+            color:#4F7D99;
+            cursor: pointer;
+        } 
+
+                 
+        .importSrcItemSelected{
+            background: url({!URLFOR($Resource.XactlySMBResources, 'img/layout/lateralMenuItemArrow.png')}) no-repeat;
+            font-size: 11px;
+            height: 17px;
+            margin: 10px 0 0 10px;
+            padding: 2px 0 2px 4px;
+            width: 148px;
+            color: #FFFFFF;
+        }
+       
+        .optionDropDown{
+            background: url({!URLFOR($Resource.XactlySMBResources, 'img/layout/dropDownCustom.png')}) no-repeat;
+            color: #4F7D99;
+            float: right;
+            font-size: 12px;
+            font-weight: bold;
+            height: 28px;
+            margin-top: 4px;
+            padding: 8px 0 0 19px;
+            text-align: left;
+            width: 140px;
+        }
+        
+        .resText{
+            color: #4F7D99;
+            font-size: 13px;
+            font-weight: bold;
+        }
+        
+        .topTableElementMax{
+            float: left;
+            margin: 10px;
+        }
+        
+        .topTableElement{
+            color: #6D6E71;
+            float: left;
+            font-size: 11px;
+            font-weight: normal;
+            margin: 13px 26px 0 6px;
+            
+        }
+        .options{
+            display:none;
+            z-index:100;
+            position: absolute;
+            top: 24px;  
+            right: 50px;   
+            right: /*\**/40px\9;          
+           // right: 40px;
+           // top: 20px;
+        }
+        .optionsDropDownTop{
+            background: url({!URLFOR($Resource.XactlySMBResources, 'img/layout/dropDownCustomTop.png')}) no-repeat;
+            float: left;
+            height: 24px;
+            margin-bottom: -20px;
+            margin-left: -20px;
+            margin-top: -20px;
+            width: 131px;
+        }
+        .optionsDropDownBottom{
+            background: url({!URLFOR($Resource.XactlySMBResources, 'img/layout/dropDownCustomBottom.png')}) no-repeat;
+            height: 16px;
+            margin: 0 -20px -50px;
+            width: 131px;
+        }
+        .optionsDropDownBody{
+            background-color: #FFFFFF;
+            border-left: 2px solid #9A9A9A;
+            border-right: 2px solid #9A9A9A;
+            margin: -10px -20px 0;
+            padding: 0 0 0 20px;
+            width: 106px;
+        }
+        
+        .classOptionItam{
+            color:#757679;
+            height: 25px;
+            margin-left: -15px;
+            padding: 3px 8px 0;
+            cursor: pointer;
+        }
+        .classOptionItam1{
+            margin-bottom: 10px;
+        }
+        .classOptionItam:HOVER{
+            background: url({!URLFOR($Resource.XactlySMBResources, 'img/layout/selItemBack.png')}) no-repeat;
+            color: #ffffff;
+         }
+         .importSource{
+            display: none;
+         }
+         
+         .noMapDescriptionContainer{
+            color: #111111;
+            font-size: 11px;
+            margin-bottom: 10px;
+            margin-top: 10px;
+            width: 154px;
+         }
+    </style>
+    
+<style>
+        #dealAttrList {
+            list-style: none;
+            margin: 0px;
+            padding: 0px;
+            width:100%;
+        }
+        
+        #dealAttrList li { 
+            display: block;
+            margin-bottom: 0px;
+            background-color: #EFEFEF;
+            cursor: move;
+            margin:0px;
+            //margin-top:-3px;
+            height:32px;
+            border:solid 1px #ffffff;   
+            border-bottom:solid 1px #888888;    
+        }
+        
+        
+        #dealAttrList li img.handle2 {
+            margin-right: 7px;
+        }
+
+
+        #dealAttrListNoS {
+            list-style: none;
+            margin: 0px;
+            padding: 0px;
+            width:100%;
+        }
+        
+        #dealAttrListNoS li {
+            display: block;
+            margin-bottom: 0px;
+            background-color: #EFEFEF;
+            margin:0px;
+            //margin-top:-3px;
+            height:32px;
+            border:solid 1px #ffffff;   
+            border-bottom:solid 1px #888888;    
+        }
+        
+        #dealAttrListNoS li img.handle2 {
+            margin-right: 7px;
+        }
+
+
+
+
+        .columsL{
+            width:77px;
+            background:#EFEFEF;
+            height: 19px;
+            padding: 8px 0 5px 3px;
+            border:solid 1px #cccccc;   
+            border-right:solid 1px #888888; 
+            border-bottom:solid 1px #888888;    
+        }
+
+        .topBorder {
+            background: url({!URLFOR($Resource.XactlySMBResources, 'img/layout/SearchBackgroundTopBorder.jpg')}) white repeat-x;
+            height: 9px;
+            margin: 0px;
+            padding: 0px;
+        }
+        
+        .bottomBorder {
+            background: url({!URLFOR($Resource.XactlySMBResources, 'img/layout/SearchBackgroundBottomBorder.jpg')}) white repeat-x;
+            height: 4px;
+            padding: 0px;
+            bottom: 69px;
+            right: 20px;
+            left: 20px;
+        }
+        .resultPanel {
+        }
+        
+        .tableElement{
+            width: 738px;
+            height: 32px;
+        }
+        
+        
+        .tableElement td{
+            border-right: 1px solid #888888;
+            padding-left: 5px;
+        }
+        
+        .tableElementsContainer{
+            overflow: scroll;
+            max-height: 450px;
+            float:left;
+        }
+        
+        .formulaContainer{
+            float:left;
+            margin-top: 2px;
+        }
+        
+        .editFormulaContainer{
+            float: left;
+            margin-left: 10px;
+        }
+        
+        .myType{
+            display:none;
+        }
+        
+</style>    
+    
+    <c:XactlySMBShadows />
+    
+    <!-- PAGE WRAPPER -->  
+  
+    <div class="pageContent" id="pContent" style="min-height: 277px;margin-bottom:30px;">
+        <!-- HEADER -->
+        <apex:form id="settingsForm" >
+            <apex:outputPanel layout="block" styleClass="header">
+                <c:XactlySMBHeader isAdmin="{!isAdmin}"  isActive="{!isActive}" nbrSeparator="{!nbrSeparator}" nbrDecimal="{!nbrDecimal}" currentUserOrSlected="{!currentUserOrSlected}" emulatingUserURLAppend="{!emulatingUserURLAppend}" selected="7" wqlabel="{!currentSettings.quotasPlural}" wclabel="{!currentSettings.creditsPlural}" wlabel="{!currentSettings.dealsPluralCap}" step="3" wtype="setting" hlabel="{!defineDealsFieldsLabel}"  stepHelp="SettingsDeals"/>
+            </apex:outputPanel>     
+        
+        
+            <apex:actionFunction name="refreshMapping" action="{!refreshMapping}" rerender="dealsContent" oncomplete="initMethod();jQuery('.reportDiv').html('');jQuery('.toEllipsis').ellipsis();waitOff();"/>
+            <div  class="error">
+                <!-- INSUFFICIENT PERMISSIONS -->
+                <apex:outputPanel rendered="{!!isAdmin || !isActive}">
+                     <c:XactlySMBErrorMsg error="{!$Label.xactlyexpress__InsufficientPermissions}" />
+                </apex:outputPanel>
+
+            </div>   
+                           
+            <apex:outputPanel layout="block" styleclass="additionalContent" rendered="{!isAdmin && isActive}">    
+                <c:XactlySMBChatterWall objectId="{!$User.Id}" showHeader="true" showWall="true" currentPage="{!$CurrentPage.Name}"/>
+            </apex:outputPanel>
+            <apex:inputText value="{!settings.XactlyExpress__ImportSource__c}" styleclass="importSourceValue"/>
+            
+            <!-- MAIN CONTENT -->
+            <apex:outputPanel id="dealsContent" layout="block" styleClass="mainContent" rendered="{!isAdmin && isActive}">
+                                
+              
+                <!-- Counts Vars -->
+                <script>
+                    var countText = '{!countText}';
+                    var countDate = '{!countDate}';
+                    var countCurrency = '{!countCurrency}';
+                    var countNumber = '{!countNumber}';
+                    var countBoolean = '{!countBoolean}';
+                    
+                    var accountMap = new Array();
+                    <apex:variable var="numValAcc" value="{!0}"/>
+                    <apex:repeat value="{!opportunityFieldsAccounts}" var="account">
+                        <apex:outputPanel layout="none" rendered="{!numValAcc > 1}">
+                            accountMap['{!account.value}'] = '{!account.label}';
+                        </apex:outputPanel>
+                        <apex:variable var="numValAcc" value="{!numValAcc + 1}"/>
+                    </apex:repeat>
+                    
+                    var productMap = new Array();
+                    <apex:variable var="numValProd" value="{!0}"/>
+                    <apex:repeat value="{!opportunityFieldsProducts}" var="product">
+                        <apex:outputPanel layout="none" rendered="{!numValProd > 1}">
+                            productMap['{!product.value}'] = '{!product.label}';
+                        </apex:outputPanel>
+                        <apex:variable var="numValProd" value="{!numValProd + 1}"/>
+                    </apex:repeat>
+                    
+                </script> 
+                                <apex:outputPanel styleclass="reportDiv"  layout="block" rendered="{!ErrorMsg != '' || warningMsg != ''}" id="errorMsg" style="margin-top:10px;">
+                                    <apex:outputText value="{!ErrorMsg}" escape="false" styleclass="errorMsg"/>
+                                    <apex:outputText value="{!warningMsg}" escape="false"/>
+                                </apex:outputPanel>   
+                
+                <table class="dealAttributeMainTable" border="0" cellspacing="0px" cellpadding="0px">
+                    <tr>
+                        <td rowspan="3" style="width: 152px;padding: 20px 10px; 0 5px;" valign="top" align="left">
+                            <div style="margin: 10px 0pt 10px 15px;" onclick="jQuery('.importSourceValue').val('');waitOn();refreshMapping();" class="importSrcItem{!IF(settings.ImportSource__c = '','Selected','')}">Express Deal Attributes</div>
+                            <div class="topLeftPanel"></div>
+
+                            <apex:outputPanel layout="block" id="lateralMenu" styleclass="bodyLeftPanel">
+                                <div class="resText">{!$Label.ExistingMappings}</div>
+                                <div onclick="jQuery('.importSourceValue').val('CSV__File');waitOn();refreshMapping();" class="importSrcItem{!IF(settings.ImportSource__c= 'CSV__File','Selected','')}">External CSV</div>
+                                
+                                <apex:repeat value="{!iSources}" var="impSrc">
+                                    <div onclick="jQuery('.importSourceValue').val('{!JSENCODE(impSrc.Name)}');waitOn();refreshMapping();" class="importSrcItem{!IF(settings.ImportSource__c = impSrc.Name,'Selected','')}">{!impSrc.Name}</div>
+                                </apex:repeat>
+                                <apex:outputPanel layout="block" rendered="{!iSources.size == 0}" styleclass="noMapDescriptionContainer">
+                                    <apex:outputText value="{!$Label.xactlyexpress__FirstNoMappingDesc}" escape="false" />
+                                    
+                                </apex:outputPanel>
+                                
+                                <div class="btnToLeft btnAction" onclick="waitOn();clearImportSource();" style="margin: 10px 0pt;cursor:pointer;">
+                                     <div class="rightBtnSilverNew" >
+                                         <div class="leftBtnSilverNew">
+                                             <div class="middleBtnSilverNew">
+                                                 {!$Label.AddMapping}
+                                             </div>
+                                         </div>
+                                     </div>
+                                </div>
+                            </apex:outputPanel>
+                            <div class="bottomLeftPanel"></div>
+                        </td>
+                        <td valign="top"  align="right">
+
+                            
+                                <div class="tableDAWrapper">
+                                <div class="resText topTableElementMax">{!$Label.Mapping}</div>
+                                <apex:outputPanel layout="none" rendered="{!(settings.XactlyExpress__ImportSource__c != '')}">
+                                    <div class="resText topTableElement">{!IF(!ISNULL(currentImportSource) && currentImportSource.Name !=  'CSV__File',currentImportSource.Name ,$Label.ExternalCSV)}</div>
+                                    <div class="resText topTableElementMax">{!$Label.MappedTo}</div>
+                                    <div class="resText topTableElement">{!IF(!ISNULL(currentImportSource) && currentImportSource.SourceLabel__c !=  'CSV__File',currentImportSource.SourceLabel__c ,$Label.ExternalCSV)}</div>
+                                    <div class="optionDropDown" onmouseover="jQuery('.options').show();"  onmouseleave="if( _isIE7)jQuery('.options').hide();" onmouseout="if(! _isIE7)jQuery('.options').hide();">Options
+                                        <div class="options">
+                                            <div class="optionsDropDownTop"></div>
+                                            <div class="optionsDropDownBody">
+                                                <div class="classOptionItam1">Options</div>
+                                                <apex:outputPanel layout="block" styleClass="classOptionItam" onclick="waitOn();clearImportSourceCpy();" >Copy Mapping</apex:outputPanel>
+                                                <apex:outputPanel layout="block" styleClass="classOptionItam" rendered="{!!(ISNULL(currentImportSource) || currentImportSource.Name = '')}" onclick="waitOn();jQuery('.importSoureName').val(jQuery('.importSourceValue')[0].value);editImportSource();">{!$Label.xactlyexpress__EditMapping}</apex:outputPanel>
+                                                <apex:outputPanel layout="block" styleClass="classOptionItam" onclick="location.href = '{!$Page.XactlyExpress__XactlySMBExportMapping}'">Export Mapping</apex:outputPanel>
+                                                <apex:outputPanel layout="block" styleClass="classOptionItam" rendered="{!!(ISNULL(currentImportSource) || currentImportSource.Name = '' || currentImportSource.XactlyExpress__SourceLabel__c='CSV__File')}" onclick="showTestMapping();">{!$Label.xactlyexpress__TestMapping}</apex:outputPanel>
+                                                <apex:outputPanel layout="block" styleClass="classOptionItam" rendered="{!!(ISNULL(currentImportSource) || currentImportSource.Name = '')}"  onclick="if(confirm('Do you want delete this mapping?')){deleteCurrantImportSource();waitOn();}">{!$Label.xactlyexpress__DeleteMapping}</apex:outputPanel>
+                                            </div>   
+                                            <div class="optionsDropDownBottom"></div>
+                                        </div>
+                                     </div>       
+                                </apex:outputPanel>
+                                <apex:outputPanel layout="none" rendered="{!!(settings.XactlyExpress__ImportSource__c != '' )}">
+                                    <div class="resText topTableElement">{!$Label.xactlyexpress__viewAllExpressFields}</div>
+                                </apex:outputPanel>
+
+                                     <apex:outputPanel layout="none" rendered="{!settings.XactlyExpress__ImportSource__c == 'CSV__File' || (!ISNULL(currentImportSource) && currentImportSource.XactlyExpress__SourceLabel__c = 'CSV__File' && currentImportSource.Name  != '')}">
+                                        <c:XactlySMBDealAttributeOrder id="dealAttrOrderComp" importSourceToMapping="{!settings.XactlyExpress__ImportSource__c}"  /> 
+                                     </apex:outputPanel>  
+                                 
+                                     <apex:outputPanel layout="none" rendered="{!((ISNULL(currentImportSource) || currentImportSource.XactlyExpress__SourceLabel__c != 'CSV__File'  ||  currentImportSource.Name  == '') && settings.XactlyExpress__ImportSource__c != 'CSV__File')}">
+                                             <table class="dealAttributeTable" cellpadding="0" cellspacing="0">
+                                                <thead>
+                                                    <tr class="tableHeader">
+                                                        <th style="width: 43px;">
+                                                            {!$Label.Options}
+                                                        </th>
+                                                        <th style="width: 80px;">
+                                                            <apex:outputPanel rendered="{!sortElement == 'DataType__c'}" layout="block" style="float:left;margin-top:3px;">
+                                                                <img  src="{!IF(sortByDesc == true, URLFOR($Resource.XactlySMBResources, 'img/icons/arrowUp.png'), URLFOR($Resource.XactlySMBResources, 'img/icons/arrowDown.png'))}" />
+                                                            </apex:outputPanel>
+                                                            <a href="javascript:;" onclick="setOrder('DataType__c')">
+                                                                {!$Label.xactlyexpress__DataType}
+                                                            </a>
+                                                        </th>
+                                                        <apex:outputPanel rendered="{!(settings.XactlyExpress__ImportSource__c != 'CSV__File' && settings.XactlyExpress__ImportSource__c != '')}" layout="none">
+                                                            <th>
+                                                                <apex:outputPanel rendered="{!sortElement == 'OpportunityMapField__c'}" layout="block" style="float:left;margin-top:3px;">
+                                                                    <img  src="{!IF(sortByDesc == true, URLFOR($Resource.XactlySMBResources, 'img/icons/arrowUp.png'), URLFOR($Resource.XactlySMBResources, 'img/icons/arrowDown.png'))}" />
+                                                                </apex:outputPanel>
+                                                                <a href="javascript:;" onclick="setOrder('OpportunityMapField__c')">
+                                                                    <apex:outputtext escape="false" value="{!$Label.xactlyexpress__SalesforceFieldName}">
+                                                                       <apex:param value="{!currentImportSource.XactlyExpress__SourceLabel__c}" />
+                                                                    </apex:outputtext>
+                                                                </a>
+                                                            </th>
+                                                        </apex:outputPanel>  
+                                                        <th style="width: 165px;">
+                                                            <apex:outputPanel rendered="{!sortElement == 'DisplayName__c'}" layout="block" style="float:left;margin-top:3px;">
+                                                                <img  src="{!IF(sortByDesc == true, URLFOR($Resource.XactlySMBResources, 'img/icons/arrowUp.png'), URLFOR($Resource.XactlySMBResources, 'img/icons/arrowDown.png'))}" />
+                                                            </apex:outputPanel>
+                                                            <a href="javascript:;" onclick="setOrder('DisplayName__c')">
+                                                                {!$Label.xactlyexpress__ExpressFieldName}
+                                                            </a>
+                                                        </th>
+
+                                                        <apex:outputPanel rendered="{!settings.XactlyExpress__ImportSource__c == ''}" layout="none">
+                                                            <th>{!$Label.xactlyexpress__Description}</th>
+                                                        </apex:outputPanel>  
+                                                        <th style="width: 50px;">
+                                                            <apex:outputPanel rendered="{!sortElement == 'isKey__c'}" layout="block" style="float:left;margin-top:3px;">
+                                                                <img  src="{!IF(sortByDesc == true, URLFOR($Resource.XactlySMBResources, 'img/icons/arrowUp.png'), URLFOR($Resource.XactlySMBResources, 'img/icons/arrowDown.png'))}" />
+                                                            </apex:outputPanel>
+                                                            <a href="javascript:;" onclick="setOrder('isKey__c')">
+                                                                {!$Label.xactlyexpress__UniqueID}
+                                                            </a>
+                                                        </th>
+                                                        <th style="width: 50px;border-right: 0px none;">
+                                                            <apex:outputPanel rendered="{!sortElement == 'isRequired__c'}" layout="block" style="float:left;margin-top:3px;">
+                                                                <img  src="{!IF(sortByDesc == true, URLFOR($Resource.XactlySMBResources, 'img/icons/arrowUp.png'), URLFOR($Resource.XactlySMBResources, 'img/icons/arrowDown.png'))}" />
+                                                            </apex:outputPanel>
+                                                            <a href="javascript:;" onclick="setOrder('isRequired__c')">
+                                                                {!$Label.xactlyexpress__DealAttRequired}
+                                                            </a>
+                                                        </th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                <apex:variable var="iterIndex" value="{!0}"/>
+                                                <apex:repeat id="repdealAttributes" value="{!dealAttributes}"  var="iter">
+                                                    <tr class="rowElemenmt{!RIGHT(TEXT(iterIndex),2)} {!IF(iterIndex = 0,'independentRow',IF(MOD(iterIndex,2)=0,'odd','even'))}" >
+                                                        <td style="padding-left:  10px;">
+                                                             <apex:outputPanel styleclass="actionBtnContainer rowShow{!RIGHT(TEXT(iterIndex),2)}" >                                                                                        
+                                                                 <apex:image url="{!URLFOR($Resource.XactlyExpress__XactlySMBResources, 'img/buttons/pencilEdit.png')}" onclick="editDealAttr({!RIGHT(TEXT(iterIndex),2)});" style="cursor:pointer;"/>
+                                                             </apex:outputPanel>
+                                                             <apex:outputPanel style="display:none;" styleclass="actionBtnContainer editingDeal row{!RIGHT(TEXT(iterIndex),2)}" >                                                                                        
+                                                                 <apex:image url="{!URLFOR($Resource.XactlyExpress__XactlySMBResources, 'img/buttons/tic.png')}" onclick="lockDealAttr({!RIGHT(TEXT(iterIndex),2)});" style="cursor:pointer;"/>
+                                                             </apex:outputPanel>
+                                                             <apex:outputPanel rendered="{!IF(!OR(iter.dealA.XactlyExpress__DealColumnName__c = 'DealId__c', iter.dealA.XactlyExpress__DealColumnName__c = 'DealDate__c', iter.dealA.XactlyExpress__DealColumnName__c = 'ProfileId__c', iter.dealA.XactlyExpress__DealColumnName__c = 'AccountId__c', iter.dealA.XactlyExpress__DealColumnName__c = 'ProductId__c', iter.dealA.XactlyExpress__DealColumnName__c = 'Relationship__c'), false, true)}"  >             
+                                                                &nbsp;   
+                                                             </apex:outputPanel>         
+                                                            <apex:outputpanel styleclass="actionBtnContainer editMode" rendered="{!IF((OR(iter.dealA.XactlyExpress__DealColumnName__c = 'DealId__c', iter.dealA.XactlyExpress__DealColumnName__c = 'DealDate__c', iter.dealA.XactlyExpress__DealColumnName__c = 'ProfileId__c', iter.dealA.XactlyExpress__DealColumnName__c = 'AccountId__c', iter.dealA.XactlyExpress__DealColumnName__c = 'ProductId__c', iter.dealA.XactlyExpress__DealColumnName__c = 'Relationship__c') && (settings.XactlyExpress__ImportSource__c == '' ||  currentImportSource.XactlyExpress__SourceLabel__c == 'CSV__File')) || (currentImportSource.XactlyExpress__SourceLabel__c != 'CSV__File' && !ISNULL(settings.XactlyExpress__ImportSource__c) && settings.XactlyExpress__ImportSource__c != '' && iter.dealA.XactlyExpress__IsRequired__c), false, true)}">
+                                                                 <apex:commandLink id="deleteLink" onclick="waitOn();" oncomplete="initMethod();waitOff();" action="{!deleteDealAttribute}" rerender="dealsContent, errorMsgPopUp,errorMsg" >
+                                                                     <apex:param name="rowIndex" value="{!RIGHT(TEXT(iterIndex),2)}" />
+                                                                     <img src="{!URLFOR($Resource.XactlySMBResources, 'img/buttons/delete_small.png')}" />    
+                                                                 </apex:commandLink>                                                                            
+                                                            </apex:outputpanel>
+                                                            <div class="myType">{!HTMLENCODE(iter.dealA.DataType__c)}</div>
+                                                            <div class="bubble_html"></div>
+                                                        </td>
+                                                        <td class="contectTableData noTypeColum"  align="left">
+                                                            <div class="viewMode " >
+                                                                <apex:outputpanel styleclass="dataTypeShow" style=" float: left; ">
+                                                                    <apex:outputtext value="{!iter.dataTypeDisplayed}" />
+                                                                </apex:outputpanel>
+                                                            </div>
+                                                            <apex:outputpanel styleclass="editMode">
+                                                             
+                                                                <apex:selectList id="dataTypeSelect" styleclass="dataTypeSelect" onchange="if(!changeDataType('{!iter.dealA.XactlyExpress__DataType__c}',this,jQuery('.reqValue', jQuery(this).parent().parent().parent())[0].checked,{!IF(ISNULL(iter.dealA.Id) || iter.onlyMapping,'true','false')}))return false;waitOn();jQuery('.constantValue', jQuery(this).parent().parent().parent()).hide();changeToViewMode(this, 'select', true);checkNothingToShow(this,{!RIGHT(TEXT(iterIndex),2)});waitOff();" value="{!iter.dealA.XactlyExpress__DataType__c}" multiselect="false" size="1"  rendered="{!IF((OR(iter.dealA.XactlyExpress__DealColumnName__c = 'DealId__c', iter.dealA.XactlyExpress__DealColumnName__c = 'DealDate__c', iter.dealA.XactlyExpress__DealColumnName__c = 'ProfileId__c', iter.dealA.XactlyExpress__DealColumnName__c = 'AccountId__c', iter.dealA.XactlyExpress__DealColumnName__c = 'ProductId__c', iter.dealA.XactlyExpress__DealColumnName__c = 'Relationship__c') &&  (currentImportSource.XactlyExpress__SourceLabel__c == 'CSV__File' || ISNULL(settings.XactlyExpress__ImportSource__c))) || (!(currentImportSource.XactlyExpress__SourceLabel__c == 'CSV__File' || ISNULL(settings.XactlyExpress__ImportSource__c)) && iter.dealA.XactlyExpress__IsRequired__c), false, true)}">
+                                                                    <apex:selectOptions value="{!dealAttributesTypes}" />
+                                                                </apex:selectList>
+                                                                <div class="myIndex" style="display:none;">{!RIGHT(TEXT(iterIndex),2)}</div>
+                                                                <apex:outputtext value="{!iter.dataTypeDisplayed}"  rendered="{!IF((OR(iter.dealA.XactlyExpress__DealColumnName__c = 'DealId__c', iter.dealA.XactlyExpress__DealColumnName__c = 'DealDate__c', iter.dealA.XactlyExpress__DealColumnName__c = 'ProfileId__c', iter.dealA.XactlyExpress__DealColumnName__c = 'AccountId__c', iter.dealA.XactlyExpress__DealColumnName__c = 'ProductId__c', iter.dealA.XactlyExpress__DealColumnName__c = 'Relationship__c') &&  (currentImportSource.XactlyExpress__SourceLabel__c == 'CSV__File' || ISNULL(settings.XactlyExpress__ImportSource__c))) || (!(currentImportSource.XactlyExpress__SourceLabel__c == 'CSV__File' || ISNULL(settings.XactlyExpress__ImportSource__c)) && iter.dealA.XactlyExpress__IsRequired__c),  true, false)}" />
+                                                            </apex:outputpanel>
+                                                            <div class="bubble_html"></div>
+                                                        </td>
+                                                        <apex:outputPanel rendered="{!(settings.XactlyExpress__ImportSource__c != 'CSV__File' && settings.XactlyExpress__ImportSource__c != '')}" layout="none">
+                                                            <td class="contectTableData noTypeColum"  align="left">
+                                                                  <div class="editMode"><!-- *ALWAYS SHOW SELECT* -->
+                                                                      <apex:outputpanel layout="none" rendered="{!IF(iter.dealA.XactlyExpress__IsRequired__c && (iter.dealA.XactlyExpress__DealColumnName__c == 'AccountId__c' || iter.dealA.XactlyExpress__DealColumnName__c == 'ProductId__c' || iter.dealA.XactlyExpress__DealColumnName__c == 'ProfileId__c'), false , true)}">
+                                                                          <select onchange="jQuery('.constantValue',jQuery(this).parent())[0].value = this.value;ifConstant(this,isConstant{!RIGHT(TEXT(iterIndex),2)});checkChangeAcoountProduct(this);" id="stringSelect{!RIGHT(TEXT(iterIndex),2)}" class="stringSelect toSelectInitSet toHideOnType" style="{!IF(AND(iter.dealA.DataType__c == 'String',iter.dealA.isConstant__c == false),'', 'display:none;')}"  size="1"  >
+                                                                              <apex:outputpanel layout="none"  rendered="{!IF(contains(iter.dealA.XactlyExpress__OpportunityMapField__c, '.') && iter.dealA.XactlyExpress__DataType__c == 'String', true, false )}">
+                                                                                   <option value="{!iter.dealA.XactlyExpress__OpportunityMapField__c}" selected="selected">{!iter.dealA.XactlyExpress__OpportunityMapField__c}</option>
+                                                                              </apex:outputpanel>
+                                                                              <apex:repeat id="repopportunityFieldsString" value="{!opportunityFieldsString}"  var="op">
+                                                                                   <apex:outputpanel layout="none"  rendered="{!IF(iter.dealA.XactlyExpress__OpportunityMapField__c == op.value  && op.value != FORMULA_FIELD_VALUE, true, false )}">
+                                                                                      <option value="{!op.value}" selected="selected" >{!op.label}</option>
+                                                                                   </apex:outputpanel>
+                                                                                   <apex:outputpanel layout="none"  rendered="{!IF(iter.dealA.XactlyExpress__OpportunityMapField__c != op.value  && op.value != FORMULA_FIELD_VALUE, true, false )}">
+                                                                                      <option value="{!op.value}" >{!op.label}</option>
+                                                                                   </apex:outputpanel>
+                                                                              </apex:repeat>
+                                                                          </select>
+                                                                          <select onchange="jQuery('.constantValue',jQuery(this).parent())[0].value = this.value;ifConstant(this,isConstant{!RIGHT(TEXT(iterIndex),2)});" id="dateSelect{!RIGHT(TEXT(iterIndex),2)}" class="dateSelect toSelectInitSet toHideOnType" style="{!IF(AND(iter.dealA.DataType__c == 'Date',iter.dealA.isConstant__c == false),'', 'display:none;')}"  size="1"  >
+                                                                              <apex:outputpanel layout="none"  rendered="{!IF(contains(iter.dealA.XactlyExpress__OpportunityMapField__c, '.')  && iter.dealA.XactlyExpress__DataType__c == 'Date', true, false )}">
+                                                                                   <option value="{!iter.dealA.XactlyExpress__OpportunityMapField__c}" selected="selected">{!iter.dealA.XactlyExpress__OpportunityMapField__c}</option>
+                                                                              </apex:outputpanel>
+                                                                              <apex:repeat id="repopportunityFieldsDate" value="{!opportunityFieldsDate}"  var="op">
+                                                                                   <apex:outputpanel layout="none"  rendered="{!IF(iter.dealA.XactlyExpress__OpportunityMapField__c == op.value  && op.value != FORMULA_FIELD_VALUE, true, false )}">
+                                                                                      <option value="{!op.value}" selected="selected">{!op.label}</option>
+                                                                                   </apex:outputpanel>
+                                                                                   <apex:outputpanel layout="none"  rendered="{!IF(iter.dealA.XactlyExpress__OpportunityMapField__c != op.value  && op.value != FORMULA_FIELD_VALUE, true, false )}">
+                                                                                      <option value="{!op.value}">{!op.label}</option>
+                                                                                   </apex:outputpanel>
+                                                                              </apex:repeat> 
+                                                                          </select>
+                                                                          <select onchange="jQuery('.constantValue',jQuery(this).parent())[0].value = this.value;ifConstant(this,isConstant{!RIGHT(TEXT(iterIndex),2)});" id="numberSelect{!RIGHT(TEXT(iterIndex),2)}" class="numberSelect toSelectInitSet toHideOnType" style="{!IF(AND(iter.dealA.DataType__c == 'Decimal',iter.dealA.isConstant__c == false),'', 'display:none;')}"  size="1"  >
+                                                                              <apex:outputpanel layout="none"  rendered="{!IF(contains(iter.dealA.XactlyExpress__OpportunityMapField__c, '.')  && iter.dealA.XactlyExpress__DataType__c == 'Decimal', true, false )}">
+                                                                                   <option value="{!iter.dealA.XactlyExpress__OpportunityMapField__c}" selected="selected">{!iter.dealA.XactlyExpress__OpportunityMapField__c}</option>
+                                                                              </apex:outputpanel>
+                                                                              <apex:repeat id="repopportunityFieldsNumber" value="{!opportunityFieldsNumber}"  var="op">
+                                                                                   <apex:outputpanel layout="none"  rendered="{!IF(iter.dealA.XactlyExpress__OpportunityMapField__c == op.value, true, false )}">
+                                                                                      <option value="{!op.value}" selected="selected">{!op.label}</option>
+                                                                                   </apex:outputpanel>
+                                                                                   <apex:outputpanel layout="none"  rendered="{!IF(iter.dealA.XactlyExpress__OpportunityMapField__c != op.value, true, false )}">
+                                                                                      <option value="{!op.value}">{!op.label}</option>
+                                                                                   </apex:outputpanel>
+                                                                              </apex:repeat>                                                              
+                                                                          </select>
+                                                                          <select onchange="jQuery('.constantValue',jQuery(this).parent())[0].value = this.value;ifConstant(this,isConstant{!RIGHT(TEXT(iterIndex),2)});" id="currencySelect{!RIGHT(TEXT(iterIndex),2)}" class="currencySelect toSelectInitSet toHideOnType" style="{!IF(AND(iter.dealA.DataType__c == 'Currency',iter.dealA.isConstant__c == false),'', 'display:none;')}"   size="1" >
+                                                                              <apex:outputpanel layout="none"  rendered="{!IF(contains(iter.dealA.XactlyExpress__OpportunityMapField__c, '.')  && iter.dealA.XactlyExpress__DataType__c == 'Currency', true, false )}">
+                                                                                   <option value="{!iter.dealA.XactlyExpress__OpportunityMapField__c}" selected="selected">{!iter.dealA.XactlyExpress__OpportunityMapField__c}</option>
+                                                                              </apex:outputpanel>
+                                                                              <apex:repeat id="repopportunityFieldsCurrency" value="{!opportunityFieldsCurrency}"  var="op">
+                                                                                   <apex:outputpanel layout="none"  rendered="{!IF(iter.dealA.XactlyExpress__OpportunityMapField__c == op.value, true, false )}">
+                                                                                      <option value="{!op.value}" selected="selected">{!op.label}</option>
+                                                                                   </apex:outputpanel>
+                                                                                   <apex:outputpanel layout="none"  rendered="{!IF(iter.dealA.XactlyExpress__OpportunityMapField__c != op.value, true, false )}">
+                                                                                      <option value="{!op.value}">{!op.label}</option>
+                                                                                   </apex:outputpanel>
+                                                                              </apex:repeat>      
+                                                                          </select>
+                                                                          <select onchange="jQuery('.constantValue',jQuery(this).parent())[0].value = this.value;ifConstant(this,isConstant{!RIGHT(TEXT(iterIndex),2)});" id="booleanSelect{!RIGHT(TEXT(iterIndex),2)}" class="booleanSelect toSelectInitSet toHideOnType" style="{!IF(AND(iter.dealA.DataType__c == 'Boolean',iter.dealA.isConstant__c == false),'', 'display:none;')}" size="1" >
+                                                                              <apex:outputpanel layout="none"  rendered="{!IF(contains(iter.dealA.XactlyExpress__OpportunityMapField__c, '.')  && iter.dealA.XactlyExpress__DataType__c == 'Boolean', true, false )}">
+                                                                                   <option value="{!iter.dealA.XactlyExpress__OpportunityMapField__c}" selected="selected">{!iter.dealA.XactlyExpress__OpportunityMapField__c}</option>
+                                                                              </apex:outputpanel>
+                                                                              <apex:repeat id="repopportunityFieldsBoolean" value="{!opportunityFieldsBoolean}"  var="op">
+                                                                                   <apex:outputpanel layout="none"  rendered="{!IF(iter.dealA.XactlyExpress__OpportunityMapField__c == op.value  && op.value != FORMULA_FIELD_VALUE, true, false )}">
+                                                                                      <option value="{!op.value}" selected="selected">{!op.label}</option>
+                                                                                   </apex:outputpanel>
+                                                                                   <apex:outputpanel layout="none"  rendered="{!IF(iter.dealA.XactlyExpress__OpportunityMapField__c != op.value  && op.value != FORMULA_FIELD_VALUE, true, false )}">
+                                                                                      <option value="{!op.value}" >{!op.label}</option>
+                                                                                   </apex:outputpanel>
+                                                                              </apex:repeat>                                                                                 
+                                                                          </select>
+                                                                          <select onchange="jQuery('.constantValue',jQuery(this).parent())[0].value = this.value;ifConstant(this,isConstant{!RIGHT(TEXT(iterIndex),2)});" id="allSelect{!RIGHT(TEXT(iterIndex),2)}" class="allSelect toSelectInitSet toHideOnType" style="{!IF(AND(iter.dealA.DataType__c == null,iter.dealA.isConstant__c == false),'', 'display:none;')}" size="1" >
+                                                                              <apex:outputpanel layout="none"  rendered="{!IF(contains(iter.dealA.XactlyExpress__OpportunityMapField__c, '.'), true, false )}">
+                                                                                   <option value="{!iter.dealA.XactlyExpress__OpportunityMapField__c}" selected="selected" >{!iter.dealA.XactlyExpress__OpportunityMapField__c}</option>
+                                                                              </apex:outputpanel>
+                                                                              <apex:repeat id="repopportunityFieldsAll" value="{!opportunityFieldsAll}"  var="op">
+                                                                                   <apex:outputpanel layout="none"  rendered="{!IF(iter.dealA.XactlyExpress__OpportunityMapField__c == op.value, true, false )}">
+                                                                                      <option value="{!op.value}" selected="selected">{!op.label}</option>
+                                                                                   </apex:outputpanel>
+                                                                                   <apex:outputpanel layout="none"  rendered="{!IF(iter.dealA.XactlyExpress__OpportunityMapField__c != op.value, true, false )}">
+                                                                                      <option value="{!op.value}">{!op.label}</option>
+                                                                                   </apex:outputpanel>
+                                                                              </apex:repeat>  
+                                                                          </select>
+                                                                      </apex:outputpanel>
+                                                                      
+                                                                      <apex:outputpanel layout="none"  rendered="{!IF(iter.dealA.XactlyExpress__IsRequired__c && (iter.dealA.XactlyExpress__DealColumnName__c == 'ProductId__c') , true , false)}">
+                                                                           <select onchange="jQuery('.constantValue',jQuery(this).parent())[0].value = this.value;ifConstant(this,isConstant{!RIGHT(TEXT(iterIndex),2)});" id="stringSelect2{!RIGHT(TEXT(iterIndex),2)}" class="stringSelect toSelectInitSet toHideOnType" style="{!IF(AND(iter.dealA.DataType__c == 'String', iter.dealA.DealColumnName__c = 'ProductId__c',iter.dealA.isConstant__c == false, iter.dealA.IsRequired__c),'', 'display:none;')}"   size="1"  >
+                                                                              <apex:outputpanel layout="none"  rendered="{!IF(contains(iter.dealA.XactlyExpress__OpportunityMapField__c, '.'), true, false )}">
+                                                                                   <option value="{!iter.dealA.XactlyExpress__OpportunityMapField__c}" selected="selected">{!iter.dealA.XactlyExpress__OpportunityMapField__c}</option>
+                                                                              </apex:outputpanel>
+                                                                              <apex:repeat id="repopportunityFieldsProducts" value="{!opportunityFieldsProducts}"  var="op">
+                                                                                   <apex:outputpanel layout="none"  rendered="{!IF(iter.dealA.XactlyExpress__OpportunityMapField__c == op.value  && op.value != FORMULA_FIELD_VALUE, true, false )}">
+                                                                                      <option value="{!op.value}" selected="selected" >{!op.label}</option>
+                                                                                   </apex:outputpanel>
+                                                                                   <apex:outputpanel layout="none"  rendered="{!IF(iter.dealA.XactlyExpress__OpportunityMapField__c != op.value  && op.value != FORMULA_FIELD_VALUE, true, false )}">
+                                                                                      <option value="{!op.value}" >{!op.label}</option>
+                                                                                   </apex:outputpanel>
+                                                                              </apex:repeat>  
+                                                                          </select>
+                                                                      </apex:outputpanel>
+                                                                      <apex:outputpanel layout="none"  rendered="{!IF(iter.dealA.XactlyExpress__IsRequired__c && (iter.dealA.XactlyExpress__DealColumnName__c == 'ProfileId__c'), true, false )}">
+                                                                          <select onchange="jQuery('.constantValue',jQuery(this).parent())[0].value = this.value;ifConstant(this,isConstant{!RIGHT(TEXT(iterIndex),2)});" id="stringSelect3{!RIGHT(TEXT(iterIndex),2)}" class="stringSelect toSelectInitSet toHideOnType" style="{!IF(AND(iter.dealA.DataType__c == 'String', iter.dealA.DealColumnName__c = 'ProfileId__c',iter.dealA.isConstant__c == false),'', 'display:none;')}"  size="1">
+                                                                              <apex:outputpanel layout="none"  rendered="{!IF(contains(iter.dealA.XactlyExpress__OpportunityMapField__c, '.'), true, false )}">
+                                                                                   <option value="{!iter.dealA.XactlyExpress__OpportunityMapField__c}" selected="selected">{!iter.dealA.XactlyExpress__OpportunityMapField__c}</option>
+                                                                              </apex:outputpanel>
+                                                                              <apex:repeat id="repopportunityFieldsUsers" value="{!opportunityFieldsUsers}"  var="op">
+                                                                                   <apex:outputpanel layout="none"  rendered="{!IF(iter.dealA.XactlyExpress__OpportunityMapField__c == op.value && op.value != FORMULA_FIELD_VALUE, true, false )}">
+                                                                                      <option value="{!op.value}" selected="selected" >{!op.label}</option>
+                                                                                   </apex:outputpanel>
+                                                                                   <apex:outputpanel layout="none"  rendered="{!IF(iter.dealA.XactlyExpress__OpportunityMapField__c != op.value && op.value != FORMULA_FIELD_VALUE, true, false )}">
+                                                                                      <option value="{!op.value}">{!op.label}</option>
+                                                                                   </apex:outputpanel>
+                                                                              </apex:repeat>  
+                                                                          </select>
+                                                                      </apex:outputpanel>
+                                                                      <apex:outputpanel layout="none"  rendered="{!IF(iter.dealA.XactlyExpress__IsRequired__c && (iter.dealA.XactlyExpress__DealColumnName__c == 'AccountId__c'), true, false )}">
+                                                                          <select onchange="jQuery('.constantValue',jQuery(this).parent())[0].value = this.value;ifConstant(this,isConstant{!RIGHT(TEXT(iterIndex),2)});" id="stringSelect4{!RIGHT(TEXT(iterIndex),2)}" class="stringSelect toSelectInitSet toHideOnType" style="{!IF(AND(iter.dealA.DataType__c == 'String', iter.dealA.DealColumnName__c = 'AccountId__c',iter.dealA.isConstant__c == false,iter.dealA.IsRequired__c),'', 'display:none;')}"  size="1"  >
+                                                                              <apex:outputpanel layout="none"  rendered="{!IF(contains(iter.dealA.XactlyExpress__OpportunityMapField__c, '.'), true, false )}">
+                                                                                   <option value="{!iter.dealA.XactlyExpress__OpportunityMapField__c}" selected="selected">{!iter.dealA.XactlyExpress__OpportunityMapField__c}</option>
+                                                                              </apex:outputpanel>
+                                                                              <apex:repeat id="repopportunityFieldsAccounts" value="{!opportunityFieldsAccounts}"  var="op">
+                                                                                   <apex:outputpanel layout="none"  rendered="{!IF(iter.dealA.XactlyExpress__OpportunityMapField__c == op.value  && op.value != FORMULA_FIELD_VALUE, true, false )}">
+                                                                                      <option value="{!op.value}" selected="selected">{!op.label}</option>
+                                                                                   </apex:outputpanel>
+                                                                                   <apex:outputpanel layout="none"  rendered="{!IF(iter.dealA.XactlyExpress__OpportunityMapField__c != op.value  && op.value != FORMULA_FIELD_VALUE, true, false )}">
+                                                                                      <option value="{!op.value}">{!op.label}</option>
+                                                                                   </apex:outputpanel>
+                                                                              </apex:repeat>  
+                                                                          </select>   
+                                                                      </apex:outputpanel>
+                                                                      <apex:outputpanel rendered="{!IF(iter.dealA.XactlyExpress__DealColumnName__c == 'AccountId__c','true','false')}" layout="none">
+                                                                           <div id="{!RIGHT(TEXT(iterIndex),2) & '-account'}" style="float:left;width:142px;margin-top:-3px;margin-top /*\**/:-5px\9;margin-top:expression('10px');margin-right:20px;{!IF(iter.dealA.isConstant__c == true && iter.dealA.DealColumnName__c == 'AccountId__c','','display: none;')}" class="constantAccount toHideOnType">
+                                                                              <apex:inputText id="inpAcco" styleClass="{!ROUND(iterIndex ,0)}-accountName accountName" onfocus="this.blur();jQuery(this).attr('readonly', true);" value="{!iter.accountName}" style="width:100px !important;width:100px;color:#000000;cursor:default;background-color:#EFEFEF;"/>
+                                                                              <apex:image url="{!URLFOR($Resource.XactlyExpress__XactlySMBResources, 'img/icons/magnifier.png')}" onclick="javascript: accountsWindow = window.open('/apex/XactlySMBAccountPopup?index={!ROUND(iterIndex ,0)}', 'Accounts','location=0,status=0,scrollbars=1,width=700px,height=500px'); accountsWindow.moveTo(100,100);"/>
+                                                                           </div>
+                                                                      </apex:outputpanel>
+                                                                      <apex:outputpanel rendered="{!IF(iter.dealA.XactlyExpress__DealColumnName__c == 'ProductId__c','true','false')}" layout="none">
+                                                                           <div id="{!RIGHT(TEXT(iterIndex),2) & '-product'}" style="float:left;width:142px;margin-top:-3px;margin-top /*\**/:-5px\9;margin-top:expression('10px');margin-right:20px;{!IF(iter.dealA.isConstant__c == true && iter.dealA.DealColumnName__c == 'ProductId__c','','display: none;')}" class="constantProduct toHideOnType">
+                                                                              <apex:inputText id="inpProd"  styleClass="{!ROUND(iterIndex ,0)}-productName productName" onfocus="this.blur();jQuery(this).attr('readonly', true);" value="{!iter.productName}" style="width:100px !important;width:100px;color:#000000;cursor:default;background-color:#EFEFEF;"/>
+                                                                              <apex:image url="{!URLFOR($Resource.XactlyExpress__XactlySMBResources, 'img/icons/magnifier.png')}" onclick="javascript: productsWindow = window.open('/apex/XactlySMBProductPopup?index={!ROUND(iterIndex ,0)}', 'Products','location=0,status=0,scrollbars=1,width=700px,height=500px'); productsWindow.moveTo(100,100);"/>
+                                                                           </div> 
+                                                                      </apex:outputpanel>  
+                                                                      <apex:selectList styleClass="constantProfile toHideOnType toSelectInitSet" multiselect="false" size="1" value="{!iter.dealA.XactlyExpress__OpportunityMapField__c}" rendered="{!IF(iter.dealA.XactlyExpress__DealColumnName__c == 'ProfileId__c','true','false')}"  onchange="jQuery('.constantValue',jQuery(this).parent())[0].value = this.value;" style="margin-right:20px;{!IF(iter.dealA.XactlyExpress__isConstant__c == true && iter.dealA.XactlyExpress__DealColumnName__c == 'ProfileId__c','','display: none;')}">
+                                                                          <apex:selectOptions value="{!Salespersons}" />
+                                                                      </apex:selectList>
+                                                                                  
+                                                                      <div class="formulaContainer" style="{!IF(iter.isFormula == true && (iter.dealA.DataType__c == 'Currency' || iter.dealA.DataType__c == 'Decimal'),'','display: none;')}">
+                                                                        {!HTMLENCODE(iter.formulaToDisplay)}
+                                                                      </div>            
+                                                                      <div style="float:right;" class="editFormulaContainer" style="{!IF(iter.isFormula == true && (iter.dealA.DataType__c == 'Currency' || iter.dealA.DataType__c == 'Decimal'),'','display: none;')}" >                                                                                        
+                                                                         <apex:image onclick="showDAFormula(jQuery('.constantValue', jQuery(this).parent().parent())[0],jQuery('.formulaContainer', jQuery(this).parent().parent())[0], jQuery('.isAdvFormula', jQuery(this).parent().parent())[0]);" url="{!URLFOR($Resource.XactlyExpress__XactlySMBResources, 'img/buttons/pencilEdit.png')}" style="cursor:pointer;"/>
+                                                                      </div>
+                                                                      <apex:inputCheckbox id="isAdvFormula" value="{!iter.isAdvFormula}" styleClass="isAdvFormula" style="display:none;"  />
+                                                                      <apex:inputCheckbox id="isFormula" value="{!iter.isFormula}"  styleClass="isFormula" style="display:none;"  />
+                                                                      
+                                                                      
+                                                                      <apex:inputText id="constantDate" onchange="if(checkDate(this))jQuery('.constantValue',jQuery(this).parent())[0].value = this.value;" onfocus="showCalendar(isDate{!RIGHT(TEXT(iterIndex),2)});" value="{!iter.dealA.XactlyExpress__OpportunityMapField__c}" style="{!IF(iter.dealA.XactlyExpress__isConstant__c == true && iter.dealA.XactlyExpress__DataType__c == 'Date','','display: none;')}float:left;width:80%" styleClass="constantDate toHideOnType"/>
+                                                                      <apex:inputText id="inpCurr" onchange="if(checkCurr(this))jQuery('.constantValue',jQuery(this).parent())[0].value = this.value;" value="{!iter.dealA.XactlyExpress__OpportunityMapField__c}" style="{!IF(iter.dealA.XactlyExpress__isConstant__c == true && iter.dealA.XactlyExpress__DataType__c == 'Currency' && !(iter.isFormula),'','display: none;')}float:left;width:80%" styleClass="constantCurrency toHideOnType"/>
+                                                                      <apex:inputText id="inpNum" onchange="if(checkNum(this))jQuery('.constantValue',jQuery(this).parent())[0].value = this.value;" value="{!iter.dealA.XactlyExpress__OpportunityMapField__c}" style="{!IF(iter.dealA.XactlyExpress__isConstant__c == true && iter.dealA.XactlyExpress__DataType__c == 'Decimal' && !(iter.isFormula),'','display: none;')}float:left;width:80%" styleClass="constantNumber toHideOnType"/>
+                                                                      
+                                                                      <apex:inputCheckbox id="inpConst" onchange="jQuery('.constantValue',jQuery(this).parent())[0].value = this.checked;"  value="{!iter.dealA.XactlyExpress__OpportunityMapField__c}"  styleClass="constantBoolean toHideOnType" style="{!IF(iter.dealA.XactlyExpress__DataType__c == 'Boolean' && iter.dealA.XactlyExpress__isConstant__c == true,'', 'display:none;')}"  />
+                                                                      <apex:inputText id="inpOpp" value="{!iter.dealA.XactlyExpress__OpportunityMapField__c}" style="{!IF(iter.dealA.XactlyExpress__isConstant__c == true && iter.dealA.XactlyExpress__DataType__c == 'String' && iter.dealA.XactlyExpress__DealColumnName__c != 'ProductId__c' && iter.dealA.XactlyExpress__DealColumnName__c != 'AccountId__c' && iter.dealA.XactlyExpress__DealColumnName__c != 'ProfileId__c'  ,'','display: none;')}float:left;width:80%" styleClass="constantValue toHideOnType {!RIGHT(TEXT(iterIndex),2)}-productId {!RIGHT(TEXT(iterIndex),2)}-accountId "  id="constantValue"/>
+            
+                                                                      <apex:inputText id="isConstant" value="{!iter.dealA.XactlyExpress__isConstant__c}" style="display:none;" styleClass="isConstant" />
+                                                                      <script>
+                                                                          var isConstant{!RIGHT(TEXT(iterIndex),2)} = '{!$Component.isConstant}'.replace(/:/g,'\\:'); 
+                                                                          var isDate{!RIGHT(TEXT(iterIndex),2)} = '{!$Component.constantDate}'; 
+                                                                      </script>
+                                                                      <input type="hidden" class="firstType" value="{!JSENCODE(iter.dealA.DataType__c)}"/>
+                                                                      <span class="arrowCont" style="{!IF(iter.dealA.isConstant__c == true,'','display: none;')}float:right;cursor:pointer;" onclick="returnConstant(this,isConstant{!RIGHT(TEXT(iterIndex),2)});"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/buttons/orangeArrow.png')}" width="30"/></span>
+                                                                  </div>
+                                                                  <div class="viewMode {!IF(LEN(iter.dealA.OpportunityMapField__c) > 30,'toEllipsis trigger','')}">
+                                                                      <apex:outputpanel styleclass="dataTypeShow" style=" float: left; " rendered="{!iter.dealA.XactlyExpress__isConstant__c}">
+                                                                            <apex:outputPanel layout="none" rendered="{!iter.dealA.XactlyExpress__DataType__c != 'Boolean'}" >
+                                                                                <apex:outputPanel layout="none" rendered="{!iter.isFormula}" >
+                                                                                    "<apex:outputtext value="{!iter.formulaToDisplay}" />"
+                                                                                </apex:outputPanel>
+                                                                                <apex:outputPanel layout="none" rendered="{!!iter.isFormula}" >
+                                                                                    "<apex:outputtext value="{!iter.dealA.XactlyExpress__OpportunityMapField__c}" />"
+                                                                                </apex:outputPanel>
+                                                                            </apex:outputPanel>
+                                                                            <apex:outputPanel layout="none" rendered="{!iter.dealA.XactlyExpress__DataType__c == 'Boolean'}" >
+                                                                                 <apex:outputPanel layout="none" rendered="{!iter.dealA.XactlyExpress__OpportunityMapField__c = 'true'}">
+                                                                                     <input type="checkbox" value="1"  checked="checked" disabled="disabled"/>
+                                                                                 </apex:outputPanel>
+                                                                                 <apex:outputPanel layout="none" rendered="{!iter.dealA.XactlyExpress__OpportunityMapField__c != 'true'}">
+                                                                                     <input type="checkbox" value="1"  disabled="disabled"/>
+                                                                                 </apex:outputPanel>
+                                                                             </apex:outputPanel>
+                                                                      </apex:outputpanel>
+                                                                      <apex:outputpanel styleclass="dataTypeShow" style=" float: left; " rendered="{!!iter.dealA.XactlyExpress__isConstant__c}">
+                                                                            <apex:outputtext value="{!iter.dealA.XactlyExpress__OpportunityMapField__c}" />
+                                                                      </apex:outputpanel>
+                                                                  </div>
+                                                                 <div class="bubble_html"><apex:outputtext value="{!iter.dealA.XactlyExpress__OpportunityMapField__c}" /></div>
+                                                            </td>
+                                                        </apex:outputPanel>
+                                                        <td class="contectTableData dealAttributeName noTypeColum"  align="left">
+                                                              <div class="viewMode dealName {!IF(LEN(iter.dealA.name) > 20,'toEllipsis trigger','')}">  
+                                                                  <apex:outputpanel rendered="{!IF(AND(iter.dealA.XactlyExpress__DealColumnName__c != 'AccountId__c', iter.dealA.XactlyExpress__DealColumnName__c != 'ProductId__c', iter.dealA.XactlyExpress__DealColumnName__c != 'Relationship__c'), true, false)}">
+                                                                      &nbsp;<apex:outputtext value="{!iter.dealA.name}"/>
+                                                                  </apex:outputpanel>
+                                                                  <apex:outputpanel style="display: block; float: left; width: 130px;" rendered="{!IF(OR(iter.dealA.XactlyExpress__DealColumnName__c = 'AccountId__c', iter.dealA.XactlyExpress__DealColumnName__c = 'ProductId__c', iter.dealA.XactlyExpress__DealColumnName__c = 'Relationship__c'), true, false)}">
+                                                                      &nbsp;<apex:outputtext value="{!IF(iter.dealA.name == 'Product Id',$Label.xactlyexpress__Product,IF(iter.dealA.name == 'Account Id',$Label.xactlyexpress__Account,iter.dealA.name))}"/>
+                                                                  </apex:outputpanel>
+                                                              </div>
+                                                              <apex:outputpanel styleClass="editMode">
+
+                                                                  
+                                                                <apex:outputPanel style="float:right;" rendered="{!!iter.dealA.XactlyExpress__IsRequired__c && settings.XactlyExpress__ImportSource__c != ''}" styleclass="actionBtnContainer editDeal{!RIGHT(TEXT(iterIndex),2)}" >                                                                                        
+                                                                    <apex:image onclick="editDealAttReal('{!RIGHT(TEXT(iterIndex),2)}')" url="{!URLFOR($Resource.XactlyExpress__XactlySMBResources, 'img/buttons/pencilEdit.png')}" style="cursor:pointer;"/>
+                                                                </apex:outputPanel>
+                                                                <apex:outputPanel style="display:none; float:right;" rendered="{!!iter.dealA.XactlyExpress__IsRequired__c && settings.XactlyExpress__ImportSource__c != ''}" styleclass="actionBtnContainer editingDeal deal{!RIGHT(TEXT(iterIndex),2)}" >                                                                                        
+                                                                    <apex:image onclick="lockDealAttReal('{!RIGHT(TEXT(iterIndex),2)}')" url="{!URLFOR($Resource.XactlyExpress__XactlySMBResources, 'img/buttons/tic.png')}" style="cursor:pointer;"/>
+                                                                </apex:outputPanel>
+                                                                
+                                                                  <apex:selectList id="daProducts" onchange="jQuery('.dealAttrNameInput',jQuery(this).parent())[0].value = this.value;jQuery('.allSelect',jQuery(this).parent())[0].value = this.value;changeReqAndKey(this);if(this.selectedIndex == 0){ editDealAttReal('{!RIGHT(TEXT(iterIndex),2)}');  }" styleclass="productsSelect" multiselect="false" size="1" value="{!iter.dealA.name}"  style="{!IF(AND(iter.dealA.XactlyExpress__DataType__c == 'String', iter.dealA.XactlyExpress__DealColumnName__c = 'ProductId__c',iter.onlyMapping),'', 'display:none;')}" rendered="{!!iter.dealA.XactlyExpress__IsRequired__c && (currentImportSource.XactlyExpress__SourceLabel__c != 'CSV__File' && !ISNULL(settings.XactlyExpress__ImportSource__c) && settings.XactlyExpress__ImportSource__c != '')}">
+                                                                      <apex:selectOptions value="{!dealAttributeProducts}" />
+                                                                  </apex:selectList>
+                                                                  <apex:selectList id="daAccounts" onchange="jQuery('.dealAttrNameInput',jQuery(this).parent())[0].value = this.value;jQuery('.allSelect',jQuery(this).parent())[0].value = this.value;changeReqAndKey(this);if(this.selectedIndex == 0){ editDealAttReal('{!RIGHT(TEXT(iterIndex),2)}');  }" styleclass="accountsSelect" multiselect="false" size="1" value="{!iter.dealA.name}" style="{!IF(AND(iter.dealA.XactlyExpress__DataType__c == 'String', iter.dealA.XactlyExpress__DealColumnName__c = 'AccountId__c',iter.onlyMapping),'', 'display:none;')}" rendered="{!!iter.dealA.XactlyExpress__IsRequired__c && (currentImportSource.XactlyExpress__SourceLabel__c != 'CSV__File' && !ISNULL(settings.XactlyExpress__ImportSource__c) && settings.XactlyExpress__ImportSource__c != '')}">
+                                                                      <apex:selectOptions value="{!dealAttributeAccounts}" />
+                                                                  </apex:selectList> 
+
+                                                                  <apex:selectList id="daStrings" onchange="jQuery('.dealAttrNameInput',jQuery(this).parent())[0].value = this.value;jQuery('.allSelect',jQuery(this).parent())[0].value = this.value;changeReqAndKey(this);if(this.selectedIndex == 0){ editDealAttReal('{!RIGHT(TEXT(iterIndex),2)}');  }" styleclass="stringSelect" multiselect="false" size="1" value="{!iter.dealA.name}" style="{!IF(AND(iter.dealA.XactlyExpress__DataType__c == 'String' && iter.dealA.XactlyExpress__DealColumnName__c != 'AccountId__c' && iter.dealA.XactlyExpress__DealColumnName__c != 'ProductId__c' && iter.onlyMapping ),'', 'display:none;')}"  rendered="{!!iter.dealA.XactlyExpress__IsRequired__c && (currentImportSource.XactlyExpress__SourceLabel__c != 'CSV__File' && !ISNULL(settings.XactlyExpress__ImportSource__c) && settings.XactlyExpress__ImportSource__c != '')}">
+                                                                      <apex:selectOptions value="{!dealAttributeString}" />
+                                                                  </apex:selectList>
+                                                                  <apex:selectList id="daNumbers" onchange="jQuery('.dealAttrNameInput',jQuery(this).parent())[0].value = this.value;jQuery('.allSelect',jQuery(this).parent())[0].value = this.value;changeReqAndKey(this);if(this.selectedIndex == 0){ editDealAttReal('{!RIGHT(TEXT(iterIndex),2)}');  }" styleclass="numberSelect" multiselect="false" size="1" value="{!iter.dealA.name}" style="{!IF(AND(iter.dealA.XactlyExpress__DataType__c == 'Decimal',iter.onlyMapping),'', 'display:none;')}"  rendered="{!!iter.dealA.XactlyExpress__IsRequired__c && (currentImportSource.XactlyExpress__SourceLabel__c != 'CSV__File' && !ISNULL(settings.XactlyExpress__ImportSource__c) && settings.XactlyExpress__ImportSource__c != '')}">
+                                                                      <apex:selectOptions value="{!dealAttributeNumber}" />
+                                                                  </apex:selectList>                                                                  
+                                                                  <apex:selectList id="daDates" onchange="jQuery('.dealAttrNameInput',jQuery(this).parent())[0].value = this.value;jQuery('.allSelect',jQuery(this).parent())[0].value = this.value;changeReqAndKey(this);if(this.selectedIndex == 0){ editDealAttReal('{!RIGHT(TEXT(iterIndex),2)}');  }" styleclass="dateSelect" multiselect="false" size="1" value="{!iter.dealA.name}" style="{!IF(AND(iter.dealA.XactlyExpress__DataType__c == 'Date',iter.onlyMapping),'', 'display:none;')}"  rendered="{!!iter.dealA.XactlyExpress__IsRequired__c && (currentImportSource.XactlyExpress__SourceLabel__c != 'CSV__File' && !ISNULL(settings.XactlyExpress__ImportSource__c) && settings.XactlyExpress__ImportSource__c != '')}">
+                                                                      <apex:selectOptions value="{!dealAttributeDate}" />
+                                                                  </apex:selectList>                                                                  
+                                                                  <apex:selectList id="daCurrencys" onchange="jQuery('.dealAttrNameInput',jQuery(this).parent())[0].value = this.value;jQuery('.allSelect',jQuery(this).parent())[0].value = this.value;changeReqAndKey(this);if(this.selectedIndex == 0){ editDealAttReal('{!RIGHT(TEXT(iterIndex),2)}');  }" styleclass="currencySelect" multiselect="false" size="1" value="{!iter.dealA.name}" style="{!IF(AND(iter.dealA.XactlyExpress__DataType__c == 'Currency',iter.onlyMapping),'', 'display:none;')}"   rendered="{!!iter.dealA.XactlyExpress__IsRequired__c && (currentImportSource.XactlyExpress__SourceLabel__c != 'CSV__File' && !ISNULL(settings.XactlyExpress__ImportSource__c) && settings.XactlyExpress__ImportSource__c != '')}">
+                                                                      <apex:selectOptions value="{!dealAttributeCurrency}" />
+                                                                  </apex:selectList>
+                                                                  <apex:selectList id="daBooleans" onchange="jQuery('.dealAttrNameInput',jQuery(this).parent())[0].value = this.value;jQuery('.allSelect',jQuery(this).parent())[0].value = this.value;changeReqAndKey(this);if(this.selectedIndex == 0){ editDealAttReal('{!RIGHT(TEXT(iterIndex),2)}');  }" styleclass="booleanSelect" multiselect="false" size="1" value="{!iter.dealA.name}" style="{!IF(AND(iter.dealA.XactlyExpress__DataType__c == 'Boolean',iter.onlyMapping),'', 'display:none;')}" rendered="{!!iter.dealA.XactlyExpress__IsRequired__c && (currentImportSource.XactlyExpress__SourceLabel__c != 'CSV__File' && !ISNULL(settings.XactlyExpress__ImportSource__c) && settings.XactlyExpress__ImportSource__c != '')}">
+                                                                      <apex:selectOptions value="{!dealAttributeBoolean}" />
+                                                                  </apex:selectList>        
+                                                                                                           
+                                                                  <apex:selectList id="daAll" styleclass="allSelect" onchange="jQuery('.dealAttrNameInput',jQuery(this).parent())[0].value = this.value;changeReqAndKey(this);" multiselect="false" size="1" value="{!iter.dealA.name}" style="{!IF(AND(iter.dealA.XactlyExpress__DataType__c == null,iter.onlyMapping),'', 'display:none;')}"  rendered="{!!iter.dealA.XactlyExpress__IsRequired__c  && (currentImportSource.XactlyExpress__SourceLabel__c != 'CSV__File' && !ISNULL(settings.XactlyExpress__ImportSource__c) && settings.XactlyExpress__ImportSource__c != '')}">
+                                                                      <apex:selectOptions value="{!allDealAttributes}" />
+                                                                  </apex:selectList>
+
+                                                                  
+                                                                  <apex:inputText id="oldName" styleclass="oldName{!RIGHT(TEXT(iterIndex),2)}"  style="display:none;" value="{!iter.oldName}" />
+                                                                  <apex:outputpanel layout="none" rendered="{!!((iter.dealA.XactlyExpress__DealColumnName__c == 'AccountId__c' || iter.dealA.XactlyExpress__DealColumnName__c == 'ProductId__c'  || iter.dealA.XactlyExpress__DealColumnName__c == 'DealId__c'  || iter.dealA.XactlyExpress__DealColumnName__c == 'DealDate__c' || iter.dealA.XactlyExpress__DealColumnName__c == 'ProfileId__c')  && (currentImportSource.XactlyExpress__SourceLabel__c = 'CSV__File' || ISNULL(settings.XactlyExpress__ImportSource__c) || settings.XactlyExpress__ImportSource__c = '')) || (!iter.dealA.XactlyExpress__IsRequired__c && !(currentImportSource.XactlyExpress__SourceLabel__c = 'CSV__File' || ISNULL(settings.XactlyExpress__ImportSource__c) || settings.XactlyExpress__ImportSource__c = ''))}">
+                                                                      <apex:inputField id="inputNames" style="{!IF(iter.onlyMapping,'display:none;','')}width:130px;" styleclass="dealAttrNameInput dealNameInp dealName{!RIGHT(TEXT(iterIndex),2)}" onblur="fixSpaces(this);changeToViewMode(jQuery('.dataTypeSelect',jQuery(this).parent().parent().parent())[0], 'String', true);" value="{!iter.dealA.name}" />
+                                                                  </apex:outputpanel>
+                                                                  <apex:outputpanel style="display: block; float: left; width: 130px;" rendered="{!((iter.dealA.XactlyExpress__DealColumnName__c == 'AccountId__c' || iter.dealA.XactlyExpress__DealColumnName__c == 'ProductId__c'  || iter.dealA.XactlyExpress__DealColumnName__c == 'DealId__c'  || iter.dealA.XactlyExpress__DealColumnName__c == 'DealDate__c' || iter.dealA.XactlyExpress__DealColumnName__c == 'ProfileId__c')  && (currentImportSource.XactlyExpress__SourceLabel__c = 'CSV__File' || ISNULL(settings.XactlyExpress__ImportSource__c) || settings.XactlyExpress__ImportSource__c = '')) || (iter.dealA.XactlyExpress__IsRequired__c && !(currentImportSource.XactlyExpress__SourceLabel__c = 'CSV__File' || ISNULL(settings.XactlyExpress__ImportSource__c) || settings.XactlyExpress__ImportSource__c = ''))}">
+                                                                      <apex:outputtext value="{!IF(iter.dealA.name == 'Product Id',$Label.xactlyexpress__Product,IF(iter.dealA.name == 'Account Id',$Label.xactlyexpress__Account,iter.dealA.name))}"/>
+                                                                  </apex:outputpanel>
+                                                                  <script>
+                                                                      var daAll =  '{!$Component.daAll}'.replace(/:/g,'\\:'); 
+                                                                      if(jQuery('select:visible',jQuery('#' + daAll))[0] == undefined){
+                                                                        jQuery('input:visible',jQuery('#' + daAll).parent()).trigger('blur');
+                                                                      }else{
+                                                                        jQuery('select:visible',jQuery('#' + daAll).parent()).trigger('change');
+                                                                      }
+                                                                  </script>
+
+                                                                 
+                                                                 <apex:inputCheckbox id="onlyMapping" styleclass="onlyMapping{!RIGHT(TEXT(iterIndex),2)}"  value="{!iter.onlyMapping}" style="display:none;"  />
+                                                              </apex:outputpanel>
+                                                              <div class="bubble_html"><apex:outputtext value="{!iter.dealA.name}"/></div>
+                                                        </td>
+                                                        <apex:outputPanel rendered="{!settings.XactlyExpress__ImportSource__c == ''}" layout="none">
+                                                            <td class="contectTableData "  align="left">
+                                                                  <div class="viewMode {!IF(LEN(iter.dealA.Description__c) > 50,'toEllipsis trigger','')} dataTypeShow overflow" style="width: 310px;">
+                                                                       <apex:outputtext value="{!iter.dealA.XactlyExpress__Description__c}"/>
+                                                                  </div>
+                                                                  <div class="editMode">
+                                                                      <apex:inputText style="width: 300px;" id="daDescription" value="{!iter.dealA.XactlyExpress__Description__c}"/>
+                                                                  </div>
+                                                                  <div class="bubble_html"><apex:outputtext value="{!iter.dealA.XactlyExpress__Description__c}" /></div>
+                                                            </td>
+                                                         </apex:outputPanel>    
+                                                         <td align="center">
+                                                             <apex:outputPanel layout="block" styleclass="viewMode">
+                                                                 <apex:outputPanel layout="none" rendered="{!iter.dealA.XactlyExpress__IsKey__c}">
+                                                                     <input type="checkbox" value="1"  checked="checked" disabled="disabled"/>
+                                                                 </apex:outputPanel>
+                                                                 <apex:outputPanel layout="none" rendered="{!!iter.dealA.XactlyExpress__IsKey__c}">
+                                                                     <input type="checkbox" value="1"  disabled="disabled"/>
+                                                                 </apex:outputPanel>
+                                                             </apex:outputPanel>
+                                                             <apex:outputpanel layout="block" styleclass="editMode">
+                                                                 <input type="checkbox" class="noClick" value="1" onclick="jQuery('.keyValue', jQuery(this).parent())[0].checked = this.checked;"  id="uniChckbx{!RIGHT(TEXT(iterIndex),2)}"/>
+                                                                 <apex:inputCheckbox styleclass="keyValue noClick" id="uniChckbx" value="{!iter.dealA.XactlyExpress__IsKey__c}" style="display:none;"/>
+                                                             </apex:outputpanel>
+                                                             
+                                                                <script>
+                                                                    var uniChckbx = '{!$Component.uniChckbx}'.replace(/:/g,'\\:'); 
+                                                                    jQuery('#uniChckbx{!RIGHT(TEXT(iterIndex),2)}')[0].checked = jQuery('#' + uniChckbx)[0].checked;
+                                                                    <apex:outputPanel layout="none" rendered="{!iter.onlyMapping}">
+                                                                           jQuery('#uniChckbx{!RIGHT(TEXT(iterIndex),2)}')[0].disabled = true; 
+                                                                    </apex:outputPanel>
+                                                                </script>
+                                                             <div class="bubble_html"></div>
+                                                         </td>
+                                                         <td align="center"  style="border-right: 0px none;">
+                                                             <apex:outputPanel layout="block" styleclass="viewMode">
+                                                                 <apex:outputPanel layout="none" rendered="{!iter.dealA.XactlyExpress__IsRequired__c}">
+                                                                     <input type="checkbox" value="1"  checked="checked" disabled="disabled"/>
+                                                                 </apex:outputPanel>
+                                                                 <apex:outputPanel layout="none" rendered="{!!iter.dealA.XactlyExpress__IsRequired__c}">
+                                                                     <input type="checkbox" value="1"  disabled="disabled"/>
+                                                                 </apex:outputPanel>
+                                                             </apex:outputPanel>
+                                                             <apex:outputpanel layout="block" styleclass="editMode">
+
+                                                                 <apex:outputPanel layout="none"  rendered="{!!(iter.dealA.XactlyExpress__DealColumnName__c == 'DealDate__c')}" >
+                                                                    <input type="checkbox"  class="noClick" value="1" id="reqChckbx{!RIGHT(TEXT(iterIndex),2)}"  onclick="jQuery('.reqValue', jQuery(this).parent())[0].checked = this.checked;"/>
+                                                                 </apex:outputPanel>
+                                                                 <apex:outputPanel layout="none"  rendered="{!(iter.dealA.XactlyExpress__DealColumnName__c == 'DealDate__c')}" >
+                                                                    <input type="checkbox" class="noClick" value="1" disabled="disabled" checked="checked" id="reqChckbx{!RIGHT(TEXT(iterIndex),2)}"/>
+                                                                 </apex:outputPanel>
+                                                                 <apex:inputCheckbox styleclass="reqValue noClick" disabled="{!iter.dealA.XactlyExpress__DealColumnName__c == 'DealDate__c'}" id="reqChckbx" value="{!iter.dealA.XactlyExpress__IsRequired__c}" style="display:none;"/>
+                                                             </apex:outputpanel>
+                                                             <div class="bubble_html"></div>
+                                                             
+                                                             <script>
+                                                                 var reqChckbx = '{!$Component.reqChckbx}'.replace(/:/g,'\\:'); 
+                                                                <apex:outputPanel layout="none" rendered="{!!(iter.dealA.XactlyExpress__DealColumnName__c == 'DealDate__c')}">
+                                                                         jQuery('#reqChckbx{!RIGHT(TEXT(iterIndex),2)}')[0].checked = jQuery('#' + reqChckbx)[0].checked; 
+                                                                </apex:outputPanel>
+                                                                    <apex:outputPanel layout="none" rendered="{!iter.onlyMapping && !(iter.dealA.XactlyExpress__DealColumnName__c == 'DealDate__c')}">
+                                                                           jQuery('#reqChckbx{!RIGHT(TEXT(iterIndex),2)}')[0].disabled = true; 
+                                                                    </apex:outputPanel>
+                                                             </script>
+                                                         </td>
+                                                    </tr>
+                                                    <apex:variable var="iterIndex" value="{!iterIndex +1}"/>
+                                                </apex:repeat>
+                                                <tr class="independentRow" style="height: 34px; padding-left: 70px;">
+                                                    <td colspan="6" style="border-right: 0px none;">
+                                                          <apex:actionFunction name="addNewAttr" action="{!addNewAttribute}"  rerender="dealsContent,errorMsgPopUp"  oncomplete="initMethod();buttonUtils.setObjectTarget(jQuery('.addField'));editDealAttr(0);waitOff();" />
+                                                            <div class="btnToLeft btnAction" style="margin-left: 70px;cursor:pointer;" onclick="waitOn();buttonUtils.setObjectTarget(jQuery('.addField'));buttonUtils.storeOnclickEvents();addNewAttr();">
+                                                                    <div class="rightBtnSilverNew" >
+                                                                        <div class="leftBtnSilverNew">
+                                                                            <div class="middleBtnSilverNew">
+                                                                                {!$Label.AddRow}
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                               </div>
+                                                      </td>      
+                                                </tr>
+                                            </tbody>    
+                                         </table>
+                                         <script>
+                                           var mapDAToReqKey = new Array();
+        
+                                            <apex:repeat value="{!allDealAttributesLst}" var="da">
+                                                mapDAToReqKey['{!da.Name}'] = '{!da.XactlyExpress__IsRequired__c}|{!da.XactlyExpress__IsKey__c}';
+                                            </apex:repeat>
+                                         </script>
+                                    </apex:outputPanel>        
+                                </div>        
+                        </td>
+                    </tr>
+                </table>
+                <div style="clear:both"></div>
+            <!-- FOOTER  -->
+            <apex:outputPanel layout="block" styleClass="footer" rendered="{!isAdmin && isActive}" id="pFooter">
+                <apex:outputPanel layout="block" styleClass="previousStepWrapper"  style="max-width:150px;">
+                    <div class="previousStepRight"></div>
+                    <a class="previousStepMiddle" href="{!$Page.XactlySMBSettingsUsers}">
+                        {!$Label.PreviousStep}
+                    </a>
+                    <div class="previousStepLeft"></div>
+                </apex:outputpanel>
+                
+                    
+                <apex:outputPanel layout="block" styleClass="actionButtons">                        
+                    <apex:outputPanel layout="block" styleClass="actionButtonWrapper">
+                        <div class="actionButtonLeft"></div>
+                        <apex:outputPanel layout="none" rendered="{!(ISNULL(currentImportSource) || currentImportSource.XactlyExpress__SourceLabel__c != 'CSV__File'  || currentImportSource.Name  == '') && settings.XactlyExpress__ImportSource__c != 'CSV__File' }">
+                            <apex:commandLink styleClass="actionButtonMiddle saveBtn" id="saveBtn" action="{!saveDealAttributes}" onclick="return onclickEventToSave();">
+                                {!$Label.xactlyexpress__SaveChanges}
+                            </apex:commandLink>
+                        </apex:outputPanel>  
+                        <apex:outputPanel layout="none" rendered="{!settings.XactlyExpress__ImportSource__c == 'CSV__File' || (!ISNULL(currentImportSource) && currentImportSource.XactlyExpress__SourceLabel__c = 'CSV__File'   &&  currentImportSource.Name  != '')}">
+                            <a href="javascript:;" class="actionButtonMiddle saveBtn" id="saveBtn2" onclick="rerenderNoCompare = false;waitOn();updateNewOrder();saveNewOrder();">
+                                {!$Label.xactlyexpress__SaveChanges}
+                            </a>
+                        </apex:outputPanel>    
+                        <script>
+                            var noChangeCheck = false;
+                            function onclickEventToSave(){
+                                if(validateNumericReq() == false)
+                                    return false;
+                                waitOn();
+                                noChangeCheck = true;
+                                jQuery('select:visible', jQuery('.dealAttributeName')).trigger('change');
+                                storeValues();
+
+                                rerenderNoCompare = false;
+                            }
+                        </script>
+                        <div class="actionButtonRight"></div>    
+                    </apex:outputpanel>
+                    
+                    <apex:outputPanel layout="block" styleClass="actionButtonWrapper">
+                        <div class="actionButtonLeft"></div>
+                        <a href="javascript:;" class="actionButtonMiddle" onclick="discardChangesConfirm(window.location.href);">
+                            <apex:outputtext escape="false" value="{!$Label.xactlyexpress__DiscardChanges}">
+                               <apex:param value="{!URLFOR($Resource.XactlyExpress__XactlySMBResources ,'img/buttons/navigateCancelMiddle.gif')}" />
+                            </apex:outputtext>
+                        </a>
+                        <div class="actionButtonRight"></div>    
+                    </apex:outputpanel>
+                </apex:outputPanel>
+                <apex:outputPanel layout="none" rendered="{!(ISNULL(currentImportSource) || currentImportSource.XactlyExpress__SourceLabel__c != 'CSV__File'  || currentImportSource.Name  == '') && settings.XactlyExpress__ImportSource__c != 'CSV__File' }">
+                    <apex:outputPanel layout="block" styleClass="nextStepWrapper" style="margin-right:100px;"> 
+                        <div class="nextStepLeft"></div>  
+                        <apex:commandLink styleClass="nextStepMiddle" action="{!saveNext}"  onclick="rerenderNoCompare = false;if(validateEmptyRows() == false || validateRequiredIncentFieldCombo() == false || validateFieldTypeCount('{!$Component.settingsForm}') == false || validateNumericReq() == false){return false;}else{onclickEventToSave();}">
+                            {!$Label.xactlyexpress__NextStep}
+                        </apex:commandLink>
+                        <div class="nextStepRight"></div>
+                    </apex:outputPanel>
+                </apex:outputPanel> 
+                <apex:outputPanel layout="none" rendered="{!settings.XactlyExpress__ImportSource__c == 'CSV__File' || (!ISNULL(currentImportSource) && currentImportSource.XactlyExpress__SourceLabel__c = 'CSV__File'   &&  currentImportSource.Name  != '')}">
+                    <apex:outputPanel layout="block" styleClass="nextStepWrapper" style="margin-right:100px;"> 
+                        <div class="nextStepLeft"></div>  
+                        <a class="nextStepMiddle"  href="javascript:;"  onclick="rerenderNoCompare = false;waitOn();storeValues();updateNewOrder();saveNextOrder();">
+                            {!$Label.xactlyexpress__NextStep}
+                        </a>
+                        <div class="nextStepRight"></div>
+                    </apex:outputPanel>
+                </apex:outputPanel>
+            </apex:outputPanel>
+            </apex:outputPanel>
+            
+            <apex:actionFunction name="refresISources" action="{!genISources}"  rerender="dealsContent" oncomplete="initMethod();waitOff();"/>
+            <apex:actionFunction name="refreshOrder" action="{!genDealAttributes}" rerender="dealsContent" oncomplete="initMethod();waitOff();"/>
+            <apex:actionFunction name="deleteCurrantImportSource" action="{!removeISources}"/>
+            <apex:inputField value="{!dummyDeal.XactlyExpress__DealDate__c}" style="display:none;"></apex:inputField>
+            <apex:inputText value="{!sortElement}" id="sortField" style="display:none;"/>
+            <apex:inputCheckbox value="{!sortByDesc}" id="sortByDesc" style="display:none;"/>
+            <script>
+                var sortField = '{!$Component.sortField}'; 
+                var sortByDesc = '{!$Component.sortByDesc}'; 
+            </script>
+            <c:XactlySMBImportSource />
+            <c:XactlySMBDAFormula id="formulaComp"/>
+            <c:XactlySMBTestMapping id="testMappingComp"/>
+            <c:XactlySMBLookupsField objectName="{!settings.XactlyExpress__ImportSource__c}" />
+            <c:XactlySMBCopyImportSource mappingToCopy="{!settings.XactlyExpress__ImportSource__c}" />
+        </apex:form>
+        
+    </div>    
+    
+    <div style="display: none;">
+        <a class="commentBoxBtn"></a>
+        <div id="fooPopup_px" class="jqpopup_cross"></div>
+        <div class="jqpopup_header" id="fooPopup_ph"></div>
+        <div id="fooPopup_pm" class="jqpopup_message"></div>
+        <div id="'fooPopup'_pc" class="jqpopup_content"></div>
+        <div id="fooPopup_pf" class="jqpopup_footer"></div>
+        <div id="fooPopup_ps" class="jqpopup_resize"></div>
+        <div id="fooPopup_pl" class="jqpopup_center"></div>
+    </div>
+    
+    <apex:includeScript value="{!URLFOR($Resource.XactlyExpress__CSN, 'jquery.js')}" />
+    <c:XactlySMBFooterScript /> 
+
+
+    <script type="text/javascript">
+
+        
+        function DisplayAlert(id,left,top) {
+            document.getElementById(id).style.left=left;
+            document.getElementById(id).style.top=top;
+            document.getElementById(id).style.display='block';
+        }
+        jQuery(function(){
+            $.superbox.settings = {
+                closeTxt: "X",
+                loadTxt: "Loading...",
+                nextTxt: "Next",
+                prevTxt: "Previous"
+            };
+            $.superbox();
+        });
+    </script>
+    <script> 
+        function addComment (rowIndex) {
+            
+        }
+        
+        function changeDataType(prevValue,obj,isRequired,noCheck){
+            var returnValue = true;
+            if(!noCheck){
+                if(isRequired){
+                    alert('You can not change the data type of a required Deal Attribute!');
+                    returnValue = false;
+                }else{
+                    if(!confirm('If you change the data type, you will be lost the associated data and all fields mappings to this deal attribute.\n Do you want do this change?')){
+                        returnValue = false;
+                    }
+                }
+            }
+            if(!returnValue){
+                obj.value = prevValue;
+            }
+            deleteNotPosibleFormulaInDropdown();
+            return returnValue;
+        }
+        
+        function changeReqAndKey(obj){
+            if(mapDAToReqKey != undefined && mapDAToReqKey[obj.value] != undefined && !noChangeCheck){
+                var arr = mapDAToReqKey[obj.value].split('|');
+                var keyObj = jQuery('.keyValue',jQuery(obj).parent().parent().parent())[0];
+                var reqObj = jQuery('.reqValue',jQuery(obj).parent().parent().parent())[0];
+                if(arr[0] == 'true'){
+                    reqObj.checked = true;
+                    jQuery('.viewMode', jQuery(reqObj).parent().parent()).html('<input type="checkbox" value="1"  checked="checked" disabled="disabled"/>');
+                }else{
+                    reqObj.checked = false;
+                    jQuery('.viewMode', jQuery(reqObj).parent().parent()).html('<input type="checkbox" value="1" disabled="disabled"/>');
+                }
+                if(arr[1] == 'true'){
+                    keyObj.checked = true;
+                    jQuery('.viewMode', jQuery(keyObj).parent().parent()).html('<input type="checkbox" value="1"  checked="checked" disabled="disabled"/>');
+                }else{
+                    keyObj.checked = false;
+                    jQuery('.viewMode', jQuery(keyObj).parent().parent()).html('<input type="checkbox" value="1" disabled="disabled"/>');
+                }      
+            }
+            deleteNotPosibleFormulaInDropdown();
+        }
+       
+        function checkChangeAcoountProduct(obj){
+            if(jQuery('.dealAttributeName .dealAttrNameInput', jQuery(obj).parent().parent().parent())[0].style.display == 'none'){
+                if(accountMap[obj.value] != undefined){
+                    jQuery('.dealAttributeName .stringSelect', jQuery(obj).parent().parent().parent()).hide();
+                    jQuery('.dealAttributeName .accountsSelect', jQuery(obj).parent().parent().parent()).show();
+                }else if(productMap[obj.value] != undefined){
+                    jQuery('.dealAttributeName .stringSelect', jQuery(obj).parent().parent().parent()).hide();
+                    jQuery('.dealAttributeName .productsSelect', jQuery(obj).parent().parent().parent()).show();
+                }else{
+                    jQuery('.dealAttributeName .stringSelect', jQuery(obj).parent().parent().parent()).show();
+                    jQuery('.dealAttributeName .productsSelect', jQuery(obj).parent().parent().parent()).hide();
+                    jQuery('.dealAttributeName .accountsSelect', jQuery(obj).parent().parent().parent()).hide();
+                }            
+            }
+        }
+        
+        function ifConstant(obj, isConstant){
+            var valueSelect;
+            if(jQuery('.dataTypeSelect',jQuery(obj).parent().parent().parent()).length > 0){
+                valueSelect = jQuery('.dataTypeSelect',jQuery(obj).parent().parent().parent()).val();
+            }else{
+                valueSelect = jQuery('.firstType', jQuery(obj).parent()).val();
+            }
+            if(obj.options[obj.selectedIndex].value == '{!JSENCODE(DATA_TYPE_CONSTANT)}'){
+                obj.selectedIndex = 0;
+                jQuery(obj).hide();
+                jQuery('.isFormula', jQuery(obj).parent())[0].checked = false;
+                jQuery('.formulaContainer', jQuery(obj).parent()).hide();
+                jQuery('.editFormulaContainer', jQuery(obj).parent().parent()).hide();
+                if ( valueSelect != 'Date' && valueSelect != 'Decimal' && valueSelect != 'Currency' && valueSelect != 'Boolean') {
+                    if(jQuery('.constantAccount', jQuery(obj).parent()) != undefined && jQuery('.constantAccount', jQuery(obj).parent()) != null &&  jQuery('.constantAccount', jQuery(obj).parent()).html() != null ){                                           
+                        jQuery('.constantAccount', jQuery(obj).parent()).show();
+                        jQuery('.constantAccount', jQuery(obj).parent()).trigger('click');
+                    }else if(jQuery('.constantProduct', jQuery(obj).parent()) != undefined && jQuery('.constantProduct', jQuery(obj).parent()) != null &&  jQuery('.constantProduct', jQuery(obj).parent()).html() != null  ){                                      
+                        jQuery('.constantProduct', jQuery(obj).parent()).show();  
+                        jQuery('.constantProduct', jQuery(obj).parent()).trigger('click');
+                    }else if(jQuery('.constantProfile', jQuery(obj).parent()) != undefined && jQuery('.constantProfile', jQuery(obj).parent()) != null &&  jQuery('.constantProfile', jQuery(obj).parent()).html() != null  ){                   
+                        jQuery('.constantProfile', jQuery(obj).parent()).show();
+                        jQuery('.constantProfile', jQuery(obj).parent()).trigger('click');
+                    }else{
+                        jQuery('.constantValue', jQuery(obj).parent()).show();
+                        jQuery('.constantValue', jQuery(obj).parent()).trigger('click');
+                    } 
+                }
+                if (valueSelect == 'Date') {
+                    jQuery('.constantDate', jQuery(obj).parent()).val('');
+                    jQuery('.constantValue', jQuery(obj).parent()).val('');
+                    jQuery('.constantDate', jQuery(obj).parent()).show();
+                    jQuery('.constantDate', jQuery(obj).parent()).trigger('click');
+                }
+               
+                if (valueSelect == 'Decimal') {
+                    jQuery('.constantNumber', jQuery(obj).parent()).val('1');
+                    jQuery('.constantValue', jQuery(obj).parent()).val('1');
+                    jQuery('.constantNumber', jQuery(obj).parent()).show();
+                    jQuery('.constantNumber', jQuery(obj).parent()).trigger('click');
+                }
+                if (valueSelect == 'Currency') {
+                    jQuery('.constantCurrency', jQuery(obj).parent()).val('1');
+                    jQuery('.constantValue', jQuery(obj).parent()).val('1');
+                    jQuery('.constantCurrency', jQuery(obj).parent()).show();
+                    jQuery('.constantCurrency', jQuery(obj).parent()).trigger('click');
+                }
+                
+
+                if (valueSelect == 'Boolean') {
+                    jQuery('.constantBoolean', jQuery(obj).parent()).show();
+                    jQuery('.constantValue', jQuery(obj).parent()).val(jQuery('.constantBoolean', jQuery(obj).parent())[0].checked);
+                    jQuery('.constantBoolean', jQuery(obj).parent()).trigger('click');
+                    jQuery('.constantBoolean', jQuery(obj).parent()).trigger('click');
+                }
+                
+                jQuery('.arrowCont', jQuery(obj).parent()).show();
+                jQuery('#'+isConstant).val(true);
+            }else if(obj.options[obj.selectedIndex].value == '{!JSENCODE(LOOKUP_FIELD_VALUE)}'){
+                obj.selectedIndex = 0;
+                jQuery('.currentTypeLookup')[0].value = valueSelect;
+                newLookupsFieldSetter(obj);
+            }else if(obj.options[obj.selectedIndex].value == '{!JSENCODE(FORMULA_FIELD_VALUE)}'){
+                obj.selectedIndex = 0;
+                jQuery(obj).hide(); 
+                jQuery('#'+isConstant).val(true);
+                jQuery('.arrowCont', jQuery(obj).parent()).show();
+                jQuery('.isFormula', jQuery(obj).parent())[0].checked = true;
+                jQuery('.constantValue', jQuery(obj).parent()).val('');
+                jQuery('.formulaContainer', jQuery(obj).parent().parent()).show();
+                jQuery('.editFormulaContainer', jQuery(obj).parent().parent()).show(); 
+                showDAFormula(jQuery('.constantValue', jQuery(obj).parent())[0],jQuery('.formulaContainer', jQuery(obj).parent().parent())[0],jQuery('.isAdvFormula', jQuery(obj).parent())[0]); 
+                deleteNotPosibleFormulaInDropdown();
+            }
+        }
+        
+        function returnConstant(obj, isConstant){           
+            jQuery('#'+isConstant).val(false);   
+            jQuery('.formulaContainer', jQuery(obj).parent()).hide();
+            jQuery('.editFormulaContainer', jQuery(obj).parent().parent()).hide();
+            jQuery('.isFormula', jQuery(obj).parent())[0].checked = false;
+            var selectDataType;
+            if(jQuery('.dataTypeSelect',jQuery(obj).parent().parent().parent()).length > 0){
+                selectDataType = jQuery('.dataTypeSelect',jQuery(obj).parent().parent().parent());
+            }else{
+                selectDataType = jQuery('.firstType', jQuery(obj).parent());
+            }
+            if(jQuery(selectDataType).val() == 'Boolean'){
+                jQuery('.booleanSelect', jQuery(obj).parent()).show();
+                jQuery('.booleanSelect', jQuery(obj).parent())[0].value = "";
+                jQuery('.constantBoolean', jQuery(obj).parent()).hide();
+            }else if(jQuery(selectDataType).val() == 'Currency'){
+                jQuery('.currencySelect', jQuery(obj).parent()).show();
+                jQuery('.currencySelect', jQuery(obj).parent())[0].value= "";
+                jQuery('.constantCurrency', jQuery(obj).parent()).hide();
+            }else if(jQuery(selectDataType).val() == 'Date'){
+                jQuery('.dateSelect', jQuery(obj).parent()).show();
+                jQuery('.dateSelect', jQuery(obj).parent())[0].value="";
+                jQuery('.constantDate', jQuery(obj).parent()).hide();
+            }else if(jQuery(selectDataType).val() == 'Decimal'){
+                jQuery('.numberSelect', jQuery(obj).parent()).show();
+                jQuery('.numberSelect', jQuery(obj).parent())[0].value = "";
+                jQuery('.constantNumber', jQuery(obj).parent()).hide();
+            }else if(jQuery(selectDataType).val() == 'String'){
+                jQuery('.stringSelect', jQuery(obj).parent()).show();
+                jQuery('.stringSelect', jQuery(obj).parent())[0].value = "";
+                jQuery('.constantValue', jQuery(obj).parent()).hide();
+                jQuery('.constantAccount', jQuery(obj).parent()).hide();
+                jQuery('.constantProduct', jQuery(obj).parent()).hide();
+                jQuery('.constantProfile', jQuery(obj).parent()).hide();                
+            }
+            else{
+                jQuery('.allSelect', jQuery(obj).parent()).show();
+            }  
+            jQuery('.constantValue', jQuery(obj).parent())[0].value = "-- none --";
+            jQuery('.arrowCont', jQuery(obj).parent()).hide();                  
+        }
+        
+        var rerenderNoCompare = true;
+        
+        function validateEmptyRows() {
+           
+            var errors = false;
+            
+            for (var i = 0; i < jQuery('.dealAttrNameInput').length; i++ ) {
+                if (jQuery('.dealAttrNameInput')[i].value.replace(/\s/gi, '') == '') {
+                    errors = true;
+                }
+            }
+            
+            
+            assignTheCorrectOpportunitySelect();
+
+            
+        }
+        
+        /**
+         * @author Alvaro Olivencia
+         * This function checks if the user clicks on Save but a Salesforce Field - combobox is not defiend ( "-none-" )
+         * and at the same time, the Incent Field is required ( this last point is defined through checkboxes ).
+         */
+        function validateRequiredIncentFieldCombo(){  
+            
+            var returnVal = true;
+            
+            if(jQuery(".editMode:visible").size()){
+            
+                var storeIncentField = [];//In this array we'll store the dealName when there is an error.
+            
+                //Loop through each table tr tag
+                jQuery(".dealAttributesDataTable tbody tr").each(function(index) {
+            
+                    //here we get each combobox where its value is '' and we check if the current checkbox is checked  
+                    //If all above is true we store the text from dealName into storeIncentField to later show it.
+                    if( (jQuery(this).find('select:visible').val() == '' || jQuery(this).find('input:visible').val() == '' ) && (jQuery(this).find('.editMode :checkbox').is(':checked') == true || jQuery(this).find('.viewMode :checkbox').is(':checked') == true))
+                        
+                        if(jQuery.trim(jQuery(this).find('.dealName').text()) != ''){
+                            storeIncentField.push('"'+jQuery.trim(jQuery(this).find('.dealName').text())+'"');
+                        }
+                        else{
+                            storeIncentField.push('"'+jQuery.trim(jQuery(this).find('.dealNameInp').val())+'"');
+                        }
+                
+                });
+                
+                //If there is an error we show it
+                if(storeIncentField.lenght){
+                    alert('{!$Label.SomeSalesforceFiledsNotDefined}'.replace('{0}',storeIncentField.toString()));
+                    returnVal = false; 
+                 }        
+            
+            }
+            
+            return returnVal;
+        
+        }
+        
+        function searchDataTypeLabel (dataTypeValue) {
+            var dataTypeLabel = '';
+            var dataTypeSelects = jQuery('.dataTypeSelect');
+            if (dataTypeSelects.length > 0) {
+                var dataTypeSelect = dataTypeSelects[0];
+                for (var i = 0; i < dataTypeSelect.options.length; i++) {
+                    if (dataTypeSelect.options[i].value == dataTypeValue) {
+                        dataTypeLabel = dataTypeSelect.options[i].text;
+                        break;
+                    }
+                }
+            }   
+            return dataTypeLabel;
+        }
+    
+        function searchOpptyFieldType (opptyField) {
+            var opptyFieldType = ''
+            
+            for (var i = 0; i < jQuery('.stringSelect').length; i++) {
+                var iterSelect = jQuery('.stringSelect')[i];
+                for (var j = 0; j < iterSelect.options.length; j++) {
+                    if (iterSelect.options[j].value == opptyField) {
+                        opptyFieldType = 'String';
+                        break;  
+                    }
+                }
+            } 
+            
+            for (var i = 0; i < jQuery('.dateSelect').length; i++) {
+                var iterSelect = jQuery('.dateSelect')[i];
+                for (var j = 0; j < iterSelect.options.length; j++) {
+                    if (iterSelect.options[j].value == opptyField) {
+                        opptyFieldType = 'Date';    
+                        break;
+                    }
+                }
+            }
+              
+            for (var i = 0; i < jQuery('.numberSelect').length; i++) {
+                var iterSelect = jQuery('.numberSelect')[i];
+                for (var j = 0; j < iterSelect.options.length; j++) {
+                    if (iterSelect.options[j].value == opptyField) {
+                        opptyFieldType = 'Decimal';  
+                        break;
+                    }
+                }
+            }
+            
+            for (var i = 0; i < jQuery('.currencySelect').length; i++) {
+                var iterSelect = jQuery('.currencySelect')[i];
+                for (var j = 0; j < iterSelect.options.length; j++) {
+                    if (iterSelect.options[j].value == opptyField) {
+                        opptyFieldType = 'Currency';    
+                        break;
+                    }
+                }
+            } 
+            
+            for (var i = 0; i < jQuery('.booleanSelect').length; i++) {
+                var iterSelect = jQuery('.booleanSelect')[i];
+                for (var j = 0; j < iterSelect.options.length; j++) {
+                    if (iterSelect.options[j].value == opptyField) {
+                        opptyFieldType = 'Boolean';    
+                        break;
+                    }
+                }
+            } 
+            
+            return opptyFieldType;
+        }
+        
+        function populateDataTypeSelect (selectObj) {           
+            var parentTR = selectObj.parentNode.parentNode.parentNode;
+            var trSelects = parentTR.getElementsByTagName('select');
+               
+            populateOpptyName(selectObj);
+            changeToViewMode(selectObj, 'select', false); 
+        }
+        
+        function populateOpptyName (selectObj) {            
+            var selIndex = selectObj.selectedIndex;            
+            var selectedObj = selectObj.options[selIndex];
+            var opptyFieldName = selectedObj.text;
+            var parentTd = selectObj.parentNode.parentNode;
+            var nextTd = parentTd.nextSibling;
+            var editName;
+            if (nextTd != undefined && nextTd.getElementsByTagName != undefined && nextTd.getElementsByTagName('input').length > 0) { 
+               editName = nextTd.getElementsByTagName('input')[0];
+            }
+            if (editName != null && editName.value == '') {
+                editName.value = opptyFieldName;
+            } 
+        }
+        
+        var saved=false;
+        function assignTheCorrectOpportunitySelect () {
+            for (var i = 0; i < jQuery('.stringSelect').length; i++) {
+                var iterSelect = jQuery('.stringSelect')[i];
+                if (iterSelect.style.display != 'none') {
+                     iterSelect.parentNode.getElementsByTagName('input')[0].value = iterSelect.value;
+                }
+            } 
+    
+            for (var i = 0; i < jQuery('.dateSelect').length; i++) {
+                var iterSelect = jQuery('.dateSelect')[i];
+                if (iterSelect.style.display != 'none') {
+                    iterSelect.parentNode.getElementsByTagName('input')[0].value = iterSelect.value;
+                }
+            }
+              
+            for (var i = 0; i < jQuery('.numberSelect').length; i++) {
+                var iterSelect = jQuery('.numberSelect')[i];
+                if (iterSelect.style.display != 'none') {
+                    iterSelect.parentNode.getElementsByTagName('input')[0].value = iterSelect.value;
+                }
+            }
+            
+            for (var i = 0; i < jQuery('.currencySelect').length; i++) {
+                var iterSelect = jQuery('.currencySelect')[i];
+                if (iterSelect.style.display != 'none') {
+                    iterSelect.parentNode.getElementsByTagName('input')[0].value = iterSelect.value; 
+                }
+            }
+            
+            for (var i = 0; i < jQuery('.booleanSelect').length; i++) {
+                var iterSelect = jQuery('.booleanSelect')[i];
+                if (iterSelect.style.display != 'none') {
+                    iterSelect.parentNode.getElementsByTagName('input')[0].value = iterSelect.value; 
+                }
+            }  
+            
+            for (var i = 0; i < jQuery('.allSelect').length; i++) {
+                var iterSelect = jQuery('.allSelect')[i];
+                if (iterSelect.style.display != 'none') {
+                    iterSelect.parentNode.getElementsByTagName('input')[0].value = iterSelect.value;
+                }
+            }  
+        }
+
+        function initMethod () {
+            jQuery('.dealAttributeTable input').change(function() {
+                if(this.type!='checkbox'){
+                    if(jQuery('.isConstant', jQuery(this).parent().parent())[0] != undefined && jQuery('.isConstant', jQuery(this).parent().parent())[0].value == 'true' ){
+                        jQuery('.viewMode', jQuery(this).parent().parent()).html('"' + jQuery(this).val() + '"');
+                    }else{
+                        jQuery('.viewMode', jQuery(this).parent().parent()).html(jQuery(this).val());
+                    }
+                    jQuery('.bubble_html', jQuery(this).parent().parent()).html(jQuery(this).val())
+                    if(jQuery(this).val().length > 20){
+                        jQuery('.viewMode', jQuery(this).parent().parent()).addClass('trigger');
+                    }else{
+                        jQuery('.viewMode', jQuery(this).parent().parent()).removeClass('trigger');
+                    }
+                    loadBubbles();
+                }else{
+                    if(this.checked){
+                        jQuery('.viewMode', jQuery(this).parent().parent()).html('<input type="checkbox" value="1"  checked="checked" disabled="disabled"/>');
+                    }else{
+                        jQuery('.viewMode', jQuery(this).parent().parent()).html('<input type="checkbox" value="1" disabled="disabled"/>');
+                    }
+                }
+            });
+            jQuery('.dealAttributeTable input').click(function() {
+                if(this.type!='checkbox'){
+                    if(jQuery('.isConstant', jQuery(this).parent().parent())[0] != undefined && jQuery('.isConstant', jQuery(this).parent().parent())[0].value == 'true'){
+                        jQuery('.viewMode', jQuery(this).parent().parent()).html('"' + jQuery(this).val() + '"');
+                    }else{
+                        jQuery('.viewMode', jQuery(this).parent().parent()).html(jQuery(this).val());
+                    }
+                    jQuery('.bubble_html', jQuery(this).parent().parent()).html(jQuery(this).val())
+                    if(jQuery(this).val().length > 20){
+                        jQuery('.viewMode', jQuery(this).parent().parent()).addClass('trigger');
+                    }else{
+                        jQuery('.viewMode', jQuery(this).parent().parent()).removeClass('trigger');
+                    }
+                    loadBubbles();
+                }else{
+                    if(this.checked){
+                        jQuery('.viewMode', jQuery(this).parent().parent()).html('<input type="checkbox" value="1"  checked="checked" disabled="disabled"/>');
+                    }else{
+                        jQuery('.viewMode', jQuery(this).parent().parent()).html('<input type="checkbox" value="1" disabled="disabled"/>');
+                    }
+                }
+            });
+            jQuery('.editMode select').change(function() {
+                if(this.selectedIndex >= 0){
+                    jQuery('.bubble_html',jQuery(this).parent().parent()).html(this.options[this.selectedIndex].innerHTML);
+                             /*          
+                    if(jQuery('.isConstant', jQuery(this).parent().parent())[0] != undefined && jQuery('.isConstant', jQuery(this).parent().parent())[0].value == 'true'){
+                        jQuery('.viewMode',jQuery(this).parent().parent()).html('"' + this.options[this.selectedIndex].innerHTML + '"');
+                    }else{ */
+                        jQuery('.viewMode',jQuery(this).parent().parent()).html(this.options[this.selectedIndex].innerHTML);
+                   // }
+                    if(jQuery(this).val().length > 20){
+                        jQuery('.viewMode', jQuery(this).parent().parent()).addClass('trigger');
+                    }else{
+                        jQuery('.viewMode', jQuery(this).parent().parent()).removeClass('trigger');
+                    }
+
+                    loadBubbles();
+                }
+            });
+            jQuery('.editMode select').click(function() {
+                if(this.selectedIndex >= 0){
+                    jQuery('.bubble_html',jQuery(this).parent().parent()).html(this.options[this.selectedIndex].innerHTML);
+                                       
+                    if(jQuery('.isConstant', jQuery(this).parent().parent())[0] != undefined && jQuery('.isConstant', jQuery(this).parent().parent())[0].value == 'true'){
+                        jQuery('.viewMode',jQuery(this).parent().parent()).html('"' + this.options[this.selectedIndex].innerHTML + '"');
+                    }else{
+                        jQuery('.viewMode',jQuery(this).parent().parent()).html(this.options[this.selectedIndex].innerHTML);
+                    }
+                    if(jQuery(this).val().length > 20){
+                        jQuery('.viewMode', jQuery(this).parent().parent()).addClass('trigger');
+                    }else{
+                        jQuery('.viewMode', jQuery(this).parent().parent()).removeClass('trigger');
+                    }
+                    loadBubbles();
+                    deleteNotPosibleFormulaInDropdown();
+                }
+            });
+            jQuery.each(jQuery('.toSelectInitSet'), function() {
+                if((jQuery(this).hasClass('constantProfile') || jQuery('.isConstant', jQuery(this).parent().parent())[0] == undefined || jQuery('.isConstant', jQuery(this).parent().parent())[0].value != 'true') && jQuery(this).hasClass('toHideOnType') &&  !jQuery(this).hasClass('dataTypeSelect') && this.options.selectedIndex > 1){
+                    jQuery(this).trigger('change');
+                }
+            });
+            if(jQuery('.newOrderInputHidden')[0] != undefined && updateNewOrder != undefined){
+                updateNewOrder();
+            }
+            storeValues();
+            jQuery('.toEllipsis').ellipsis();
+            loadBubbles();
+            deleteNotPosibleFormulaInDropdown();
+        }   
+        jQuery(document).ready(function(){
+
+            
+            initMethod();
+            
+            <apex:outputPanel layout="none" rendered="{!settings.XactlyExpress__ImportSource__c == 'CSV__File' || (!ISNULL(currentImportSource) && currentImportSource.XactlyExpress__SourceLabel__c = 'CSV__File' && currentImportSource.Name  != '')}">
+                makeListSortable();
+            </apex:outputPanel>
+        }); 
+        
+        
+        window.onbeforeunload = function(){
+            if(jQuery('.newOrderInputHidden')[0] != undefined && updateNewOrder != undefined ){
+                updateNewOrder();
+            }
+            if(compareValues(true,rerenderNoCompare) != undefined){
+            }
+            return compareValues(true,rerenderNoCompare);
+        }         
+        
+        function validateFieldTypeCount (attributeForm) {
+            var attributeTypes = document.getElementById(attributeForm).getElementsByTagName('select');
+            
+            var validateCountText = 0;
+            var validateCountDate = 0;
+            var validateCountCurrency = 0;validateFieldTypeCount
+            var validateCountBoolean = 0;
+            var validateCountNumber = 0;
+            for (var i = 0; i < attributeTypes.length; i++) {
+                if (attributeTypes[i].value == 'String') {
+                    validateCountText++;    
+                }
+                if (attributeTypes[i].value == 'Date') {
+                    validateCountDate++;    
+                }
+                if (attributeTypes[i].value == 'Currency') {
+                    validateCountCurrency++;    
+                }
+                if (attributeTypes[i].value == 'Decimal') {
+                    validateCountNumber++;  
+                }
+                if (attributeTypes[i].value == 'Boolean') {
+                    validateCountBoolean++;  
+                }
+            }
+            
+            var result = true;
+            
+            if (validateCountText > 24) {
+                jQuery('{!$Label.xactlyexpress__AttributeMaxText}');
+                result = false;
+            }
+            
+            if (validateCountDate > 5) {
+                jQuery('.errorMsg span div').html('{!$Label.xactlyexpress__AttributeMaxDate}');
+                result = false;
+            } 
+            
+            if (validateCountCurrency > 10) {
+                jQuery('.errorMsg span div').html('{!$Label.xactlyexpress__AttributeMaxCurrency}');
+                result = false;
+            }
+            
+            if (validateCountBoolean > 5) {
+                jQuery('.errorMsg span div').html('{!$Label.xactlyexpress__AttributeMaxBoolean}');
+                result = false;
+            }
+            
+            if (validateCountNumber > 10) {
+                jQuery('.errorMsg span div').html('{!$Label.xactlyexpress__AttributeMaxNumber}');
+                result = false;
+            }
+            
+            if(!result){
+                waitOff();
+                buttonUtils.enableButton();
+            }
+            
+            return result;
+        }
+        
+        
+        function validateNumericReq () {
+            var attributeTypes = jQuery('.myType');
+            
+            var someNums = 0;
+            for (var i = 0; i < attributeTypes.length; i++) {
+                if ((attributeTypes[i].innerHTML == 'Currency' || attributeTypes[i].innerHTML == 'Decimal') && (jQuery('.reqValue',jQuery(attributeTypes[i]).parent().parent())[0].checked == true)) {
+                    someNums++;    
+                }
+            }
+            
+            var result = true;
+            
+            if (someNums <= 0) {
+                alert("{!$Label.xactlyexpress__numberRequired}");
+                result = false;
+            }
+            
+            if(!result){
+                waitOff();
+                buttonUtils.enableButton();
+            }
+            
+            return result;
+        }
+        function fixSpaces(obj){
+            obj.value= obj.value.replace(/  +/g, ' ')
+        }
+        function changeToViewMode (obj, fieldType, showHide) {
+            var editModeDiv = obj.parentNode;
+            var viewModeDiv = editModeDiv.parentNode.getElementsByTagName('div')[0];        
+            var trWrapper = editModeDiv.parentNode.parentNode;
+            allOk = true;
+            
+            
+            jQuery('.editDeal'+jQuery('.myIndex',jQuery(obj).parent())[0].innerHTML).show();
+            jQuery('.deal'+jQuery('.myIndex',jQuery(obj).parent())[0].innerHTML).hide();
+
+            if (allOk) {
+                if (fieldType == 'select') {
+                    var selectValue = '';
+                   
+                    if(jQuery('.isConstant',jQuery(trWrapper))[0] != undefined){
+                        var temp = jQuery('.isConstant',jQuery(trWrapper))[0].value;                   
+                        if( temp == 'false'){                       
+                            for (var i = 0; i < trWrapper.getElementsByTagName('select').length; i++) {        
+
+                                if (jQuery(obj).hasClass('dataTypeSelect') && !jQuery(trWrapper.getElementsByTagName('select')[i]).hasClass('dataTypeSelect') ) {
+                                    trWrapper.getElementsByTagName('select')[i].style.display = 'none';
+                                    if (obj.value == 'String' && ((jQuery(trWrapper.getElementsByTagName('select')[i]).hasClass('stringSelect')))) {
+                                        trWrapper.getElementsByTagName('select')[i].style.display = '';
+                                        if(jQuery(trWrapper.getElementsByTagName('select')[i])[0].options.lenght > minSelectElement){
+                                           jQuery(trWrapper.getElementsByTagName('select')[i]).trigger('change');
+                                        }
+                                    }
+                                    
+                                    if (obj.value == 'Date' && ((jQuery(trWrapper.getElementsByTagName('select')[i]).hasClass('dateSelect')) )) {
+                                        trWrapper.getElementsByTagName('select')[i].style.display = '';
+                                        if(jQuery(trWrapper.getElementsByTagName('select')[i])[0].options.lenght > minSelectElement){
+                                           jQuery(trWrapper.getElementsByTagName('select')[i]).trigger('change');
+                                        }
+                                    }
+                                    
+                                    if (obj.value == 'Decimal' && ((jQuery(trWrapper.getElementsByTagName('select')[i]).hasClass('numberSelect')) )) {
+                                        trWrapper.getElementsByTagName('select')[i].style.display = '';
+                                        if(jQuery(trWrapper.getElementsByTagName('select')[i])[0].options.lenght > minSelectElement){
+                                           jQuery(trWrapper.getElementsByTagName('select')[i]).trigger('change');
+                                        }
+                                    }
+                                       
+                                    if (obj.value == 'Currency' && ((jQuery(trWrapper.getElementsByTagName('select')[i]).hasClass('currencySelect')) )) {
+                                        trWrapper.getElementsByTagName('select')[i].style.display = '';
+                                        if(jQuery(trWrapper.getElementsByTagName('select')[i])[0].options.lenght > minSelectElement){
+                                           jQuery(trWrapper.getElementsByTagName('select')[i]).trigger('change');
+                                        }
+                                    }
+                                    
+                                    if (obj.value == 'Boolean' && ((jQuery(trWrapper.getElementsByTagName('select')[i]).hasClass('booleanSelect')) )) {
+                                        trWrapper.getElementsByTagName('select')[i].style.display = '';
+                                        if(jQuery(trWrapper.getElementsByTagName('select')[i])[0].options.lenght > minSelectElement){
+                                           jQuery(trWrapper.getElementsByTagName('select')[i]).trigger('change');
+                                        }
+                                    }
+                                }
+                                
+                                
+                                if (trWrapper.getElementsByTagName('select')[i].style.display != 'none' && jQuery(trWrapper.getElementsByTagName('select')[i]).hasClass(obj.className)) {
+                                    var selIndex = trWrapper.getElementsByTagName('select')[i].selectedIndex;
+                                    selectValue = trWrapper.getElementsByTagName('select')[i].options[selIndex].text;
+                                }
+                                
+                                if(jQuery('.deal'+ jQuery('.myIndex',jQuery(obj).parent())[0].innerHTML)[0] != undefined && trWrapper.getElementsByTagName('select')[i].style.display != 'none' && trWrapper.getElementsByTagName('select')[i].options.length == 1){
+                                    editDealAttReal(jQuery('.myIndex',jQuery(obj).parent())[0].innerHTML);
+                                    jQuery(trWrapper.getElementsByTagName('select')[i]).hide();
+                                    jQuery(jQuery('.deal'+ jQuery('.myIndex',jQuery(obj).parent())[0].innerHTML)[0]).hide();
+                                }          
+                            } 
+                            
+                            for (var i = 0; i < trWrapper.getElementsByTagName('input').length; i++) {
+                               if(jQuery(trWrapper.getElementsByTagName('input')[i]).hasClass('toHideOnType')){
+                                   trWrapper.getElementsByTagName('input')[i].style.display = 'none';
+                               }
+                            }           
+                            if (selectValue == '-- none --') { 
+                                selectValue = "&nbsp;";
+                            }
+                            jQuery('.arrowCont',jQuery(trWrapper)).hide();
+                            jQuery('.isConstant',jQuery(trWrapper))[0].value = false;
+                       }else{
+                            for (var i = 0; i < trWrapper.getElementsByTagName('input').length - 4; i++) {                          
+                                if (jQuery(obj).hasClass('dataTypeSelect')) {
+                                    trWrapper.getElementsByTagName('input')[i].style.display = 'none';
+                              //        trWrapper.getElementsByTagName('input')[i].value = '';                                
+                                    if (obj.value == 'String' && jQuery(trWrapper.getElementsByTagName('input')[i]).hasClass('constantValue')) {
+                                        trWrapper.getElementsByTagName('input')[i].style.display = '';
+                                        jQuery(trWrapper.getElementsByTagName('input')[i]).trigger('blur');
+                                    }
+                                    
+                                    if (obj.value == 'Date' && jQuery(trWrapper.getElementsByTagName('input')[i]).hasClass('constantDate')) {
+                                        trWrapper.getElementsByTagName('input')[i].style.display = '';
+                                        jQuery(trWrapper.getElementsByTagName('input')[i]).trigger('blur');
+                                    }
+                                    
+                                    if ((obj.value == 'Currency') && jQuery(trWrapper.getElementsByTagName('input')[i]).hasClass('constantCurrency')) {
+                                        trWrapper.getElementsByTagName('input')[i].style.display = '';
+                                        jQuery(trWrapper.getElementsByTagName('input')[i]).trigger('blur');
+                                    }
+                                    if ((obj.value == 'Decimal') && jQuery(trWrapper.getElementsByTagName('input')[i]).hasClass('constantNumber')) {
+                                        trWrapper.getElementsByTagName('input')[i].style.display = '';
+                                        jQuery(trWrapper.getElementsByTagName('input')[i]).trigger('blur');
+                                    }
+                                    
+                                    if (obj.value == 'Boolean' && jQuery(trWrapper.getElementsByTagName('input')[i]).hasClass('constantBoolean')) {
+                                        trWrapper.getElementsByTagName('input')[i].style.display = '';
+                                        jQuery(trWrapper.getElementsByTagName('input')[i]).trigger('change');
+                                    }
+                                }
+                            }
+                            for (var i = 0; i < trWrapper.getElementsByTagName('select').length; i++) {    
+        
+                                if(!jQuery(trWrapper.getElementsByTagName('select')[i]).hasClass('toHideOnType') &&  !jQuery(trWrapper.getElementsByTagName('select')[i]).hasClass('dataTypeSelect') ){
+                                    trWrapper.getElementsByTagName('select')[i].style.display = 'none';         
+                                    if (obj.value == 'String' && ((jQuery(trWrapper.getElementsByTagName('select')[i]).hasClass('stringSelect')))) {
+                                        trWrapper.getElementsByTagName('select')[i].style.display = '';
+                                        if(jQuery(trWrapper.getElementsByTagName('select')[i])[0].options.lenght > minSelectElement){
+                                           jQuery(trWrapper.getElementsByTagName('select')[i]).trigger('change');
+                                        }
+                                    }
+                                    
+                                    if (obj.value == 'Date' && ((jQuery(trWrapper.getElementsByTagName('select')[i]).hasClass('dateSelect')) )) {
+                                        trWrapper.getElementsByTagName('select')[i].style.display = '';
+                                        if(jQuery(trWrapper.getElementsByTagName('select')[i])[0].options.lenght > minSelectElement){
+                                           jQuery(trWrapper.getElementsByTagName('select')[i]).trigger('change');
+                                        }
+                                    }
+                                    
+                                    if (obj.value == 'Decimal'  && ((jQuery(trWrapper.getElementsByTagName('select')[i]).hasClass('numberSelect')) )) {
+                                        trWrapper.getElementsByTagName('select')[i].style.display = '';
+                                        if(jQuery(trWrapper.getElementsByTagName('select')[i])[0].options.lenght > minSelectElement){
+                                           jQuery(trWrapper.getElementsByTagName('select')[i]).trigger('change');
+                                        }
+                                    }
+                                       
+                                    if (obj.value == 'Currency'  && ((jQuery(trWrapper.getElementsByTagName('select')[i]).hasClass('currencySelect')) )) {
+                                        trWrapper.getElementsByTagName('select')[i].style.display = '';
+                                        if(jQuery(trWrapper.getElementsByTagName('select')[i])[0].options.lenght > minSelectElement){
+                                           jQuery(trWrapper.getElementsByTagName('select')[i]).trigger('change');
+                                        }
+                                    }
+                                    
+                                    if (obj.value == 'Boolean'  && ((jQuery(trWrapper.getElementsByTagName('select')[i]).hasClass('booleanSelect')) )) {
+                                        trWrapper.getElementsByTagName('select')[i].style.display = '';
+                                        if(jQuery(trWrapper.getElementsByTagName('select')[i])[0].options.lenght > minSelectElement){
+                                           jQuery(trWrapper.getElementsByTagName('select')[i]).trigger('change');
+                                        }
+                                    }
+                                }
+                                
+                                if(jQuery('.deal'+ jQuery('.myIndex',jQuery(obj).parent())[0].innerHTML)[0] != undefined && trWrapper.getElementsByTagName('select')[i].style.display != 'none' && trWrapper.getElementsByTagName('select')[i].options.length == 1){
+                                    editDealAttReal(jQuery('.myIndex',jQuery(obj).parent())[0].innerHTML);
+                                    jQuery(trWrapper.getElementsByTagName('select')[i]).hide();
+                                    jQuery(jQuery('.deal'+ jQuery('.myIndex',jQuery(obj).parent())[0].innerHTML)[0]).hide();
+                                }      
+                            }
+                            jQuery('.arrowCont',jQuery(trWrapper)).show();
+                            jQuery('.isConstant',jQuery(trWrapper))[0].value = true;
+                       }
+                   }       
+                }
+            }
+        }
+
+      function showCalendar(lnmString){
+          DatePicker.pickDate(true, lnmString, false);
+      }
+      
+       function checkDate(obj){
+            var dateFirst = '{!dateFirst}';
+            var dateSeparator = '{!dateSeparator}';
+            var val = jQuery(obj).val();
+            var dateparts = val.split(dateSeparator);   
+            
+            if(val.length == 0){
+                return;
+            }
+                
+            if (dateparts.length != 3){
+                alert('{!$Label.xactlyexpress__WrongDateFormatJS}');
+                obj.value = '';
+                obj.focus();
+                return;
+            } 
+        
+            //Pad to 2 digits
+            for(i = 0; i < dateparts.length; i++){
+                if(dateparts[i].length == 0 || dateparts[i] <= 0){
+                    alert('{!$Label.xactlyexpress__WrongDateFormatJS}');
+                    obj.value = '';
+                    obj.focus();
+                    return;
+                }
+                if (dateparts[i].length == 1){
+                    dateparts[i] = '0'+dateparts[i];
+                }
+            }
+            
+            var day;
+            var month;
+            var year;
+            
+            if(isNaN(dateparts[0]) || isNaN(dateparts[1]) || isNaN(dateparts[2])){
+                alert('{!$Label.xactlyexpress__WrongDateFormatJS}');
+                obj.value = '';
+                obj.focus();
+                return;
+             }
+            if (dateFirst == 'day'){
+                day = parseInt(dateparts[0],10);
+                month = parseInt(dateparts[1],10);
+                year = parseInt(dateparts[2],10);
+            }
+            else if (dateFirst == 'month'){
+                day = parseInt(dateparts[1],10);
+                month = parseInt(dateparts[0],10);
+                year = parseInt(dateparts[2],10);
+            }
+            else if (dateFirst == 'year'){                  
+                day = parseInt(dateparts[2],10);
+                month = parseInt(dateparts[1],10);
+                year = parseInt(dateparts[0],10);               
+            }
+            else{
+                alert('{!$Label.xactlyexpress__WrongDateFormatJS}');
+                obj.value = '';
+                obj.focus();
+                return;
+            }
+            
+            var leapYear = (day > 28 && year%4 > 0 && month == 2);
+            
+            if(isNaN(day) || isNaN(month) || isNaN(year) || leapYear || day < 1 || day > 31 || month < 1 || month > 12 || year < 2000){
+                alert('{!$Label.xactlyexpress__WrongDateFormatJS}');
+                obj.value = '';
+                obj.focus();
+                return;
+            }
+            return true;
+        }
+             
+        
+        function checkError(newAttributeForm){   
+            if (document.getElementById('errorPopCont').getElementsByTagName('span')[0].innerHTML == ''){
+                resetNewAttributeForm(newAttributeForm);
+                jQuery('#newDealAttributeModal').jqpopup_close();
+            }
+            saved=false;
+        } 
+        jQuery('.textInput').ellipsis();
+        
+        function checkNum(obj){
+            if(isNaN(jQuery(obj)[0].value)){             
+                alert('{!$Label.xactlyexpress__WrongNumberFormatJS}');
+                jQuery(obj)[0].value = 1;
+            }
+            return true;            
+        }
+        function checkCurr(obj){            
+            if(isNaN(jQuery(obj)[0].value)){             
+                alert('{!$Label.xactlyexpress__WrongCurrencyFormatJS}');
+                jQuery(obj)[0].value = 1;
+            } 
+            return true;     
+        }       
+        
+          
+       function myJQuery(selector){
+            return jQuery(selector);
+       }           
+       
+        function editDealAttr(idx){         
+            jQuery('.rowShow'+idx).hide();
+            jQuery('.row'+idx).show();
+            jQuery('.rowElemenmt'+idx+ ' .viewMode').hide();
+            jQuery('.rowElemenmt'+idx+ ' .editMode').show();
+            jQuery.each(jQuery('select:visible',jQuery('.rowElemenmt'+idx+ ' .editMode .noTypeColum')),  function() {
+                if(this.value != '-- New Field --' || this.options.length == 0){
+                    jQuery(this).trigger('change');
+                }
+            });
+            if(jQuery('.dealName'+idx)[0] != undefined){
+          /*      if(jQuery('.dealName'+idx)[0].style.display != 'none'){
+                   jQuery('.keyValue',jQuery('.dealName'+idx).parent().parent().parent())[0].disabled = false;
+                   jQuery('.reqValue',jQuery('.dealName'+idx).parent().parent().parent())[0].disabled = false;
+                }else{
+                   jQuery('.keyValue',jQuery('.dealName'+idx).parent().parent().parent())[0].disabled = true;
+                   jQuery('.reqValue',jQuery('.dealName'+idx).parent().parent().parent())[0].disabled = true;
+                } */
+                introAsTab();
+            }
+            deleteNotPosibleFormulaInDropdown();
+        }     
+         function lockDealAttr(idx){     
+             jQuery('.rowShow'+idx).show();
+             jQuery('.row'+idx).hide();
+             jQuery('select:visible',jQuery('.rowElemenmt'+idx+ ' .editMode .noTypeColum')).trigger('change');
+            
+             if(!jQuery('input:visible', jQuery('.rowElemenmt'+idx+ ' .editMode')).hasClass('noClick')){
+                 jQuery('input:visible', jQuery('.rowElemenmt'+idx+ ' .editMode')).trigger('click');
+                 jQuery('input:visible', jQuery('.rowElemenmt'+idx+ ' .editMode')).attr('checked', function() {
+                    return !this.checked;
+                 })
+             }
+
+             
+             jQuery('.rowElemenmt'+idx+ ' .viewMode').show();
+             jQuery('.rowElemenmt'+idx+ ' .editMode').hide();
+             jQuery('.rowElemenmt'+idx+ ' .viewMode').ellipsis();
+        }       
+        
+        function editDealAttReal(idx){         
+            jQuery('.editDeal'+idx).hide();
+            jQuery('.deal'+idx).show();
+            jQuery('.onlyMapping'+idx)[0].checked= false;
+            jQuery('.dealName'+idx).show();
+            if(jQuery('select:visible',jQuery('.dealName'+idx).parent()).length > 0 && jQuery('select:visible',jQuery('.dealName'+idx).parent())[0].selectedIndex != 0){
+                jQuery('.oldName'+idx).val(jQuery('select:visible',jQuery('.dealName'+idx).parent())[0].value);
+                jQuery('.dealName'+idx).val(jQuery('select:visible',jQuery('.dealName'+idx).parent())[0].value);
+            }
+            jQuery('select',jQuery('.dealName'+idx).parent()).hide();
+            jQuery('#reqChckbx' +idx )[0].disabled = false;
+            jQuery('#uniChckbx' +idx )[0].disabled = false;
+            jQuery('#reqChckbx' +idx )[0].style.display = '';
+            jQuery('#uniChckbx' +idx )[0].style.display = '';
+        }     
+        
+        function lockDealAttReal(idx){     
+             jQuery('.editDeal'+idx).show();
+             jQuery('.deal'+idx).hide();
+             jQuery('.onlyMapping'+idx)[0].checked= true;
+             jQuery('.dealName'+idx).hide();
+             jQuery('#reqChckbx' +idx )[0].disabled = true;
+             jQuery('#uniChckbx' +idx )[0].disabled = true;
+             jQuery('#reqChckbx' +idx )[0].style.display = '';
+             jQuery('#uniChckbx' +idx )[0].style.display = '';
+             changeToViewMode ( jQuery('.dataTypeSelect',jQuery('.dealName'+idx).parent().parent().parent())[0], 'select', true);
+        }     
+        
+        function setOrder(string){
+            if(document.getElementById(sortField).value == string){
+                document.getElementById(sortByDesc).checked = !document.getElementById(sortByDesc).checked;
+            }
+            document.getElementById(sortField).value = string;
+            waitOn();
+            refreshOrder();
+        }
+          
+        function myJQuery(selector){
+            return jQuery(selector);
+        }
+        
+        function checkNothingToShow(obj,index){
+            if(jQuery('select', jQuery('td', jQuery(obj).parent().parent().parent())[2])[0] != undefined){
+                if(jQuery('select:visible', jQuery('td', jQuery(obj).parent().parent().parent())[2])[0] != undefined && jQuery('select:visible', jQuery('td', jQuery(obj).parent().parent().parent())[2])[0].options.length == minSelectElement ){
+                    jQuery('select:visible', jQuery('td', jQuery(obj).parent().parent().parent())[2])[0].selectedIndex = 0;
+                    jQuery(jQuery('select:visible', jQuery('td', jQuery(obj).parent().parent().parent())[2])[0]).trigger('change');
+                }else{
+                    if(jQuery('select:visible', jQuery('td', jQuery(obj).parent().parent().parent())[2])[0] == undefined){
+                        jQuery(jQuery('.arrowCont', jQuery('td', jQuery(obj).parent().parent().parent())[2])[0]).trigger('click');
+                    }
+                }
+                if(jQuery('select:visible', jQuery('td', jQuery(obj).parent().parent().parent())[3])[0] != undefined &&  jQuery('select:visible', jQuery('td', jQuery(obj).parent().parent().parent())[3])[0].options.length == 0 ){
+                    editDealAttReal(index);
+                }else{
+                    lockDealAttReal(index);
+                }
+            }
+        } 
+        
+        function deleteNotPosibleFormulaInDropdown(){
+            var allFormulas = jQuery('.viewMode',jQuery('.isFormula:checked').parent().parent());
+            var i = 0; 
+            var elemType;
+            var haveFormulaOp;
+            jQuery.each(jQuery('.dealNameInp'),  function() {
+                var dropDownToModified = jQuery('.toSelectInitSet:visible',jQuery(this).parent().parent().parent())[0];
+                if(dropDownToModified != undefined && (jQuery(dropDownToModified).hasClass('currencySelect') || jQuery(dropDownToModified).hasClass('numberSelect'))){
+                    if(jQuery('.dataTypeSelect',jQuery(this).parent().parent().parent())[0] != undefined)
+                        elemType = jQuery('.dataTypeSelect',jQuery(this).parent().parent().parent())[0].value;
+                    else
+                        elemType = jQuery('.myType',jQuery(this).parent().parent().parent())[0].innerHTML;
+                    
+                    if(elemType == 'Decimal' || elemType == 'Currency'){
+                        haveFormulaOp = true;
+                        i = 0;
+                        while(i < allFormulas.length && haveFormulaOp){
+                            if(allFormulas[i].innerHTML.indexOf(this.value) >= 0){
+                                haveFormulaOp = false;
+                            }
+                            i++;
+                        }
+               
+                        if(haveFormulaOp){
+                            if(dropDownToModified.options[2].text != '-- Formula Field --' && dropDownToModified.options[3].text != '-- Formula Field --'){
+                                var option=document.createElement("option");
+                                option.value='-- Formula Field --';
+                                option.text='-- Formula Field --';
+                                if(_isIE){
+                                    dropDownToModified.add(option,2);
+                                }else{
+                                    dropDownToModified.add(option,dropDownToModified.options[2]);
+                                }
+                                dropDownToModified.add(3);
+                            }
+                        }else{
+                            if(dropDownToModified.options[2].text == '-- Formula Field --'){
+                                dropDownToModified.remove(2);
+                            }
+                            if(dropDownToModified.options[3].text == '-- Formula Field --'){
+                                dropDownToModified.remove(3);
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        var minSelectElement = '{!MIN_SELECT_ELEMENT}';
+    </script>
+</apex:page>

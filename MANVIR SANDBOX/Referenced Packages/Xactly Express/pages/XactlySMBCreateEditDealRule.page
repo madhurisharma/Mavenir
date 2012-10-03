@@ -1,0 +1,521 @@
+<apex:page id="createEditDealsProfile" controller="XactlyExpress.XactlySMBCreateEditDealRuleCtrl" showHeader="false" sidebar="false"  action="{!redirectWhenAccessIsDenied}" standardStylesheets="true">
+
+<c:XactlySMBCursor />
+    <link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.XactlySMBResources ,'css/XactlySMBStyles.css')}"/>
+    <link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.XactlySMBResources ,'css/XactlySMBNumeratedBox.css')}" /> 
+    <link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.XactlySMBResources ,'css/XactlySMBFontStyles.css')}" /> 
+<title></title>
+<style>
+
+    body {
+        font-family: 'Helvetica', Arial, sans-serif !important;
+        margin: 0px !important;
+        padding: 0px !important;
+        background-color:white;
+        min-width:910px;
+        min-height:300px;
+    }
+    body td{font-family: 'Helvetica', Arial, sans-serif !important;}
+    body .x-btn button, body .btn, body .btnImportant, body .btnDisabled, body .btnCancel, body .menuButton .menuButtonButton, body .menuButton .menuButtonMenu a, body .menuButton .menuButtonMenu input.theOption, h1, h2, h3, h4, h5, h6 {font-family: 'Helvetica', Arial, sans-serif !important;}
+        
+    hr {
+        background-color:#E8C9AE;
+        border:0 none;
+        color:#E8C9AE;
+        height:1px;
+        margin:0;
+    }
+    .leftPeoplePanel{
+        width: 260px;
+        float: left;
+        
+    } 
+      
+    .contenctPanel{
+        float: left;
+        width:724px;
+        margin-right:10px;
+        margin-bottom:50px; 
+        overflow: hidden;  
+    }
+      
+    .content {
+        font-size: 11px;
+        padding: 0px;
+        margin:50px 0px 20px;
+        position:relative;
+        overflow: hidden;
+    }  
+      
+    a {
+        text-decoration: none;
+    }
+    a:HOVER{
+        border:0px;
+    }
+    a:FOCUS{
+        border:0px;
+    }  
+    a:ACTIVE{
+        border:0px;
+    }      
+      
+    
+    .btnAction {
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .btnAction input {
+        float: left;
+    } 
+        
+    .btnAction .leftBtnOrange {
+         background:url({!URLFOR($Resource.XactlySMBResources, 'img/buttons/orange_button_left.png')}) transparent  no-repeat scroll 0 0;
+         float: left;
+         height:19px;
+         padding:0px 0px 0px 5px;
+         width:auto;
+    }
+        
+    .btnAction .middleBtnOrange {
+        color: white;
+        font-size: 10px;
+        font-weight: bold;
+        padding: 3px 5px;
+        width: auto;
+    }
+        
+    .btnAction .rightBtnOrange {
+        background: url({!URLFOR($Resource.XactlySMBResources, 'img/buttons/orange_button_right.png')}) transparent no-repeat scroll right center;
+        float:left;
+        height:19px;
+        padding:0px 5px 0px 0px;
+        width:auto;
+        margin-top: 1px;
+        margin-left: 5px;
+    }          
+        
+    .header {
+        background: url({!URLFOR($Resource.XactlySMBResources, 'img/layout/SearchBackgroundHeader.jpg')}) white repeat-x;
+        height: 28px;
+        margin: 0px;
+        padding: 0px;
+    }
+        
+    .topBorder {
+        background: url({!URLFOR($Resource.XactlySMBResources, 'img/layout/SearchBackgroundTopBorder.jpg')}) white repeat-x;
+        height: 9px;
+        margin: 0px;
+        padding: 0px;
+    }
+        
+    .bottomBorder {
+        background: url({!URLFOR($Resource.XactlySMBResources, 'img/layout/SearchBackgroundBottomBorder.jpg')}) white repeat-x;
+        height: 4px;
+        padding: 0px;
+        bottom: 69px;
+        right: 20px;
+        left: 20px;
+        position: absolute;
+    }
+       
+    .xactlyLogo {
+        background: url({!URLFOR($Resource.XactlySMBResources, 'img/layout/SearchXactlyLogo.png')}) white no-repeat right bottom;
+        height: 59px;
+        width: 724px;
+        margin: 0px;
+        padding: 0px;
+        padding-bottom: 10px;
+        bottom: 0px;
+        right: 20px;
+        position: fixed;
+    }
+        
+    #adjustIcon{
+        float:left;
+        margin-left:10px;
+        width:76px;
+        height:63px;
+        background: url({!URLFOR($Resource.XactlySMBResources, 'img/icons/noMattersSoldItIcon.png')}) no-repeat;
+    }
+        
+    #centerContainer{
+        margin-left:auto;
+        margin-top:auto;            
+    }
+
+
+
+
+    #spaceMenu{
+        border-right:2px solid #D49761; 
+        border-left:2px solid #D49761; 
+        background-color:#fff;
+        width:236px; 
+        height:465px;
+        margin-left:5px;
+    }
+    
+    .leftPanelTitle{
+        color:#CE641B;
+        float:left;
+        font-size:10pt;
+        font-weight:bolder;
+        margin-left:8px;
+        margin-top:14px;
+    }
+    
+    .leftPanelCreateNew{
+        float:right;
+        font-size:8pt;
+        margin-right:4px;
+        margin-top:-8px;
+    }
+    
+    .leftPanelContainer{
+        float:left;
+        margin-left:26px;
+        margin-top:10px;
+        height:400px;
+        overflow:auto;
+        width:210px;
+    }
+    
+    .leftPanelMenuItem{
+        margin-bottom:16px;
+    }
+    
+    .topCurvy{
+        background: url({!URLFOR($Resource.XactlySMBResources ,'img/layout/topCurvy2.gif')}) no-repeat;
+        width:240px;
+        height:15px;
+        margin-left:5px; 
+    }
+    
+    .bottomCurvy{
+        background: url({!URLFOR($Resource.XactlySMBResources ,'img/layout/bottomCurvy.gif')}) no-repeat;
+        width:240px;
+        height:15px;
+        margin-left:5px;
+    }
+    
+    .flechader {
+        border-color:transparent transparent transparent #E8E8E8;
+        border-style:solid;
+        border-width:8px 9px;
+        width:0;
+        font-size: 0pt;  
+    }
+    
+    .itemLink{
+        color:#000000;
+        width:300px; 
+    }
+
+    .title{
+        font-family: 'ProximaNovaSemiBold' !important;
+        font-size:25px;
+        color:#D88045;
+        margin-left:10px;
+        margin-right:10px;
+        float:left;
+    }
+        
+        span.dateFormat{
+            display:none;
+        }
+     
+    .stepActionNumber{    
+        //color:#143E49;
+        float:left;
+        //font-size:250%;
+        font-weight:bold;
+        //width:25px;
+    }
+    
+    .statusLabel{
+        color:#AFAFAF;
+        float:right;
+        font-size:10px;
+        font-weight:bold;
+        margin-top:4px;
+        text-transform: uppercase;
+    }
+    
+    .leftItemText{
+        float:left;
+        width:118px;
+    }
+    
+    .elementContainer{
+        margin-top:3px;
+    }
+    
+    .sepItems{
+        width:210px;
+        height:30px;
+    }
+    .rightSelectPlan{
+        float:left;
+        margin-right:15px;
+        margin-left:5px;
+        margin-top:4px;
+    }
+    .treeContainer{
+        overflow:visible; 
+        font-size:10pt;
+     }
+     .leftPeoplePanel{
+        margin-top: 10px;
+     }
+     
+     .errorMsg {           
+         background:none repeat scroll 0 0 #FFFFFF;
+         border:1px solid #CC0000;
+         color:#CC0000;
+     }
+        
+    </style>
+    <apex:form id="mainPopup">
+        <script>
+            var attrTypes = new Array();
+            <apex:repeat value="{!attributeTypes}" var="at">        
+                attrTypes['{!at.s}'] = '{!at.typ}';        
+            </apex:repeat>
+        </script>    
+        <div class="header"></div>
+        <div class="content">
+            <apex:outputPanel id="errorMsg" layout="block" styleClass="errorScrollBox" style="width:100%">
+                <apex:outputPanel layout="block" rendered="{!errorMsg!=''}" style="width:100%">
+                    <c:XactlySMBErrorMsg error="{!errorMsg}" errStyle="background:#FF0000;color:#FFFFFF;font-size:16px;font-weight:bold;overflow:auto;max-height:100px;"/>
+                </apex:outputPanel>
+            </apex:outputPanel>
+            <div id="centerContainer">
+                <div id="adjustIcon"></div>
+                <div style="float:left;margin-top:20px;">                    
+                    <apex:outputtext styleclass="title " value="{!$Label.xactlyexpress__createEditDealBasedRule}">
+                        <apex:param value="{!currentSettings.dealsCap}"/>
+                    </apex:outputtext>
+                     <div style="float: left; margin-top: 10px;">{!$Label.For}&nbsp; </div> 
+                    <apex:selectList id="planLst" style="float: left; margin-top: 4px;"  styleClass="noCompare" value="{!customPlanId}" onchange="waitOn();refreshCredits();" multiSelect="false" size="1">
+                        <apex:selectOptions value="{!plans}"/>
+                    </apex:selectList>        
+                    <apex:outputPanel id="creditList">
+                        <apex:selectList id="creditLst" value="{!customCreditId}" styleClass="noCompare" onchange="waitOn();gotoSelectedCredit();" style="{!IF(credits.size > 0,'','display:none;')}float: left; margin-top: 4px;" multiSelect="false" size="1">
+                            <apex:selectOptions value="{!credits}"/> 
+                        </apex:selectList>   
+                    </apex:outputPanel>
+                </div>
+                <div style="clear:both; margin-bottom:10px"></div>
+                
+                <apex:outputPanel layout="block" styleClass="treeContainer" id="treeContainer">
+                    <div class="leftPeoplePanel" style="{!IF(credits.size > 0,'','display:none;')}">
+                        <div class="topCurvy"></div>
+                        <div id="spaceMenu">
+                            <div class="stepActionNumber PNovaBlack60c5 " style="margin-top:-10px;">A</div>
+                            <div class="leftPanelTitle">{!$Label.SelectThePersonToEdit}</div>
+                            
+                            <div class="leftPanelCreateNew"></div>
+                            <div class="leftPanelContainer">  
+                        
+                              <div style="float:left;width:165px;{!IF(userId == '','background-color:#E8E8E8;','')}"><a href="{!$Page.XactlySMBCreateEditDealRule}?pid={!idPlan}&crid={!creditId}" class="itemLink">Everyone on this plan</a></div>
+                              <div style="float:left;"><div class="{!IF(userId == '','flechader','')}"></div></div> 
+                              <div class="sepItems">&nbsp;</div>               
+                              <apex:repeat value="{!planUsers}" var="iterUser">
+                                  <div class="elementContainer">
+                                      <div style="float:left;width:180px;{!IF(iterUser.id == userId,'background-color:#E8E8E8;','')}">
+                                          <div class="leftItemText">
+                                            <a href="{!$Page.XactlySMBCreateEditDealRule}?pid={!idPlan}&crid={!creditId}&uid={!iterUser.id }" class="itemLink">{!iterUser.ProfileID__r.UserId__r.LastName}, {!iterUser.ProfileID__r.UserId__r.FirstName}</a>
+                                          </div>
+                                          <apex:variable value="{!0}" var="temp"/>
+                                          <apex:variable var="isOverride" value="false"/>
+                                          <apex:repeat value="{!iterUser.XCCreditRuleProfile__r}" var="temp">
+                                              <apex:variable var="isOverride" value="{!IF(temp.XactlyExpress__OverrideDefault__c,'true','false')}"/>
+                                          </apex:repeat> 
+                                          <div class="statusLabel">{!IF(isOverride = 'true',$Label.Override,$Label.Default)}</div>
+                                      </div>
+                                      <div style="float:left;"><div class="{!IF(iterUser.id == userId,'flechader','')}"></div></div> 
+                                  </div>
+                              </apex:repeat>
+                            </div>
+                        </div>
+                        <div class="bottomCurvy"></div>
+
+                    </div>
+                    <div class="contenctPanel" style="{!IF(credits.size > 0,'','display:none;')}">
+                          <div class="box" style="margin-top:10px">
+                              <div class="tm"> 
+                                  <div style="float: left;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/tl.png')}" /></div>
+                                  <div style="float: right;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/tr.png')}" /></div>
+                                  <div style="clear:both"></div>
+                              </div>
+                              <div class="roundedBox">
+                                  <div class="boxHeader">
+                                      <div class="stepActionNumber PNovaBlack60c5 ">
+                                       B
+                                      </div>
+                                      <div class="titleWrapper" style="{!IF(!isDefault,'width:480px;','')}">  
+                                          <div class="mainTitle PNovaSemiBold17c3">{!$Label.DefineCriteriaToPayReps}</div>
+                                          <div class="detailedTitle HelveticaRegular12c3">{!$Label.DefineCriteriaToPayRepsDesc}:</div>
+                                         
+                                      </div>
+                                      <apex:outputPanel layout="block" styleClass="extraTitleStuff" rendered="{!!isDefault}">                      
+                                        <div class="btnToCenter btnAction" style="float:right;margin-right:15px;margin-left:5px">
+                                            <div class="separateBtn"> 
+                                          		<apex:actionFunction name="changeToDefault" action="{!changeToDefault}" reRender="mainPopup" oncomplete="waitOff();criteriasHandler.setOperatorSelectValues();introAsTab();"/>
+                                                <a href="javascript:;"  onclick="confirmChangeDefault();" >
+                                                    <span class="rightBtnOrange">
+                                                        <span class="leftBtnOrange">
+                                                            <span style="color: white;" class="middleBtnOrange">
+                                                               &gt;&gt;
+                                                            </span>
+                                                        </span> 
+                                                    </span> 
+                                                 </a>
+                                            </div>
+                                        </div> 
+                                        <div style="float:right;margin-top:3px;" class="areaTitle textToChange">{!$Label.ChangeToDefault}</div><br/><br/>
+                                      </apex:outputPanel>                           
+                                      <div style="clear:both"></div>
+                                  </div>
+                                   
+                                  <div class="boxContent">
+                                  
+                                          <apex:actionFunction name="dummy" action="{!addCriteria}" oncomplete="waitOff();criteriasHandler.setOperatorSelectValues();introAsTab();" rerender="fieldSetContainer"/>
+                                          <apex:actionFunction name="deleteCriteriaAction" action="{!removeCriteria}" rerender="fieldSetContainer" oncomplete="criteriasHandler.updateAdvancedFormula();waitOff();criteriasHandler.setOperatorSelectValues();introAsTab();"/>
+                                          
+                                          <apex:actionFunction name="refreshCredits" action="{!dummyRefresh}" oncomplete="rerenderNoCompare = false;gotoSelectedCreditRender();" rerender="creditList,treeContainer,discardChanges,saveChanges"/>
+                                          <apex:actionFunction name="gotoSelectedCreditRender" action="{!gotoSelectedCredit}" oncomplete="rerenderNoCompare = true;waitOff();" rerender="creditList,treeContainer,discardChanges,saveChanges"/>
+                                          <apex:actionFunction name="gotoSelectedCredit" action="{!gotoSelectedCredit}"/>
+                                           
+                                          <apex:outputPanel id="fieldSetContainer">
+                                                
+                                                <c:XactlySMBCriteriasComp id="citeriasComp" isAdvancedFormula="{!currentDealRule.creditRule.XactlyExpress__IsAdvancedFormula__c}" criterias="{!currentDealRule.criterias}" typeOptions="{!typeOptions}" criteriasInstance="{!criteriasInstance}" />          
+                                                
+                                                <br/>   
+                                                 
+                                                 <hr style="margin-left:6px;"/>
+                                                 
+                                                 <apex:outputPanel layout="block" styleClass="actionButtonWrapper" style="margin-top:-1px;">
+                                                     <div class="actionButtonLeft" style="margin:0;"></div>
+                                                         <a class="actionButtonMiddle" style="margin:0;color:#CE641B;" onclick="criteriasHandler.checkErrors();">
+                                                               {!$Label.AddMoreCriteria}
+                                                         </a>
+                                                     <div class="actionButtonRight" style="margin:0;"></div>
+                                                 </apex:outputPanel>
+                                                
+		                                        <apex:inputField value="{!dummyDeal.XactlyExpress__DealDate__c}" id="dummyElemennt" required="false" style="display:none;"/>
+                                                <apex:inputText id="deleteCriteriaKeyInput" value="{!criteriasInstance.deleteCriteriaKey}" style="display:none;" />
+		                                        <div id="isThereContainer" style="clear:both;">
+		                                          {!$Label.xactlyexpress__IsThere}<apex:inputCheckbox value="{!currentDealRule.creditRule.XactlyExpress__IsAdvancedFormula__c}" id="isAdvFormula" onclick="criteriasHandler.toggleAdvFormulas()" />
+		                                          <br />
+		                                          <apex:inputField id="advancedFormula" styleClass="advancedFormula {!IF(currentDealRule.creditRule.XactlyExpress__IsAdvancedFormula__c == true,'displayed','hidden')}" value="{!currentDealRule.creditRule.XactlyExpress__AdvancedFormula__c}" />  
+		                                          <script>
+		                                              var advFormulaId = '{!$Component.advancedFormula}';
+		                                          </script>
+		                                        </div>
+                                          </apex:outputPanel> 
+                                  </div>    
+                              </div>      
+                              <div class="bm">
+                                  <div style="float: left;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/bl.png')}" /></div>
+                                  <div style="float: right;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/br.png')}" /></div>
+                              </div>
+                          </div>
+                    
+                    </div>
+                    <div style="width: 100%; text-align: center; padding-top: 50px;{!IF(credits.size > 0,'display:none;','')}">
+                        <apex:outputtext value="{!$Label.xactlyexpress__NoPlanDealBased}">
+                            <apex:param value="{!currentSettings.dealsCap}"/>
+                        </apex:outputtext>
+                    </div>               
+                </apex:outputPanel>
+            </div> 
+        </div> 
+        <div style="clear:both;"></div> 
+        <div class="xactlyLogo">
+           <div class="btnToCenter btnAction" >
+                <div class="separateBtn">   
+                    <apex:outputPanel id="saveChanges" layout="block" styleClass="actionButtonWrapper"  style="{!IF(credits.size > 0,'','display:none;')}">
+                        <div class="actionButtonLeft"></div>
+                        <apex:commandLink styleClass="actionButtonMiddle" id="saveBtn" onclick="if(!checkErrorsSave()){return false;};waitOn();" action="{!save}" rerender="errorMsg,mainPopup" oncomplete="storeValues();waitOff();">
+                            <apex:outputtext escape="false" value="{!$Label.xactlyexpress__SaveChanges}"> 
+                               <apex:param value="{!URLFOR($Resource.XactlyExpress__XactlySMBResources ,'img/buttons/navigateSaveMiddle.gif')}" />
+                            </apex:outputtext>  
+                        </apex:commandLink>
+                        <div class="actionButtonRight"></div>    
+                    </apex:outputpanel>
+                    
+                    <apex:outputPanel id="discardChanges" layout="block" styleClass="actionButtonWrapper" style="{!IF(credits.size > 0,'','display:none;')}">
+                        <div class="actionButtonLeft"></div>
+                        <a href="javascript:;" class="actionButtonMiddle" onclick="discardChangesConfirm(window.location.href);">
+                            <apex:outputtext escape="false" value="{!$Label.xactlyexpress__DiscardChanges}">
+                               <apex:param value="{!URLFOR($Resource.XactlyExpress__XactlySMBResources ,'img/buttons/navigateCancelMiddle.gif')}" />
+                            </apex:outputtext>
+                        </a>
+                        <div class="actionButtonRight"></div>    
+                    </apex:outputpanel>   
+                </div>  
+            </div>
+        
+        </div>
+                
+        
+    </apex:form>
+    <apex:includeScript value="{!URLFOR($Resource.XactlyExpress__CSN, 'jquery.js')}" />
+    <c:XactlySMBFooterScript /> 
+    <apex:includeScript value="{!URLFOR($Resource.XactlyExpress__XactlySMBResources, 'js/XactlySMBJavascript.js')}" />
+    <apex:includeScript value="{!URLFOR($Resource.XactlyExpress__XactlySMBResources, 'js/criteriasHandler.js')}" />
+    
+    <script> 
+    
+        
+        var rerenderNoCompare = true;
+        
+        jQuery(document).ready(function () {
+            storeValues();
+            window.opener.putClosePopup();
+            
+            var labelsArr = new Array();
+            labelsArr[0] = '{!$Label.AdvFormulaMissingParenthesis}';
+            labelsArr[1] = '{!$Label.advancedIsEmpty}';
+            labelsArr[2] = '{!$Label.AdvanceFormulaCheckLogicalStatement}';
+            labelsArr[3] = '{!$Label.AdvanceFormulaWrongChar}';
+            labelsArr[4] = '{!$Label.WrongDateFormatJS}';
+            labelsArr[5] = '{!$Label.errorsInCriteria}';
+            labelsArr[6] = '{!$Label.deleteAFilterCriteria}';
+            labelsArr[7] = '{!$Label.CriteriaNumberNotExists}';
+            labelsArr[8] = '{!$Label.CriteriaNegativeNumbers}';
+            labelsArr[9] = '{!$Label.incompleteAdvFmla}';
+            criteriasHandler.init('{!criteriasInstance.dealDateAttrId}','{!criteriasInstance.productAttrId}','{!criteriasInstance.accountAttrId}','{!criteriasInstance.salespersonAttrId}',labelsArr, '{!dateFirst}', '{!dateSeparator}');
+            
+        });
+        
+        var ChangesWillNotBeSaved = "{!$Label.ChangesWillNotBeSaved}";
+        window.onbeforeunload = function(){return compareValues(true,rerenderNoCompare);};
+  
+        var nbrSeparator = "{!nbrSeparator}";
+        var nbrDecimal = "{!nbrDecimal}";
+        
+        function checkErrorsSave(){
+            if(criteriasHandler.chkErrors() && criteriasHandler.checkCriterias(advFormulaId, true)){
+                criteriasHandler.updateHiddenToSelectedValues();
+                criteriasHandler.overrideAdvancedFormula();
+                return true;
+            }else{ 
+                return false;
+            }
+        }
+        function confirmChangeDefault(){
+        	if(confirm('{!$Label.confirmChangeDealsBasedRulesToDefault}')){
+        		waitOn();
+        		changeToDefault();
+        		return true;
+        	}
+        	else{
+        		return false;
+        	}
+        }
+    </script>
+</apex:page>

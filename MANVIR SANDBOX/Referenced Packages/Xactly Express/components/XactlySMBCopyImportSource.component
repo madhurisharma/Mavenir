@@ -1,0 +1,159 @@
+<apex:component controller="XactlyExpress.XactlySMBImportSources"  allowDML="true"> 
+   <apex:attribute name="mappingToCopy" description="Name from eleement to copy" type="String" assignTo="{!copyIS}"  access="public" />
+   <style>
+        #CopyItSource.xactlySuperBox div.close{
+            display: none;
+        }
+        #CopyItSource a div.closeBtn{
+            background: url({!URLFOR($Resource.XactlyExpress__XactlySMBResources ,'img/layout/closeBtnSearch.png')});
+            display:block;
+            float:right;
+            height:24px;
+            margin-left:-26px;
+            position:relative;
+            width:25px; 
+            top:-35px;
+            left:-5px;
+        }
+                      
+        .marginBtn {
+           display:inline;
+           float:left;
+           margin:5px 5px 0 0;
+           overflow:hidden;
+           padding:0;
+           position:relative;
+        }
+        
+        .newISOnlyNumeric{
+           display:none;
+        }
+        
+        #CopyItSource th{
+           text-align: left; 
+           color: #4681A6;
+           padding-left: 20px;
+        }
+        
+
+        #newISButtons{
+            height:30px;
+            margin-top:0px; 
+            float:right;
+            margin-right: 10px;
+        }
+        
+        .newISCheckContainer{
+            float: left; 
+            display: inline;
+            margin: 2px 0 0 11px;
+        }
+    </style>
+        <div id="CopyItSource" style="display:none;height: 200px;width: 210px;">
+            <apex:outputPanel id="toRefresh" layout="block">
+            
+                <div style="background-image: url('{!URLFOR($Resource.XactlySMBResources ,'img/layout/topOrange.png')}');margin-left:15px;margin-right:11px;">
+                    <div style="float: left;margin-left:-15px;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/topLeftOrange.png')}"/></div>
+                    <div style="float: right;margin-right:-15px;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/topRightOrange.png')}"/></div>
+                    <div style="clear:both"></div>
+                </div> 
+           
+                <div style="width:100%;border-right:2px solid #D49761;border-left:2px solid #D49761;background-color:#FFF;">
+                     <div style="clear:both"></div>
+                    <apex:outputPanel id="errorMsgPopIS" layout="block" styleClass="errorScrollBox" style="margin-left:5px;padding-bottom:3px;">
+                       <c:XactlySMBErrorMsg error="{!errorMsg}"/>
+                       <script>
+                            var errorMsgPopIS = '{!errorMsg}';
+                       </script>
+                    </apex:outputPanel>                      
+                     <div style="width: 188px;margin:10px;" class="box">
+                         <div class="tm">
+                             <div style="float: left;"><img src="{!URLFOR($Resource.XactlySMBResources ,'/img/layout/tl.png')}" /></div>
+                             <div style="float: right;"><img src="{!URLFOR($Resource.XactlySMBResources ,'/img/layout/tr.png')}" /></div>
+                             <div style="clear: both;"></div>
+                         </div>
+                         <div class="roundedBox" style="height:54px;width:186px;">
+                             <div style="clear:both"></div>
+                             <table cellpadding="0" cellspacing="0" style="width: 184px;" class="commonTable">
+                               <thead>
+                                   <tr>
+                                       <th style="background-color: #FFFFFF;">Source Name to Copy</th>
+                                   </tr>
+                               </thead>
+                               <tbody>
+                                   <tr class="even" style="background-color: #E6E6E6;">
+                                       <td>
+                                           <apex:inputText value="{!imSource.Name}" id="sourceNmae" styleClass="toClear importSoureName" style="width: 160px" maxlength="20" />
+                                       </td>
+                                   </tr>
+                               </tbody>
+                             </table>
+                             <script>
+                                var sourceNmae = '{!$Component.sourceNmae}'.replace(/:/g,'\\:');
+                             </script>  
+                         </div>
+                         <div>
+                             <div style="float: left;"><img src="{!URLFOR($Resource.XactlySMBResources ,'/img/layout/bl2.png')}" /></div>
+                             <div style="float: right;"><img src="{!URLFOR($Resource.XactlySMBResources ,'/img/layout/br2.png')}" /></div>
+                             <div style="float: left; background-color: rgb(231, 231, 231); width: 174px; height: 6px; border-bottom: 1px solid rgb(191, 191, 191);"></div>
+                         </div>                  
+                     </div>
+                    <br/> 
+                    <apex:actionFunction name="copyIS" action="{!copyImportSource}" oncomplete="jQuery.superbox.refreshSuperboxContent();if(errorMsgPopIS==''){$('.CopyItSourceValue').val($('.importSoureName')[1].value);refresISources();jQuery.superbox.close()};waitOff();" rerender="errorMsgPopIS"/>
+                    <div id="newISButtons" class="btnAction" >
+                        <div class="marginBtn">
+                            <div class="saveaDD" onclick="waitOn();jQuery.superbox.overrideSourceWithSuperboxContent();copyIS();" style="cursor:pointer;">
+                                <div class="rightBtnSilver">
+                                    <div class="leftBtnSilver">
+                                        <div class="middleBtnSilver">
+                                            {!$Label.Save_Return}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+            
+                        <div class="marginBtn">
+                            <div onclick="jQuery.superbox.close();" style="cursor:pointer;">
+                                <div class="rightBtnSilver">
+                                    <div class="leftBtnSilver">
+                                        <div class="middleBtnSilver">
+                                            {!$Label.Cancel}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="clear:both;"></div>
+                </div>
+                <div style="background-image: url('{!URLFOR($Resource.XactlySMBResources ,'img/layout/bottomOrange.png')}');margin-left:15px;margin-right:11px;">
+                   <div style="float: left;margin-left:-15px;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/bottomLeftOrange.png')}"/></div>
+                   <div style="float: right;margin-right:-15px;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/bottomRightOrange.png')}"/></div>
+                   <div style="clear:both"></div>
+                </div> 
+            </apex:outputPanel>
+        </div>  
+        
+        <apex:actionFunction name="clearImportSourceCpy" action="{!clear}" oncomplete="copyItSourceSetter();waitOff();" rerender="toRefresh"/>
+        <a id="CopyItSourceLink" rel="superbox[content#CopyItSource.xactlySuperBox][230][50]" href="#CopyItSource" onclick="jQuery('.hiddenResults').hide();" style="display:none"></a>
+        <script>
+            function copyItSourceSetter(){
+                $('.toClear').val('');
+                jQuery('#CopyItSourceLink').trigger('click');
+                setTimeout('clearCopyMapping()',500);
+            }
+            
+            /**
+             * clearCreateNewDealAttr is called when the popup is displayed.
+             * It deletes any error msg previously defined
+             */
+            function clearCopyMapping(){
+                var errorMsg = $innerbox.find('.errorMsg');
+                if(errorMsg!=undefined){
+                  errorMsg.html('');
+                }                
+                waitOff();
+            }
+        </script>
+</apex:component>

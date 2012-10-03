@@ -1,0 +1,236 @@
+<apex:page id="releaseQualifier" controller="XactlyExpress.XactlySMBReleaseQualifierRule" sidebar="false" showHeader="false" standardStylesheets="true" action="{!redirectWhenAccessIsDenied}">
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.XactlySMBResources ,'css/XactlySMBFontStyles.css')}" />
+    <link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.XactlySMBResources ,'css/XactlySMBStyles.css')}"/>
+    <link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.XactlySMBResources ,'css/XactlySMBNumeratedBox.css')}" />
+    <apex:includeScript value="{!URLFOR($Resource.XactlyExpress__CSN, 'jquery.js')}" /> 
+    <apex:includeScript value="{!URLFOR($Resource.XactlyExpress__XactlySMBResources, 'js/XactlySMBJavascript.js')}" />
+    <apex:includeScript value="{!URLFOR($Resource.XactlyExpress__XactlySMBResources, 'js/criteriasHandler.js')}" />
+        
+    <style>
+            
+        body{
+            margin: 0px !important;
+            padding: 0px !important;
+            background-color:transparent;
+            min-width: 0;
+        }
+        
+        span.dateFormat{
+            display:none;
+        }
+        
+        div.titleLabel, span.titleLabel {
+            color:#3B6F8E;
+            font-size:24px;
+        }
+        
+        .btnAction .leftBtnSilverRR {
+            background: url({!URLFOR($Resource.XactlyExpress__XactlySMBResources, 'img/layout/sch_bottomSilvRight.png')}) transparent no-repeat scroll right center;
+            float: left;
+            height:19px;
+            padding:0px 0px 0px 5px;
+            width:auto;
+        }
+        .btnAction .middleBtnSilverRR {
+            color: white;
+            height:19px;
+            text-transform: lowercase;
+            font-size: 11px;
+            padding:2px 25px 0 0;
+            float:left;
+        }
+        .btnAction .rightBtnSilverRR {
+            background: url({!URLFOR($Resource.XactlyExpress__XactlySMBResources, 'img/layout/sch_bottomSilvLeft.png')}) transparent no-repeat scroll left center;
+            float:left;
+            height:19px;
+            width:auto;
+            margin-top: 1px;
+            margin-left: 5px;
+            padding-left:22px;
+        }         
+        
+    </style>
+    <!-- Custom Cursor Loader -->
+        <c:XactlySMBCursor />
+    <!-- Custom Cursor Loader -->
+    <apex:form id="theForm">
+        <script>
+            var attrTypes = new Array();
+            <apex:repeat value="{!attributeTypes}" var="at">        
+                attrTypes['{!at.s}'] = '{!at.typ}';        
+            </apex:repeat>
+        </script>
+        <apex:actionFunction name="save" action="{!save}" rerender="errorMsg" oncomplete="if(errorMsgJs != ''){waitOff();return false;}window.parent.dummyRefrshRR();" />
+        <div class="superboxTop"></div>
+        <div class="superboxBody">
+            <div style="padding: 15px;">
+                <apex:inputField value="{!dummyDeal.XactlyExpress__DealDate__c}" id="dummyElemennt" required="false" style="display:none;"/>
+                    <apex:outputPanel id="errorMsg" layout="block">
+                        <c:XactlySMBErrorMsg error="{!errorMsg}"/>
+                        <script>
+                            var errorMsgJs = '{!errorMsg}';
+                        </script>
+                    </apex:outputPanel>
+                    <apex:outputpanel layout="block" rendered="{!!ISNULL(rulename)}" style="position:relative; overflow: hidden; float:left" id="header">
+                        <div class="titleBoxContainer">
+                            <apex:outputtext styleclass="titleLabel" value="{!$Label.xactlyexpress__StaggeredPaymentName}" /> &nbsp;
+                            <apex:outputText style="font-size:14pt;color: #6D6E71;" value="{!rulename}" />
+                        </div>
+                    </apex:outputpanel>
+                    <div style="float:left;margin-top:4px;">
+                        <apex:outputText rendered="{!!ISNULL(rulename)}" escape="false" style="margin-left:20px;margin-right:15px;font-size:15pt;color:#3B6F8E;" value="&gt;" />
+                    </div>
+                    <div style="padding-bottom:25px;float:left">                  
+                        <apex:outputpanel layout="block" styleClass="titleLabel" style="float:left">
+                            <apex:outputtext value="{!$Label.xactlyexpress__qualifierRule}" />
+                        </apex:outputpanel>
+                        <apex:outputpanel layout="block" style="float:left;margin-left:10px;margin-top:5px;">
+                            <apex:inputField id="qualifName" value="{!currentQualifier.name}"/>
+                        </apex:outputpanel>
+                        <div style="clear:both;"></div>
+                    </div>
+                    <div style="clear:both;"></div>
+                    <div class="box" style="margin-right: 15px; margin-bottom: 15px; margin-left: 15px;">
+                         <div class="tm">
+                             <div style="float: left;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/tl.png')}" /></div>
+                             <div style="float: right;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/tr.png')}" /></div>
+                             <div style="clear:both"></div>
+                         </div> 
+                         <div class="roundedBox">
+                             <div class="boxHeader">
+                                 <div class="titleWrapper">  
+                                     <div class="mainTitle PNovaSemiBold17c3">
+                                         <apex:outputText value="{!$Label.xactlyexpress__filterDeals}">
+                                            <apex:param value="{!currentSettings.dealsPluralCap}"/>
+                                         </apex:outputText>
+                                     </div>
+                                     <div class="detailedTitle HelveticaRegular12c3">
+                                         <apex:outputText value="{!$Label.xactlyexpress__filterDealsSub}">
+                                            <apex:param value="{!currentSettings.dealsPlural}"/>
+                                         </apex:outputText>
+                                     </div>
+                                 </div>
+                                 <div style="clear:both"></div>
+                             </div>
+                             <div class="boxContent"> 
+                                <apex:actionFunction name="deleteCriteriaAction" action="{!removeCriteria}" rerender="fieldSetContainer" oncomplete="criteriasHandler.updateAdvancedFormula();waitOff();criteriasHandler.setOperatorSelectValues();introAsTab();"/>
+                                <apex:actionFunction name="dummy" action="{!addCriteria}" oncomplete="waitOff();criteriasHandler.setOperatorSelectValues();introAsTab();" rerender="fieldSetContainer"/>
+                                <apex:outputPanel id="fieldSetContainer">
+
+                                    <c:XactlySMBCriteriasComp id="critComp" isAdvancedFormula="{!currentQualifier.XactlyExpress__IsAdvancedFormula__c}" criterias="{!criterias}" typeOptions="{!typeOptions}" criteriasInstance="{!criteriasInstance}" />
+                                    
+                                    <br/>
+                                    
+                                    <hr style="margin-left:-20px;width:890px;"/>
+                                    
+                                    <apex:outputPanel layout="block" styleClass="actionButtonWrapper" style="margin-top:-1px;">
+                                        <div class="actionButtonLeft" style="margin:0;"></div>
+                                            <a class="actionButtonMiddle" style="margin:0;color:#CE641B;" onclick="criteriasHandler.checkErrors();">
+                                                  {!$Label.AddMoreCriteria}
+                                            </a>
+                                        <div class="actionButtonRight" style="margin:0;"></div>
+                                    </apex:outputPanel>
+                                    
+                                    <apex:inputText id="deleteCriteriaKeyInput" value="{!criteriasInstance.deleteCriteriaKey}" style="display:none;" /> 
+                                    <div id="isThereContainer" style="clear:both;height:35px;">
+                                        {!$Label.xactlyexpress__IsThere}<apex:inputCheckbox value="{!currentQualifier.XactlyExpress__IsAdvancedFormula__c}" id="isAdvFormula" onclick="criteriasHandler.toggleAdvFormulas()" /> 
+                                        <br />
+                                        <apex:inputField id="advancedFormula" styleClass="advancedFormula {!IF(currentQualifier.XactlyExpress__IsAdvancedFormula__c == true,'displayed','hidden')}" value="{!currentQualifier.XactlyExpress__AdvancedFormula__c}" />  
+                                        <script>
+                                        var advFormulaId = '{!$Component.advancedFormula}';
+                                        </script>
+                                    </div>
+                                </apex:outputPanel>
+                             </div>    
+                         </div>         
+                         <div class="bm">
+                             <div style="float: left;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/bl.png')}" /></div>
+                             <div style="float: right;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/br.png')}" /></div>
+                         </div> 
+                     </div>
+                </div>
+            </div>  
+            
+            
+            
+            <apex:outputpanel layout="block" id="superboxFooter" styleClass="superboxFooter">
+                <div style="float: left; width: 33%; padding-top: 12px;">
+                                            
+                </div>
+                <div style="width: 33%; padding-top: 12px; float: left; text-align: center;">
+                    <div class="btnAction" style="float:left;">
+                        <div style="display: inline-block;" class="btnAction">
+                            <a href="javascript:;" onclick="if(!checkErrorsSave()){return false;};" id="saveBtn" class="saveBtn">
+                                <apex:outputPanel styleClass="rightBtnOrangeNew">  
+                                     <apex:outputPanel styleClass="leftBtnOrangeNew">
+                                         <apex:outputPanel styleClass="middleBtnOrangeNew" style="color: white;">
+                                             {!$Label.xactlyexpress__saveReturn}
+                                        </apex:outputPanel>
+                                    </apex:outputPanel>     
+                                 </apex:outputPanel>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="btnAction" style="float:left;">
+                        <a href="javascript:;" id="cancelBtn" class="cancelBtn" onclick="window.parent.changePopupCont2();">                         
+                             <apex:outputPanel styleClass="rightBtnOrangeNew">
+                                 <apex:outputPanel styleClass="leftBtnOrangeNew">
+                                     <apex:outputPanel styleClass="middleBtnOrangeNew" style="color: white;">
+                                         {!$Label.xactlyexpress__Cancel}
+                                    </apex:outputPanel>
+                                </apex:outputPanel>
+                             </apex:outputPanel>       
+                        </a>
+                    </div>
+                </div>
+                <div style="float: right; width: 33%; margin-top: 12px;">
+                    <div class="btnToLeft btnAction" style="position:inherit;">
+                        <apex:commandLink id="deleteRule" action="{!removeQualifierRule}" onclick="waitOn();" rerender="errorMsg" oncomplete="if(errorMsgJs != ''){waitOff();return false;}window.parent.dummyRefrshRR();">                         
+                             <span class="rightBtnSilverRR" >
+                                 <span class="leftBtnSilverRR">
+                                     <span class="middleBtnSilverRR">
+                                         <apex:outputtext value="{!$Label.xactlyexpress__deleteRuleMin}"/>
+                                     </span>
+                                 </span>
+                             </span>    
+                        </apex:commandLink>
+                    </div>                      
+                </div>
+                <div style="clear: both;"></div>  
+            </apex:outputpanel>
+        </apex:form> 
+    
+    <script type="text/javascript">
+    
+        var nbrSeparator = "{!nbrSeparator}";
+        var nbrDecimal = "{!nbrDecimal}";   
+        
+    
+       $(document).ready(function(){
+            var labelsArr = new Array();
+            labelsArr[0] = '{!$Label.xactlyexpress__AdvFormulaMissingParenthesis}';
+            labelsArr[1] = '{!$Label.xactlyexpress__advancedIsEmpty}';
+            labelsArr[2] = '{!$Label.xactlyexpress__AdvanceFormulaCheckLogicalStatement}';
+            labelsArr[3] = '{!$Label.xactlyexpress__AdvanceFormulaWrongChar}';
+            labelsArr[4] = '{!$Label.xactlyexpress__WrongDateFormatJS}';
+            labelsArr[5] = '{!$Label.xactlyexpress__errorsInCriteria}';
+            labelsArr[6] = '{!$Label.xactlyexpress__deleteAFilterCriteria}';
+            labelsArr[7] = '{!$Label.xactlyexpress__CriteriaNumberNotExists}';
+            labelsArr[8] = '{!$Label.xactlyexpress__CriteriaNegativeNumbers}';
+            labelsArr[9] = '{!$Label.xactlyexpress__incompleteAdvFmla}';
+            criteriasHandler.init('{!criteriasInstance.dealDateAttrId}','{!criteriasInstance.productAttrId}','{!criteriasInstance.accountAttrId}','{!criteriasInstance.salespersonAttrId}',labelsArr, '{!dateFirst}', '{!dateSeparator}');
+            
+        }); 
+        function checkErrorsSave(){
+            if(criteriasHandler.chkErrors()&&criteriasHandler.checkCriterias(advFormulaId, true)){
+                criteriasHandler.updateHiddenToSelectedValues();
+                criteriasHandler.overrideAdvancedFormula();
+                waitOn();
+                save();
+            }else{ 
+                return false;
+            }
+        }
+    </script>
+</apex:page>

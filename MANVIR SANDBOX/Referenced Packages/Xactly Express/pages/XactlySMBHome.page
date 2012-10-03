@@ -1,0 +1,8 @@
+<!--
+Developed by Timba Software Corp. www.timbasoftware.com admin@timbasoftware.com
+ This page defines Settings
+ @author Bruno Vuono <bvuono@timbasoftware.com>
+-->
+<apex:page controller="XactlyExpress.XactlySMBHome" action="{!redirectUser}">
+{!errorMsg}
+</apex:page>

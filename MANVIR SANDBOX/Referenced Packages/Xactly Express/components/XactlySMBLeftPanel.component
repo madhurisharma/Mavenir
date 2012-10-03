@@ -1,0 +1,81 @@
+<!--
+Developed by Timba Software Corp. www.timbasoftware.com admin@timbasoftware.com
+ This component displays a custom left panel with contextual help and actions
+ @author Alvaro Scuccimarra <ascuccimarra@timbasoftware.com>
+-->
+<apex:component controller="XactlyExpress.XactlySMBLeftPanelController">
+	<apex:attribute name="bestPractices" description="The text displayed in best practices" type="String" required="false" />
+	<apex:attribute name="pageNameFor" description="The Page Name" type="String" required="false" />
+	<link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.XactlySMBResources ,'css/XactlySMBBestPractices.css')}" />
+	
+	<style>
+		#bestPracticeStaticResource {
+			margin: 0px;
+			padding: 0px;
+			color: #3B6080;
+			font-size: 12px;
+			width: 180px;
+		}
+	</style>
+	
+	<div id="bestPContainer">
+		<div class="bestPTitle">
+			{!$Label.BestPractices}
+		</div>	
+		<div class="bestPContent">  
+			<div id="bestPracticeStaticResource">{!$Label.WaitLoading}...</div>
+		</div>
+		<div class="bestPBottom">
+		</div>
+	</div>
+	
+	<apex:includeScript value="{!URLFOR($Resource.XactlyExpress__CSN, 'jquery.js')}" />
+	<script>
+		
+		$(document).ready(function (){
+			$.ajaxSetup({
+			    "beforeSend": function(xhr) {
+                    if (window.XMLHttpRequest) {
+                        xmlHttpReq = new XMLHttpRequest();
+                        if (xhr.overrideMimeType) {
+                            xhr.overrideMimeType('text/html; charset=iso-8859-1');
+                            // See note below about this line
+                        }
+                    // IE
+                    } else if (window.ActiveXObject) { // IE
+                        try {
+                            xhr = new ActiveXObject("Msxml2.XMLHTTP");
+                    } catch (e) {
+                        try {
+                            xhr = new ActiveXObject("Microsoft.XMLHTTP");
+                        } catch (e) {}
+                        }
+                    }
+                    
+                }
+			});
+			
+			var pageName = '{!pageNameFor}';
+			if (pageName != null && pageName != '') {
+				if (pageName == 'PlanCreateStep4') {
+				    $("#bestPracticeStaticResource").load("{!URLFOR($Resource.BestPracticesAndHelpContent, currentUserLang + '/BestPracticesForPlanCreateStep5.txt')}");
+				}
+				else if (pageName == 'PlanCreateStep5') {
+				    $("#bestPracticeStaticResource").load("{!URLFOR($Resource.BestPracticesAndHelpContent, currentUserLang + '/BestPracticesForPlanCreateStep4.txt')}");
+				}
+				else if (pageName == 'PlanList') {
+                    $("#bestPracticeStaticResource").load("{!URLFOR($Resource.BestPracticesAndHelpContent, currentUserLang + '/BestPractices.txt')}");
+                }
+                else if (pageName == 'TermsAndConditions') {
+                    $("#bestPracticeStaticResource").load("{!URLFOR($Resource.BestPracticesAndHelpContent, currentUserLang + '/BestPracticesForSettingsTerminology.txt')}");
+                }
+				else {
+				    $("#bestPracticeStaticResource").load("{!URLFOR($Resource.BestPracticesAndHelpContent, currentUserLang + '/BestPracticesFor' + pageNameFor + '.txt')}");
+				}
+			}
+			else {
+				$("#bestPracticeStaticResource").load("{!URLFOR($Resource.BestPracticesAndHelpContent, currentUserLang + '/BestPractices.txt')}");
+			}
+		});
+	</script>
+</apex:component>

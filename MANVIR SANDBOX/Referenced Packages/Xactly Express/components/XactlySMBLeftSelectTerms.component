@@ -1,0 +1,48 @@
+<apex:component controller="XactlyExpress.XactlySMBLeftSelectTermsController">
+    <style> 
+    
+    .orangeLi{
+       color:#BD5C19;
+       font-weight: bold;
+    }
+    
+    </style>
+    
+    <link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.XactlySMBResources ,'css/XactlySMBMeasureList.css')}" />
+    <apex:attribute name="currentFiscalYear" description="The Current Fiscal Year" type="String" access="public" assignTo="{!currentFiscalYear}" />
+    <apex:attribute name="currentTermsId" description="The Current Plan" type="String" access="public" assignTo="{!currentTermsId}" />
+      
+    <apex:outputPanel id="editMeasuresContainer" layout="block">
+        <div id="measuresContainer">
+            <div class="measuresTitle">
+                <apex:outputtext value="{!$Label.xactlyexpress__SelectTerms}" />
+            </div>  
+            <div class="measuresContent">
+                <apex:outputpanel rendered="{!IF(TermsList.size == 0, false, true)}">
+                    <apex:outputpanel >
+                       <apex:repeat value="{!TermsList}" var="iter">
+                      
+                               <a href="{!$Page.XactlySMBTermsAndConditions}?id={!iter.id}" class="{!IF(iter.id==currentTermsId,'orangeLi','measuresListLinks')}">
+                                   {!iter.name}
+                               </a>
+                           
+                           <br />
+                       </apex:repeat>
+                   </apex:outputpanel>
+                   
+                </apex:outputpanel>
+                <apex:outputpanel rendered="{!IF(TermsList.size == 0, true, false)}">
+                    <apex:outputtext value="{!$Label.xactlyexpress__NoTerms}" /> 
+                </apex:outputpanel>
+            </div>  
+            <div class="measuresBottom">
+            </div>
+        </div>   
+    </apex:outputPanel>
+    <script>
+    
+    
+    
+    
+    </script>
+</apex:component>

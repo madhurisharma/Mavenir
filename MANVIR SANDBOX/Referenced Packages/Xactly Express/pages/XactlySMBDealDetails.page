@@ -1,0 +1,482 @@
+<!--
+Developed by Timba Software Corp. www.timbasoftware.com admin@timbasoftware.com
+This page lists plans
+@author Dario Levy <dlevy@timbasoftware.com>
+-->
+<apex:page id="dealDetails" controller="XactlyExpress.XactlySMBDealDetails" sidebar="false" showHeader="false" standardStylesheets="true" action="{!redirectWhenAccessIsDenied}">
+    <c:XactlySMBCursor />
+    <title>{!$Label.Calculate}: {!statusLabel}</title> 
+    <link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.XactlySMBResources ,'css/XactlySMBStyles.css')}" />
+    <apex:includeScript value="{!URLFOR($Resource.XactlyExpress__CSN, 'jquery.js')}" />
+    <script type="text/javascript" language="javascript" src="{!URLFOR($Resource.XactlySMBResources, 'js/XactlySMBJavascript.js')}"></script>
+    
+    <style>
+        .tableWrapper{
+            margin:23px 0 0 21px;
+            width:1015px;
+            position:relative;
+            margin-bottom:70px;
+        }
+        
+        .tableWrapper .tHeader{
+            width:100%;
+            position:relative;
+        }
+        
+        .tableWrapper .tContent {
+            border-top:1px solid #EDEDED;
+            border-left:1px solid #EDEDED;
+            border-right:1px solid #EDEDED;
+            width:100%;
+            position:relative;
+        }
+        
+        .tableWrapper .tFooter{
+            width:100%;
+            height:25px;
+            background:transparent url({!URLFOR($Resource.XactlySMBResources,'img/layout/bottomBgTable.png')});
+            border:1px solid #EDEDED;
+            position:relative;
+        }
+        
+        .dateFormat {
+            display:none;
+        }
+        
+        .editablePositive{
+            color:#8BB201;
+            font-weight: bold;
+        }
+        
+        .editableNegative{
+            color:#FF1114;
+            font-weight: bold;
+        }
+        
+        .errorMsg {           
+            background:none repeat scroll 0 0 #FFFFFF;
+            border:1px solid #CC0000;
+            color:#CC0000;
+        }      
+    
+    </style>
+
+    <c:XactlySMBShadows />
+
+    <!-- PAGE WRAPPER -->
+    <div class="pageContent" id="pContent">
+ 
+        <!-- HEADER -->
+            
+        <apex:form >
+            <apex:outputPanel layout="block" styleClass="header" rendered="{!isAdmin && !isEmulatedManager && !emulatingUser}">
+                <c:XactlySMBHeader isAdmin="{!isAdmin}"  isActive="{!isActive}" nbrSeparator="{!nbrSeparator}" nbrDecimal="{!nbrDecimal}" currentUserOrSlected="{!currentUserOrSlected}" emulatingUserURLAppend="{!emulatingUserURLAppend}" selected="2"  wqlabel="{!currentSettings.quotasPlural}" wclabel="{!currentSettings.creditsPlural}" wlabel="{!currentSettings.dealsPluralCap}" step="2" wtype="calculate"  hlabel="{!statusLabel}" stepHelp="CalculateStep3"/>
+            </apex:outputPanel>
+            
+            <apex:outputPanel layout="block" styleClass="header" rendered="{!isEmulatedManager || isSalesRep || isManager || emulatingUser}">
+                <c:XactlySMBSalesRepHeader lastClosedPeriod="{!lastClosedPeriod}" isEmulatedManager="{!isEmulatedManager}" isManager="{!isManager}" isSalesAdmin="{!isSalesAdmin}" isAdmin="{!isAdmin}"  isActive="{!isActive}" nbrSeparator="{!nbrSeparator}" nbrDecimal="{!nbrDecimal}" currentUserOrSlected="{!currentUserOrSlected}" emulatingUserURLAppend="{!emulatingUserURLAppend}" dealsLabel="{!currentSettings.dealsPluralCap}" selected="2" emulatingUserURLAppend="{!emulatingUserURLAppend}" hlabel="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean ac mi eget est semper feugiat."/>
+            </apex:outputPanel>
+            
+            <apex:outputPanel layout="block" styleclass="additionalContent" rendered="{!isAdmin && !isEmulatedManager && !emulatingUser}">    
+                <c:XactlySMBChatterWall objectId="{!$User.Id}" showHeader="true" showWall="true" currentPage="{!$CurrentPage.Name}"/>
+            </apex:outputPanel>
+            
+            <apex:outputPanel layout="block" styleclass="additionalContent" rendered="{!isEmulatedManager || isSalesRep || isManager || emulatingUser}">    
+                <c:XactlySMBChatterWall objectId="{!$User.Id}" showHeader="true" showWall="true" currentPage="EditDealsDashboards"/>
+            </apex:outputPanel>
+             
+            <!-- MAIN CONTENT -->
+            <apex:outputPanel layout="block" styleClass="mainContent">
+                <!-- CONTENT -->
+                <apex:outputPanel layout="block" styleClass="content" style="width:100%">
+                    <apex:outputPanel id="errorMsg" layout="block" styleClass="errorScrollBox" style="width:100%">
+                        <apex:outputPanel layout="block" rendered="{!errorMsg!=''}" style="width:100%">
+                            <c:XactlySMBErrorMsg error="{!errorMsg}" errStyle="background:#FF0000;color:#FFFFFF;font-size:16px;font-weight:bold;overflow:auto;max-height:100px;"/>
+                        </apex:outputPanel>
+                    </apex:outputPanel>
+                    <apex:outputPanel id="tableWrapper" styleclass="tableWrapper" layout="block">
+                        <div class="tHeader">
+                            <div style="background-image: url('{!URLFOR($Resource.XactlySMBResources ,'img/layout/topBgTable.png')}');margin-left:5px;margin-right:3px;">
+                                <div style="float: left;margin-left:-5px;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/topLeftCurvy.png')}"/></div>
+                                <apex:outputText value="{!statusLabel}" style="float:left;font-size:11pt;font-weight:bolder;margin-left:5px;margin-top:10px;"/>
+                                <div style="float: right;margin-right:-5px;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/topRightCurvy.png')}"/></div>
+                                <div style="float:right;margin-right:5px;margin-top:13px;"><span style="color:#FF0000;">*</span><apex:outputText value=" = {!$Label.xactlyexpress__RequiredInformation}"/></div>
+                                <div style="clear:both"></div>
+                            </div> 
+                        </div>
+                        <div class="tContent">
+                            <div style="float:left;margin-left:95px;">
+                                <table cellspacing="10">
+                                	<apex:variable var="index" value="{!0}"/>     
+                                    <apex:repeat value="{!attribs}" var="y" rows="{!countLimit}">
+                                        <tr>
+                                            <td style="text-align:right;font-size:10px;" class="areaTitle">
+                                                <div style="margin-top:2px;">
+                                                    <apex:outputText style="color:#FF0000;" rendered="{!y.required}" value="* "/><apex:outputText value="{!y.name}"/>
+                                                </div>
+                                            </td>
+                                            <td>
+
+                                                <apex:outputPanel layout="block"  rendered="{!LEFT(y.field,7) == 'Boolean'}">
+                                                    <apex:selectList disabled="{!OR(AND(!CanEdit,!isAdmin),isSalesRep, AND(NoEditable, !CanEdit2))}" value="{!y.value}" rendered="{!LEFT(y.field,7) == 'Boolean'}" size="1" multiselect="false">
+                                                        <apex:selectOptions value="{!booleanOptions}" />
+                                                    </apex:selectList>
+                                                </apex:outputPanel>
+                                                
+                                                <apex:outputPanel layout="none" rendered="{!y.field == 'ProfileId__c'}" >
+                                                    <apex:selectList disabled="{!OR(AND(AND(!CanEdit,!isAdmin),!isAdmin),isSalesRep, AND(NoEditable, !CanEdit2))}" value="{!currentDeal.XactlyExpress__ProfileID__c}" size="1" multiselect="false" rendered="{!y.field == 'ProfileId__c'}">
+                                                        <apex:selectOptions value="{!usersOptions}" />
+                                                    </apex:selectList>
+                                                </apex:outputPanel>
+                                                
+                                                <apex:outputPanel style="width:200px" layout="block" rendered="{!y.field == 'ProductId__c'}">
+                                                    <div id="0-product">
+                                                        <input disabled="disabled" type="text" class="productName" value="{!ProductName}" style="width:85%" />
+                                                        <apex:commandLink rendered="{!!OR(AND(!CanEdit,!isAdmin),isSalesRep, AND(NoEditable, !CanEdit2))}" rerender="errorMsg" onclick="openProductPopup()">
+                                                            <apex:image url="{!URLFOR($Resource.XactlyExpress__XactlySMBResources, 'img/icons/magnifier.png')}"  />
+                                                        </apex:commandLink>
+                                                        <apex:inputText style="display:none;" styleClass="productId" value="{!currentDeal.XactlyExpress__ProductID__c}"/>
+                                                    </div>
+                                                </apex:outputPanel>
+                                                
+                                                <apex:outputPanel style="width:200px" layout="block" rendered="{!y.field == 'AccountId__c'}">
+                                                    <div id="0-account">
+                                                    	<apex:inputText styleclass="accountName" value="{!AccountName}" style="width:85%;background-color: #dcdcdc;color: #000000;cursor: default;" onfocus="this.blur();"/>
+                                                        <!--  <input disabled="disabled" type="text" class="accountName" value="{!AccountName}" style="width:85%" />-->
+                                                        <apex:commandLink rendered="{!!OR(AND(!CanEdit,!isAdmin),isSalesRep, AND(NoEditable, !CanEdit2))}" rerender="errorMsg" onclick="openAccountPopup()">
+                                                            <apex:image url="{!URLFOR($Resource.XactlyExpress__XactlySMBResources, 'img/icons/magnifier.png')}"/>
+                                                        </apex:commandLink>
+                                                        <apex:inputText style="display:none;" styleClass="accountId" value="{!currentDeal.XactlyExpress__AccountID__c}"/>
+                                                    </div>
+                                                </apex:outputPanel>
+                                                
+                                                <apex:outputPanel layout="block" rendered="{!AND(y.field == 'DealId__c',!OR(AND(!CanEdit,!isAdmin),isSalesRep, AND(NoEditable, !CanEdit2)))}">
+                                                    <apex:inputField onblur="checkValue(this, '{!y.datatype}');" value="{!currentDeal.XactlyExpress__DealID__c}"/>
+                                                </apex:outputPanel>
+                                                <apex:outputPanel layout="block" rendered="{!AND(y.field == 'DealId__c',OR(AND(!CanEdit,!isAdmin),isSalesRep, AND(NoEditable, !CanEdit2)))}">
+                                                    <input type="text" disabled="disabled" value="{!currentDeal.XactlyExpress__DealID__c}"/>
+                                                </apex:outputPanel>
+                                                
+                                                <apex:outputPanel layout="block" rendered="{!AND(y.field == 'DealDate__c',!OR(AND(!CanEdit,!isAdmin),isSalesRep, AND(NoEditable, !CanEdit2)))}">
+                                                    <apex:inputField onblur="checkValue(this, '{!y.datatype}');" value="{!currentDeal.XactlyExpress__DealDate__c}"/>
+                                                </apex:outputPanel>
+                                                <apex:outputPanel layout="block" rendered="{!AND(y.field == 'DealDate__c',OR(AND(!CanEdit,!isAdmin),isSalesRep, AND(NoEditable, !CanEdit2)))}">
+                                                    <input type="text" disabled="disabled" value="{!FormattedDate}"/>
+                                                </apex:outputPanel>
+                                                                                                    
+                                                <apex:outputPanel layout="block" rendered="{!AND(y.field != 'DealDate__c', y.datatype=='date')}">
+                                                  <apex:inputText disabled="{!OR(AND(!CanEdit,!isAdmin),isSalesRep, AND(NoEditable, !CanEdit2))}" onblur="checkValue(this, '{!y.datatype}');" id="fld" value="{!y.value}" onfocus="showCalendar(isDate{!FLOOR(index)});"/>
+                                                </apex:outputPanel>   
+                                                <script>
+                                                	var isDate{!FLOOR(index)} = '{!$Component.fld}';  
+                                                </script>     
+                                                                                                                   
+                                                <apex:outputPanel layout="block" rendered="{!AND(y.field != 'ProductId__c', y.field != 'AccountId__c', y.field != 'DealId__c', y.field != 'ProfileId__c', y.field != 'DealDate__c', y.field != 'ProfileId__r.UserId__c',y.datatype!='date', LEFT(y.field,7) != 'Boolean')}">
+                                                    <apex:inputText disabled="{!OR(AND(!CanEdit,!isAdmin),isSalesRep, AND(NoEditable, !CanEdit2))}" styleclass="{!IF(OR(y.datatype == 'currency', y.datatype == 'decimal'),IF(NOT(CONTAINS(y.value,'-')),'editablePositive','editableNegative'),'')}" onblur="checkValue(this, '{!y.datatype}');" value="{!y.value}" />
+                                                </apex:outputPanel>
+                                            </td>
+                                        </tr>
+                                        <apex:variable var="index" value="{!index + 1}"/>
+                                    </apex:repeat>
+                                </table>
+                            </div>
+                            <div style="float:left;margin-left:95px;">
+                                <table cellspacing="10">
+                                	                         	
+                                    <apex:repeat value="{!attribs}" var="y" first="{!countLimit}">
+                                        <tr>
+                                            <td style="text-align:right;font-size:10px;" class="areaTitle">
+                                                <div style="margin-top:2px;">
+                                                    <apex:outputText style="color:#FF0000;" rendered="{!y.required}" value="* "/><apex:outputText value="{!y.name}"/>
+                                                </div>
+                                            </td>
+                                            <td>
+                        
+                                                <apex:outputPanel layout="block"  rendered="{!LEFT(y.field,7) == 'Boolean'}">
+                                                    <apex:selectList disabled="{!OR(AND(!CanEdit,!isAdmin),isSalesRep, AND(NoEditable, !CanEdit2))}" value="{!y.value}" rendered="{!LEFT(y.field,7) == 'Boolean'}" size="1" multiselect="false">
+                                                        <apex:selectOptions value="{!booleanOptions}" />
+                                                    </apex:selectList>
+                                                </apex:outputPanel>
+                                                
+                                                <apex:outputPanel layout="none" rendered="{!y.field == 'ProfileId__c'}" >
+                                                    <apex:selectList disabled="{!OR(AND(!CanEdit,!isAdmin),isSalesRep, AND(NoEditable, !CanEdit2))}" value="{!currentDeal.XactlyExpress__ProfileID__c}" size="1" multiselect="false" rendered="{!y.field == 'ProfileId__c'}">
+                                                        <apex:selectOptions value="{!usersOptions}" />
+                                                    </apex:selectList>
+                                                </apex:outputPanel>
+                                                
+                                                <apex:outputPanel style="width:200px" layout="block" rendered="{!y.field == 'ProductId__c'}">
+                                                    <div id="0-product">
+                                                    	<apex:inputText styleclass="productName" value="{!ProductName}" style="width:85%;background-color: #dcdcdc;color: #000000;cursor: default;" onfocus="this.blur();"/>
+                                                        <!-- <input disabled="disabled" type="text" class="productName" value="{!ProductName}" style="width:85%" /> -->
+                                                        <apex:commandLink rendered="{!!OR(AND(!CanEdit,!isAdmin),isSalesRep, AND(NoEditable, !CanEdit2))}" rerender="errorMsg" onclick="openProductPopup()">
+                                                            <apex:image url="{!URLFOR($Resource.XactlyExpress__XactlySMBResources, 'img/icons/magnifier.png')}"  />
+                                                        </apex:commandLink>
+                                                        <apex:inputText style="display:none;" styleClass="productId" value="{!currentDeal.XactlyExpress__ProductID__c}"/>
+                                                    </div>
+                                                </apex:outputPanel>
+                                                
+                                                <apex:outputPanel style="width:200px" layout="block" rendered="{!y.field == 'AccountId__c'}">
+                                                    <div id="0-account">
+                                                        <input disabled="disabled" type="text" class="accountName" value="{!AccountName}" style="width:85%;" />
+                                                        <apex:commandLink rendered="{!!OR(AND(!CanEdit,!isAdmin),isSalesRep, AND(NoEditable, !CanEdit2))}" rerender="errorMsg" onclick="openAccountPopup()">
+                                                            <apex:image url="{!URLFOR($Resource.XactlyExpress__XactlySMBResources, 'img/icons/magnifier.png')}"/>
+                                                        </apex:commandLink>
+                                                        <apex:inputText style="display:none;" styleClass="accountId" value="{!currentDeal.XactlyExpress__AccountID__c}"/>
+                                                    </div>
+                                                </apex:outputPanel>
+                                                
+                                                <apex:outputPanel layout="block" rendered="{!AND(y.field == 'DealId__c',!OR(AND(!CanEdit,!isAdmin),isSalesRep, AND(NoEditable, !CanEdit2)))}">
+                                                    <apex:inputField onblur="checkValue(this, '{!y.datatype}');" value="{!currentDeal.XactlyExpress__DealID__c}"/>
+                                                </apex:outputPanel>
+                                                <apex:outputPanel layout="block" rendered="{!AND(y.field == 'DealId__c',OR(AND(!CanEdit,!isAdmin),isSalesRep, AND(NoEditable, !CanEdit2)))}">
+                                                    <input type="text" disabled="disabled" value="{!currentDeal.XactlyExpress__DealID__c}"/>
+                                                </apex:outputPanel>
+                                                
+                                                <apex:outputPanel layout="block" rendered="{!AND(y.field == 'DealDate__c',!OR(AND(!CanEdit,!isAdmin),isSalesRep, AND(NoEditable, !CanEdit2)))}">
+                                                    <apex:inputField onblur="checkValue(this, '{!y.datatype}');" value="{!currentDeal.XactlyExpress__DealDate__c}"/>
+                                                </apex:outputPanel>
+                                                <apex:outputPanel layout="block" rendered="{!AND(y.field == 'DealDate__c',OR(AND(!CanEdit,!isAdmin),isSalesRep, AND(NoEditable, !CanEdit2)))}">
+                                                    <input type="text" disabled="disabled" value="{!currentDeal.XactlyExpress__DealID__c}"/>
+                                                </apex:outputPanel>
+                                                    
+                                                <apex:outputPanel layout="block" rendered="{!AND(y.field != 'DealDate__c', y.datatype=='date')}">
+                                                  <apex:inputText disabled="{!OR(AND(!CanEdit,!isAdmin),isSalesRep, AND(NoEditable, !CanEdit2))}" onblur="checkValue(this, '{!y.datatype}');" id="fld" value="{!y.value}" onfocus="showCalendar(isDate{!FLOOR(index)});"/>
+                                                </apex:outputPanel>   
+                                                <script>
+                                                	var isDate{!FLOOR(index)} = '{!$Component.fld}';  
+                                                </script>     
+                                                                                                              
+                                                <apex:outputPanel layout="block" rendered="{!AND(y.field != 'ProductId__c', y.field != 'AccountId__c', y.field != 'DealId__c', y.field != 'ProfileId__c', y.field != 'DealDate__c', y.field != 'ProfileId__r.UserId__c',y.datatype!='date', LEFT(y.field,7) != 'Boolean')}">
+                                                    <apex:inputText disabled="{!OR(AND(!CanEdit,!isAdmin),isSalesRep, AND(NoEditable, !CanEdit2))}" styleclass="{!IF(OR(y.datatype == 'currency', y.datatype == 'decimal'),IF(NOT(CONTAINS(y.value,'-')),'editablePositive','editableNegative'),'')}" onblur="checkValue(this, '{!y.datatype}');" value="{!y.value}" />
+                                                </apex:outputPanel>
+                                            </td>
+                                        </tr>
+                                        <apex:variable var="index" value="{!index + 1}"/>
+                                       
+                                    </apex:repeat>
+                                </table>
+                            </div>
+                            <div style="clear:both;"></div>
+                        </div>
+                        <div class="tFooter">
+                        </div>
+                    </apex:outputPanel>
+                </apex:outputPanel><!-- END CONTENT -->
+                
+            </apex:outputPanel><!-- END CONTENTWRAPPER -->
+            
+            <!-- FOOTER  -->
+            <apex:outputPanel layout="block" styleClass="footer" id="pFooter">
+               
+                <apex:outputPanel layout="block" styleClass="previousStepWrapper" style="max-width:150px;">
+                </apex:outputpanel>
+                    
+                <apex:outputPanel layout="block" styleClass="actionButtons">                        
+                    <apex:outputPanel layout="block" styleClass="actionButtonWrapper" rendered="{!!OR(AND(!CanEdit,!isAdmin || !ISNULL($CurrentPage.parameters.userId)),isSalesRep, AND(NoEditable, !CanEdit2))}">
+                        <div class="actionButtonLeft"></div>
+                        <apex:actionFunction name="save" action="{!save}"/>
+                        <a href="javascript:;" onclick="rerenderNoCompare=false;save();" class="actionButtonMiddle">
+                            <apex:outputtext escape="false" value="{!$Label.xactlyexpress__Save}">
+                               <apex:param value="{!URLFOR($Resource.XactlyExpress__XactlySMBResources ,'img/buttons/navigateSaveMiddle.gif')}" />
+                            </apex:outputtext>  
+                        </a>
+                        <div class="actionButtonRight"></div>    
+                    </apex:outputpanel>
+                    <apex:outputPanel layout="block" styleClass="actionButtonWrapper" rendered="{!!OR(AND(!CanEdit,!isAdmin || !ISNULL($CurrentPage.parameters.userId)),isSalesRep, AND(NoEditable, !CanEdit2))}">
+                        <div class="actionButtonLeft"></div>
+                        <apex:actionFunction name="saveNew" action="{!saveNew}"/>
+                        <a href="javascript:;" onclick="rerenderNoCompare=false;saveNew();" class="actionButtonMiddle">
+                            <apex:outputtext escape="false" value="{!$Label.xactlyexpress__saveAndNew}">
+                               <apex:param value="{!URLFOR($Resource.XactlyExpress__XactlySMBResources ,'img/buttons/navigateSaveMiddle.gif')}" />
+                            </apex:outputtext>  
+                        </a>
+                        <div class="actionButtonRight"></div>    
+                    </apex:outputpanel>
+                  
+                    <apex:outputPanel layout="block" styleClass="actionButtonWrapper">
+                        <div class="actionButtonLeft"></div>
+                        <a href="{!IF(OR(!ISNULL($CurrentPage.parameters.userId),isManager,isSalesRep),$Page.XactlySMBDashRepMyDeals,$Page.XactlySMBCalculateStep3)}{!IF(LEN(emulatingUserURLAppend)>0,'?'+emulatingUserURLAppend+IF(!AND(!ISNULL(viewId),viewId != ''),'&vwId='+viewId,IF(AND(!ISNULL(searchstring),searchstring != ''),'&s='+searchstring,'')),IF(AND(!ISNULL(viewId),viewId != ''),'?vwId='+viewId,IF(AND(!ISNULL(searchstring),searchstring != ''),'?s='+searchstring,'')))}{!IF(!ISNULL($CurrentPage.parameters.userId),'&userId='+$CurrentPage.parameters.userId,'')}" onclick="rerenderNoCompare=false;" class="actionButtonMiddle">
+                            <apex:outputtext escape="false" value="{!$Label.xactlyexpress__Cancel}">
+                               <apex:param value="{!URLFOR($Resource.XactlyExpress__XactlySMBResources ,'img/buttons/navigateSaveMiddle.gif')}" />
+                            </apex:outputtext>  
+                        </a>
+                        <div class="actionButtonRight"></div>    
+                    </apex:outputpanel>
+                </apex:outputPanel>
+            
+                <apex:outputPanel layout="block" styleClass="nextStepWrapper" style="margin-right:100px;">
+                </apex:outputPanel>
+            </apex:outputPanel>
+        </apex:form>
+    </div>      
+    
+    <c:XactlySMBFooterScript /> 
+    <script type="text/javascript" language="javascript" src="{!URLFOR($Resource.XactlySMBResources, 'js/XactlySMBJavascript.js')}"></script>
+    <script type="text/javascript" src="{!URLFOR($Resource.XactlySMBResources ,'js/jquery.superbox-min.js')}"></script>
+    <script type="text/javascript">
+        $(function(){
+            $.superbox.settings = {
+                closeTxt: "X",
+                loadTxt: "Loading...",
+                nextTxt: "Next",
+                prevTxt: "Previous"
+            };
+            $.superbox();
+        });
+    </script>
+    <script type="text/javascript">     
+    	var rerenderNoCompare = true;   	
+    	$(document).ready(function () {
+    		storeValues();    	    		    		
+    	});
+    	window.onbeforeunload = function () {
+            window.onunload = function() {savePageHandler.disableBottomBar();};                        
+            return compareValues(true, rerenderNoCompare);
+        };
+    		
+    	function showCalendar(lnmString){    	  
+          DatePicker.pickDate(true, lnmString, false);
+      	}
+        function checkValue(obj, dataType){
+            if($(obj).val() != ''){
+                if(dataType == 'date'){
+                    checkDate(obj);               
+                }
+                else if(dataType == 'decimal' || dataType == 'currency'){
+                	var aux = $(obj).val().replace(/ /g, '');                 	
+	                if (aux != $(obj).val()){
+	                	if(dataType == 'decimal'){
+	                    	alert('{!$Label.WrongNumberFormatJS}');
+	                    }
+	                    else{
+	                    	alert('{!$Label.WrongCurrencyFormatJS}');
+	                    }	 
+	                    $(obj).val('0.0');                      
+	                    $(obj).focus();
+	                    return;
+	                }	       
+                    if(isNaN(parseInt($(obj).val())) || $(obj).val().toLowerCase().indexOf('e') > 0){
+                        if(dataType == 'decimal'){
+                            alert('{!$Label.WrongNumberFormatJS}');
+                        }
+                        else{
+                            alert('{!$Label.WrongCurrencyFormatJS}');
+                        }
+                        $(obj).val('0.0');
+                        $(obj).focus();
+                        return;
+                    }    
+                    $(obj).val(formatNumber(unformatNumber($(obj).val())));
+                    if(obj.value.indexOf('-')!=-1){
+                       $(obj).removeClass('editablePositive').addClass('editableNegative');
+                    }
+                    else{
+                       $(obj).removeClass('editableNegative').addClass('editablePositive');
+                    }                 
+                }
+            }        
+        }
+        function isInteger(s){
+			var i;
+		    for (i = 0; i < s.length; i++){   
+		        // Check that current character is number.
+		        var c = s.charAt(i);
+		        if (((c < "0") || (c > "9"))) return false;
+		    }
+		    // All characters are numbers.
+		    return true;
+		}
+        function checkDate(obj){
+            var dateFirst = '{!dateFirst}';
+            var dateSeparator = '{!dateSeparator}';
+            var val = $(obj).val();
+           
+            var dateparts = val.split(dateSeparator);   
+            
+            if(val.length == 0){
+                return;
+            }
+                
+            if (dateparts.length != 3){
+                alert('{!$Label.WrongDateFormatJS}');
+                obj.value = '';
+                obj.focus();
+                return;
+            } 
+        
+            //Pad to 2 digits
+            for(i = 0; i < dateparts.length; i++){
+            	if (!isInteger(dateparts[i])){            		
+            		alert('{!$Label.WrongDateFormatJS}');                    
+	                obj.value = '';	                      
+                    obj.focus();
+                    return;
+            	}
+                if(dateparts[i].length == 0 || dateparts[i] <= 0){
+                    alert('{!$Label.WrongDateFormatJS}');
+                    obj.value = '';
+                    obj.focus();
+                    return;
+                }
+                if (dateparts[i].length == 1){
+                    dateparts[i] = '0'+dateparts[i];
+                }
+            }
+            
+            var day;
+            var month;
+            var year;
+            
+            if (dateFirst == 'day'){
+                day = parseInt(dateparts[0],10);
+                month = parseInt(dateparts[1],10);
+                year = parseInt(dateparts[2],10);
+            }
+            else if (dateFirst == 'month'){
+                day = parseInt(dateparts[1],10);
+                month = parseInt(dateparts[0],10);
+                year = parseInt(dateparts[2],10);
+            }
+            else if (dateFirst == 'year'){                  
+                day = parseInt(dateparts[2],10);
+                month = parseInt(dateparts[1],10);
+                year = parseInt(dateparts[0],10);               
+            }
+            else{
+                alert('{!$Label.WrongDateFormatJS}');
+                obj.value = '';
+                obj.focus();
+                return; 
+            }
+            
+            var leapYear = (day > 28 && year%4 > 0 && month == 2);
+            
+            if(isNaN(day) || isNaN(month) || isNaN(year) || leapYear || day < 1 || day > 31 || month < 1 || month > 12 || year < 2000){
+                alert('{!$Label.WrongDateFormatJS}');
+                obj.value = '';
+                obj.focus();
+                return;
+            }
+        }
+        
+        function openProductPopup(){
+            if(_isChrome){
+                productsWindow = window.open('/apex/XactlySMBProductPopup?mng=dlsdtl&index=0', 'Products','location=0,status=0,scrollbars=1,width=700px,height=550px');
+            }
+            else{
+                productsWindow = window.open('/apex/XactlySMBProductPopup?mng=dlsdtl&index=0', 'Products','location=0,status=0,scrollbars=1,width=700px,height=500px');   
+            }
+            productsWindow.moveTo(100,100);
+        }   
+        
+        function openAccountPopup(){
+            if(_isChrome){
+                accountsWindow = window.open('/apex/XactlySMBAccountPopup?mng=dlsdtl&index=0', 'Account','location=0,status=0,scrollbars=1,width=700px,height=550px');
+            }
+            else{
+                accountsWindow = window.open('/apex/XactlySMBAccountPopup?mng=dlsdtl&index=0', 'Account','location=0,status=0,scrollbars=1,width=700px,height=500px');
+            }
+            accountsWindow.moveTo(100,100);
+        } 
+    </script>
+</apex:page>

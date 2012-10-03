@@ -1,0 +1,11 @@
+<apex:component >
+<apex:attribute name="text" description="The text to be shown" type="String" required="true" access="public"/>
+<apex:attribute name="maxLength" description="The maximum length of the text" type="Integer" required="true" access="public"/>
+<apex:attribute name="codaWidth" description="The width of coda_bubble" type="String" required="false" access="public"/>
+<apex:attribute name="wrappStyle" description="The wrappStyle" type="String" required="false" access="public"/>
+<div class="bubbleText" style="{!wrappStyle}{!IF(LEN(text)>maxLength,'*padding-left:1px;',IF(LEN(text)==0,'width:90px;',''))}">
+    <span class="{!IF(LEN(text)>maxLength,'trigger','')}" style="{!codaWidth}">{!IF(LEN(text) > maxLength, LEFT(text,maxLength - 1) & '...', text)}&nbsp;</span>
+    <apex:outputPanel layout="block" styleClass="bubble_html" style="display:none;" rendered="{!LEN(text)>maxLength}">{!text}</apex:outputPanel>
+</div>
+
+</apex:component>

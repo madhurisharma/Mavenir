@@ -1,0 +1,3069 @@
+<!--
+ Developed by Timba Software Corp. www.timbasoftware.com admin@timbasoftware.com
+ This page lists plans
+ @author Guillermo Freire <guillermo.freire@gmail.com>
+-->   
+<apex:page id="planQuotas" controller="XactlyExpress.XactlySMBPlanController" sidebar="false" showHeader="false" standardStylesheets="false" action="{!redirectWhenAccessIsDenied}">
+   <!-- Custom Cursor Loader -->
+   <c:XactlySMBCursor />
+   <!-- Custom Cursor Loader -->
+    <title>{!$Label.ManagePlans}</title>
+    <link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.XactlySMBResources ,'css/XactlySMBStyles.css')}" />
+    <link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.XactlySMBResources ,'css/XactlySMBNumeratedBox.css')}" /> 
+     
+    <style>
+        td#firstTd {
+            padding-left: 1px;
+        }
+        .displayNone {
+            display: none;
+        }
+        table#theTable {
+            white-space: nowrap;
+        }
+        .tableContainer {
+            overflow: auto;
+            max-height: 393px;
+            display: block;
+            //margin-left: 36px;
+        }
+        td.bigTds {
+            padding: 0;
+            margin: 0;
+        }
+        table#theTable {
+            border-collapse: collapse;
+            float: left;
+        }
+        .errorMsg {
+            float: left;
+            /*margin-left: 100px;*/
+            color: #DD0000;
+        }
+        table#profileTable tr td {
+            white-space: nowrap;
+        }
+        td#firstTd {
+            padding-right: 0;
+        }
+        div#planWorking {
+            margin: 0px;
+            text-align: center;
+        }
+        div.topTable {
+        background: url({!URLFOR($Resource.XactlySMBResources ,'img/layout/table_top_1000w_no_title_bar.png')})no-repeat;
+        //margin-left: 36px;
+        height: 9px;
+        margin-bottom:auto;
+        }
+        div.bottomTable {
+        background: url({!URLFOR($Resource.XactlySMBResources ,'img/layout/table_bottom_1000w.png')})no-repeat;
+            //margin-left: 36px;
+            height: 9px;
+        }
+        div#periodContainer {
+            margin-bottom: 10px;
+            text-align: left;
+            margin-left: 100px;
+            line-height: 1.3;
+        }
+        .firstTd {
+            border-left: 0;
+        }
+        .qTable {
+            border-left: 2px solid #D8D8D8;
+        }
+        .inputName {
+        }
+        .planName {
+            color: #3B6080;
+        }
+        .collapseBar {
+            background: url({!URLFOR($Resource.XactlySMBResources ,'img/layout/collapsebar.jpg')})no-repeat;
+            color:#FFFFFF;
+            width:8px;
+            height:755px;
+            top:-5px;
+            z-index:3;
+            cursor:pointer;
+        }
+        .percentInput {
+            width: 70px !important;
+        }
+        #quotaCreateContainer {
+            padding-left: 15px;
+        }
+        .hiddenVal {
+            text-align: right;
+            width: 88px !important;
+        }
+        .showVal {
+            width: 88px !important;
+        } 
+        
+        table.quotaByPlanBlock{
+           border-width: 1px;
+           border-spacing: 0px;
+           border-color:#B4C1CA;
+           border-style:solid;
+           border-collapse: collapse;
+           /*font-size:90%;*/
+        }
+        
+        table.quotaByPlanBlock td, th{
+           border-width: 1px;
+           padding: 0 1px 0 1px;
+           border-style: solid;
+           border-color: #B4C1CA;
+           height:19px;
+        }
+        
+        
+        table.quotaByPlanBlock tbody td input{
+            width:96%;
+            height:17px;
+            line-height: 16px;
+            padding: 0;
+            text-align: right;
+        }
+        
+        table.quotaByPlanBlock th{
+           color: #264D5B;
+        }
+        
+        table.quotaByPlanBlock th div{
+           float:left;
+        }
+        
+        table.quotaByPlanBlock .gray{
+           background-color: #EAEAEA;
+        }
+        
+        table.quotaByPlanBlock .grayLight{
+           background-color: #F2F1F1;
+        }
+        
+        table.quotaByPlanBlock .fontBold{
+           /*white-space: nowrap;*/
+           font-weight:bold;
+           color:#264D5B;
+        }
+        
+        table.quotaByPlanBlock td.Month, table.quotaByPlanBlock td.Month input, table.quotaByPlanBlock td.Quarter, table.quotaByPlanBlock td.Quarter input, table.quotaByPlanBlock td.Year, table.quotaByPlanBlock td.Year input{
+           text-align: right;
+        }
+        
+        table.quotaByPlanBlock td div{
+           padding:2px;
+        }
+        
+        table.quotaByPlanBlock td div{
+           padding:2px;
+        }
+        
+        table.quotaByPlanBlock .disable{
+            -moz-opacity:.20;
+            filter:alpha(opacity=20);
+            opacity:.20;
+            cursor: default !important;
+        }
+    
+    
+        .openQuarter1 {
+            cursor: pointer;
+            font-weight: bold;
+            color: #c45c16;
+        }
+        .openQuarter2 {
+            cursor: pointer;
+            font-weight: bold;
+            color: #c45c16;
+        }
+        .openQuarter3 {
+            cursor: pointer;
+            font-weight: bold;
+            color: #c45c16;
+        }
+        .openQuarter4 {
+            cursor: pointer;
+            font-weight: bold;
+            color: #c45c16;
+        }
+        .closeQuarter1 {
+            cursor: pointer;
+            font-weight: bold;
+            color: #c45c16;
+        }
+        .closeQuarter2 {
+            cursor: pointer;
+            font-weight: bold;
+            color: #c45c16;
+        }
+        .closeQuarter3 {
+            cursor: pointer;
+            font-weight: bold;
+            color: #c45c16;
+        }
+        .closeQuarter4 {
+            cursor: pointer;
+            font-weight: bold;
+            color: #c45c16;
+        }
+        .openAnnual {
+            cursor: pointer;
+            font-weight: bold;
+            color: #c45c16;
+        }
+        .closeAnnual {
+            cursor: pointer;
+            font-weight: bold;
+            color: #c45c16;
+        }
+        .percent{
+            display:none !important;
+        }
+        
+        .FixedCelsTable {  
+         width: 938px;
+         height: 330px;
+         position: relative;
+         left:0px;
+         overflow: hidden;
+         *background-position:left;
+         width: 100%;
+     }
+     .FixedCelsTable .tablesHolder{
+         height:380px;
+     }
+     
+     .FixedCelsTable .tablesHolder .toolbar{
+         height:40px;
+         margin-left:10px;
+         text-align:center;
+     }
+     .FixedCelsTable .tablesHolder .scroller{
+         width:99%;
+         height:100px;
+         overflow:scroll;
+         position:absolute;
+     }
+     
+     .FixedCelsTable .tablesHolder .recordsList{
+         width: 97%; 
+         height: 420px;
+         _height: 300px;
+         overflow:hidden;
+     }
+     
+     .FixedCelsTable .tablesHolder .recordsList .colsContainer{
+         position:relative;
+     }       
+     .FixedCelsTable .tablesHolder .recordsList .colsContainer .columns{
+         overflow: hidden;
+         left:0px;
+         width:438px;
+         position:absolute;
+     }
+     .FixedCelsTable .tablesHolder .recordsList .cellContainer{
+         position:relative;
+     }
+     .FixedCelsTable .tablesHolder .recordsList .cellContainer .cells{
+         margin-top:30px;
+         overflow: hidden;
+         width:438px;
+         position:absolute;
+         height:280px;
+         *margin-top:19px;          
+     }   
+     
+     .FixedCelsTable .tablesHolder .recordsList .objectHeaders td{
+         font-weight:bold;
+         padding: 5px 0px;
+         text-align: center;
+     } 
+     
+     .FixedCelsTable .tablesHolder .recordsList .objectHeaders td.fixed{
+         font-weight:bold;
+         padding: 5px 0px;
+         text-align: center;
+         border-right: 0px;
+     }
+     
+     .FixedCelsTable .tablesHolder .recordsList .dataRow td{
+         height: 33px;
+         text-align: center;
+         padding: 0px;
+         overflow:hidden;
+     }   
+     .FixedCelsTable .tablesHolder .recordsList .whiteCells td{
+         text-align:left;
+     }
+     
+     .FixedCelsTable .tablesHolder .recordsList .whiteCells td span{
+     }
+    
+    div.tableContainer2 {
+        overflow: hidden;
+    }
+    
+    .cancelQuotaButton {
+        background: url({!URLFOR($Resource.XactlySMBResources ,'img/buttons/deleteQuota.png')});
+        background-position:top;
+        width:12px;
+        height:11px;
+    }
+        
+    </style>
+
+    <c:XactlySMBShadows /> 
+    
+    <!-- PAGE WRAPPER -->
+    <div class="pageContent" id="pContent" style="height: auto;overflow: visible;">
+        <apex:form id="theForm" >
+          <apex:actionFunction name="changeQuotaStatus" action="{!pqm.changeStatus}"  rerender="commentBox,errorMsg"  oncomplete="introAsTab();"/>
+          <apex:actionFunction action="{!changeSelectedYear}" name="changeFyscalYear" rerender="startDate, endDate, leftPanel,errorMsg,mainId" oncomplete="waitOff();">
+                 <apex:param name="move" assignTo="{!fyscalYearOption}" value="" />
+          </apex:actionFunction>   
+            <!-- HEADER -->
+            <apex:outputPanel layout="block" styleClass="header">
+                <c:XactlySMBHeader isAdmin="{!isAdmin}"  isActive="{!isActive}" nbrSeparator="{!nbrSeparator}" nbrDecimal="{!nbrDecimal}" currentUserOrSlected="{!currentUserOrSlected}" emulatingUserURLAppend="{!emulatingUserURLAppend}" selected="3" wclabel="{!currentSettings.creditsPlural}" wId="{!plan.id}" step="2" wlabel="{!currentSettings.dealsPlural}" wqlabel="{!currentSettings.quotasPlural}" wtype="plan" hlabel="{!DefineQuotasForThePeopleLabel}" stepHelp="PlanCreateStep3" stepBreadcrumb="{!plan.Name} {!$Label.xactlyexpress__Plan} {!IF(pqm.currentQuota.name == null, '', '> ' + pqm.currentQuota.name)}"/>
+            </apex:outputPanel>
+            
+            
+            <!-- INSUFFICIENT PERMISSIONS -->
+            <apex:outputPanel rendered="{!!isAdmin}">
+                <c:XactlySMBErrorMsg error="{!$Label.xactlyexpress__InsufficientPermissions}" />
+            </apex:outputPanel>
+            
+            <apex:outputPanel layout="block" styleclass="additionalContent" rendered="{!isAdmin && isActive}">    
+                <c:XactlySMBChatterWall objectId="{!$User.Id}" showHeader="true" showWall="true" currentPage="{!$CurrentPage.Name}"/>
+            </apex:outputPanel>
+            
+            <!-- MAIN CONTENT -->
+            <apex:outputPanel layout="block" styleClass="mainContent"  style="padding-bottom:50px;" rendered="{!IF(AND(isAdmin,!isNull(pqm.currentQuota)),true,false)}">
+                
+                <!-- LEFT PANEL -->
+                
+                <apex:outputPanel id="leftPanel" layout="block" styleClass="leftPanel" style="min-height: 540px;">
+                    <c:XactlySMBLeftPanelAccordeon currentSettings="{!currentSettings}" fiscalYear="{!plan.XactlyExpress__XCFiscalYearSettingsID__c}" currentPlan="{!plan.id}" step="3.1" planId="{!plan.id}" currentQuota="{!pqm.currentQuota.id}" indexSelected="1" havePreviousYear="{!havePreviousYear}" namePreviousYear="{!namePreviousYear}" haveNextYear="{!haveNextYear}" nameNextYear="{!nameNextYear}"/>
+                       <apex:outputPanel layout="none" rendered="{!!ISNULL(pqm.currentQuota.Id)}">
+                           <div>
+                               <apex:commandLink id="deleteQuotaLink" action="{!pqm.deleteQuota}" onclick="return deleteQuota();">
+                                   <div class="buttonCurvy" onmouseover="jQuery(this).css('background-position','bottom');"  onmouseout="jQuery(this).css('background-position','top');">
+                                       <center>
+                                           <div style="padding-top:5px;">
+                                          <apex:outputtext escape="false" styleClass="HelveticaRegular12c1" value="{!$Label.xactlyexpress__deleteThisQuota}">
+                                              <apex:param value="{!currentSettings.quotasCap}"/>
+                                          </apex:outputtext>
+                                           </div>
+                                       </center>
+                                   </div>
+                               </apex:commandLink>
+                           </div>
+                           <br/>
+                       </apex:outputPanel>
+                       <div>
+                            <a href="{!$Page.XactlySMBPlanCreateQuotaOverview}?id={!plan.Id}&step=3.1" class="HelveticaRegular12c1">
+                               <div class="buttonCurvy" onmouseover="jQuery(this).css('background-position','bottom');"  onmouseout="jQuery(this).css('background-position','top');">
+                                   <center>
+                                       <div style="padding-top:5px;">
+                                               {!$Label.backToOverview}
+                                       </div>
+                                   </center>
+                               </div>
+                            </a>
+                       </div>
+                </apex:outputPanel>
+                 
+                <!-- CONTENT -->
+
+                        
+                <!-- QUOTAS TABLE -->
+                <apex:outputPanel id="quotaContent" layout="block" styleClass="content" style="overflow:visible;height:auto;">    
+                 <!-- Collapse -->                                        
+                    <div style="margin: 7px 60px 0 10px;">
+                    
+                        <apex:outputPanel id="errorMsg" layout="block">
+                            <c:XactlySMBErrorMsg error="{!errorMsg}"/> 
+                        </apex:outputPanel>
+                        
+                        <div style="clear: both;"></div>
+                        
+                        <div class="box">
+                            <div class="tm">
+                                <div style="float: left;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/tl.png')}" /></div>
+                                <div style="float: right;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/tr.png')}" /></div>
+                                <div style="clear:both"></div>
+                            </div>
+                            <div class="roundedBox">
+                                <div class="boxHeader">
+                                    <div class="PNovaBlack60c5 stepActionNumber">
+                                     A
+                                    </div>
+                                    <div class="titleWrapper">  
+                                        <div class="mainTitle PNovaSemiBold17c3">{!pqm.quotaNameLabel}</div>
+                                        <div class="detailedTitle HelveticaRegular12c3">{!pqm.whatQuotaNameLabel}</div>
+                                    </div>
+                                    <div class="extraTitleStuff"></div>
+                                    <div style="clear:both"></div>
+                                </div> 
+                                <div class="boxContent"> 
+                                    <apex:inputText maxlength="35" value="{!pqm.currentQuota.name}" size="25" id="quotaNameInput" styleClass="quotaNameInput" />
+                                </div>    
+                            </div>      
+                            <div class="bm">
+                                <div style="float: left;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/bl.png')}" /></div>
+                                <div style="float: right;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/br.png')}" /></div>
+                            </div>
+                        </div>
+                        
+                        <div style="height:10px">&nbsp;</div>
+                        
+                        <div class="box" style="margin-bottom:70px;">
+                            <div class="tm">
+                                <div style="float: left;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/tl.png')}" /></div>
+                                <div style="float: right;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/tr.png')}" /></div>
+                                <div style="clear:both"></div>
+                            </div>
+                            <div class="roundedBox" style="position: relative;">
+                                <div class="boxHeader">
+                                    <div class="PNovaBlack60c5 stepActionNumber">
+                                     B
+                                    </div>
+                                    <div class="titleWrapper floatNone">  
+                                        <div class="mainTitle PNovaSemiBold17c3">{!pqm.enterQuotaValuesLabel}</div>
+                                        <div class="detailedTitle HelveticaRegular12c3">{!pqm.youCanEnterQuotaValuesLabel}</div>
+                                    </div>
+                                </div>
+                                 
+                                <div class="boxContent">
+                                        <div>
+                                            <div style="float: left; padding-right: 40px;color:#143E49;">
+                                                <apex:outputpanel layout="none" rendered="{!IF(pqm.currentQuota.XactlyExpress__EnterByPerson__c == false,true,false)}">
+                                                   <input type="radio" name="radios" id="radios1" value = "enterQuotaByPerson" checked="checked" />
+                                                </apex:outputpanel>
+                                                <apex:outputpanel layout="none" rendered="{!IF(pqm.currentQuota.XactlyExpress__EnterByPerson__c == false,false,true)}">
+                                                   <input type="radio" name="radios" id="radios1" value = "enterQuotaByPerson" />
+                                                </apex:outputpanel>
+                                                <label for="radios1">
+                                                    <span style="color:#143E49;font-size:12px;font-weight:bold;">
+                                                        {!pqm.enterQuotaByPlanLabel} 
+                                                    </span>
+                                                </label>
+                                            </div>
+                                            <div style="float: left; padding-right: 40px;color:#143E49;">
+                                       
+                                                <apex:outputpanel layout="none" rendered="{!IF(pqm.currentQuota.XactlyExpress__EnterByPerson__c == true,true,false)}">
+
+                                                    <apex:outputpanel layout="none" rendered="{!IF(hasUsers = true, 'true', 'false')}">
+                                                        <input type="radio" name="radios" id="radios2" value = "enterQuotaByPlan" checked="checked"/>
+                                                    </apex:outputpanel>
+                                                    <apex:outputpanel layout="none" rendered="{!IF(hasUsers = false, 'true', 'false')}">
+                                                        <input type="radio" name="radios" id="radios2" value = "enterQuotaByPlan" checked="checked" disabled="true" />
+                                                    </apex:outputpanel>
+
+                                                </apex:outputpanel>
+                                                <apex:outputpanel layout="none" rendered="{!IF(pqm.currentQuota.XactlyExpress__EnterByPerson__c == true,false,true)}">
+
+                                                    <apex:outputpanel layout="none" rendered="{!IF(hasUsers = true, 'true', 'false')}">
+                                                        <input type="radio" name="radios" id="radios2" value = "enterQuotaByPlan" />
+                                                    </apex:outputpanel>
+                                                    <apex:outputpanel layout="none" rendered="{!IF(hasUsers = false, 'true', 'false')}">
+                                                        <input type="radio" name="radios" id="radios2" value = "enterQuotaByPlan" disabled="true" />
+                                                    </apex:outputpanel>
+
+                                                </apex:outputpanel>
+                                                <label for="radios2">
+                                                    <span style="color:#143E49;font-size:12px;font-weight:bold;">
+                                                        {!pqm.enterQuotaByPersonLabel} 
+                                                    </span>
+                                                </label>
+                                            </div>
+                                            <div style="clear: both;"></div>
+                                        </div>
+                                </div>
+                                 
+                                
+                                <div style="background-color:#FFFFFF; padding: 0 5px 0 5px;">
+                                
+                                    <!-- Quota by Person table -->
+                                    <apex:outputPanel id="quotasTablePanel" styleClass="quotaByPersonBlock" layout="block" style="{!IF(pqm.currentQuota.XactlyExpress__EnterByPerson__c == false,'display:none','')}">
+                                            <div class='topTable hideable tochgsize' id='topTableBor' style="margin-left:0px;"></div>
+                                            
+                                             <!-- Top Panel -->
+                                                <apex:outputPanel id="tableContainer" styleClass="tableContainer2" layout="block">            
+                                                    <div class="FixedCelsTable">
+                                                       <div class="tablesHolder">
+                                                           <div id="scroller" class="scroller" onscroll="scrollContent();" style="display: none;"><div id="scrollCont">&nbsp;</div></div>
+                                                           
+                                                           <apex:outputPanel id="FixedCelsTableGrid">
+                                                               <div id="recordsList" class="recordsList">
+                                                                   <div id="colsContainer" class="colsContainer">
+                                                                       <div id="cols"  class="columns">
+                                                                           <table id="tcont" class="payTable" cellspacing="0" border="0" style="margin-top: 0px;">
+                                                                                <tr class="even" >
+                                                                                    <td>&nbsp;</td>
+                                                                                    <td style="white-space: nowrap">{!$Label.Override}</td>
+                                                                                    <td style="white-space: nowrap">{!$Label.FirstName}</td>
+                                                                                    <td style="white-space: nowrap">{!$Label.LastName}</td>
+                                                                                    <td style="white-space: nowrap">
+                                                                                      <span style="white-space: nowrap">
+                                                                                        <apex:outputtext value="{!$Label.xactlyexpress__AnnualQuota}">
+                                                                                            <apex:param value="{!currentSettings.quotasCap}" />
+                                                                                        </apex:outputtext>
+                                                                                        <span class="openAnnual displayNone" onclick="openAnnual();">&gt;&gt;</span>
+                                                                                        <span class="closeAnnual" onclick="closeAnnual();">&lt;&lt;</span>
+                                                                                      </span>
+                                                                                    </td>
+                                                                                    <td style="white-space: nowrap" class="quotaGroup">
+                                                                                        Q1 {!fiscalYearName}
+                                                                                        <span class="openQuarter1 displayNone" onclick="openQuarter(1);">&gt;&gt;</span>
+                                                                                        <span class="closeQuarter1" onclick="closeQuarter(1);">&lt;&lt;</span>
+                                                                                    </td>
+                                                                                    <td style="white-space: nowrap" class="quarter1Months">M1 {!fiscalYearName}</td>
+                                                                                    <td style="white-space: nowrap" class="quarter1Months">M2 {!fiscalYearName}</td>
+                                                                                    <td style="white-space: nowrap" class="quarter1Months">M3 {!fiscalYearName}</td>
+                                                                                    <td style="white-space: nowrap" class="quotaGroup">
+                                                                                        Q2 {!fiscalYearName}
+                                                                                        <span class="openQuarter2 displayNone" onclick="openQuarter(2);">&gt;&gt;</span>
+                                                                                        <span class="closeQuarter2" onclick="closeQuarter(2);">&lt;&lt;</span>
+                                                                                    </td>
+                                                                                    <td style="white-space: nowrap" class="quarter2Months">M4 {!fiscalYearName}</td>
+                                                                                    <td style="white-space: nowrap" class="quarter2Months">M5 {!fiscalYearName}</td>
+                                                                                    <td style="white-space: nowrap" class="quarter2Months">M6 {!fiscalYearName}</td>
+                                                                                    <td style="white-space: nowrap" class="quotaGroup">
+                                                                                        Q3 {!fiscalYearName}
+                                                                                        <span class="openQuarter3 displayNone" onclick="openQuarter(3);">&gt;&gt;</span>
+                                                                                        <span class="closeQuarter3" onclick="closeQuarter(3);">&lt;&lt;</span>
+                                                                                    </td>
+                                                                                    <td style="white-space: nowrap" class="quarter3Months">M7 {!fiscalYearName}</td>
+                                                                                    <td style="white-space: nowrap" class="quarter3Months">M8 {!fiscalYearName}</td>
+                                                                                    <td style="white-space: nowrap" class="quarter3Months">M9 {!fiscalYearName}</td>
+                                                                                    <td style="white-space: nowrap" class="quotaGroup">
+                                                                                        Q4 {!fiscalYearName}
+                                                                                        <span class="openQuarter4 displayNone" onclick="openQuarter(4);">&gt;&gt;</span>
+                                                                                        <span class="closeQuarter4" onclick="closeQuarter(4);">&lt;&lt;</span>
+                                                                                    </td>
+                                                                                    <td style="white-space: nowrap" class="quarter4Months">M10 {!fiscalYearName}</td>
+                                                                                    <td style="white-space: nowrap" class="quarter4Months">M11 {!fiscalYearName}</td>
+                                                                                    <td style="white-space: nowrap" class="quarter4Months">M12 {!fiscalYearName}</td>
+                                                                                </tr>
+                                                                            </table>
+                                                                       </div>
+                                                                   </div>
+                                                                   
+                                                                   <!-- Cells Panel -->
+                                                                   <div id="cellContainer" class="cellContainer">
+                                                                       <div id="cells" class="cells">
+                                                                           <table id="quotasTable" cellspacing="0" border="0">
+                                                                               <apex:variable var="rowCount" value="{!0}"/>
+                                                                               <apex:repeat value="{!pqm.currentQuotaDetails}" var="quota" id="quotaGenerator">
+                                                                                       <tr>
+                                                                                            <td style="white-space: nowrap">
+                                                                                                <apex:commandLink id="addCommentLink" styleClass="{!IF(quota.qd.XactlyExpress__Comment__c=='','addCommentLink','editCommentLink')}" action="{!pqm.setComment}" rerender="commentBox,errorMsg" status="ajaxStatus" onclick="waitOn();" oncomplete="introAsTab();waitOff();" >
+                                                                                                    <apex:param value="{!quota.qd.ProfilePlanId__r.ProfileId__r.UserId__r.Id}" name="activeId"/>
+                                                                                                </apex:commandLink>
+                                                                                            </td>
+                                                                                            <td style="white-space: nowrap">
+                                                                                                <apex:inputCheckbox value="{!quota.qd.XactlyExpress__OverrideDefault__c}" onclick="quotaValuesHandler.doQuotaByPersonRowEditable(this);"/>
+                                                                                            </td>
+                                                                                            <td style="white-space: nowrap">
+                                                                                                <apex:outputLabel value="{!quota.qd.ProfilePlanId__r.ProfileId__r.UserId__r.FirstName}"/>
+                                                                                            </td>
+                                                                                            <td style="white-space: nowrap">
+                                                                                                <apex:outputLabel value="{!quota.qd.ProfilePlanId__r.ProfileId__r.UserId__r.LastName}"/>
+                                                                                            </td>
+                                                                                            <td style="white-space: nowrap" class="annualTd">
+                                                                                                <div class="showVal" style="text-align:right;" onmouseover="changeCursor(this, 'annual')">{!ROUND(quota.qd.AnnualAmount__c,2)}<span>&nbsp;</span></div>
+                                                                                                <apex:inputField id="annualIndividual" value="{!quota.qd.XactlyExpress__AnnualAmount__c}" styleClass="hiddenVal row{!FLOOR(rowCount)}" style="display:none;" onblur="$J(this).val($J.trim($J(this).val()));$J(this).val(unformatNumber($J(this).val()));if (isNaN($J(this).val())){$J(this).val(zero);}$J(this).val(formatNumber(parseFloat(parseFloat(unformatNumber($J(this).val())).toFixed(2))));"/>
+                                                                                            </td>
+                                                                                                         
+                                                                                            <td style="white-space: nowrap" class="quotaGroup">    
+                                                                                              <div class="showVal" style="width:75px;text-align:right" onmouseover="changeCursor(this, 'period')"> <span>{!quota.qd.XactlyExpress__Q1Amount__c}</span></div>
+                                                                                              <apex:inputField id="q1Individual" value="{!quota.qd.XactlyExpress__Q1Amount__c}" styleClass="hiddenVal" style="display:none;" onblur="calculateQuarterly(this,1);$J(this).val(formatNumber(parseFloat(parseFloat(unformatNumber($J(this).val())).toFixed(2))));"/>
+                                                                                            </td>
+                                                                                                       
+                                                                                            <td style="white-space: nowrap" id="{!quota.qd.id}-1-" class="quarter1Months">
+                                                                                                <div class="showVal" style="width:75px;text-align:right" onmouseover="changeCursor(this, 'period')">{!ROUND(quota.qd.M1Amount__c,2)}<span>&nbsp;</span></div>
+                                                                                                <apex:inputField id="m1Individual" value="{!quota.qd.XactlyExpress__M1Amount__c}" styleClass="hiddenVal" style="display:none;" onblur="calculateAnnual(this);$J(this).val(formatNumber(parseFloat(parseFloat(unformatNumber($J(this).val())).toFixed(2))));"/>
+                                                                                            </td>
+                                                                                            <td style="white-space: nowrap" id="{!quota.qd.id}-2-" class="quarter1Months">
+                                                                                                <div class="showVal" style="width:75px;text-align:right" onmouseover="changeCursor(this, 'period')">{!ROUND(quota.qd.M2Amount__c,2)}<span>&nbsp;</span></div>
+                                                                                                <apex:inputField id="m2Individual" value="{!quota.qd.XactlyExpress__M2Amount__c}" styleClass="hiddenVal" style="display:none;" onblur="calculateAnnual(this);$J(this).val(formatNumber(parseFloat(parseFloat(unformatNumber($J(this).val())).toFixed(2))));"/>
+                                                                                            </td>
+                                                                                            <td style="white-space: nowrap" id="{!quota.qd.id}-3-" class="quarter1Months">
+                                                                                                <div class="showVal" style="width:75px;text-align:right" onmouseover="changeCursor(this, 'period')">{!ROUND(quota.qd.M3Amount__c,2)}<span>&nbsp;</span></div>
+                                                                                                <apex:inputField id="m3Individual" value="{!quota.qd.XactlyExpress__M3Amount__c}" styleClass="hiddenVal" style="display:none;" onblur="calculateAnnual(this);$J(this).val(formatNumber(parseFloat(parseFloat(unformatNumber($J(this).val())).toFixed(2))));"/>
+                                                                                            </td>
+                                                                                            
+                                                                                            <td style="white-space: nowrap" class="quotaGroup">
+                                                                                              <div class="showVal" style="width:75px;text-align:right" onmouseover="changeCursor(this, 'period')"> <span>{!quota.qd.XactlyExpress__Q2Amount__c}</span></div>
+                                                                                              <apex:inputField id="q2Individual" value="{!quota.qd.XactlyExpress__Q2Amount__c}" styleClass="hiddenVal" style="display:none;" onblur=" calculateQuarterly(this,2);$J(this).val(formatNumber(parseFloat(parseFloat(unformatNumber($J(this).val())).toFixed(2))));"/>
+                                                                                            </td>
+                                                                                            
+                                                                                            <td style="white-space: nowrap" id="{!quota.qd.id}-4-" class="quarter2Months">
+                                                                                                <div class="showVal" style="width:75px;text-align:right" onmouseover="changeCursor(this, 'period')">{!ROUND(quota.qd.M4Amount__c,2)}<span>&nbsp;</span></div>
+                                                                                                <apex:inputField id="m4Individual" value="{!quota.qd.XactlyExpress__M4Amount__c}" styleClass="hiddenVal" style="display:none;" onblur="calculateAnnual(this);$J(this).val(formatNumber(parseFloat(parseFloat(unformatNumber($J(this).val())).toFixed(2))));"/>
+                                                                                            </td>
+                                                                                            <td style="white-space: nowrap" id="{!quota.qd.id}-5-" class="quarter2Months">
+                                                                                                <div class="showVal" style="width:75px;text-align:right" onmouseover="changeCursor(this, 'period')">{!ROUND(quota.qd.M5Amount__c,2)}<span>&nbsp;</span></div>
+                                                                                                <apex:inputField id="m5Individual" value="{!quota.qd.XactlyExpress__M5Amount__c}" styleClass="hiddenVal" style="display:none;" onblur="calculateAnnual(this);$J(this).val(formatNumber(parseFloat(parseFloat(unformatNumber($J(this).val())).toFixed(2))));"/>
+                                                                                            </td>
+                                                                                            <td style="white-space: nowrap" id="{!quota.qd.id}-6-" class="quarter2Months">
+                                                                                                <div class="showVal" style="width:75px;text-align:right" onmouseover="changeCursor(this, 'period')">{!ROUND(quota.qd.M6Amount__c,2)}<span>&nbsp;</span></div>
+                                                                                                <apex:inputField id="m6Individual" value="{!quota.qd.XactlyExpress__M6Amount__c}" styleClass="hiddenVal" style="display:none;" onblur="calculateAnnual(this);$J(this).val(formatNumber(parseFloat(parseFloat(unformatNumber($J(this).val())).toFixed(2))));"/>
+                                                                                            </td>
+                                                                                            
+                                                                                            <td style="white-space: nowrap" class="quotaGroup">
+                                                                                              <div class="showVal" style="width:75px;text-align:right" onmouseover="changeCursor(this, 'period')"> <span>{!quota.qd.XactlyExpress__Q3Amount__c}</span></div>
+                                                                                              <apex:inputField id="q3Individual" value="{!quota.qd.XactlyExpress__Q3Amount__c}" styleClass="hiddenVal" style="display:none;" onblur=" calculateQuarterly(this,3);$J(this).val(formatNumber(parseFloat(parseFloat(unformatNumber($J(this).val())).toFixed(2))));"/>
+                                                                                            </td>
+                                                                                            
+                                                                                            <td style="white-space: nowrap" id="{!quota.qd.id}-7-" class="quarter3Months">
+                                                                                                <div class="showVal" style="width:75px;text-align:right" onmouseover="changeCursor(this, 'period')">{!ROUND(quota.qd.M7Amount__c,2)}<span>&nbsp;</span></div>
+                                                                                                <apex:inputField id="m7Individual" value="{!quota.qd.XactlyExpress__M7Amount__c}" styleClass="hiddenVal" style="display:none;" onblur="calculateAnnual(this);$J(this).val(formatNumber(parseFloat(parseFloat(unformatNumber($J(this).val())).toFixed(2))));"/>
+                                                                                            </td>
+                                                                                            <td style="white-space: nowrap" id="{!quota.qd.id}-8-" class="quarter3Months">
+                                                                                                <div class="showVal" style="width:75px;text-align:right" onmouseover="changeCursor(this, 'period')">{!ROUND(quota.qd.M8Amount__c,2)}<span>&nbsp;</span></div>
+                                                                                                <apex:inputField id="m8Individual" value="{!quota.qd.XactlyExpress__M8Amount__c}" styleClass="hiddenVal" style="display:none;" onblur="calculateAnnual(this);$J(this).val(formatNumber(parseFloat(parseFloat(unformatNumber($J(this).val())).toFixed(2))));"/>
+                                                                                            </td>
+                                                                                            <td style="white-space: nowrap" id="{!quota.qd.id}-9-" class="quarter3Months">
+                                                                                                <div class="showVal" style="width:75px;text-align:right" onmouseover="changeCursor(this, 'period')">{!ROUND(quota.qd.M9Amount__c,2)}<span>&nbsp;</span></div>
+                                                                                                <apex:inputField id="m9Individual" value="{!quota.qd.XactlyExpress__M9Amount__c}" styleClass="hiddenVal" style="display:none;" onblur="calculateAnnual(this);$J(this).val(formatNumber(parseFloat(unformatNumber($J(this).val())).toFixed(2)));"/>
+                                                                                            </td>
+                                                                                            
+                                                                                            <td style="white-space: nowrap" class="quotaGroup">
+                                                                                              <div class="showVal" style="width:75px;text-align:right" onmouseover="changeCursor(this, 'period')"> <span>{!quota.qd.XactlyExpress__Q4Amount__c}</span></div>
+                                                                                              <apex:inputField id="q4Individual" value="{!quota.qd.XactlyExpress__Q4Amount__c}" styleClass="hiddenVal" style="display:none;" onblur="calculateQuarterly(this,4);$J(this).val(formatNumber(parseFloat(parseFloat(unformatNumber($J(this).val())).toFixed(2))));"/>
+                                                                                            </td>
+                                                                                            
+                                                                                            <td style="white-space: nowrap" id="{!quota.qd.id}-10-" class="quarter4Months">
+                                                                                                <div class="showVal" style="width:75px;text-align:right" onmouseover="changeCursor(this, 'period')">{!ROUND(quota.qd.M10Amount__c,2)}<span>&nbsp;</span></div>
+                                                                                                <apex:inputField id="m10Individual" value="{!quota.qd.XactlyExpress__M10Amount__c}" styleClass="hiddenVal" style="display:none;" onblur="calculateAnnual(this);$J(this).val(formatNumber(parseFloat(parseFloat(unformatNumber($J(this).val())).toFixed(2))));"/>
+                                                                                            </td>
+                                                                                            <td style="white-space: nowrap" id="{!quota.qd.id}-11-" class="quarter4Months">
+                                                                                                <div class="showVal" style="width:75px;text-align:right" onmouseover="changeCursor(this, 'period')">{!ROUND(quota.qd.M11Amount__c,2)}<span>&nbsp;</span></div>
+                                                                                                <apex:inputField id="m11Individual"value="{!quota.qd.XactlyExpress__M11Amount__c}" styleClass="hiddenVal" style="display:none;" onblur="calculateAnnual(this);$J(this).val(formatNumber(parseFloat(parseFloat(unformatNumber($J(this).val())).toFixed(2))));"/>
+                                                                                            </td>
+                                                                                            <td style="white-space: nowrap" id="{!quota.qd.id}-12-" class="quarter4Months">
+                                                                                                <div class="showVal" style="width:75px;text-align:right" onmouseover="changeCursor(this, 'period')">{!ROUND(quota.qd.M12Amount__c,2)}<span>&nbsp;</span></div>
+                                                                                                <apex:inputField id="m12Individual" value="{!quota.qd.XactlyExpress__M12Amount__c}" styleClass="hiddenVal" style="display:none;" onblur="calculateAnnual(this);$J(this).val(formatNumber(parseFloat(parseFloat(unformatNumber($J(this).val())).toFixed(2))));"/>
+                                                                                            </td>
+                                                                                        </tr>
+                                                                                    <apex:variable var="rowCount" value="{!rowCount + 1}"/>
+                                                                                </apex:repeat>
+                                                                           </table>
+                                                                       </div>
+                                                                   </div>
+                                                               </div>
+                                                           </apex:outputPanel>
+                                                       </div>
+                                                   </div>      
+                                               </apex:outputPanel>
+                                          <div class='bottomTable hideable tochgsize' id='bottomTableBor' style="margin-left:0px;"> </div>
+                                       </apex:outputPanel>
+                                       
+                                       
+                                       <!-- Quota by Plan table -->
+                                       <table cellspacing="0" cellpadding="0" style="width: 100%;{!IF(pqm.currentQuota.EnterByPerson__c == true,'display:none','')}" id="quotaByPlanBlock" class="quotaByPlanBlock">
+                                            <thead>
+                                               <tr class="gray">
+                                                   <th style="width: 190px;" colspan="2">
+                                                     <div style="width: 50%; padding-top: 3px;" class="frequency">
+                                                         <label for="Year">YEAR</label>
+                                                     </div>
+                                                     <div style="width: 50%;">
+                                                         <input type="radio" value="Year" id="Year" onclick="quotaValuesHandler.quotaByPlanColumnEditionHandler(this.value);introAsTab();" name="freq" />
+                                                     </div>
+                                                   </th>
+                                                   <th colspan="2">
+                                                     <div id="QuarterTH" style="padding-top: 3px; width: 55%;" class="frequency">
+                                                         QUARTER
+                                                     </div>
+                                                     <div style="width: 36%;">
+                                                         <input type="radio" value="Quarter" id="Quarter" onclick="quotaValuesHandler.quotaByPlanColumnEditionHandler(this.value);introAsTab();" name="freq" />
+                                                     </div>
+                                                     <div id="disableQuarter" style="float: right; padding: 3px 3px 0pt 0pt;cursor:pointer;">
+                                                         <div class="cancelQuotaButton" onmouseover="jQuery(this).css('background-position','bottom');"  onmouseout="jQuery(this).css('background-position','top');"></div>
+                                                     </div>
+                                                     <div id="enableQuarter" style="float: right; padding: 3px 3px 0pt 0pt;display:none;cursor:pointer;">
+                                                         <div style="margin-right: 5px;" onmouseover="jQuery(this).css('color','#FFFFFF');" onmouseout="jQuery(this).css('color','#264D5B');">{!$Label.ACTIVATE}</div>
+                                                         <img src="{!URLFOR($Resource.XactlySMBResources ,'img/buttons/activate.png')}" />
+                                                     </div>
+                                                   </th>
+                                                   <th colspan="2">
+                                                     <div id="MonthTH" style="padding-top: 3px; width: 40%;" class="frequency">
+                                                         MONTH
+                                                     </div>
+                                                     <div style="width: 40%; text-align: right;">
+                                                         <input type="radio" value="Month" id="Month" onclick="quotaValuesHandler.quotaByPlanColumnEditionHandler(this.value);introAsTab();" name="freq" />
+                                                     </div>
+                                                     <div id="disableMonth" style="float: right; padding: 3px 3px 0pt 0pt;cursor:pointer;">
+                                                         <div class="cancelQuotaButton" onmouseover="jQuery(this).css('background-position','bottom');"  onmouseout="jQuery(this).css('background-position','top');"></div>
+                                                     </div>
+                                                     <div id="enableMonth" style="float: right; padding: 3px 3px 0pt 0pt;display:none;cursor:pointer;">
+                                                         <div style="margin-right: 5px;" onmouseover="jQuery(this).css('color','#FFFFFF');" onmouseout="jQuery(this).css('color','#264D5B');">{!$Label.ACTIVATE}</div>
+                                                         <img src="{!URLFOR($Resource.XactlySMBResources ,'img/buttons/activate.png')}" />
+                                                     </div>
+                                                   </th>
+                                                   
+                                                   <!-- <th>    Do not ERASE this, commented i
+                                                      <div style="padding-top: 3px;">
+                                                         PERCENT
+                                                      </div>
+                                                      <div style="text-align: right;">
+                                                         <input type="checkbox" value="percent" name="percent" id="percent" disabled>
+                                                     </div>
+                                                   </th>
+                                                    -->
+                                               </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                     <td class="gray fontBold">
+                                                         <span style="white-space: nowrap;">
+                                                            YEAR-{!pqm.fiscalYear.name}
+                                                         </span> 
+                                                     </td>
+                                                     <td style="width: 105px;" class="grayLight Year" id="year">
+                                                         <apex:inputField id="quotaAnnual" value="{!pqm.currentQuotaDetailsWithoutProfileId.qd.XactlyExpress__AnnualAmount__c}" style="display: none;"/>
+                                                         <apex:outputPanel layout="block">{!pqm.currentQuotaDetailsWithoutProfileId.qd.XactlyExpress__AnnualAmount__c}</apex:outputPanel>   
+                                                     </td>
+                                                     <td class="gray">
+                                                         
+                                                     </td>
+                                                     <td style="width: 105px;" class="grayLight">
+                         
+                                                     </td>
+                                                     <td class="gray">
+                                                        
+                                                     </td>
+                                                     <td style="width: 105px;" class="grayLight">
+                                                         
+                                                     </td>
+                                                     <td style="width: 99px;" class="gray percent" id="totalPercent">
+                                                         <input type="text" value="100" style="display: none;" datatype="percentage" />
+                                                         <div class="disable">100%</div>
+                                                     </td>
+                                                 </tr>
+                                             <tr>
+                                                 <td rowspan="16" class="gray">
+                                                     
+                                                 </td>
+                                                 <td rowspan="16" class="grayLight">
+                                                   
+                                                 </td>
+                                                 <td class="gray fontBold QuarterLabel">
+                                                     <span style="white-space: nowrap;">
+                                                         QTR-1-{!pqm.fiscalYear.name}
+                                                     </span>
+                                                 </td>
+                                                 <td class="grayLight Quarter" id="quarter1">
+                                                     <apex:inputField id="quarter1" value="{!pqm.currentQuotaDetailsWithoutProfileId.qd.XactlyExpress__Q1Amount__c}" style="display: none;"/>
+                                                     <apex:outputPanel layout="block">{!pqm.currentQuotaDetailsWithoutProfileId.qd.XactlyExpress__Q1Amount__c}</apex:outputPanel>
+                                                 </td>
+                                                 <td class="gray">
+                                                     
+                                                 </td>
+                                                 <td class="grayLight">     
+                                                     
+                                                 </td>
+                                                 <td class="gray percentQuarter percent" id="quarterPorcentage1">
+                                                     <input type="text"  style="display: none;" datatype="percentage" />
+                                                     <div class="disable"></div>
+                                                 </td>
+                                             </tr>   
+                                             <tr>
+                                                 <td rowspan="3" class="gray">
+                                                     
+                                                 </td>
+                                                 <td rowspan="3" class="grayLight">
+                                                    
+                                                 </td>
+                                                 <td class="gray MonthLabel">
+                                                     <span style="white-space: nowrap;">
+                                                     {!pqm.Period1}-{!pqm.fiscalYear.name}
+                                                     </span>
+                                                 </td>
+                                                 <td class="grayLight monthFromQuarter1 Month" id="month1">
+                                                     <apex:inputField id="period1" value="{!pqm.currentQuotaDetailsWithoutProfileId.qd.XactlyExpress__M1Amount__c}" style="display: none;"/>
+                                                     <apex:outputPanel layout="block">{!pqm.currentQuotaDetailsWithoutProfileId.qd.XactlyExpress__M1Amount__c}</apex:outputPanel>
+                                                 </td>
+                                                 <td class="gray percentageFromQuarter1 monthlyPercentage percent" id="percentage1">
+                                                     <input type="text"  style="display: none;" datatype="percentage" />
+                                                     <div class="disable"></div>
+                                                 </td>
+                                             </tr>
+                                             <tr>
+                                                 <td class="gray MonthLabel">
+                                                     <span style="white-space: nowrap;">
+                                                         {!pqm.Period2}-{!pqm.fiscalYear.name}
+                                                     </span>
+                                                 </td>
+                                                 <td class="grayLight monthFromQuarter1 Month" id="month2">
+                                                     <apex:inputField id="period2" value="{!pqm.currentQuotaDetailsWithoutProfileId.qd.XactlyExpress__M2Amount__c}" style="display: none;"/>
+                                                     <apex:outputPanel layout="block">{!pqm.currentQuotaDetailsWithoutProfileId.qd.XactlyExpress__M2Amount__c}</apex:outputPanel>
+                                                 </td>
+                                                 <td class="gray percentageFromQuarter1 monthlyPercentage percent" id="percentage2">
+                                                     <input type="text"  style="display: none;" datatype="percentage" />
+                                                     <div class="disable"></div>
+                                                 </td>
+                                             </tr>
+                                             <tr>
+                                                 <td class="gray MonthLabel">
+                                                     <span style="white-space: nowrap;">
+                                                         {!pqm.Period3}-{!pqm.fiscalYear.name}
+                                                     </span>                        
+                                                 </td>
+                                                 <td class="grayLight monthFromQuarter1 Month" id="month3">
+                                                     <apex:inputField id="period3" value="{!pqm.currentQuotaDetailsWithoutProfileId.qd.XactlyExpress__M3Amount__c}" style="display: none;"/>
+                                                     <apex:outputPanel layout="block">{!pqm.currentQuotaDetailsWithoutProfileId.qd.XactlyExpress__M3Amount__c}</apex:outputPanel>
+                                                 </td>
+                                                 <td class="gray percentageFromQuarter1 monthlyPercentage percent" id="percentage3">
+                                                     <input type="text"  style="display: none;" datatype="percentage" />
+                                                     <div class="disable"></div>
+                                                 </td>
+                                             </tr>
+                                             <tr>
+                                                 <td class="gray fontBold QuarterLabel">
+                                                     <span style="white-space: nowrap;">                
+                                                         QTR-2-{!pqm.fiscalYear.name}
+                                                     </span>
+                                                 </td>
+                                                 <td class="grayLight Quarter" id="quarter2">
+                                                     <apex:inputField id="quarter2" value="{!pqm.currentQuotaDetailsWithoutProfileId.qd.XactlyExpress__Q2Amount__c}" style="display: none;"/>
+                                                     <apex:outputPanel layout="block">{!pqm.currentQuotaDetailsWithoutProfileId.qd.XactlyExpress__Q2Amount__c}</apex:outputPanel> 
+                                                 </td>
+                                                 <td class="gray">
+                                                     
+                                                 </td>
+                                                 <td class="grayLight">
+                                                     
+                                                 </td>
+                                                 <td class="gray percentQuarter percent" id="quarterPorcentage2">
+                                                     <input type="text"  style="display: none;" datatype="percentage" />
+                                                     <div class="disable"></div>
+                                                 </td>
+                                             </tr>
+                                             <tr>
+                                                 <td rowspan="3" class="gray">
+                                                     
+                                                 </td>
+                                                 <td rowspan="3" class="grayLight">
+                                                    
+                                                 </td>
+                                                 <td class="gray MonthLabel">
+                                                     <span style="white-space: nowrap;">
+                                                         {!pqm.Period4}-{!pqm.fiscalYear.name}
+                                                     </span>
+                                                 </td>
+                                                 <td class="grayLight monthFromQuarter2 Month" id="month4">
+                                                     <apex:inputField id="period4" value="{!pqm.currentQuotaDetailsWithoutProfileId.qd.XactlyExpress__M4Amount__c}" style="display: none;"/>
+                                                     <apex:outputPanel layout="block">{!pqm.currentQuotaDetailsWithoutProfileId.qd.XactlyExpress__M4Amount__c}</apex:outputPanel>
+                                                 </td>
+                                                 <td class="gray percentageFromQuarter2 monthlyPercentage percent" id="percentage4">
+                                                     <input type="text"  style="display: none;" datatype="percentage" />
+                                                     <div class="disable"></div>
+                                                 </td>
+                                             </tr>
+                                             <tr>
+                                                 <td class="gray MonthLabel">
+                                                     <span style="white-space: nowrap;">
+                                                         {!pqm.Period5}-{!pqm.fiscalYear.name}
+                                                     </span>
+                                                 </td>
+                                                 <td class="grayLight monthFromQuarter2 Month" id="month5"> 
+                                                     <apex:inputField id="period5" value="{!pqm.currentQuotaDetailsWithoutProfileId.qd.XactlyExpress__M5Amount__c}" style="display: none;"/>
+                                                     <apex:outputPanel layout="block">{!pqm.currentQuotaDetailsWithoutProfileId.qd.XactlyExpress__M5Amount__c}</apex:outputPanel>
+                                                 </td>
+                                                 <td class="gray percentageFromQuarter2 monthlyPercentage percent" id="percentage5">
+                                                     <input type="text"  style="display: none;" datatype="percentage" />
+                                                     <div class="disable"></div>
+                                                 </td>
+                                             </tr>
+                                             <tr>
+                                                 <td class="gray MonthLabel">
+                                                     <span style="white-space: nowrap;">
+                                                         {!pqm.Period6}-{!pqm.fiscalYear.name}
+                                                     </span>
+                                                 </td>
+                                                 <td class="grayLight monthFromQuarter2 Month" id="month6">
+                                                     <apex:inputField id="period6" value="{!pqm.currentQuotaDetailsWithoutProfileId.qd.XactlyExpress__M6Amount__c}" style="display: none;"/>
+                                                     <apex:outputPanel layout="block">{!pqm.currentQuotaDetailsWithoutProfileId.qd.XactlyExpress__M6Amount__c}</apex:outputPanel>
+                                                 </td>
+                                                 <td class="gray percentageFromQuarter2 monthlyPercentage percent" id="percentage6">
+                                                     <input type="text"  style="display: none;" datatype="percentage" />
+                                                     <div class="disable"></div>
+                                                 </td>
+                                             </tr>
+                                             <tr>
+                                                 <td class="gray fontBold QuarterLabel">
+                                                     <span style="white-space: nowrap;">
+                                                         QTR-3-{!pqm.fiscalYear.name}
+                                                     </span>
+                                                 </td>
+                                                 <td class="grayLight Quarter" id="quarter3">
+                                                     <apex:inputField id="quarter3" value="{!pqm.currentQuotaDetailsWithoutProfileId.qd.XactlyExpress__Q3Amount__c}" style="display: none;"/>
+                                                     <apex:outputPanel layout="block">{!pqm.currentQuotaDetailsWithoutProfileId.qd.XactlyExpress__Q3Amount__c}</apex:outputPanel>
+                                                 </td>
+                                                 <td class="gray">
+                                                     
+                                                 </td>
+                                                 <td class="grayLight">
+                                                     
+                                                 </td>
+                                                 <td class="gray percentQuarter percent" id="quarterPorcentage3">
+                                                     <input type="text"  style="display: none;" datatype="percentage" />
+                                                     <div class="disable"></div>
+                                                 </td>
+                                             </tr>
+                                             <tr>
+                                                 <td rowspan="3" class="gray">
+                                                     
+                                                 </td>
+                                                 <td rowspan="3" class="grayLight">
+                                                    
+                                                 </td>
+                                                 <td class="gray MonthLabel">
+                                                     <span style="white-space: nowrap;">
+                                                     {!pqm.Period7}-{!pqm.fiscalYear.name}
+                                                     </span>
+                                                 </td>
+                                                 <td class="grayLight monthFromQuarter3 Month"  id="month7">
+                                                     <apex:inputField id="period7" value="{!pqm.currentQuotaDetailsWithoutProfileId.qd.XactlyExpress__M7Amount__c}" style="display: none;"/>
+                                                     <apex:outputPanel layout="block">{!pqm.currentQuotaDetailsWithoutProfileId.qd.XactlyExpress__M7Amount__c}</apex:outputPanel>
+                                                 </td>
+                                                 <td class="gray percentageFromQuarter3 monthlyPercentage percent" id="percentage7">
+                                                     <input type="text"  style="display: none;" datatype="percentage" />
+                                                     <div class="disable"></div>
+                                                 </td>
+                                             </tr>
+                                             <tr>
+                                                 <td class="gray MonthLabel">
+                                                     <span style="white-space: nowrap;">
+                                                         {!pqm.Period8}-{!pqm.fiscalYear.name}
+                                                     </span>
+                                                 </td>
+                                                 <td class="grayLight monthFromQuarter3 Month" id="month8">
+                                                     <apex:inputField id="period8" value="{!pqm.currentQuotaDetailsWithoutProfileId.qd.XactlyExpress__M8Amount__c}" style="display: none;"/>
+                                                     <apex:outputPanel layout="block">{!pqm.currentQuotaDetailsWithoutProfileId.qd.XactlyExpress__M8Amount__c}</apex:outputPanel>
+                                                 </td>
+                                                 <td class="gray percentageFromQuarter3 monthlyPercentage percent" id="percentage8">
+                                                     <input type="text"  style="display: none;" datatype="percentage" />
+                                                     <div class="disable"></div>
+                                                 </td>
+                                             </tr>
+                                             <tr>
+                                                 <td class="gray MonthLabel">
+                                                     <span style="white-space: nowrap;">
+                                                         {!pqm.Period9}-{!pqm.fiscalYear.name}
+                                                     </span>
+                                                 </td>
+                                                 <td class="grayLight monthFromQuarter3 Month" id="month9">
+                                                     <apex:inputField id="period9" value="{!pqm.currentQuotaDetailsWithoutProfileId.qd.XactlyExpress__M9Amount__c}" style="display: none;"/>
+                                                     <apex:outputPanel layout="block">{!pqm.currentQuotaDetailsWithoutProfileId.qd.XactlyExpress__M9Amount__c}</apex:outputPanel>
+                                                 </td>
+                                                 <td class="gray percentageFromQuarter3 monthlyPercentage percent"  id="percentage9">
+                                                     <input type="text"  style="display: none;" datatype="percentage" />
+                                                     <div class="disable"></div>
+                                                 </td>
+                                             </tr>
+                                             <tr>
+                                                 <td class="gray fontBold QuarterLabel">
+                                                     <span style="white-space: nowrap;">
+                                                         QTR-4-{!pqm.fiscalYear.name}
+                                                     </span>
+                                                 </td>
+                                                 <td class="grayLight Quarter" id="quarter4">
+                                                     <apex:inputField id="quarter4" value="{!pqm.currentQuotaDetailsWithoutProfileId.qd.XactlyExpress__Q4Amount__c}" style="display: none;"/>
+                                                     <apex:outputPanel layout="block">{!pqm.currentQuotaDetailsWithoutProfileId.qd.XactlyExpress__Q4Amount__c}</apex:outputPanel>
+                                                 </td>
+                                                 <td class="gray">
+                                                     
+                                                 </td>
+                                                 <td class="grayLight">
+                                                     
+                                                 </td>
+                                                 <td class="gray percentQuarter percent" id="quarterPorcentage4">
+                                                     <input type="text"  style="display: none;" datatype="percentage" />
+                                                     <div class="disable"></div>
+                                                 </td>
+                                             </tr>
+                                             <tr>
+                                                 <td rowspan="3" class="gray">
+                                                     
+                                                 </td>
+                                                 <td rowspan="3" class="grayLight">
+                                                    
+                                                 </td>
+                                                 <td class="gray MonthLabel">
+                                                     <span style="white-space: nowrap;">
+                                                         {!pqm.Period10}-{!pqm.fiscalYear.name}
+                                                     </span>
+                                                 </td>
+                                                 <td class="grayLight monthFromQuarter4 Month" id="month10">
+                                                     <apex:inputField id="period10" value="{!pqm.currentQuotaDetailsWithoutProfileId.qd.XactlyExpress__M10Amount__c}" style="display: none;" />
+                                                     <apex:outputPanel layout="block">{!pqm.currentQuotaDetailsWithoutProfileId.qd.XactlyExpress__M10Amount__c}</apex:outputPanel>
+                                                 </td>
+                                                 <td class="gray percentageFromQuarter4 monthlyPercentage percent" id="percentage10">
+                                                     <input type="text"  style="display: none;" datatype="percentage" />
+                                                     <div class="disable"></div>
+                                                 </td>
+                                             </tr>
+                                             <tr>
+                                                 <td class="gray MonthLabel">
+                                                     <span style="white-space: nowrap;">
+                                                         {!pqm.Period11}-{!pqm.fiscalYear.name}
+                                                     </span>
+                                                 </td>
+                                                 <td class="grayLight monthFromQuarter4 Month" id="month11">
+                                                     <apex:inputField id="period11" value="{!pqm.currentQuotaDetailsWithoutProfileId.qd.XactlyExpress__M11Amount__c}" style="display: none;" />
+                                                     <apex:outputPanel layout="block">{!pqm.currentQuotaDetailsWithoutProfileId.qd.XactlyExpress__M11Amount__c}</apex:outputPanel>
+                                                 </td>
+                                                 <td class="gray percentageFromQuarter4 monthlyPercentage percent" id="percentage11">
+                                                     <input type="text"  style="display: none;" datatype="percentage" />
+                                                     <div class="disable"></div>
+                                                 </td>
+                                             </tr>
+                                             <tr>
+                                                 <td class="gray MonthLabel">
+                                                     <span style="white-space: nowrap;">
+                                                         {!pqm.Period12}-{!pqm.fiscalYear.name}
+                                                     </span>
+                                                 </td>
+                                                 <td class="grayLight monthFromQuarter4 Month" id="month12">
+                                                     <apex:inputField id="period12" value="{!pqm.currentQuotaDetailsWithoutProfileId.qd.XactlyExpress__M12Amount__c}" style="display: none;" />
+                                                     <apex:outputPanel layout="block">{!pqm.currentQuotaDetailsWithoutProfileId.qd.XactlyExpress__M12Amount__c}</apex:outputPanel>
+                                                 </td>
+                                                 <td class="gray percentageFromQuarter4 monthlyPercentage percent" id="percentage12"> 
+                                                     <input type="text"  style="display: none;" datatype="percentage" />
+                                                     <div class="disable"></div>
+                                                 </td>
+                                             </tr>
+                                             <tr class="gray fontBold">
+                                                 <td class="YearLabel">
+                                                     <span style="white-space: nowrap;">
+                                                         Year Total:
+                                                     </span>
+                                                 </td>
+                                                 <td>
+                                                    <div style="text-align:right;" id="totalYear"></div>
+                                                 </td>
+                                                 <td class="QuarterLabel">
+                                                     <span style="white-space: nowrap;">
+                                                         Quarter Total:
+                                                     </span>
+                                                 </td>
+                                                 <td>
+                                                    <div style="text-align:right;" id="totalQuarter"></div>
+                                                 </td>
+                                                 <td class="MonthLabel">
+                                                    <span style="white-space: nowrap;">
+                                                        Total:
+                                                    </span>
+                                                 </td>
+                                                 <td>
+                                                     <div style="text-align:right;" id="totalMonth"></div>
+                                                 </td>
+                                                 <!-- 
+                                                 <td>
+                                                     
+                                                 </td> -->
+                                             </tr>
+                                         </tbody></table>
+                                         
+
+                                         <!-- COMMENT  BOX -->
+                                       <apex:outputPanel layout="block" id="commentBox" styleClass="comment">
+                                           <apex:outputPanel layout="block" rendered="{!IF(ISNULL(pqm.toCommentQuota),'false','true')}" styleClass="commentBox" style="margin:10px 0 0 0;width:705px">
+                                               <div class="commentHeader">
+                                                    <apex:outputText value="{!$Label.xactlyexpress__UsersComments}">
+                                                       <apex:param value="{!pqm.toCommentQuota.ProfilePlanId__r.ProfileId__r.UserId__r.Name}" />
+                                                       <apex:param value="'" />
+                                                   </apex:outputText>
+                                                   <apex:commandLink id="closeCommentLink" action="{!pqm.closeComment}"  styleClass="commentBoxBtn" rerender="commentBox, addCommentLink,errorMsg" onclick="waitOn();" oncomplete="introAsTab();waitOff();stripeRows();fixCelsDimensions(); quotaByPersonHandler.init();"  />              
+                                               </div>
+                                               <div>
+                                                   <apex:inputTextarea id="commentBody" value="{!pqm.toCommentQuota.XactlyExpress__Comment__c}" styleClass="commentTextArea" style="width:703px"  onkeyup="document.getElementById(commentid).value = document.getElementById(commentid).value.substring(0,1024);"/>
+                                                     <script>
+                                                        var commentid = '{!$Component.commentBody}'; 
+                                                     </script>       
+                                               </div>
+                                           </apex:outputPanel>
+                                       </apex:outputPanel>                                        
+                                         
+                                         
+                                        </div>
+                                    
+                                
+                                
+                                
+                                
+                                    
+                            </div>      
+                            <div class="bm">
+                                <div style="float: left;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/bl.png')}" /></div>
+                                <div style="float: right;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/br.png')}" /></div>
+                            </div>
+                        </div>
+                        
+                        
+                        
+                       
+                    </div>
+                    <apex:inputHidden id="quotaStatus" value="{!pqm.status}" />                    <apex:inputHidden id="quotaFrequency" value="{!pqm.currentQuota.XactlyExpress__Frequency__c}" />
+                    <apex:inputHidden id="afterchange"/>
+                    <apex:inputHidden id="enterByPerson" value="{!pqm.currentQuota.XactlyExpress__EnterByPerson__c}" />
+                    <script> 
+                       var quotaStatus = '#{!$Component.quotaStatus}'.replace(/:/g,'\\:');
+                       var quotaFrequencyHiddenId = '#{!$Component.quotaFrequency}'.replace(/:/g,'\\:');
+                       //var quotaNameInputId = '#{!$Component.quotaNameInput}'.replace(/:/g,'\\:');
+                       var quotasModeId = '#{!$Component.quotasMode}'.replace(/:/g,'\\:');
+                       var afterchange = document.getElementById('{!$Component.afterchange}');
+                    </script>
+                    
+                    
+                        
+                </apex:outputPanel>
+                <div style="clear:both"></div>
+            </apex:outputPanel>
+            
+              
+            
+            <apex:outputPanel rendered="{!ISNULL(pqm.currentQuota)}">
+                <apex:outputtext value="{!$Label.xactlyexpress__YouMustSelectAMeasure}">
+                    <apex:param value="{!currentSettings.components}" />
+                </apex:outputtext>
+            </apex:outputPanel>     
+            
+            <!-- FOOTER  -->
+            <apex:outputPanel layout="block" styleClass="footer" rendered="{!IF(AND(isAdmin,!isNull(pqm.currentQuota)),true,false)}" id="pFooter">
+                <apex:outputPanel layout="block" styleClass="previousStepWrapper" style="max-width:150px;">
+                    <div class="previousStepRight"></div>
+                    <a href="{!$Page.XactlySMBPlanCreate}?id={!plan.Id}" class="previousStepMiddle" id="prevBtn">
+                        {!$Label.PreviousStep}
+                    </a>
+                    <div class="previousStepLeft"></div>
+                </apex:outputpanel>
+                    
+                <apex:outputPanel layout="block" styleClass="actionButtons">                        
+                    <apex:outputPanel layout="block" styleClass="actionButtonWrapper">
+                        <div class="actionButtonLeft"></div>
+                        <apex:commandLink styleClass="actionButtonMiddle saveBtn" action="{!savePlan}" onclick="if(validate()==false)return false;savePageHandler.disableBottomBar();storeValues();">
+                            <apex:outputtext escape="false" value="{!$Label.xactlyexpress__SaveChanges}">
+                               <apex:param value="{!URLFOR($Resource.XactlyExpress__XactlySMBResources ,'img/buttons/navigateSaveMiddle.gif')}" />
+                            </apex:outputtext>  
+                        </apex:commandLink>
+                        <div class="actionButtonRight"></div>    
+                    </apex:outputpanel>
+                    
+                    <apex:outputPanel layout="block" styleClass="actionButtonWrapper">
+                        <div class="actionButtonLeft"></div>
+                        <a href="javascript:;" class="actionButtonMiddle" onclick="discardChangesConfirm('{!$Page.XactlySMBPlanCreateStep3}?step=3&id={!plan.id}&quota={!pqm.quota}');">
+                            <apex:outputtext escape="false" value="{!$Label.xactlyexpress__DiscardChanges}">
+                               <apex:param value="{!URLFOR($Resource.XactlyExpress__XactlySMBResources ,'img/buttons/navigateCancelMiddle.gif')}" />
+                            </apex:outputtext>
+                        </a>
+                        <div class="actionButtonRight"></div>    
+                    </apex:outputpanel>
+                </apex:outputPanel>
+            
+                <apex:outputPanel layout="block" styleClass="nextStepWrapper" style="margin-right:100px;">
+                    <div class="nextStepLeft"></div>
+                    <apex:commandLink styleClass="nextStepMiddle" action="{!saveNext}"   onclick="if(validate()==false)return false;savePageHandler.disableBottomBar();storeValues();" >
+                        {!$Label.xactlyexpress__NextStep}  
+                    </apex:commandLink> 
+                    <div class="nextStepRight"></div>
+                </apex:outputPanel>
+            </apex:outputPanel>
+            
+            <apex:actionFunction name="saveFunction" action="{!savePlan}" oncomplete="introAsTab();"/>
+            <apex:actionFunction name="refreshLeftPanel" rerender="errorMsg" oncomplete="introAsTab();"/> 
+            <apex:actionFunction name="reloadPage" action="{!pqm.dummy}" rerender="quotaContent,errorMsg" oncomplete="introAsTab();"/>
+            
+        </apex:form>
+    </div>  
+    <apex:includeScript value="{!URLFOR($Resource.XactlyExpress__CSN, 'jquery.js')}" />
+    <c:XactlySMBFooterScript /> 
+    
+    <script type="text/javascript" language="javascript" src="{!URLFOR($Resource.XactlySMBResources, 'js/jquery.curvycorners.min.js')}"></script>
+    <script type="text/javascript" language="javascript" src="{!URLFOR($Resource.XactlySMBResources, 'js/XactlySMBJavascript.js')}"></script>
+    <script type="text/javascript" language="javascript" src="{!URLFOR($Resource.XactlySMBResources, 'js/jquery.arrayUtils.js')}"></script>
+    <script type="text/javascript" src="{!URLFOR($Resource.XactlySMBResources ,'js/jquery.superbox-min.js')}"></script>
+    <script type="text/javascript" src="{!URLFOR($Resource.XactlySMBResources ,'js/jquery.tools.min.js')}"></script>
+    <script type="text/javascript" charset="utf-8">
+        var zero = nbrDecimal == '.' ? '0.00' : '0,00';   
+        var $J = jQuery.noConflict();
+        var rerenderNoCompare = true;
+        
+         $J(function(){
+            $J.superbox.settings = {
+                closeTxt: "X",
+                loadTxt: "Loading...",
+                nextTxt: "Next",
+                prevTxt: "Previous"
+            };
+            $J.superbox();
+        });
+        
+         
+    
+        window.onbeforeunload = function () {
+            window.onunload = function() {savePageHandler.disableBottomBar();}
+            if ($J(quotaStatus).val() == 'false') {
+                if(compareValues(false,rerenderNoCompare) != undefined){
+                    setTimeout("savePageHandler.enableBottomBar();",1000);
+                }
+                return compareValues(false, rerenderNoCompare);
+            }
+            else {
+                if(compareValues(true,rerenderNoCompare) != undefined){
+                    setTimeout("savePageHandler.enableBottomBar();",1000);
+                }
+                return compareValues(true, rerenderNoCompare);
+            }
+        };
+                        
+        
+        //var collapsed = false;
+        
+        function openQuarter(i) {
+            $J('.openQuarter' + i).hide();
+            $J('.closeQuarter' + i).show();
+            $J('.quarter' + i + 'Months').show();
+            fixCelsDimensions();
+        }
+        
+        function adjustQuotaTable(tam) {
+        
+            $J('#topTableBor').width(tam);
+            $J('#bottomTableBor').width(tam);
+        
+        }
+        
+        function closeQuarter(i) {
+            $J('.openQuarter' + i).show();
+            $J('.closeQuarter' + i).hide();
+            $J('.quarter' + i + 'Months').hide();
+            fixCelsDimensions();
+        }
+        
+        function openAnnual() {
+            $J('.openAnnual').hide();
+            $J('.closeAnnual').show();
+            $J('.quotaGroup').show();
+            fixCelsDimensions();
+        }
+        
+        function closeAnnual() { 
+            $J('.openAnnual').show();
+            $J('.closeAnnual').hide();
+            for (i = 1; i <= 4; i++) {
+                $J('.openQuarter' + i).show();
+                $J('.closeQuarter' + i).hide();
+                $J('.quarter' + i + 'Months').hide();
+            }
+            $J('.quotaGroup').hide();
+            fixCelsDimensions();
+        }
+        
+        function calculateQuarterly(obj, i) {
+            $J(obj).val($J.trim($J(obj).val()));
+            
+            if(quotaValuesHandler.getLastQuotaByPersonValuesById()[$J(obj).attr('id')] == Math.round((parseFloat(unformatNumber($J(obj).val())))*100)/100){
+                return false;
+            } 
+            
+            var val = parseFloat(unformatNumber($J(obj).val()));
+            var months = $J(obj).parent().parent().children('.quarter' + i + 'Months');
+            for (var x = 0; x < months.length; x++) {
+                var t = $J(months[x]);
+                var ch = t.children();
+                var div = $J(ch[0]);
+                var inp = $J(ch[1]);
+                div.html(formatNumber(parseFloat((val / 3).toFixed(2))));
+                inp.val(formatNumber(parseFloat((val / 3).toFixed(2))));  
+            }
+            calculateAnnual(obj);
+                
+        }
+        
+        var firstInputs = new Array();
+        
+        function validate() {
+        
+            var quotaName = $J('.quotaNameInput').val();
+            if (quotaName == null || quotaName == '' || jQuery.trim(quotaName) == '' || jQuery.trim(quotaName) == null) {
+                alert('{!pqm.AddQuotaNameLabel}')
+                return false;
+            }
+         
+            
+            var freqval = $J(quotaFrequencyHiddenId).val();
+            if (freqval == null || freqval == '') {
+                alert('{!pqm.SelectAQuotaTypeLabel}')
+                return false;
+            }
+            
+            if(frequencyGridCalculator.isTotalPercentageValid() == false){
+                alert("{!$Label.MaxTotalPorcent100}");
+                return false;
+            }
+            
+            if(frequencyGridCalculator.isThereANegativeValue() == true){
+                alert("{!$Label.SomeValuesNegative}");
+                return false;
+            }
+
+            //AO 4/15/10: I have commented this part of the code because we wont use percentages any more
+            /*if(alert100()){
+             $J(quotaStatus).val('true');
+             }else{
+             //when alert100 is false or undefined we return false
+             return false;
+             
+             } */
+        
+            $J(quotaStatus).val('true');
+        
+        }
+        
+        function addComment(id) {
+            selectedIndex.value = id;
+            submitComment();
+        }
+        
+        function changeCursor(obj, type) {
+            if ($J('#radio1').is(':checked')) {
+                if (type == 'annual') {
+                    obj.style.cursor = "default";
+                    obj.readOnly = true;
+                }
+                if (type == 'period') {
+                    obj.style.cursor = "text";
+                    obj.readOnly = false;
+                }
+            } else {
+                if (type == 'period') {
+                    obj.style.cursor = "default";
+                    obj.readOnly = true;
+                }
+                if (type == 'annual') {
+                    obj.style.cursor = "text";
+                    obj.readOnly = false;
+                }
+            }
+        }
+        
+        
+        function calculateAnnual(obj) {
+            $J(obj).val($J.trim($J(obj).val()));
+            
+            //check if the current input field value is different than the one stores in lastQuotaByPersonValuesById
+            if(quotaValuesHandler.getLastQuotaByPersonValuesById()[$J(obj).attr('id')] == Math.round((parseFloat(unformatNumber($J(obj).val())))*100)/100){
+                return false;
+            }
+                        
+            //var sum = 0;
+            var inputs = obj.parentNode.parentNode.getElementsByTagName('input');
+            var annual;
+            var quotas = [0, 0, 0, 0];
+            var quarterAnnual = 0;
+            var quotaGroups = new Array();
+            for (var i = 0; i < inputs.length; i++) {
+                if ($J(inputs[i].parentNode).hasClass('quotaGroup')) {
+                    quotaGroups[quotaGroups.length] = inputs[i];
+                    quarterAnnual +=  parseFloat(unformatNumber(inputs[i].value));
+                }
+                else if ($J(inputs[i].parentNode).hasClass('annualTd')) {
+                    annual = inputs[i];
+                } else {
+                    if (!$J(inputs[i].parentNode).hasClass('displayNone') && !$J(inputs[i].parentNode).hasClass('quotaGroup')) {
+                        
+                        if (!isNaN(parseFloat(unformatNumber(inputs[i].value))) && inputs[i].value != '') {
+                            if ($J(inputs[i].parentNode).hasClass('quarter1Months')) {
+                                quotas[0] += parseFloat(unformatNumber(inputs[i].value));
+                            }
+                            else if ($J(inputs[i].parentNode).hasClass('quarter2Months')) {
+                                quotas[1] += parseFloat(unformatNumber(inputs[i].value));
+                            }
+                            else if ($J(inputs[i].parentNode).hasClass('quarter3Months')) {
+                                quotas[2] += parseFloat(unformatNumber(inputs[i].value));
+                            }
+                            else if ($J(inputs[i].parentNode).hasClass('quarter4Months')) {
+                                quotas[3] += parseFloat(unformatNumber(inputs[i].value));
+                            }
+                        } else {
+                            inputs[i].value = zero;
+                        }
+                    }
+                }
+            }
+            if($J(obj).parent().attr('class') != 'quotaGroup' && (quotaValuesHandler.getSelectedFrequency() == 'Month' || quotaValuesHandler.getSelectedFrequency() == 'Quarter')){
+                var quarterSum = 0;
+                $J(obj).parents('tr:first').find('.'+$J(obj).parent().attr('class')+' input').each(function(){
+                    quarterSum = quarterSum + parseFloat(unformatNumber($J(this).val()));
+                });
+                
+                $J(obj).parent().prevAll('td.quotaGroup:first').find('input').val(formatNumber(parseFloat(quarterSum.toFixed(2))));
+                $J(obj).parent().prevAll('td.quotaGroup:first').find('div').html(formatNumber(parseFloat(quarterSum.toFixed(2))));
+                
+                
+            }
+            
+            //When the frecuency is different than Year ( Month or Quarter ), we must update it.
+            if (quotaValuesHandler.getSelectedFrequency() == 'Month') {
+                //annual.value = formatNumber(parseFloat(sum.toFixed(2)));
+                $J('.showVal', annual.parentNode).html(formatNumber(parseFloat($J.sum(quotas).toFixed(2))));
+                $J('.hiddenVal', annual.parentNode).val(formatNumber(parseFloat($J.sum(quotas).toFixed(2))));
+            }
+            
+            if (quotaValuesHandler.getSelectedFrequency() == 'Quarter') {
+                $J('.showVal', annual.parentNode).html(formatNumber(parseFloat(quarterAnnual.toFixed(2))));
+                $J('.hiddenVal', annual.parentNode).val(formatNumber(parseFloat(quarterAnnual.toFixed(2))));
+            }
+            
+            /*$J('.showVal', annual.parentNode).html(formatNumber(parseFloat(parseFloat(unformatNumber(annual.value)).toFixed(2))));
+            $J('.hiddenVal', annual.parentNode).val(formatNumber(parseFloat(parseFloat(unformatNumber(annual.value)).toFixed(2))));*/
+        
+            //quotaValuesHandler.setLastQuotaByPersonValues();
+            
+            quotaValuesHandler.setLastQuotaByPersonValuesById();
+        
+        }
+        
+        function formatCells() {
+            var tds2 = $J('td',$J('#quotasTable'));
+            for (var i = 0; i < tds2.length; i++) {
+                var values = $J('.hiddenVal', tds2[i]).val();
+                var semifinal = parseFloat(unformatNumber(values));
+                var finalValue = formatNumber(parseFloat(semifinal.toFixed(2)));
+                $J('.showVal', tds2[i]).html(finalValue);
+                $J('.hiddenVal', tds2[i]).val(finalValue);
+            }
+        }
+
+        var changes = false;
+        
+        
+        
+        function setInputs() {
+            var inputs = document.getElementsByTagName('input');
+            for (var i = 0; i < inputs.length; i++) {
+                firstInputs[i] = inputs[i].value;
+            }
+        }
+        
+        function stripeRows() {
+            var rows = $J('tr',$J('#quotasTable'));
+            for (var i = 0; i < rows.length; i++) {
+                if (i % 2 == 0) {
+                    rows[i].className = 'odd';
+                } else {
+                    rows[i].className = 'even';
+                }
+            }
+        }
+        
+        function deleteQuota() {
+            var err = '{!JSENCODE(pqm.DeleteQuotaError)}';
+            var conf = '{!JSENCODE(pqm.DeleteQuotaConfirm)}';
+        
+            if (err.length != 0) {
+                alert(err);
+                return false;
+            }
+            else {
+                if (confirm(conf)) {
+                    waitOn();
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            }
+        }
+        
+ 
+        
+        /**
+         * @author Alvaro Olivencia 04/21/10
+         * This object handles GUI behaviors related to step 2 (ENTER THE QUOTA VALUES), they are:
+         * 1)Show/Hide Enter Quota by Plan and Enter Quota by Person tables.
+         * 2)Column edition-mode handling from Enter Quota by Plan table.
+         * 3)Some table dimension handling methods.
+         * 4)Copy Quota by Person values with Quota by Plan values 
+         * It also:
+         * 5)Stores the current Quota by Plan column values in an object.
+         * 6)Stores the current Quota by Person column values in an object.
+         * 7)Sets the value from apex:inputHidden id="quotaFrequency" 
+         */
+        var quotaValuesHandler = function(){
+            
+            var debug = true;
+            
+            var selectedFrequency = '';
+            
+            /**
+             * @name switchEditionMode handles the column edition ( enable/disable column edition ).
+             * @param column        String  
+             * @param show   boolean true = show column, false = hide column 
+             */
+            var switchEditionMode = function (column,show) {
+                  
+                if(column=='')
+                   return false;
+
+                $J('.' + column).each(function (index) {
+            
+                    if (show == false) {//disable edition
+            
+                        var value = '';
+            
+                        //If the column dataType beeing disabled is 'percentage' we add '%' at the end    
+                        if ($J(this).find('input').attr('dataType')) 
+                            value = $J(this).find('input').val() + '%';
+                        else 
+                            value = formatNumber($J(this).find('input').val());
+            
+                        $J(this).find('div').text(value);
+                        $J(this).find('input').hide();
+                        $J(this).find('div').show();
+                        
+                    } else { //edition true
+                        
+                        $J(this).find('div').hide();
+                        $J(this).find('input').show();
+                    }
+                    
+                    
+                    
+                });
+                    
+            }
+            
+            /**
+             * Next function is use when the page loads, it performs what doQuotaByPersonRowEditable does.
+             */                
+            var doQuotaByPersonRowEditableOnLoad = function(){
+                    
+                $J('#quotasTable td input:checkbox').each(function() {
+            
+                    if($J(this).is(':checked'))
+                        quotaValuesHandler.doQuotaByPersonRowEditable(this);
+                
+                })
+            }
+                   
+            return{
+                
+                oldColumnValues : new Object(),
+                lastQuotaByPersonValuesById: new Array(), 
+                
+                /**
+                 *@param quota frequency  
+                 *
+                 */
+                init: function(freq){
+                    if(freq != '')
+                      $J('#'+freq).click();//this click make a column editable
+                    
+                    switchEditionMode(freq,true);//This call enables edition over the column freq.
+                    
+                    if(freq != '')
+                        $J('#'+freq).attr('checked' , true);//sets freq radio button checked
+                      
+                    doQuotaByPersonRowEditableOnLoad();
+                    
+                    //Next click events handle the behavior    
+                    $J('#radios1').click(function(){
+                    
+                        quotaValuesHandler.switchQuotaTableType($J(this).val());
+                        
+                    });
+                    
+                    $J('#radios2').click(function(){
+                        quotaValuesHandler.switchQuotaTableType($J(this).val());
+                        //quotaByPersonHandler.calcVals();
+                        fixCelsDimensions();
+                    });
+                    
+                    $J('#disableQuarter').click(function(){
+
+                        quotaValuesHandler.disableColumn('Quarter');
+                        quotaValuesHandler.setSelectedFrequency();
+                        
+                    });
+                    
+                    $J('#enableQuarter').click(function(){
+
+                        quotaValuesHandler.enableColumn('Quarter');
+                        frequencyGridCalculator.onEditYear.updateQuarterColumn();
+                        quotaValuesHandler.setSelectedFrequency();
+                        
+                    });
+                    
+                    $J('#percent').click(function(){
+                        
+                        if($J(this).is(':checked')==true){//only when the checkbox is checked we execute the confirm dialog
+                        
+                            if(confirm("{!$Label.warningRoundingWillOccur}")){
+                            
+                                frequencyGridCalculator.onEditpercent.updateMonthColumn();
+                                quotaValuesHandler.quotaByPlanColumnEditionHandler(this.value);
+                            
+                            }else{//if the user cancels we uncheck the checkbox
+                            
+                               $J(this).attr('checked', false);
+                               return false;
+                            
+                            } 
+                        
+                        }else{
+                        
+                            quotaValuesHandler.quotaByPlanColumnEditionHandler(this.value);
+                        
+                        }
+                         
+                        
+                    });
+                    
+                    $J('#disableMonth').click(function(){
+
+                        quotaValuesHandler.disableColumn('Month');
+                        quotaValuesHandler.setSelectedFrequency();
+                        
+                    });
+                    
+                    $J('#enableMonth').click(function(){
+
+                        quotaValuesHandler.enableColumn('Month');
+                        
+                        
+                        
+                        //if Quarter radio button is not checked we don't execute the next method. 
+                        if($J('#Quarter').is(':checked')== false){
+                        
+                            frequencyGridCalculator.onEditYear.updateQuarterColumn();
+                        
+                        }
+                        
+                        frequencyGridCalculator.onEditQuarter.updateMonthColumn();
+                        quotaValuesHandler.setSelectedFrequency();
+                        
+                    });
+
+                    if(freq == 'Quarter'){
+                        
+                        quotaValuesHandler.disableColumn('Month');
+                        
+                    }else if(freq == 'Year'){
+                        
+                        quotaValuesHandler.disableColumn('Quarter');
+                        quotaValuesHandler.disableColumn('Month');
+                        $J('#percent').attr('disabled', true);
+                        
+                    }
+                    
+                    quotaValuesHandler.setSelectedFrequency();
+                },                
+                /**
+                 * @name    disableColumn
+                 * @param   column String Column name.
+                 */
+                disableColumn: function(column){
+                    
+                    $J('#quotaByPlanBlock tbody td.' + column).each(function (index) {
+
+                        $J(this).find('input').hide();
+                        $J(this).find('div').hide();
+                    
+                    });
+                    
+                    $J('#quotaByPlanBlock .' + column + 'Label span').each(function (index) {
+
+                        $J(this).addClass('disable');
+                    
+                    });
+                    
+                    $J('#'+column).attr('checked', false);//unchecks the radio button
+                    $J('#total' + column).hide();//hides the bottom total value
+                    $J('#'+column).hide();//hides column radio button
+                    $J('#enable'+column).show();//shows "ACTIVATE" label
+                    $J('#disable'+column).hide();//hides the cross icon
+                    $J('#'+column+'TH').addClass('disable');
+                    
+                    
+                    //When we disable a column, we should sets its input and divs values to 0:
+                    $J('#quotaByPlanBlock tbody td.'+column).each(function (index) {
+
+                        $J('input',$J(this)).val(formatNumber(0));
+                        $J('div',$J(this)).html(formatNumber(0));
+                    
+                    });
+                    
+                    if(column == 'Quarter'){
+                        
+                        quotaValuesHandler.disableColumn('Month');
+                        $J('#percent').attr('disabled', true);
+                        $J('#percent').attr('checked', false);
+                        switchEditionMode('percent',false);
+                        //next code hides quarter columns from Quota by Person
+                        $J('#quotasTable .quotaGroup').each(function(index){
+                            
+                            index++;
+                            
+                            $J(this).hide();
+                                                    
+                        });
+                        $J('#tcont .quotaGroup').each(function(index){
+                            
+                            index++;
+                            
+                            $J(this).hide();
+                                                    
+                        });
+                        
+                        $J('#tcont .openAnnual').hide();
+                        $J('#tcont .closeAnnual').hide();
+                        
+                    }else if(column == 'Month'){
+                        
+                        
+                        //next code hides month columns from Quota by Person
+                        $J("#quotasTable [class*='quarter']").each(function(index){
+                            
+                            $J(this).hide();
+                            $J('#tcont .openQuarter'+index).hide();
+                            $J('#tcont .closeQuarter'+index).hide();
+                        
+                        });
+                        
+                        $J("#tcont [class*='quarter']").each(function(index){
+                            
+                            $J(this).hide();
+                            $J('#tcont .openQuarter'+index).hide();
+                            $J('#tcont .closeQuarter'+index).hide();
+                        
+                        });
+                        
+                        $J('#tcont .openAnnual').hide();
+                        $J('#tcont .closeAnnual').hide();
+                            
+                    }
+                    
+                },
+                
+                /**
+                 * @name    enableColumn
+                 * @param   column String Column name.
+                 */
+                enableColumn: function(column){
+                    
+                    $J('#quotaByPlanBlock tbody td.' + column).each(function (index) {
+
+                        $J(this).find('div').show();
+                    
+                    });
+                    
+                    $J('#quotaByPlanBlock .' + column + 'Label span').each(function (index) {
+
+                        $J(this).removeClass('disable');
+                    
+                    });
+
+                    $J('#total' + column).show();
+                    $J('#'+column).show();
+                    $J('#disable'+column).show();
+                    $J('#enable'+column).hide();
+                    $J('#'+column+'TH').removeClass('disable');
+                    
+                    //When Quarter and Month columns are disaable and the user clicks on Month, we should enable Month column and Quarter as well:
+                    if($J('#QuarterTH').hasClass('disable')){
+                        
+                        quotaValuesHandler.enableColumn('Quarter');
+                        
+                    }
+                    
+                    if(column == 'Quarter'){
+
+                        //next code hides quarter columns from Quota by Person
+                        $J('#quotasTable .quotaGroup').each(function(){
+                            
+                            $J(this).show();
+                                                    
+                        });
+                        $J('#tcont .quotaGroup').each(function(){
+                            
+                            $J(this).show();
+                                                    
+                        });
+                        
+                        $J('#tcont .closeAnnual').hide();
+                        
+                    }else if(column == 'Month'){
+                        
+                        //next code shows month columns from Quota by Person
+                        $J("#quotasTable [class*='quarter']").each(function(index){
+                            
+                            $J(this).show();
+                            $J('#tcont .'+'closeQuarter'+index).show();
+                        
+                        });
+                        $J("#tcont [class*='quarter']").each(function(index){
+                            
+                            $J(this).show();
+                            $J('#tcont .'+'closeQuarter'+index).show();
+                        
+                        });
+                        
+                        $J('#tcont .closeAnnual').show();
+                            
+                    }
+                    
+                },
+                
+            
+                /**
+                 * This function turn on/off the edition by using the private function switchEditionMode
+                 */
+                quotaByPlanColumnEditionHandler: function (enableColumn) {
+                    
+                    var className = jQuery.trim($J('.quotaByPlanBlock input:text:visible:first').parent().attr('class'));
+                    className = className.split(' ');
+                    var disableColumn = className[className.length - 1];
+                    
+                    //Next if-else handles when enable the percentage column checkbox
+                    if(enableColumn == 'Quarter' || enableColumn == 'Month' || enableColumn == 'percent'){
+                        
+                        $J('#percent').attr('disabled' , false);
+                        
+                    }else{//when enableColumn (clicked radio button) is Year, we disable the percentage column checkbox 
+                        
+                        $J('#percent').attr('disabled' , true);
+                        $J('#percent').attr('checked' , false);
+                        
+                    }
+                    
+                    //log('disableColumn',disableColumn);
+                    //log('enableColumn',enableColumn);
+                    
+                    if(disableColumn == 'Quarter' && enableColumn =='percent'){
+                        
+                        switchEditionMode(enableColumn,true);
+                        
+                    }/*else if(enableColumn == 'Year'){
+                        
+                        switchEditionMode(disableColumn,false);
+                        //switchEditionMode('Month',false);
+                        switchEditionMode('Quarter',false);
+                        switchEditionMode(enableColumn,true);
+                        
+                    }*/else if(disableColumn == 'percent' && enableColumn == 'Year'){
+                      
+                        switchEditionMode('Month',false);
+                        switchEditionMode('percent',false);
+                        switchEditionMode('Quarter',false);
+                        switchEditionMode(enableColumn,true);
+                        
+                    }else if(disableColumn == 'percent' && enableColumn == 'Quarter'){
+                        
+                        switchEditionMode('Month',false);
+                        switchEditionMode(enableColumn,true);
+                        
+                    }else if(disableColumn == 'percent' && enableColumn == 'Month'){
+                        
+                        switchEditionMode('Quarter',false);
+                        switchEditionMode(enableColumn,true);
+                        
+                    }else if(disableColumn == 'Month' && enableColumn == 'percent'){
+                        
+                        switchEditionMode(disableColumn,true);
+                        switchEditionMode('Quarter',false);
+                        switchEditionMode(enableColumn,true);
+                        
+                    }else if(disableColumn == 'percent' && enableColumn == 'percent'){
+                        
+                        switchEditionMode('percent',false);
+                                                
+                    }else{
+                        switchEditionMode(disableColumn,false);
+                        switchEditionMode(enableColumn,true);
+                        
+                    }
+                     
+                    quotaValuesHandler.setOldColumnValues();
+                    
+                },
+                
+                switchQuotaTableType: function(showTable){
+                
+                  if(showTable == 'enterQuotaByPlan'){
+                      
+                      $J('.quotaByPlanBlock').hide();
+                      $J('.quotaByPersonBlock').show();
+                      
+                      //this setTimeout is because in ie7, the copy is too slow and when the user clicks on the radio button to
+                      //switch to Quota by Person, the browser gets freez, with setTimeout the user experience is better 
+                      //because first we switch and then we copy the values. 
+                      setTimeout('quotaValuesHandler.copyValuesFromPlanToPerson()',100);
+                      
+                      $J('input[id$="enterByPerson"]').val(true);
+                      
+                  }else{
+                  
+                      $J('.quotaByPersonBlock').hide();
+                      $J('.quotaByPlanBlock').show();
+                      
+                      $J('input[id$="enterByPerson"]').val(false);
+                  
+                  }
+                },
+                /**
+                 * Next method copies values from Quota by Plan to Quota by Person.
+                 * In some cases it also calculate month and quarter frequencies.  
+                 */
+                copyValuesFromPlanToPerson: function(){                 
+                    //loop through table TRs (rows)
+                    $J('tr', $J('#quotasTable')).each(function (index){
+                        
+                        //Quarter copy
+                        //The values are copied when the current row checkbox is not checked OR the frequency is Year ( if Year is selected it means that Quarter is disabled )
+                        if($J(this).find('input:checkbox').is(':checked') == false  || quotaValuesHandler.getSelectedFrequency()=='Year'){
+                           //Next we assing the new month values
+                            var i = 1;
+                            //Next we loop through each td.quotaGroup from the current row
+                            $J(this).find('td.quotaGroup').each(function (){
+                                $J('div',$J(this)).html($J('#quarter' + i + ' div').html());
+                                $J('input',$J(this)).val($J('#quarter' + i + ' input').val());
+                                
+                                if(i == 4 )
+                                    i=0;
+                            
+                                i++;
+                                    
+                            });
+                        //Next code sets the quarter field values to the last ones      
+                        }else if(quotaValuesHandler.getSumOfLastQuotaByPersonQuarterValues() > 0 && (quotaValuesHandler.getSelectedFrequency()=='Quarter' || quotaValuesHandler.getSelectedFrequency()=='Month')){
+                            //Next we loop through each td.quotaGroup from the current row
+                            $J(this).find('td.quotaGroup').each(function (quarterIndex){
+                                $J('div',$J(this)).html(formatNumber((quotaValuesHandler.getLastQuotaByPersonValuesById()[$J('input',$J(this)).attr('id')]).toFixed(2))); 
+                                $J('input',$J(this)).val(formatNumber((quotaValuesHandler.getLastQuotaByPersonValuesById()[$J('input',$J(this)).attr('id')]).toFixed(2)));
+                            });
+
+                        }
+                        
+                        //Month copy:
+                        //The values are copied when the current row checkbox is not checked OR the frequency is Quarter Or Year ( if Quarter or Month is selected it means that Month is disabled ),
+                        //in this last case, the month values are set to 0, because quota by plan month values are 0
+                        if($J(this).find('input:checkbox').is(':checked') == false  || quotaValuesHandler.getSelectedFrequency()=='Quarter' || quotaValuesHandler.getSelectedFrequency()=='Year'){
+                            //next we assing the new month values
+                            var i = 1;
+                            $J(this).find("td[class*='quarter']").each(function (){
+                                $J('div',$J(this)).html($J('#month' + i + ' div').html()); 
+                                $J('input',$J(this)).val($J('#month' + i + ' input').val());
+                                
+                                if(i == 12 )
+                                    i=0;
+                            
+                                i++;
+                                    
+                            });
+                        //Next case the current row checkbox is checked and Month freq has been enabled, so we need to copy the last month values
+                        }else if(quotaValuesHandler.getSumOfLastQuotaByPersonMonthValues() > 0 && $J(this).find('input:checkbox').is(':checked') == true && quotaValuesHandler.getSelectedFrequency()=='Month'){
+                            $J(this).find("td[class*='quarter']").each(function (monthIndex){
+                                $J('div',$J(this)).html(formatNumber((quotaValuesHandler.getLastQuotaByPersonValuesById()[$J('input',$J(this)).attr('id')]).toFixed(2))); 
+                                $J('input',$J(this)).val(formatNumber((quotaValuesHandler.getLastQuotaByPersonValuesById()[$J('input',$J(this)).attr('id')]).toFixed(2)));
+                            });
+                        
+                        //When the sum of all month values is 0 and the selected frequency is Month, we must recalculate all month values by using the quarter values as base    
+                        }else if(quotaValuesHandler.getSumOfLastQuotaByPersonMonthValues() == 0 && $J(this).find('input:checkbox').is(':checked') == true && quotaValuesHandler.getSelectedFrequency()=='Month'){
+                            var monthValues = [];
+                            //next we calculate the new month values
+                            $J(this).find('td.quotaGroup input').each(function () {
+                                monthValues.push(formatNumber((parseFloat($J(this).val())/3).toFixed(2)));
+                            });                                            
+                            //next we assing the new month values
+                            $J(this).find("td[class*='quarter']").each(function (){
+                                $J('div',$J(this)).html(monthValues[$J(this).attr('class')[7]-1]); 
+                                $J('input',$J(this)).val(monthValues[$J(this).attr('class')[7]-1]);
+    
+                            });
+                        } 
+                        
+                    });
+
+                    //When the sum of all month values is 0 and the selected frequency is Month, we must recalculate all month values by using the quarter values as base
+                    /*if($J.sum(quotaValuesHandler.getLastQuotaByPersonMonthValues()) == 0 && quotaValuesHandler.getSelectedFrequency()=='Month'){
+                        $J('tr', $J('#quotasTable')).each(function (index) {
+                            if($J(this).find('input:checkbox').is(':checked')){
+                                var monthValues = [];
+                                //next we calculate the new month values
+                                $J(this).find('td.quotaGroup input').each(function () {
+                                    monthValues.push(formatNumber((parseFloat($J(this).val())/3).toFixed(2)));
+                                });                                            
+                                //next we assing the new month values
+                                $J(this).find("td[class*='quarter']").each(function (){
+                                    $J('div',$J(this)).html(monthValues[$J(this).attr('class')[7]-1]); 
+                                    $J('input',$J(this)).val(monthValues[$J(this).attr('class')[7]-1]);
+    
+                                });
+                            }
+                        });
+                    }*/                     
+
+                    //When the sum of all quarter values is 0 and the selected frequency is Quarter, we must recalculate all month values by using the quarter values as base
+                    /*if($J.sum(quotaValuesHandler.getLastQuotaByPersonQuarterValues()) == 0 && quotaValuesHandler.getSelectedFrequency()=='Quarter'){
+                        $J('tr', $J('#quotasTable')).each(function (index) {
+                            if($J(this).find('input:checkbox').is(':checked')){
+                                var quarterValue = formatNumber(parseFloat((unformatNumber($J(this).find('td.annualTd input').val()))/4));
+                                $J(this).find('td.quotaGroup').each(function(){
+                                    $J('div',$J(this)).html(quarterValue); 
+                                    $J('input',$J(this)).val(quarterValue);
+                                });        
+    
+                            }
+                        });
+                    }*/ 
+                    
+                    $J('#quotasTable td.annualTd').each(function(){
+                        if($J(this).parent().find('input:checkbox').is(':checked') == false){
+                            $J('input', $J(this)).val($J('#year input').val());
+                            $J('div', $J(this)).html($J('#year input').val());
+                        }  
+                    });
+                    
+                },
+                
+                /////////////////////////////////
+                isLastQuotaByPersonQuarterValuesChanged: function(){
+                    
+                    $J('tr', $J('#quotasTable')).each(function (index){
+                    
+                       //$J('div',$J(this)).html(formatNumber((quotaValuesHandler.getLastQuotaByPersonQuarterValues()[index][quarterIndex]).toFixed(2)));   
+                        
+                    });
+                    
+                },
+                
+                /**
+                 * When the user clicks on a Quota by Person checkbox, this method turn editable row where the checbox belong.
+                 */
+                doQuotaByPersonRowEditable: function(obj){
+                
+                    if($J(obj).is(':checked')){
+                        
+                        $J(obj).parents('tr:first').children().each(function(){
+
+                            var div = $J('div',$J(this));
+                            var input = $J('input:text',$J(this));
+                            
+                            div.hide();
+                            input.show();
+                            
+                        });
+                
+                    }else{
+                
+                        $J(obj).parents('tr:first').children().each(function(){
+
+                            var div = $J('div',$J(this));
+                            var input = $J('input:text',$J(this));
+                             
+                            div.html(formatNumber(input.val()));
+                            
+                            div.show();
+                            input.hide();
+                            
+                        });
+                
+                    }
+                
+                },
+            
+                
+                /**
+                 * setOldColumnNames stores values from quotas by plan input fields 
+                 */
+                setOldColumnValues: function(){
+                    
+                    var oldColVal = {};
+    
+                    $J('.quotaByPlanBlock input:text:visible').parent().each(function (index) {
+                    
+                        oldColVal[$J(this).attr('id')] = formatNumber(parseFloat(unformatNumber($J('input',$J(this)).val())).toFixed(2));
+                    });    
+                    
+                    if(debug)log('quotaValuesHandler.oldColumnValues = ',oldColVal);
+                        
+                    quotaValuesHandler.oldColumnValues = oldColVal;
+                    
+                },
+                
+                getOldColumnValues: function(){
+                    
+                    return quotaValuesHandler.oldColumnValues;
+                    
+                },
+                
+                /**
+                 * setLastQuotaByPersonValuesById creates an object with input fields ids - value couples 
+                 */
+                setLastQuotaByPersonValuesById: function(){
+                    var obj = {};
+                    $J('tr', $J('#quotasTable')).each(function(){
+                        if($J(this).find('input:checkbox').is(':checked') == true){
+                            var auxMonthValues = [];
+                            $J(this).find('td input:text').each(function () {
+                                obj[$J(this).attr('id')] = Math.round((parseFloat(unformatNumber($J(this).val())))*100)/100; 
+                                                           
+                            });
+                        }
+                    });
+                    
+                    quotaValuesHandler.lastQuotaByPersonValuesById = obj;
+                    if(debug)log(obj);
+                },
+   
+                
+                getLastQuotaByPersonValuesById:function(){
+                    return quotaValuesHandler.lastQuotaByPersonValuesById; 
+                },
+                
+                /**
+                 * getSumOfLastQuotaByPersonMonthValues gets the sum of lastQuotaByPersonValuesById. Currenty it's used in copyValuesFromPlanToPerson
+                 */
+                getSumOfLastQuotaByPersonMonthValues: function(){
+                    var totalMonthSum = 0;
+                    jQuery.each(quotaValuesHandler.getLastQuotaByPersonValuesById(), function(key, value){ 
+                      if($J(document.getElementById(key)).parent().attr('class').search("quarter")!=-1){//this IF works to only filter months
+                          totalMonthSum = totalMonthSum + value;
+                      }
+                    });
+                    return totalMonthSum;
+                },
+                
+                /**
+                 * getSumOfLastQuotaByPersonQuarterValues gets the sum of lastQuotaByPersonValuesById. Currenty it's used in copyValuesFromPlanToPerson
+                 */
+                getSumOfLastQuotaByPersonQuarterValues: function(){
+                    var totalQuarterSum = 0;
+                    jQuery.each(quotaValuesHandler.getLastQuotaByPersonValuesById(), function(key, value){ 
+                      if($J(document.getElementById(key)).parent().attr('class')=='quotaGroup'){//this IF works to only filter quarters
+                          totalQuarterSum = totalQuarterSum + value;
+                      }
+                    });
+                    return totalQuarterSum;
+                },
+
+                                
+                /**
+                 * Gets the selected radio button frequency from Quota by Plan.
+                 */
+                getSelectedFrequency: function(){
+                    
+                    return selectedFrequency;
+                    
+                },
+                
+                /**
+                 * The same as above but sets. It's used when the page is loaded.
+                 */
+                setSelectedFrequency: function(freq){
+                    
+                    //next line we assign the selected frequency to apex:inputHidden quotaFrequency
+                    
+                    var frequency = '';
+
+                    $J('#quotaByPlanBlock th div.frequency').each(function(){
+                    
+                        if($J(this).hasClass('disable')==false){
+                    
+                            frequency = $J(this).next().find('input').val();
+                        
+                        }   
+                    
+                    });
+                    
+                    $J("input[id$='quotaFrequency']").val(frequency);
+                    selectedFrequency = frequency;
+                    
+                    if(debug)log('quotaValuesHandler.setSelectedFrequency.selectedFrequency = '+selectedFrequency);
+                    
+                }
+                
+            }
+        }();   
+        
+        
+        
+        
+        /**
+         * @author Alvaro Olivencia 04/27/10
+         * This js object handles all grid calculations.
+         * Important: to keep this object working, please don't change 1)class names, 2)class definition order or 3)ids from the table quotaByPlanBlock,
+         * I mean the ones defined into the table tags, i.e.: "grayLight monthFromQuarter1 Month". frequencyGridCalculator methods look for
+         * node class names like this: obj.attr('class').split(' ')[1].substr(16), this means that if you change
+         * class names or even class definition order, this code wont work any more.
+         */
+        var frequencyGridCalculator = function(){
+            
+            var debug = true;
+            
+            //reference to grid edited node
+            var editedNode = new Object();
+            
+            //the grid(table) object where our script will run 
+            var grid = new Object();
+            
+            var yearTotal = 0;
+            
+            var setGrid = function(g){
+        
+                grid = jQuery(g);
+                
+            }
+            
+            var getGrid = function(){
+                
+                return grid;
+                
+            }
+            
+            var getYearTotal = function(){
+                
+                return yearTotal;
+                
+            }
+            
+            var setEditedNode = function(node){
+                
+                editedNode = node;
+                
+            }
+            
+            var getEditedNode = function(){
+                
+                return editedNode;
+                
+            }
+            
+            /**
+             * Sum of all quarters
+             */
+            var totalYear = function(){
+                
+                var quarterSum = 0
+                        
+                $J('#quotaByPlanBlock tbody td.Quarter input').each(function (index) {
+                
+                    var v = jQuery.trim(unformatNumber($J(this).val()));
+                    var val = (v != '')? v : 0;  
+                    quarterSum = quarterSum + parseFloat(val);
+                
+                });
+                
+                return quarterSum = formatNumber(parseFloat(unformatNumber(quarterSum)).toFixed(2));
+                
+            }
+            
+            //Get the sum of all quarters and update the year with this sum.
+            var setTotalQuarter = function(){
+                
+                var quarterSum = totalYear();
+                
+                $J('#year input').val(quarterSum);
+                $J('#year div').html(quarterSum);
+                
+                yearTotal = quarterSum;
+                
+            }
+            
+            var getTotalMonth = function(){
+                
+                var totalMonth = 0;
+                    
+                $J('#quotaByPlanBlock tbody td.Month').each(function (index){
+                    
+                    totalMonth = totalMonth + parseFloat(unformatNumber($J('input',$J(this)).val()));
+                    
+                });
+                
+                if(totalMonth == 0){
+                    
+                    //return formatNumber($J('#year div').html());
+                    return formatNumber(0);
+                    
+                }else{
+                    
+                    return formatNumber(Math.round(totalMonth*100)/100);
+                    
+                }
+                    
+                
+            }
+            
+            /**
+             * updatePercentageColumn updates all percentage rows
+             */
+            var updatePercentageColumn = function(){
+                
+                var quarterPorcentage = Math.round((parseFloat(getEditedNode().val()) * 100 / parseFloat(unformatNumber($J('.Year input').val())))*100)/100;
+                
+                if(isNaN(quarterPorcentage))
+                    quarterPorcentage = 0;
+                                            
+                //number that we use to find it.
+                var editedNumber = getEditedNode().parent().attr('id').substr(7);
+                
+                //and here we are getting the corresponding quarterPorcentage and seting its value.
+                $J('#quarterPorcentage' + editedNumber + ' input').val(quarterPorcentage);
+                $J('#quarterPorcentage' + editedNumber + ' div').html(quarterPorcentage + '%');
+                
+                //then we get the rest to distribute among the left quarters
+                var quarterPorcentageRest = Math.round(((100 - quarterPorcentage)/3)*100)/100;
+                
+                if(isNaN(quarterPorcentageRest))
+                    quarterPorcentageRest = 0;
+                
+                //and finally we assing it
+                $J('td[id^="quarterPorcentage"]').each(function (index) {
+                    
+                    //while the quarter is other than the first edited...
+                    if($J(this).attr('id') != $J('#quarterPorcentage' + editedNumber).attr('id')){
+                        
+                       $J('input',$J(this)).val(quarterPorcentageRest);
+                       $J('div',$J(this)).html(quarterPorcentageRest + '%');
+                       
+                    }
+                    
+                    //Next we must define the percentage for each month.
+                    var percentagePerMonth = Math.round((parseFloat($J('input',$J(this)).val())/3)*100)/100;
+                    
+                    var editedQuarterNumber = $J(this).attr('id').substr(17);
+                    
+                    $J('td[class*="percentageFromQuarter' + editedQuarterNumber+'"]').each(function (index) {
+                    
+                        $J('input',$J(this)).val(percentagePerMonth);
+                        $J('div',$J(this)).html(percentagePerMonth + '%');
+                        
+                    });
+                
+                });
+                
+            }
+            
+            /**
+             * updateMonthlyPercentages divides each percentage quarter / 3 and assing the result over
+             * each related monthly percentage.
+             */
+            var updateMonthlyPercentages = function(){
+                
+                $J('.percentQuarter').each(function (index) {
+                            
+                    var editedQuarterNumber = $J(this).attr('id').substr(17);
+                    
+                    var monthValue = Math.round(($J('input',$J(this)).val()/3)*100)/100;
+                    
+                    $J('.percentageFromQuarter'+editedQuarterNumber).each(function(){
+                        
+                        $J('input',$J(this)).val(monthValue);
+                        $J('div',$J(this)).html(formatNumber(monthValue)+'%');
+                        
+                    });
+                    
+                });
+                
+            }
+            
+            return{
+                
+                /**
+                 * init is the point entry method
+                 */
+                init: function(myGrid){
+                    
+                    if(myGrid!=undefined)
+                        setGrid(myGrid);
+                    else
+                        log('initialization error: init() missing parameter');
+                        
+                    //Next we define the blur event to every input text of our grid    
+                    $J('input:text', getGrid()).blur(function() {
+                    
+                        $J(this).val(formatNumber(unformatNumber($J(this).val())));
+                        
+                        //If the current field value ($J(this).val()), is equal to the one stored in quotaValuesHandler.getOldColumnValues()[N],
+                        //we shouldn't update any value, and therefore we return false
+                        if(quotaValuesHandler.getOldColumnValues()[$J(this).parent().attr('id')] == $J(this).val()){
+                            
+                            return false;
+                            
+                        }
+                        
+                        //Next we get the column name( year, month, quarter, percentage ) that was edited ( or not )
+                        var className = jQuery.trim($J(this).parent().attr('class'));
+                        className = className.split(' ');
+                        
+                        /*if(debug)
+                            log('edited column: '+className[className.length - 1]);*/
+                            
+                        //setEditedNode sets the current edited node. This is used in other processes. ( look for getEditedNode )    
+                        setEditedNode($J(this));
+                        
+                        //Next for executes all functions related to the clicked input field
+                        for(func in frequencyGridCalculator['onEdit' + className[className.length - 1]]){
+                        
+                            //This line execute each function associated, i.e.: 
+                            //onEditYear.updateYearColumn()
+                            //onEditYear.updateYearColumn.updateQuarterColumn()
+                            //onEditYear.updateMonthColumn()
+                            
+                            frequencyGridCalculator['onEdit' + className[className.length - 1]][func]();
+                            
+                        }
+                        
+                        //Eeach time we define a new value we must format the divs values
+                        $J('input:text', getGrid()).siblings().each(function (index) {
+                        
+                            if(!$J(this).parent().hasClass('percent')){
+                                
+                                var value = formatNumber($J(this).siblings().val());
+                                $J(this).html(value);
+                                
+                            }
+                            
+                        }); 
+                        
+                        //finally we store quota by plan values
+                        quotaValuesHandler.setOldColumnValues();//stores values from quota by plan
+                        
+
+                    });
+                    
+                    /////Next pice of code fills/loads Quota by Plan///// 
+                    //next we define the percentages values:
+                    //first we calculate the quarter percentages
+                    $J('#quotaByPlanBlock tbody td.Quarter input').each(function(index){
+                        
+                        index++;
+                        var year = $J('#year input').val();
+                        var quarterPercentage = 0;
+                        
+                        if(year != 0){
+                            quarterPercentage = Math.round(10000 * parseFloat(unformatNumber($J(this).val())) / parseFloat(unformatNumber(year))) / 100;
+                        }
+                        $J('#quarterPorcentage' + index + ' input').val(quarterPercentage);
+                        $J('#quarterPorcentage' + index + ' div').html(formatNumber(quarterPercentage)+'%');
+                    
+                    });
+                    
+                    //we use some other method to calculate/update the others Quota by Person Columns
+                    
+                    
+                    //we get the month column total:
+                    var totalMonth = getTotalMonth();
+                    $J('#totalMonth').html(totalMonth);
+                    
+                    //sets the year total:
+                    if($J("input[id$='quotaFrequency']").val()!='Year'){
+                        
+                        frequencyGridCalculator.onEditQuarter.updateYearColumn();
+                        
+                    }else{
+                        
+                        $J('#totalYear').html(totalMonth);
+                        
+                    }
+                    
+                    //sets the quarter total:
+                    frequencyGridCalculator.onEditQuarter.updateQuarterColumn();
+                    
+                    
+                    //Next pice of code formats the divs and inputs values, for example 150,000.00
+                    $J('#quotaByPlanBlock tbody td div').each(function() {
+    
+                        if($J(this).parent().hasClass('Quarter') || $J(this).parent().hasClass('Month'))
+                            $J(this).html(formatNumber(parseFloat($J(this).html()).toFixed(2)));
+                    
+                    });
+                    
+                    $J('#quotaByPlanBlock tbody td input').each(function() {
+
+                        if($J(this).parent().hasClass('Quarter') || $J(this).parent().hasClass('Month') || $J(this).parent().hasClass('Year'))
+                            $J(this).val(formatNumber(parseFloat(unformatNumber($J(this).val())).toFixed(2)));
+                    
+                    });  
+                    
+                    //and finally we calculate monthly percentages.
+                    updateMonthlyPercentages();
+                    
+                    frequencyGridCalculator.onEditYear.updateYearColumn();
+                },
+                
+                /**
+                 * isTotalPercentageValid checks if the sum of percentage rows is valid 
+                 **/
+                isTotalPercentageValid: function(){
+                    
+                    var totalPercent = 0;
+                    $J('.monthlyPercentage input').each(function(){
+                    
+                        totalPercent = totalPercent + parseFloat($J(this).val());
+                    
+                    });
+                    
+                    totalPercent = Math.round(totalPercent*100)/100;
+                    
+                    if(debug)log('frequencyGridCalculator.isTotalPercentageValid.totalPercent= '+ totalPercent);
+                    
+                    if($J('#percent').is(':checked')== false){
+                        
+                        return true;
+                        
+                    }else if(totalPercent != 99.96 && totalPercent != 100.02 && totalPercent != 100){
+                         
+                        return false;      
+                        
+                    }else{
+                        
+                        return true;
+                        
+                    }
+                    
+                },
+                /**
+                 * returns true if all table texts fields are positive numbers               
+                 */
+                isThereANegativeValue: function(){
+                    
+                    var returnValue = false;
+
+                    $J('#quotaByPlanBlock tbody td input').each(function (index){
+                    
+                        if(parseFloat(unformatNumber($J(this).val())) < 0 && $J(this).attr('datatype')!='percentage'){
+                            
+                            return returnValue = true;
+                        
+                        }    
+                                
+                    });
+                    
+                    return returnValue;
+                    
+                },
+                
+                onEditYear:{
+                    
+                    //year / 4 and the result is assigned to each quarter 
+                    updateQuarterColumn: function(){
+                        
+                        if(debug)log('runing onEditYear.updateQuarterColumn()');
+                            
+                        if($J('#QuarterTH').hasClass('disable')){
+                        
+                            return;
+                        
+                        }
+                        $J('.Year input').val($J.trim($J('.Year input').val()));
+                        var newQuarterValue = parseFloat(unformatNumber($J('.Year input').val()))/4;
+                        
+                        newQuarterValue = formatNumber(parseFloat(newQuarterValue).toFixed(2));
+                        
+                        
+                        $J('#quotaByPlanBlock tbody td.Quarter').each(function (index) {
+                            
+                            $J('input',$J(this)).val(newQuarterValue);
+                            $J('div',$J(this)).html(newQuarterValue);
+                            
+                        });
+                        
+                        $J('#totalQuarter').html(totalYear());
+                        
+                    },
+                    
+                    //year / 12 and the result is assigned to each month
+                    updateMonthColumn: function(){
+                        
+                        if(debug)log('runing onEditYear.updateMonthColumn()');
+                            
+                        if($J('#QuarterTH').hasClass('disable')){
+                        
+                            return;
+                        
+                        }
+                        $J('#year input').val($J.trim($J('#year input').val()));
+                        
+                        var newMonthValue = parseFloat(unformatNumber($J('#year input').val())) /12;
+
+                        newMonthValue = formatNumber(parseFloat(newMonthValue).toFixed(2));
+
+                        $J('#quotaByPlanBlock tbody td.Month').each(function (index) {
+                             
+                            $J('input',$J(this)).val(newMonthValue);
+                            $J('div',$J(this)).html(newMonthValue);
+                            
+                        });
+                        
+                        var totalMonth = getTotalMonth();
+                        $J('#totalMonth').html(totalMonth);
+                        
+                        
+                    },
+                    
+                    updateYearColumn: function(){
+                        
+                        if(debug)log('runing onEditYear.updateYearColumn()');
+                        $J('#year input').val($J.trim($J('#year input').val()));
+                        
+                        $J('#totalYear').html($J('#year input').val());
+                        
+                    }
+                    
+                },
+                
+                onEditQuarter:{
+                    
+                    //get total quarter and it's assigned to year
+                    updateYearColumn: function(){
+                        
+                        if(debug)log('runing onEditQuarter.updateYearColumn()');
+
+                        setTotalQuarter();
+
+                        $J('#totalYear').html(getYearTotal());
+                        
+                    },
+                    /**
+                     * updateMonthColumn sets  
+                     */
+                    updateMonthColumn: function(){
+                        
+                        if(debug)log('runing onEditQuarter.updateMonthColumn()');
+                        
+                        var totalMonth = 0;
+                        
+                        $J('#quotaByPlanBlock tbody td.Month').each(function (index){
+                            
+                            var monthClasses = $J(this).attr('class').split(' ');
+                            var quarterNumber = monthClasses[1].substr(16);
+                            $J('#quarter' + quarterNumber + ' input').val($J.trim($J('#quarter' + quarterNumber + ' input').val()));
+                            
+                            
+                            var v = jQuery.trim(unformatNumber($J('#quarter' + quarterNumber + ' input').val()));
+                            var val = (v != '')? v : 0;  
+                            
+                            var monthValue = parseFloat(val) / 3;
+                            var monthValueToShow = (parseFloat(val) / 3);
+                            monthValueToShow = formatNumber(parseFloat(unformatNumber(monthValueToShow )).toFixed(2));
+                            $J('input',$J(this)).val(monthValueToShow);
+                            $J('div',$J(this)).html(monthValueToShow);
+                            
+                            totalMonth = totalMonth + monthValue;
+                            
+                        });
+                        
+                        //and finally we set the value of total month column
+                        $J('#totalMonth').html(formatNumber(Math.round(totalMonth*100)/100));
+                        
+                    },
+                    
+                    updatePercentageColumn: function(){
+                        
+                        if(debug)log('runing onEditQuarter.updatePercentageColumn()');
+                        
+                        updatePercentageColumn();       
+                        
+                    },
+                    
+                    updateQuarterColumn: function(){
+                    
+                        if(debug)log('runing onEditQuarter.updateQuarterColumn()');
+                            
+                        //var totalQuarter = ((parseFloat(unformatNumber($J('#quarter1 input').val())) + parseFloat(unformatNumber(($J('#quarter2 input').val()))) + parseFloat(unformatNumber($J('#quarter3 input').val())) + parseFloat(unformatNumber($J('#quarter4 input').val())))*100)/100;  
+                      
+                        $J('#totalQuarter').html(getYearTotal());
+                    
+                    }
+                    
+                },
+                
+                onEditMonth:{
+                    
+                    updateQuarterColumn: function(){
+                        
+                        if(debug)log('runing onEditMonth.updateQuarterColumn()');
+                        
+                        //Sum all months per quarter:
+                        
+                        //get current edited motnh
+                        var month = getEditedNode().parent().attr('id');                        
+                        $J('#'+month+' input').val($J.trim($J('#'+month+' input').val()));
+                        
+                        var quater1Total = parseFloat(unformatNumber($J('#month1 input').val())) + parseFloat(unformatNumber($J('#month2 input').val())) + parseFloat(unformatNumber($J('#month3 input').val()));
+                        quater1Total = formatNumber(parseFloat(unformatNumber(quater1Total)).toFixed(2));
+                        $J('#quarter1 div').html(quater1Total);
+                        $J('#quarter1 input').val(quater1Total);
+                        
+                        var quater2Total = parseFloat(unformatNumber($J('#month4 input').val())) + parseFloat(unformatNumber($J('#month5 input').val())) + parseFloat(unformatNumber($J('#month6 input').val()));
+                        quater2Total = formatNumber(parseFloat(unformatNumber(quater2Total)).toFixed(2));
+                        $J('#quarter2 div').html(quater2Total);
+                        $J('#quarter2 input').val(quater2Total);
+                        
+                        var quater3Total = parseFloat(unformatNumber($J('#month7 input').val())) + parseFloat(unformatNumber($J('#month8 input').val())) + parseFloat(unformatNumber($J('#month9 input').val()));
+                        quater3Total = formatNumber(parseFloat(unformatNumber(quater3Total)).toFixed(2));
+                        $J('#quarter3 div').html(quater3Total);
+                        $J('#quarter3 input').val(quater3Total);
+                        
+                        var quater4Total = parseFloat(unformatNumber($J('#month10 input').val())) + parseFloat(unformatNumber($J('#month11 input').val())) + parseFloat(unformatNumber($J('#month12 input').val()));
+                        quater4Total = formatNumber(parseFloat(unformatNumber(quater4Total)).toFixed(2));
+                        $J('#quarter4 div').html(quater4Total);
+                        $J('#quarter4 input').val(quater4Total);
+                        
+                        
+                        //Next we get the quartal that belongs to the edited month. We do this by accessing the 2nd class name from the edited month
+                        var editedNumber = getEditedNode().parent().attr('class').split(' ')[1].substr(16);
+                        //We define the last modified quarter, the one belonging to the last edited month. We need to do this
+                        //because this quarter is used on onEditMonth -> updatePercentageColumn -> updatePercentageColumn 
+                        setEditedNode($J('#quarter' + editedNumber + ' input'));
+                       
+                    },
+                    updateYearColumn: function(){
+                        
+                        if(debug)log('runing onEditMonth.updateYearColumn()');
+                        
+                        setTotalQuarter();
+                        //patch: next line should be defined into updateQuarterColumn, but because getYearTotal must be called after 
+                        //setTotalQuarter, I had to call it here.
+                        $J('#totalQuarter').html(formatNumber(getYearTotal()));
+                        $J('#totalYear').html(formatNumber(getYearTotal()));
+                       
+                    },
+                    updatePercentageColumn: function(){
+                        
+                        if(debug)log('runing onEditMonth.updatePercentageColumn()');
+                        
+                        updatePercentageColumn();
+                        
+                    },
+                    updateMonthColumn: function(){
+                        
+                        if(debug)log('runing onEditMonth.updateMonthColumn()');
+                        
+                        $J('#totalMonth').html($J('#totalQuarter').html());
+                        
+                    }
+                    
+                },
+                
+                onEditpercent:{
+                    
+                    /**
+                     * Next method is meant to update only monthly percentage values realted to a given quarter. 
+                     */
+                     /*updateLeftMonthlyPercentagesFromQuarter: function(){
+                        if(getEditedNode().parent().hasClass('monthlyPercentage')){
+                             //Nex line we get the quarter number related to the edited monthly percentage
+                             var editedNumber = getEditedNode().parent().attr('class').split(' ')[1].substr(21);
+                             //Now we want to calculate the percentage values related this quarter.
+                             //First we get the rest ( (quarterPorcentage - new monthly percentage) / 2 )
+                             var monthlyPercentageRest = ((parseFloat(unformatNumber($J('#quarterPorcentage' + editedNumber + ' input').val())) - parseFloat(unformatNumber(getEditedNode().val())) ) /2).toFixed(2);
+                             //monthlyPercentageRest must be assigned to the monthly percentages, but other than the one edited.
+                             $J('.percentageFromQuarter' + editedNumber).each(function (index) {
+                                if($J(this).attr('id') != getEditedNode().parent().attr('id')){
+                                   $J('input',$J(this)).val(monthlyPercentageRest);
+                                   $J('div',$J(this)).html(monthlyPercentageRest + '%');
+                                }
+                             });
+                        }
+                    },*/
+                    /**
+                     * Next method only is executed when the user edits a percentage quarter.
+                     */
+                    updateMonthlyPercentages: function(){
+                        
+                        if(debug)log('runing onEditpercent.updateMonthlyPercentages()');
+                        
+                        if(getEditedNode().parent().hasClass('percentQuarter')){
+                            
+                            updateMonthlyPercentages();
+
+                        }
+                        
+                    },
+                    
+                    /**
+                     * updateMonthColumn recalculates each month based on the total year and monthly percentages.
+                     */
+                    updateMonthColumn: function(){
+                        
+                        if(debug)log('runing onEditpercent.updateMonthColumn()');
+                        
+                        //if(getEditedNode().parent().hasClass('monthlyPercentage')){
+                            
+                        /*
+                        //Now we need to update the month values in dependency of the new monthly percentages
+                        // First we will update the month that belong to the updated monthly percentage.
+                        var monthlyPercentageNumber = getEditedNode().parent().attr('id').substr(10);
+                        
+                        //new monthly percentage * belonging month value / old monthly percentage.
+                        var newMonthValue = (parseFloat(unformatNumber(getEditedNode().val())) * parseFloat(unformatNumber($J('#month' + monthlyPercentageNumber + ' input').val())) / quotaValuesHandler.getOldColumnValues()[getEditedNode().parent().attr('id')]).toFixed(2);
+                        $J('#month' + monthlyPercentageNumber + ' input').val(newMonthValue);
+                        $J('#month' + monthlyPercentageNumber + ' div').html(newMonthValue + '%');
+                        */
+                        
+                        var totalMonth = 0;
+                        var monthValue = 0;
+                        $J('.monthlyPercentage input').each(function(index){
+                            index++;
+                            monthValue = Math.round((parseFloat(unformatNumber($J('#year input').val())) * parseFloat(unformatNumber($J(this).val())) / 100 )*100)/100;
+                            $J('#month' + index +  ' input').val(monthValue);
+                            $J('#month' + index +  ' div').html(formatNumber(monthValue));
+                            totalMonth = totalMonth + monthValue;
+                            
+                        });
+                         
+                        //and finally we set the value of total month column
+                        
+                        $J('#totalMonth').html(formatNumber(Math.round(totalMonth*100)/100));
+                        //}
+                        
+                    },
+                    
+                    /**
+                     * Next function updates a give percentage quarter, it only updates a percentage quarter when the edited percentage is monthlyPercentage
+                     */
+                    updateQuarterPercentage: function(){
+                        
+                        if(debug)log('runing onEditpercent.updateQuarterPercentage()');
+                        
+                        if(getEditedNode().parent().hasClass('monthlyPercentage')){
+                        
+                            var editedNumber = getEditedNode().parent().attr('class').split(' ')[1].substr(21);
+                                
+                            var totalQuarterPercentage = 0;
+                            
+                            $J('.percentageFromQuarter' + editedNumber).each(function (index) {
+                                
+                                totalQuarterPercentage = totalQuarterPercentage + parseFloat(unformatNumber($J('input',$J(this)).val()));
+                             
+                            });
+                            
+                            totalQuarterPercentage = Math.round(totalQuarterPercentage*100)/100;
+                            $J('#quarterPorcentage' + editedNumber + ' input').val(totalQuarterPercentage);
+                            $J('#quarterPorcentage' + editedNumber + ' div').val(totalQuarterPercentage);
+                        
+                        }
+                    }
+                    
+                }
+                
+            }
+            
+        }();
+        
+
+        /**
+         * @author alvaro olivencia 05/18/10
+         * quotaByPersonHandler handles new Quotas by Person features. 
+         */
+        var quotaByPersonHandler = function(){
+            
+            var debug = true;
+            
+            /**
+             * updateQuarterColumns updates quarter vaules when an Annual Quota is redefined by the user
+             */
+            var updateQuarterColumns = function(obj){
+                        
+                if(debug)log('quotaByPersonHandler.updateQuarterColumns()');
+                
+                var newQuarterValue = parseFloat(unformatNumber(obj.val()))/4;              
+                newQuarterValue = formatNumber(parseFloat(unformatNumber(newQuarterValue)));
+                
+                //This selector gets quarters TDs that only belong to edited Annual Quota.
+                $J('td.quotaGroup', obj.parents('#quotasTable tr')).each(function (index) {
+                    $J('input',$J(this)).val(newQuarterValue);
+                    $J('div',$J(this)).html(newQuarterValue);                                              
+                })
+            }
+            
+            /**
+             * updateMonthColumns updates month vaules when an Annual Quota is redefined by the user
+             */
+            var updateMonthColumns = function(obj){
+                        
+                if(debug)log('quotaByPersonHandler.updateMonthColumn()');
+                
+                var newMonthValue = parseFloat(unformatNumber(obj.val()))/12;
+                newMonthValue = formatNumber(parseFloat(unformatNumber(newMonthValue)).toFixed(2));
+                
+                var rowNumber = obj.attr('class').replace(/hiddenVal row/,'');
+                var row = jQuery('#quotasTable tr').eq(rowNumber);
+    
+                //This selector gets monht TDs that only belong to edited Annual Quota.
+                row.find('td[class*="quarter"]').each(function(index){
+                    $J('input',$J(this)).val(newMonthValue);
+                    $J('div',$J(this)).html(newMonthValue);
+                });
+            }
+            
+            return {
+                
+                init: function(){
+                    
+                    $J('td.annualTd input', $J('#quotasTable')).blur(function(){
+                        //check if the current input field value is different than the one stores in lastQuotaByPersonValuesById
+                        if(quotaValuesHandler.getLastQuotaByPersonValuesById()[$J(this).attr('id')] == Math.round((parseFloat(unformatNumber($J(this).val())))*100)/100){
+                            return false;
+                        }
+                        updateQuarterColumns($J(this));
+                        updateMonthColumns($J(this));
+                        quotaValuesHandler.setLastQuotaByPersonValuesById();       
+                            
+                    });
+                    
+                    //each time we click on the checkboxes we must run setLastQuotaByPersonValues();
+                    $J('td input:checkbox', $J('#quotasTable')).click(function(){
+                        quotaValuesHandler.setLastQuotaByPersonValuesById();
+                    });
+                    quotaValuesHandler.setLastQuotaByPersonValuesById();//stores values from quota by person by input field id 
+                                    
+                },
+                calcVals: function(){
+                    $J('td.annualTd input', $J('#quotasTable')).each(function(){
+                        updateQuarterColumns($J(this));
+                        updateMonthColumns($J(this));
+                        quotaValuesHandler.setLastQuotaByPersonValuesById();
+                    });
+                }              
+            }   
+            
+        }();
+       
+       var _maxViewPort;
+       var _minViewPort;
+       var _whiteLocation;
+         
+       function fixCelsDimensions() {
+            initFixedCelsTable();
+            
+            var tcont = $J('#tcont');
+            var quotasTable = $J('#quotasTable');
+            var cols = $J('#cols');
+            var recordsList = $J('#recordsList');
+            var scroller = $J('#scroller');
+            var tableContainer2 = $J('div.tableContainer2');
+            var cells = $J('#cells');
+            
+            $J('td',tcont).width(0);
+            $J('td',quotasTable).width(0);
+            tcont.width(0);
+            quotasTable.width(0);
+            
+            var headersCels = $J('td:visible',tcont);
+            var TablesWidth = 0;
+            for (var i=0; i < headersCels.length; i++) {
+                if($J(headersCels[i]).css('display') != 'none'){
+                    var iterHeaderCel = headersCels[i];
+                    var oneCel = $J('td:visible',quotasTable)[i];
+                    var newWidth = Math.max($J(oneCel).outerWidth()+20,$J(headersCels[i]).outerWidth()+20);
+                    iterHeaderCel.style.width = newWidth + 'px';
+                    oneCel.style.width = newWidth + 'px';
+                    $J('div', $J(iterHeaderCel)).width(newWidth);
+                    $J('div', $J(oneCel)).width(newWidth);
+                    TablesWidth += newWidth;
+                }   
+            }
+            tcont.width(TablesWidth);
+            quotasTable.width(TablesWidth);
+            TablesWidth < 711 ? adjustQuotaTable(TablesWidth+16) : adjustQuotaTable(711);
+            
+            var TableHeight = cols.height() + quotasTable.height();
+            $J('#colsContainer').css('width', TablesWidth + 'px');
+            recordsList.css('width', TablesWidth + 'px');
+            $J('#scrollCont').css('width', TablesWidth + 'px');
+            cells.css('width', TablesWidth + 'px');
+            cols.css('width', TablesWidth + 'px');
+            cols.css('max-width', '695px');
+            scroller.css('width', TablesWidth + 17 + 'px');
+            scroller.css('max-width', '712px');
+            scroller.css('height', TableHeight + 16 + 'px');
+            scroller.css('max-height', '430px');     
+            tableContainer2.css('height', TableHeight + 16 + 'px');
+            tableContainer2.css('max-height', '430px');
+            recordsList.css('height', TableHeight + 'px'); 
+            cells.css('height', TableHeight + 'px');
+            cells.css('max-height', '383px');
+            cells.css('max-width', '695px');
+            $J('#scrollCont').css('height', TableHeight + 'px');
+            $J('div.FixedCelsTable').css('height', TableHeight + 16 + 'px');
+        }
+        
+        function initFixedCelsTable(){
+            adjustCells();
+            scrollFixedCelsTable();
+            document.getElementById('scroller').style.display = '';
+        }
+        
+        function adjustCells(){
+            if(document.getElementById('recordsList') != null){
+                _maxViewPort = document.getElementById('recordsList').offsetWidth;
+                _minViewPort = document.getElementById('recordsList').offsetWidth;
+                if(_minViewPort > 0){
+                    document.getElementById('cells').style.width = _minViewPort + 'px';
+                    document.getElementById('cols').style.width = _minViewPort + 'px';
+                }   
+            }
+        }
+        
+        function scrollFixedCelsTable(){
+            if(document.getElementById(_whiteLocation) != null){
+                var theElement = document.getElementById(_whiteLocation);
+                var selectedPosX = 0;
+                var selectedPosY = 0;
+                  
+                while(theElement != null){
+                  selectedPosX += theElement.offsetLeft;
+                  selectedPosY += theElement.offsetTop;
+                  theElement = theElement.offsetParent;
+                  window.scrollTo(0,selectedPosY);
+                }
+            }
+        }
+        
+        function scrollContent(){
+            document.getElementById('cells').scrollLeft = document.getElementById('scroller').scrollLeft;
+            document.getElementById('cells').scrollTop = document.getElementById('scroller').scrollTop;
+            document.getElementById('cols').scrollLeft = document.getElementById('scroller').scrollLeft;
+        }
+     </script>
+     
+     <script type="text/javascript" charset="UTF-8">
+     
+        $J(document).ready(function () {
+            
+            savePageHandler.storeBottomBarOnclickEvents();
+            quotaValuesHandler.init('{!JSENCODE(pqm.currentQuota.Frequency__c)}');
+            
+           
+            frequencyGridCalculator.init('.quotaByPlanBlock');
+            //setterInput();
+            //refreshAllPercents();
+              
+           
+           formatCells();
+            stripeRows();
+            setInputs();
+            storeValues();
+            introAsTab();
+            quotaByPersonHandler.init();
+            
+            loadAccordion();
+            setTimeout('fixCelsDimensions()',500);
+        });
+     
+     </script>
+     
+     
+</apex:page>

@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <enableFeeds>false</enableFeeds>
+    <fields>
+        <fullName>Family</fullName>
+        <picklist>
+            <picklistValues>
+                <fullName>AirMessenger</fullName>
+                <default>false</default>
+            </picklistValues>
+            <picklistValues>
+                <fullName>AirGate</fullName>
+                <default>false</default>
+            </picklistValues>
+            <picklistValues>
+                <fullName>Other not covered</fullName>
+                <default>false</default>
+            </picklistValues>
+            <picklistValues>
+                <fullName>OAM</fullName>
+                <default>false</default>
+            </picklistValues>
+            <picklistValues>
+                <fullName>Converged IP Telephony</fullName>
+                <default>false</default>
+            </picklistValues>
+            <picklistValues>
+                <fullName>Mobility Server</fullName>
+                <default>false</default>
+            </picklistValues>
+            <picklistValues>
+                <fullName>UMA</fullName>
+                <default>false</default>
+            </picklistValues>
+            <picklistValues>
+                <fullName>Rich Messaging Server</fullName>
+                <default>false</default>
+            </picklistValues>
+            <picklistValues>
+                <fullName>Presence Server</fullName>
+                <default>false</default>
+            </picklistValues>
+            <picklistValues>
+                <fullName>Social Aggregation</fullName>
+                <default>false</default>
+            </picklistValues>
+            <picklistValues>
+                <fullName>IP-SMSC</fullName>
+                <default>false</default>
+            </picklistValues>
+            <picklistValues>
+                <fullName>Routers</fullName>
+                <default>false</default>
+            </picklistValues>
+            <picklistValues>
+                <fullName>HTTP Gateways</fullName>
+                <default>false</default>
+            </picklistValues>
+            <picklistValues>
+                <fullName>Databases</fullName>
+                <default>false</default>
+            </picklistValues>
+            <picklistValues>
+                <fullName>Media Servers</fullName>
+                <default>false</default>
+            </picklistValues>
+            <picklistValues>
+                <fullName>EIR</fullName>
+                <default>false</default>
+            </picklistValues>
+            <picklistValues>
+                <fullName>XDMS</fullName>
+                <default>false</default>
+            </picklistValues>
+            <picklistValues>
+                <fullName>SMS Policy Engines</fullName>
+                <default>false</default>
+            </picklistValues>
+            <picklistValues>
+                <fullName>IMS Core</fullName>
+                <default>false</default>
+            </picklistValues>
+            <sorted>false</sorted>
+        </picklist>
+        <type>Picklist</type>
+    </fields>
+    <fields>
+        <fullName>Product_Type__c</fullName>
+        <externalId>false</externalId>
+        <label>Product Type</label>
+        <length>255</length>
+        <required>false</required>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <listViews>
+        <fullName>AllActive</fullName>
+        <columns>PRODUCT2.NAME</columns>
+        <columns>PRODUCT2.FAMILY</columns>
+        <columns>PRODUCT2.CREATED_DATE</columns>
+        <columns>Product_Type__c</columns>
+        <filterScope>Everything</filterScope>
+        <filters>
+            <field>PRODUCT2.ACTIVE</field>
+            <operation>equals</operation>
+            <value>1</value>
+        </filters>
+        <label>All Active</label>
+    </listViews>
+</CustomObject>

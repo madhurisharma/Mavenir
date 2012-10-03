@@ -1,0 +1,55 @@
+<apex:component >
+    <apex:attribute name="stepNumber" description="The Step Number" type="String" required="false" access="public"/>
+    <apex:attribute name="stepLabel" description="The Step Label" type="String" required="false" access="public"/>
+    <apex:attribute name="stepHelp" description="The Step Help" type="String" required="false" access="public"/>
+    <apex:attribute name="stepBreadcrumb" description="The Step Breadcrumb" type="String" required="false" access="public"/>
+    
+    <style>
+        .newHeader {
+            background: url("{!URLFOR($Resource.XactlyExpress__XactlySMBResources , 'img/layout/StepBar.png')}") no-repeat top left;
+			color: white;
+			font-weight: normal;
+			font-size: 12px;
+			position: relative;
+			overflow: visible;
+			margin: 0px 0 5px 22px;
+			padding: 0px 0px 0px 10px;
+			line-height: 21px;
+			height: 29px;
+			width: 1015px;
+		}
+		
+		.newHeader .step {
+			font-weight: bold;
+			font-size: 17px;
+		}
+		
+		.newHeader .stepNumber {
+			font-weight: bold;
+			font-size: 20px;
+		}
+		
+		.newHeader .stepLabel {
+		
+		}
+		
+		.newHeader .stepHelp {
+			position: absolute;
+			right: -10px;
+			top: -3.5px;
+		}
+		
+		.newHeader .stepBreadcrumb {
+		  position: absolute;
+		  top: 3px;
+		  right: 30px;
+		}
+    </style>
+    
+    <div class="newHeader">
+	    <span class="step">{!$Label.xactlyexpress__Step}</span><span class="stepNumber"> {!stepNumber} </span><span class="step">: </span>
+	    <apex:outputText styleclass="stepLabel" value="{!stepLabel}" />   
+	    <apex:outputText styleclass="stepBreadcrumb" value="{!stepBreadcrumb}" />  
+	    <a class="stepHelp" onmouseover="rerenderNoCompare = false;" onmouseout="rerenderNoCompare = true;" href="javascript: helpWindow = window.open('{!$Page.XactlySMBHelp}?page={!stepHelp}', 'Help','location=0,status=0,scrollbars=1,width=700px,height=500px'); helpWindow.moveTo(100,100);"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/icons/helpIcon.jpg')}" style="border:0px"/></a>
+	</div>  
+</apex:component>

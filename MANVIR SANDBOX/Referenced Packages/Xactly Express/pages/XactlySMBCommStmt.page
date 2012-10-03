@@ -1,0 +1,568 @@
+<!--
+ Developed by Timba Software Corp. www.timbasoftware.com admin@timbasoftware.com
+ This page lists plans
+ @author Guillermo Freire <guillermo.freire@gmail.com>
+-->
+<apex:page controller="XactlyExpress.XactlySMBCommStmtController" cache="true" sidebar="false" showHeader="false" standardStylesheets="false" contentType="application/vnd.ms-excel#{!SUBSTITUTE(name,' ','_')}_Commission_statement{!If(showDeals,'_Detailed','_Summary')}.xls">
+
+<table border="0" cellspacing="0">
+
+<tr valign="bottom">
+  <td width="300"></td>
+  <c:XactlySMBDummyCells ctl="{!thisInstance}" max="{!max}"/>
+</tr>
+
+<tr valign="bottom">
+  <td></td>
+  <td colspan="{!widthSummary}"><font size="5" face="Calibri"><b>{!$Label.CommissionStatement}</b></font></td>
+  <c:XactlySMBDummyCells ctl="{!thisInstance}" max="{!maxSummary}"/>
+</tr>
+
+<tr valign="bottom">
+  <td></td>
+  <td colspan="{!widthSummary}"><font size="5" face="Calibri">{!name}</font></td>
+  <c:XactlySMBDummyCells ctl="{!thisInstance}" max="{!maxSummary}"/>
+</tr>
+
+<tr valign="bottom">
+  <td></td>
+  <c:XactlySMBDummyCells ctl="{!thisInstance}" max="{!max}"/>
+</tr>
+
+<tr valign="bottom">
+  <td></td>
+  <td colspan="{!widthSummary/2}"><font size="3" face="Calibri"><b>{!periodName} pay period</b></font></td>
+  <td colspan="{!widthSummary/2}"><font size="3" face="Calibri">{!periodStartDate} - {!periodEndDate}</font></td>
+  <c:XactlySMBDummyCells ctl="{!thisInstance}" max="{!maxSummary}"/>
+</tr>
+
+<tr valign="bottom">
+  <td></td>
+  <c:XactlySMBDummyCells ctl="{!thisInstance}" max="{!max}"/>
+</tr>
+
+<tr valign="bottom">
+  <td></td>
+  <c:XactlySMBDummyCells ctl="{!thisInstance}" max="{!widthSummary}" color="#FFFFCC"/>
+  <c:XactlySMBDummyCells ctl="{!thisInstance}" max="{!maxSummary}"/>
+</tr>
+
+<tr valign="bottom">
+  <td></td>
+  <td bgcolor="#FFFFCC"></td>
+  <td><font size="3" face="Calibri"><b>{!$Label.TotalPay}</b></font></td>
+  <td align="right" ><font size="3" face="Calibri"><b>{!totalPayPlusManual}</b></font></td>
+  <td bgcolor="#FFFFCC" ></td>
+  <c:XactlySMBDummyCells ctl="{!thisInstance}" max="{!maxSummary}"/>
+</tr>
+
+
+
+
+<!-- FOR EACH PLAN -->
+
+<apex:repeat value="{!plans}" var="p">
+
+    <tr valign="bottom">
+      <td></td>
+      <td bgcolor="#FFFFCC"></td>
+      <c:XactlySMBDummyCells ctl="{!thisInstance}" max="{!widthSummary-2}"/>
+      <td bgcolor="#FFFFCC"></td>
+      <c:XactlySMBDummyCells ctl="{!thisInstance}" max="{!maxSummary}"/>
+    </tr>
+
+
+    <tr valign="bottom">
+      <td></td>
+      <td bgcolor="#FFFFCC"></td>
+      <td><font size="3" face="Calibri"><u>{!p.p.name}</u></font></td>
+      <td align="right"><font size="3" face="Calibri">{!p.totalCompensationS}</font></td>
+      <td bgcolor="#FFFFCC"></td>
+      <c:XactlySMBDummyCells ctl="{!thisInstance}" max="{!maxSummary}"/>
+    </tr>
+
+    <!-- FOR EACH MEASURE -->
+    <apex:repeat value="{!p.payrollCategories}" var="pc">
+    
+        <tr valign="bottom">
+              <td></td>
+              <td bgcolor="#FFFFCC"></td>
+              <td><font size="3" face="Calibri">{!pc.name}</font></td>
+              <td align="right" ><font size="3" face="Calibri">{!pc.totalCompensationS}</font></td>
+              <td bgcolor="#FFFFCC"></td>
+              <c:XactlySMBDummyCells ctl="{!thisInstance}" max="{!maxSummary}"/>
+            </tr>
+    
+        <apex:repeat value="{!pc.measures}" var="m">
+        
+            <tr valign="bottom">
+              <td></td>
+              <td bgcolor="#FFFFCC"></td>
+              <td align="right" ><font size="3" face="Calibri">{!m.name}</font></td>
+              <td align="right" ><font size="3" face="Calibri">{!m.totalCompensation}</font></td>
+              <td bgcolor="#FFFFCC"></td>
+              <c:XactlySMBDummyCells ctl="{!thisInstance}" max="{!maxSummary}"/>
+            </tr>
+        
+        </apex:repeat>
+    </apex:repeat>
+    <!-- 
+    <tr valign="bottom">
+       <td></td>
+       <td bgcolor="#FFFFCC"></td>
+       <td align="left" ><font size="3" face="Calibri">{!$Label.ManualAdjustments}</font></td>
+       <td align="right" ><font size="3" face="Calibri">{!p.manualAdjustmentStr}</font></td>
+       <td bgcolor="#FFFFCC"></td>
+       <c:XactlySMBDummyCells ctl="{!thisInstance}" max="{!maxSummary}"/>
+     </tr>
+     -->
+</apex:repeat>
+
+    <tr valign="bottom">
+      <td></td>
+      <td bgcolor="#FFFFCC"></td>
+      <c:XactlySMBDummyCells ctl="{!thisInstance}" max="{!widthSummary-2}"/>
+      <td bgcolor="#FFFFCC"></td>
+      <c:XactlySMBDummyCells ctl="{!thisInstance}" max="{!maxSummary}"/>
+    </tr>
+
+    <tr valign="bottom">
+      <td></td>
+      <td bgcolor="#FFFFCC"></td>
+      <td><font size="3" face="Calibri"><u>
+        <apex:outputText value="{!$Label.xactlyexpress__CurrentLiabilityBalance}">
+            <apex:param value="{!currentSettings.liabilityCap}"/>
+        </apex:outputText>
+      </u></font></td>
+      <td align="right" ><font size="3" face="Calibri">{!liability}</font></td>
+      <td bgcolor="#FFFFCC"></td>
+      <c:XactlySMBDummyCells ctl="{!thisInstance}" max="{!maxSummary}"/>
+    </tr>
+    
+    <tr valign="bottom">
+      <td></td>
+      <td bgcolor="#FFFFCC"></td>
+      <td align="right" ><font size="3" face="Calibri">
+          <apex:outputText value="{!$Label.xactlyexpress__CurrentLiabilityManual}">
+              <apex:param value="{!currentSettings.liabilityCap}"/>
+          </apex:outputText>
+      </font></td>
+      <td align="right" ><font size="3" face="Calibri">{!liabilityManual}</font></td>
+      <td bgcolor="#FFFFCC"></td>
+      <c:XactlySMBDummyCells ctl="{!thisInstance}" max="{!maxSummary}"/>
+    </tr>
+
+<!-- END FOR EACH MEASURE -->
+<!-- 
+<tr valign="bottom">
+  <td></td>
+  <td bgcolor="#FFFFCC"></td>
+  <td align="left"><font size="3" face="Calibri">Other amounts</font></td>
+  <td></td>
+  <td bgcolor="#FFFFCC"></td>
+  <c:XactlySMBDummyCells ctl="{!thisInstance}" max="{!maxSummary}"/>
+</tr>
+
+<tr valign="bottom">
+  <td></td>
+  <td bgcolor="#FFFFCC"></td>
+  <td align="right" ><font size="3" face="Calibri">Draws</font></td>
+  <td align="right" ><font size="3" face="Calibri">{!draws}</font></td>
+  <td bgcolor="#FFFFCC"></td>
+  <c:XactlySMBDummyCells ctl="{!thisInstance}" max="{!maxSummary}"/>
+</tr>
+
+<tr valign="bottom">
+  <td></td>
+  <td bgcolor="#FFFFCC"></td>
+  <td align="right" ><font size="3" face="Calibri">Discretionary</font></td>
+  <td align="right" ><font size="3" face="Calibri">{!discretionary}</font></td>
+  <td bgcolor="#FFFFCC"></td>
+  <c:XactlySMBDummyCells ctl="{!thisInstance}" max="{!maxSummary}"/>
+</tr>
+
+<tr valign="bottom">
+  <td></td>
+
+  <td bgcolor="#FFFFCC"></td>
+  <td align="right" ><font size="3" face="Calibri">Adjustments</font></td>
+  <td align="right" ><font size="3" face="Calibri">{!adjustments}</font></td>
+  <td bgcolor="#FFFFCC"></td>
+  <c:XactlySMBDummyCells ctl="{!thisInstance}" max="{!maxSummary}"/>
+</tr>
+
+<tr valign="bottom">
+  <td></td>
+  <td bgcolor="#FFFFCC"></td>
+  <td align="right" ><font size="3" face="Calibri">Other</font></td>
+  <td align="right" ><font size="3" face="Calibri">{!other}</font></td>
+  <td bgcolor="#FFFFCC"></td>
+  <c:XactlySMBDummyCells ctl="{!thisInstance}" max="{!maxSummary}"/>
+</tr>
+ -->
+<tr valign="bottom">
+  <td></td>
+  <c:XactlySMBDummyCells ctl="{!thisInstance}" max="{!widthSummary}" color="#FFFFCC"/>
+  <c:XactlySMBDummyCells ctl="{!thisInstance}" max="{!maxSummary}"/>
+</tr>
+
+<tr valign="bottom">
+  <td></td>
+  <c:XactlySMBDummyCells ctl="{!thisInstance}" max="{!max}"/>
+</tr>
+
+<tr valign="bottom">
+  <td></td>
+  <c:XactlySMBDummyCells ctl="{!thisInstance}" max="{!max}"/>
+</tr>
+
+<tr valign="bottom">
+  <td></td>
+  <c:XactlySMBDummyCells ctl="{!thisInstance}" max="{!widthMeasures}" color="#FFFFCC"/>
+  <c:XactlySMBDummyCells ctl="{!thisInstance}" max="{!maxMeasures}"/>
+</tr>
+
+<tr valign="bottom">
+  <td></td>
+  <td bgcolor="#FFFFCC"></td>
+  <td colspan="4"><font size="3" face="Calibri"><b>{!currentSettings.ComponentsCap} Performance as of {!periodName}</b></font></td>
+  <c:XactlySMBDummyCells ctl="{!thisInstance}" max="{!widthMeasures-6}"/>
+  <td bgcolor="#FFFFCC"></td>
+  <c:XactlySMBDummyCells ctl="{!thisInstance}" max="{!maxMeasures}"/>
+</tr>
+
+<tr valign="bottom">
+  <td></td>
+  <td bgcolor="#FFFFCC"></td>
+  <c:XactlySMBDummyCells ctl="{!thisInstance}" max="{!widthMeasures-2}"/>
+  <td bgcolor="#FFFFCC"></td>
+  <c:XactlySMBDummyCells ctl="{!thisInstance}" max="{!maxMeasures}"/>
+</tr>
+
+<!-- FOR EACH ATTRIBUTE, EACH MEASURE -->
+
+<tr valign="bottom">
+  <td></td>
+  <td bgcolor="#FFFFCC"></td>
+  
+  <apex:repeat value="{!measures}" var="m">  
+      <td align="center" colspan="2"><font size="3" face="Calibri"><b>{!m.name}</b></font></td>
+      <td bgcolor="{!IF(m.i+1 == measures.size, '#FFFFCC', '#FFFFFF')}"></td>  
+  </apex:repeat>
+ 
+  <c:XactlySMBDummyCells ctl="{!thisInstance}" max="{!maxMeasures}"/>
+</tr>
+
+<tr valign="bottom">
+  <td></td>
+  <td bgcolor="#FFFFCC"></td>
+  
+  <apex:repeat value="{!measures}" var="m">  
+    <td align="center" colspan="2"><font size="3" face="Calibri"><i>
+        <apex:outputText value="{!m.summary}"/>
+    </i></font></td>
+    <td bgcolor="{!IF(m.i+1 == measures.size, '#FFFFCC', '#FFFFFF')}"></td>  
+  </apex:repeat>
+  
+  <c:XactlySMBDummyCells ctl="{!thisInstance}" max="{!maxMeasures}"/>
+</tr>
+
+<tr valign="bottom">
+  <td></td>
+  <td bgcolor="#FFFFCC"></td>
+  
+  <apex:repeat value="{!measures}" var="m">  
+      <td align="right" ><font size="3" face="Calibri">{!$Label.PeriodCredit}</font></td>
+      <td align="right" ><font size="3" face="Calibri">{!m.periodCredit}</font></td>
+      <td bgcolor="{!IF(m.i+1 == measures.size, '#FFFFCC', '#FFFFFF')}"></td>  
+  </apex:repeat>
+  
+  <c:XactlySMBDummyCells ctl="{!thisInstance}" max="{!maxMeasures}"/>
+</tr>
+
+<tr valign="bottom">
+  <td></td>
+  <td bgcolor="#FFFFCC"></td>
+  
+  <apex:repeat value="{!measures}" var="m">  
+      <td align="right" ><font size="3" face="Calibri">{!m.CumulativeCreditLabel}</font></td>
+      <td align="right" ><font size="3" face="Calibri">{!m.CumulativePeriodCredit}</font></td>
+      <td bgcolor="{!IF(m.i+1 == measures.size, '#FFFFCC', '#FFFFFF')}"></td>  
+  </apex:repeat>
+  
+  <c:XactlySMBDummyCells ctl="{!thisInstance}" max="{!maxMeasures}"/>
+</tr>
+
+<tr valign="bottom">
+  <td></td>
+  <td bgcolor="#FFFFCC"></td>
+  
+  <apex:repeat value="{!measures}" var="m">  
+      <td align="right" ><font size="3" face="Calibri">
+          <apex:outputtext value="{!m.quotaLabel}" rendered="{!m.quotaLabel != null}">
+             <apex:param value="{!currentSettings.quotasCap}" />
+          </apex:outputtext>
+      </font></td>
+      <td align="right" ><font size="3" face="Calibri">
+         <apex:outputText rendered="{!m.quotaLabel != null}" value="{!m.CurrentPeriodQuota}" />
+      </font></td>
+      <td bgcolor="{!IF(m.i+1 == measures.size, '#FFFFCC', '#FFFFFF')}"></td>  
+  </apex:repeat>
+  <c:XactlySMBDummyCells ctl="{!thisInstance}" max="{!maxMeasures}"/>
+</tr>
+ 
+<tr valign="bottom">
+  <td></td>
+  <td bgcolor="#FFFFCC"></td>
+  
+  <apex:repeat value="{!measures}" var="m">  
+      <td align="right" ><font size="3" face="Calibri">
+         <apex:outputtext value="{!m.attainmentLabel}"/>
+      </font></td>
+      <td align="right" ><font size="3" face="Calibri">
+         <apex:outputtext value="{!IF(ISNULL(m.QuotaID),'',m.Attainment)}"/>
+      </font></td>
+      <td bgcolor="{!IF(m.i+1 == measures.size, '#FFFFCC', '#FFFFFF')}"></td>  
+  </apex:repeat>
+  
+  <c:XactlySMBDummyCells ctl="{!thisInstance}" max="{!maxMeasures}"/>
+</tr>
+
+<tr valign="bottom">
+  <td></td>
+  <td bgcolor="#FFFFCC"></td>
+  
+  <apex:repeat value="{!measures}" var="m">  
+          <td align="right" ><font size="3" face="Calibri">{!$Label.AverageRate}</font></td>
+          <td align="right" ><font size="3" face="Calibri"><apex:outputText value="{!IF(!ISNULL(m.AverageRate),m.AverageRate,$Label.xactlyexpress__NotApplies)}" /></font></td>
+          <td bgcolor="{!IF(m.i+1 == measures.size, '#FFFFCC', '#FFFFFF')}"></td>  
+  </apex:repeat>  
+  <c:XactlySMBDummyCells ctl="{!thisInstance}" max="{!maxMeasures}"/>
+</tr>
+
+<tr valign="bottom">
+  <td></td>
+  <td bgcolor="#FFFFCC"></td>
+  
+  <apex:repeat value="{!measures}" var="m">  
+      <td align="right" ><font size="3" face="Calibri">
+      	<apex:outputText value="{!$Label.xactlyexpress__EarnedValue}">
+      		<apex:param value="{!currentSettings.EarnedPluralCap}"/>
+      	</apex:outputText>
+      </font></td>
+      <td align="right" ><font size="3" face="Calibri">{!m.EarnedAmount}</font></td>
+      <td bgcolor="{!IF(m.i+1 == measures.size, '#FFFFCC', '#FFFFFF')}"></td>  
+  </apex:repeat>
+  
+  <c:XactlySMBDummyCells ctl="{!thisInstance}" max="{!maxMeasures}"/>
+</tr>
+
+<tr valign="bottom">
+  <td></td>
+  <td bgcolor="#FFFFCC"></td>
+  
+  <apex:repeat value="{!measures}" var="m">  
+      <td align="right" ><font size="3" face="Calibri">{!$Label.Held}</font></td>
+      <td align="right" ><font size="3" face="Calibri">{!m.Held}</font></td>
+      <td bgcolor="{!IF(m.i+1 == measures.size, '#FFFFCC', '#FFFFFF')}"></td>  
+  </apex:repeat>
+  
+  <c:XactlySMBDummyCells ctl="{!thisInstance}" max="{!maxMeasures}"/>
+</tr>
+
+<tr valign="bottom">
+  <td></td>
+  <td bgcolor="#FFFFCC"></td>
+  
+  <apex:repeat value="{!measures}" var="m">  
+      <td align="right" ><font size="3" face="Calibri">{!$Label.Released}</font></td>
+      <td align="right" ><font size="3" face="Calibri">{!m.Release}</font></td>
+      <td bgcolor="{!IF(m.i+1 == measures.size, '#FFFFCC', '#FFFFFF')}"></td>  
+  </apex:repeat>
+  
+  <c:XactlySMBDummyCells ctl="{!thisInstance}" max="{!maxMeasures}"/>
+</tr>
+
+<tr valign="bottom">
+  <td></td>
+  <td bgcolor="#FFFFCC"></td>
+  
+  <apex:repeat value="{!measures}" var="m">  
+      <td align="right" ><font size="3" face="Calibri">{!$Label.Pay}</font></td>
+      <td align="right" ><font size="3" face="Calibri">{!m.Pay}</font></td>
+      <td bgcolor="{!IF(m.i+1 == measures.size, '#FFFFCC', '#FFFFFF')}"></td>  
+  </apex:repeat>
+  
+  <c:XactlySMBDummyCells ctl="{!thisInstance}" max="{!maxMeasures}"/>
+</tr>
+
+
+<tr valign="bottom">
+  <td></td>
+  <td bgcolor="#FFFFCC"></td>
+  
+  <apex:repeat value="{!measures}" var="m">  
+      <td align="right" ><font size="3" face="Calibri">YTD Pay</font></td>
+      <td align="right" ><font size="3" face="Calibri">{!m.YTDPay}</font></td>
+      <td bgcolor="{!IF(m.i+1 == measures.size, '#FFFFCC', '#FFFFFF')}"></td>  
+  </apex:repeat>
+  
+  <c:XactlySMBDummyCells ctl="{!thisInstance}" max="{!maxMeasures}"/>
+</tr>
+
+<tr valign="bottom">
+  <td></td>
+  <td bgcolor="#FFFFCC"></td>
+  
+  <apex:repeat value="{!measures}" var="m">  
+      <td align="right" ><font size="3" face="Calibri">{!$Label.HoldBalance}</font></td>
+      <td align="right" ><font size="3" face="Calibri">{!m.HoldBalance}</font></td>
+      <td bgcolor="{!IF(m.i+1 == measures.size, '#FFFFCC', '#FFFFFF')}"></td>  
+  </apex:repeat>
+  
+  <c:XactlySMBDummyCells ctl="{!thisInstance}" max="{!maxMeasures}"/>
+</tr>
+
+<tr valign="bottom">
+  <td></td>
+  <c:XactlySMBDummyCells ctl="{!thisInstance}" max="{!widthMeasures}" color="#FFFFCC"/>
+  <c:XactlySMBDummyCells ctl="{!thisInstance}" max="{!maxMeasures}"/>
+</tr>
+
+<tr valign="bottom">
+  <td></td>
+  <c:XactlySMBDummyCells ctl="{!thisInstance}" max="{!max}"/>
+</tr>
+
+<!-- MANUAL ADJUSTMENTS -->
+
+<tr valign="bottom">
+  <td></td>
+  <c:XactlySMBDummyCells ctl="{!thisInstance}" max="{!widthManualAdj}" color="#FFFFCC"/>
+  <c:XactlySMBDummyCells ctl="{!thisInstance}" max="{!maxManualAdj}"/>
+</tr>
+
+<tr valign="bottom">
+  <td></td>
+  <td bgcolor="#FFFFCC"></td>
+  <td colspan="4"><font size="3" face="Calibri"><b>{!$Label.ManualAdjustments}</b></font></td>
+  <td bgcolor="#FFFFCC"></td>
+  <c:XactlySMBDummyCells ctl="{!thisInstance}" max="{!maxManualAdj}" />
+</tr>
+
+<tr valign="bottom">
+  <td></td>
+  <td bgcolor="#FFFFCC"></td>
+  <c:XactlySMBDummyCells ctl="{!thisInstance}" max="{!widthManualAdj-2}" />
+  <td bgcolor="#FFFFCC"></td>
+  <c:XactlySMBDummyCells ctl="{!thisInstance}" max="{!maxManualAdj}" />
+</tr>
+
+<tr valign="bottom">
+    <td></td>
+    <td bgcolor="#FFFFCC"></td>
+    <td><font size="3" face="Calibri"><b><i>{!$Label.Category}</i></b></font></td>
+    <td><font size="3" face="Calibri"><b><i>{!$Label.paymentNameOnly}</i></b></font></td>
+    <td><font size="3" face="Calibri"><b><i>{!$Label.Description}</i></b></font></td>
+    <td><font size="3" face="Calibri"><b><i>{!$Label.Amount}</i></b></font></td>
+    <td bgcolor="#FFFFCC"></td>
+    <c:XactlySMBDummyCells ctl="{!thisInstance}" max="{!maxManualAdj}" />
+</tr>
+<apex:repeat value="{!manualAdjustments}" var="manAdj">
+    <tr valign="bottom">
+        <td></td>
+        <td bgcolor="#FFFFCC"></td>
+        <td><font size="3" face="Calibri">{!manAdj.category}</font></td>
+        <td><font size="3" face="Calibri">{!manAdj.paymentName}</font></td>
+        <td><font size="3" face="Calibri">{!manAdj.description}</font></td>
+        <td><font size="3" face="Calibri">{!manAdj.amountS}</font></td>
+        <td bgcolor="#FFFFCC"></td>
+        <c:XactlySMBDummyCells ctl="{!thisInstance}" max="{!maxManualAdj}" />
+    </tr>
+</apex:repeat>
+<tr valign="bottom">
+  <td></td>
+  <c:XactlySMBDummyCells ctl="{!thisInstance}" max="{!widthManualAdj}" color="#FFFFCC"/>
+  <c:XactlySMBDummyCells ctl="{!thisInstance}" max="{!maxManualAdj}"/>
+</tr>
+
+<tr valign="bottom">
+  <td></td>
+  <c:XactlySMBDummyCells ctl="{!thisInstance}" max="{!widthManualAdj}"/>
+  <c:XactlySMBDummyCells ctl="{!thisInstance}" max="{!maxManualAdj}"/>
+</tr>
+
+<!-- DEALS -->
+
+<apex:outputPanel layout="none" rendered="{!showDeals}">
+	<tr valign="bottom">
+	  <td></td>
+	  <c:XactlySMBDummyCells ctl="{!thisInstance}" max="{!widthDeals}" color="#FFFFCC"/>
+	  <c:XactlySMBDummyCells ctl="{!thisInstance}" max="{!maxDeals}"/>
+	</tr>
+
+	
+	<tr valign="bottom">
+	  <td></td>
+	  <td bgcolor="#FFFFCC"></td>
+	  <td colspan="4"><font size="3" face="Calibri"><b>{!currentSettings.dealsCap} and Payments for {!periodName}</b></font></td>
+	  <c:XactlySMBDummyCells ctl="{!thisInstance}" max="{!widthDeals-6}"/>
+	  <td bgcolor="#FFFFCC"></td>
+	  <c:XactlySMBDummyCells ctl="{!thisInstance}" max="{!maxDeals}" />
+	</tr>
+	
+	<tr valign="bottom">
+	    <td></td>
+	    <td bgcolor="#FFFFCC"></td>
+	    <apex:repeat value="{!dealColNames}" var="d">
+	        <td><font size="3" face="Calibri"><b><i>{!d.name}</i></b></font></td>
+	    </apex:repeat>
+	    <td bgcolor="#FFFFCC"></td>
+	</tr>
+	
+	<tr>
+	    <td></td><td bgcolor="#FFFFCC"></td>
+	    <c:XactlySMBDummyCells ctl="{!thisInstance}" max="{!widthDeals-2}"/>
+	    <td bgcolor="#FFFFCC"></td>
+	</tr>
+	
+	<!-- REPEAT FOR EACH DEAL -->
+	
+	<apex:repeat value="{!dealResultGroups}" var="dealResultGroup">
+	    
+	    <!-- SUBTOTALS -->
+	    <tr><td></td><td bgcolor="#FFFFCC"></td>
+	    <apex:repeat value="{!dealResultGroup.subtotals}" var="sub">
+	        <td><b><font size="3" face="Calibri">{!sub}</font></b></td>
+	    </apex:repeat>
+	    <td bgcolor="#FFFFCC"></td></tr>
+	    
+	    <!-- DEALS -->
+	    <apex:repeat value="{!dealResultGroup.dealResults}" var="d">
+	        <tr valign="bottom">
+	          <td></td>
+	          <td bgcolor="#FFFFCC"></td>  
+	          <apex:repeat value="{!d.attrs}" var="att">  
+	              <td><font size="3" face="Calibri">{!att}</font></td>  
+	          </apex:repeat>
+	          <td bgcolor="#FFFFCC"></td>
+	          <c:XactlySMBDummyCells ctl="{!thisInstance}" max="{!maxDeals}" />  
+	        </tr>
+	    </apex:repeat>
+	    <tr>
+	        <td></td><td bgcolor="#FFFFCC"></td>
+	        <c:XactlySMBDummyCells ctl="{!thisInstance}" max="{!widthDeals-2}"/>
+	        <td bgcolor="#FFFFCC"></td>
+	    </tr>
+	</apex:repeat>
+	
+	<!-- END REPEAT FOR EACH DEAL -->
+	
+	<tr valign="bottom">
+	  <td></td>
+	  <c:XactlySMBDummyCells ctl="{!thisInstance}" max="{!widthDeals}" color="#FFFFCC"/>
+	  <c:XactlySMBDummyCells ctl="{!thisInstance}" max="{!maxDeals}" />
+	</tr>
+</apex:outputPanel>
+</table>
+</apex:page>

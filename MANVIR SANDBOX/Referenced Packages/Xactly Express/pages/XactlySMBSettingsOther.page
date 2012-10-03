@@ -1,0 +1,495 @@
+<!--
+Developed by Timba Software Corp. www.timbasoftware.com admin@timbasoftware.com
+ This page defines Settings
+ @author Juan Bessonart <jbessonart@timbasoftware.com>
+-->
+<apex:page id="XactlySMBSettingsOther" controller="XactlyExpress.XactlySMBSettingsOtherController" sidebar="false" showHeader="false" standardStylesheets="true" action="{!redirectWhenAccessIsDenied}">
+    
+   <!-- Custom Cursor Loader -->
+   <c:XactlySMBCursor />
+   <!-- Custom Cursor Loader --> 
+    <title>{!$Label.ChangeMy} : {!$Label.SettingsWhizardStep5}</title>
+    <link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.XactlySMBResources ,'css/XactlySMBStyles.css')}" />
+    <link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.XactlySMBResources ,'css/XactlySMBNumeratedBox.css')}" />
+    <apex:includeScript value="{!URLFOR($Resource.XactlyExpress__CSN, 'jquery.js')}" />
+    
+    <style>
+        .settingSection {
+            position: relative;
+            overflow: hidden; 
+            margin: 30px;
+            padding: 0px;
+        }
+        
+        .settingSection .settingLabel {
+            margin: 10px;
+            padding: 0px;
+            margin-top:45px;
+        }
+        
+        .settingSection .settingValue {
+            margin: 10px;
+            padding: 0px;
+            margin-left: 200px; 
+        }
+        
+        .settingSection .helpCorner {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+        
+        .selectPeriod{   
+            margin-left: 100px;
+            padding: 0px;
+            margin-top:10px;
+        
+        }
+        .mainContent{
+            height:100%;
+        }
+        
+        
+        .settingPeriodLabel{
+              margin: 10px;
+            padding: 0px;
+        }
+        
+        div.topTableOther {
+            background:transparent url({!URLFOR($Resource.XactlyExpress__XactlySMBResources, 'img/layout/table_top_1000w_no_title_bar.png')}) no-repeat scroll 0 0;
+            height:9px;
+        }
+        
+        div.bottomTableOther {
+            background:transparent url({!URLFOR($Resource.XactlyExpress__XactlySMBResources, 'img/layout/table_bottom_1000w.png')}) no-repeat scroll 0 0;
+            height:9px;
+        }
+        
+        
+    </style>
+
+    <c:XactlySMBShadows />
+
+    <!-- PAGE WRAPPER -->  
+    <div class="pageContent" id="pContent">
+        
+         <apex:form >
+            <!-- HEADER -->
+            <apex:outputPanel layout="block" styleClass="header">
+                <c:XactlySMBHeader isAdmin="{!isAdmin}"  isActive="{!isActive}" nbrSeparator="{!nbrSeparator}" nbrDecimal="{!nbrDecimal}" currentUserOrSlected="{!currentUserOrSlected}" emulatingUserURLAppend="{!emulatingUserURLAppend}" selected="7" wqlabel="{!currentSettings.quotasPlural}" wclabel="{!currentSettings.creditsPlural}" wlabel="{!currentSettings.dealsPluralCap}"  step="6" wtype="setting"  hlabel="{!$Label.xactlyexpress__ControlOptionalIncentBehavior}" stepHelp="SettingsOther"/>
+            </apex:outputPanel>    
+            
+      
+          
+                  
+                         
+            <div  class="error"> 
+                <!-- INSUFFICIENT PERMISSIONS -->
+                <apex:outputPanel rendered="{!!isAdmin || !isActive}">
+                    <c:XactlySMBErrorMsg error="{!$Label.xactlyexpress__InsufficientPermissions}" />
+                </apex:outputPanel>
+                <apex:pageMessages />
+            </div>
+            
+         </apex:form>
+         
+            <apex:outputPanel layout="block" styleclass="additionalContent" rendered="{!isAdmin && isActive}">    
+                <apex:form id="chaterForm">
+                    <c:XactlySMBChatterWall objectId="{!$User.Id}" showHeader="true" showWall="true" currentPage="XactlySMBSettingsOther"/>
+                </apex:form>
+            </apex:outputPanel>
+             
+            <!-- MAIN CONTENT -->
+            <apex:outputPanel layout="block" styleClass="mainContent" rendered="{!isAdmin && isActive}">
+                <!-- CONTENT -->
+                
+                <apex:form id="settingsForm1">  
+                <apex:actionFunction name="refreshLists" action="{!refreshLists}"/>
+                <apex:outputPanel id="settingsContent" layout="block" styleClass="content" id="contentPanel">
+                    
+                    <div style="width:990px; margin: 10px 0px 0px 40px;">
+                    
+                        <div class="box">
+                            <div class="tm">
+                                <div style="float: left;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/tl.png')}" /></div>
+                                <div style="float: right;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/tr.png')}" /></div>
+                                <div style="clear:both"></div>
+                            </div>
+                            <div class="roundedBox">
+                                <div class="boxHeader">
+                                    <div class="stepActionNumber PNovaBlack60c5">
+                                     A
+                                    </div>
+                                    <div class="titleWrapper" style="float:none;">  
+                                        <div class="mainTitle PNovaSemiBold17c3">{!$Label.initialPeriodTitle}</div>
+                                        <div class="detailedTitle HelveticaRegular12c3">{!$Label.InitialPeriod}</div>
+                                    </div>
+                                    <div class="extraTitleStuff"></div>
+                                    <div style="clear:both"></div>
+                                </div> 
+                                <div class="boxContent"> 
+                                
+                                    <apex:outputLabel id="fiscalYear" value="{!$Label.xactlyexpress__FiscalYear}: " for="fyselect" />&nbsp;
+                                                   
+                                    <apex:selectList disabled="{!fysCalculated}" value="{!selectedFiscalYearId}" id="fyselect" multiselect="false" size="1" onchange="rerenderNoCompare = false; refreshLists();waitOn();">
+                                        <apex:selectOptions value="{!fiscalyearoptions}" />
+                                    </apex:selectList>
+                                   <apex:outputLabel id="period" value="{!$Label.xactlyexpress__Period}:" for="periodSelect" />&nbsp;
+                                    
+                                    <apex:selectList disabled="{!fysCalculated}" value="{!selectedPeriodId}" id="periodSelect"  multiselect="false" size="1">
+                                        <apex:selectOptions value="{!periodsOptions}" />
+                                    </apex:selectList>
+                                    
+                                    <apex:outputpanel rendered="{!fysCalculated}">
+                                    	<img style="margin-bottom:-8px;" src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/lockinitialperiod.jpg')}" />
+                                    	<apex:outputText value=" {!$Label.xactlyexpress__LockedInitialPeriod}" />
+                                    </apex:outputpanel>
+
+                                    <script>
+                                       var periodSelect = document.getElementById('{!$Component.periodSelect}');
+                                    </script>    
+                                    
+                                </div>    
+                            </div>      
+                            <div class="bm">
+                                <div style="float: left;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/bl.png')}" /></div>
+                                <div style="float: right;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/br.png')}" /></div>
+                            </div>
+                        </div>
+                        
+                        <div style="height:10px">&nbsp;</div>
+                        
+                        <div class="box">
+                            <div class="tm">
+                                <div style="float: left;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/tl.png')}" /></div>
+                                <div style="float: right;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/tr.png')}" /></div>
+                                <div style="clear:both"></div>
+                            </div>
+                            <div class="roundedBox">
+                                <div class="boxHeader">
+                                    <div class="stepActionNumber PNovaBlack60c5">
+                                     B
+                                    </div>
+                                    <div class="titleWrapper">  
+                                        <div class="mainTitle PNovaSemiBold17c3">{!$Label.managerPrivileges}</div>
+                                        <div class="detailedTitle HelveticaRegular12c3">{!ModifyDealCredits}</div>
+                                    </div>
+                                    <div class="extraTitleStuff"></div>
+                                    <div style="clear:both"></div>
+                                </div> 
+                                <div class="boxContent"> 
+                                
+                                    <apex:selectRadio id="dealCreditRadio" value="{!settings.XactlyExpress__ModifyDealCredits__c}">
+                                        <apex:selectOptions value="{!modifyDealCreditsOpts}" />
+                                    </apex:selectRadio> 
+                                    
+                                </div>    
+                            </div>      
+                            <div class="bm">
+                                <div style="float: left;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/bl.png')}" /></div>
+                                <div style="float: right;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/br.png')}" /></div>
+                            </div>
+                        </div>
+                        
+                        <div style="height:10px">&nbsp;</div>
+                        
+                        <div class="box">
+                            <div class="tm">
+                                <div style="float: left;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/tl.png')}" /></div>
+                                <div style="float: right;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/tr.png')}" /></div>
+                                <div style="clear:both"></div>
+                            </div>
+                            <div class="roundedBox">
+                                <div class="boxHeader">
+                                    <div class="stepActionNumber PNovaBlack60c5">
+                                     C
+                                    </div>
+                                    <div class="titleWrapper">  
+                                        <div class="mainTitle PNovaSemiBold17c3">{!$Label.salesforceAdministratorAccess}</div>
+                                        <div class="detailedTitle HelveticaRegular12c3">{!$Label.allowSysAdmInApp}</div>
+                                    </div>
+                                    <div class="extraTitleStuff"></div>
+                                    <div style="clear:both"></div>
+                                </div> 
+                                <div class="boxContent"> 
+                                
+                                    <apex:selectRadio id="allowSysAdAppRadio" value="{!settings.XactlyExpress__allowSysAdmInApp__c}">
+                                        <apex:selectOptions value="{!allowAdministratorAccessOpts}" />
+                                    </apex:selectRadio> 
+                                    
+                                </div>    
+                            </div>      
+                            <div class="bm">
+                                <div style="float: left;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/bl.png')}" /></div>
+                                <div style="float: right;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/br.png')}" /></div>
+                            </div>
+                        </div>
+                        
+                        <div style="height:10px">&nbsp;</div>
+                    
+                        <div class="box">
+                            <div class="tm">
+                                <div style="float: left;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/tl.png')}" /></div>
+                                <div style="float: right;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/tr.png')}" /></div>
+                                <div style="clear:both"></div>
+                            </div>
+                            <div class="roundedBox">
+                                <div class="boxHeader">
+                                    <div class="stepActionNumber PNovaBlack60c5">
+                                     D
+                                    </div>
+                                    <div class="titleWrapper">  
+                                        <div class="mainTitle PNovaSemiBold17c3">{!$Label.companyLogo}</div>
+                                        <div class="detailedTitle HelveticaRegular12c3">
+                                            <apex:outputtext value="{!$Label.xactlyexpress__SetCompanyLogo}">
+                                                <apex:param value="{!currentSettings.salesReps}"/>                                          
+                                            </apex:outputtext>
+                                        </div>
+                                    </div>
+                                    <div class="extraTitleStuff"></div>
+                                    <div style="clear:both"></div>
+                                </div> 
+                                <div class="boxContent"> 
+                                	<apex:outputPanel id="errorMsg" layout="block">
+	                            		<c:XactlySMBErrorMsg error="{!errorMsg}"/>
+	                        		</apex:outputPanel>
+	                        		<div>
+                                    <apex:inputFile onblur="LimitAttach(this,1);" onchange="LimitAttach(this,1);" value="{!logoAttachment.Body}" id="logoAttachment" contentType="{!logoAttachment.ContentType}" filename="{!logoAttachment.Name}" accept="jpg,jpeg,png,gif"  fileSize="{!filesize}"/>                                    
+                                    <br/><apex:outputtext value="( {!oldAttachment} )" /> 
+                                    </div>
+	                    			<apex:outputpanel layout="none" rendered="{!IF(currentSettingsAttach == null, false, true)}">
+	                      				<img src="/servlet/servlet.FileDownload?file={!currentSettingsAttach}" alt="" style="margin-left:300px;margin-top:-40px; max-width: 600px;"/>
+	                    			</apex:outputpanel>      
+                                    
+                                </div>    
+                            </div>      
+                            <div class="bm">
+                                <div style="float: left;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/bl.png')}" /></div>
+                                <div style="float: right;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/br.png')}" /></div>
+                            </div>
+                        </div>
+                        <div style="height:10px">&nbsp;</div>
+                        <div class="box">
+                            <div class="tm">
+                                <div style="float: left;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/tl.png')}" /></div>
+                                <div style="float: right;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/tr.png')}" /></div>
+                                <div style="clear:both"></div>
+                            </div>
+                            <div class="roundedBox">
+                                <div class="boxHeader" style="padding-bottom:5px;">
+                                    <div class="stepActionNumber PNovaBlack60c5">
+                                     E
+                                    </div>
+                                    <div class="titleWrapper">  
+                                        <div class="mainTitle PNovaSemiBold17c3">{!$Label.emailtNotificationSettingOtherTitle}</div>
+                                        <div class="detailedTitle HelveticaRegular12c3" style="width: 900px;">
+                                            <apex:outputtext value="{!$Label.xactlyexpress__emailtNotificationSettingOther}"></apex:outputtext>
+                                        </div>
+                                    </div>
+                                    <div class="extraTitleStuff"></div>
+                                    <div style="clear:both"></div>
+                                </div> 
+                                <div class="boxContent"> 
+                                    <apex:selectRadio id="emailNotificatiosRadio" value="{!settings.XactlyExpress__emailNotifications__c}">
+                                        <apex:selectOptions value="{!emailNotificationsOpts}" />
+                                    </apex:selectRadio>                                 
+                                </div>    
+                            </div>      
+                            <div class="bm">
+                                <div style="float: left;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/bl.png')}" /></div>
+                                <div style="float: right;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/br.png')}" /></div>
+                            </div>
+                        </div>
+                        <div style="height:10px">&nbsp;</div>
+                        
+                        <div class="box" style="margin-bottom:70px;">
+                            <div class="tm">
+                                <div style="float: left;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/tl.png')}" /></div>
+                                <div style="float: right;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/tr.png')}" /></div>
+                                <div style="clear:both"></div>
+                            </div>
+                            <div class="roundedBox">
+                                <div class="boxHeader" style="padding-bottom:5px;">
+                                    <div class="stepActionNumber PNovaBlack60c5">
+                                     F
+                                    </div>
+                                    <div class="titleWrapper">  
+                                        <div class="mainTitle PNovaSemiBold17c3">Period to show at Dashboard</div>
+                                        <div class="detailedTitle HelveticaRegular12c3" style="width: 900px;">
+                                            <apex:outputtext value="{!$Label.xactlyexpress__showCurrentPeriodSettingOther}"></apex:outputtext>
+                                        </div>
+                                    </div>
+                                    <div class="extraTitleStuff"></div>
+                                    <div style="clear:both"></div>
+                                </div> 
+                                <div class="boxContent"> 
+                                    <apex:selectRadio id="limitPeriod" value="{!settings.XactlyExpress__ShowCurrentPeriod__c}">
+                                        <apex:selectOptions value="{!ShowCurrentPeriodsOpts}" />
+                                    </apex:selectRadio>                                 
+                                </div>    
+                            </div>      
+                            <div class="bm">
+                                <div style="float: left;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/bl.png')}" /></div>
+                                <div style="float: right;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/br.png')}" /></div>
+                            </div>
+                        </div>
+                        <div style="height:10px">&nbsp;</div>
+                    </div>
+                    
+                </apex:outputPanel>
+                <div style="clear:both"></div>
+                
+                <!-- MOVING FOOTER ACTIONS -->
+                <apex:actionFunction name="saveOtherSettingsAction" action="{!saveSettings}"/>
+                <apex:actionFunction name="saveNextOtherSettingsAction" action="{!saveNext}"/>
+                
+                </apex:form>
+            </apex:outputPanel>
+            
+            <!-- FOOTER  -->
+            <apex:outputPanel layout="block" styleClass="footer" rendered="{!isAdmin && isActive}" id="pFooter">
+                <apex:outputPanel layout="block" styleClass="previousStepWrapper"  style="max-width:150px;">
+                    <div class="previousStepRight"></div>
+                    <a class="previousStepMiddle" href="{!$Page.XactlySMBSettingsPayroll}" onclick="savePageHandler.disableBottomBar();">
+                        {!$Label.PreviousStep}
+                    </a>
+                    <div class="previousStepLeft"></div>
+                </apex:outputPanel>
+                    
+                <apex:outputPanel layout="block" styleClass="actionButtons">                        
+                    <apex:outputPanel layout="block" styleClass="actionButtonWrapper">
+                        <div class="actionButtonLeft"></div>
+                        <a class="actionButtonMiddle" id="saveBtn" href="javascript:;" onclick="saveOtherSettings();">
+                            <apex:outputtext escape="false" value="{!$Label.xactlyexpress__SaveChanges}">
+                               <apex:param value="{!URLFOR($Resource.XactlyExpress__XactlySMBResources ,'img/buttons/navigateSaveMiddle.gif')}" />
+                            </apex:outputtext>  
+                        </a>
+                        <div class="actionButtonRight"></div>    
+                    </apex:outputPanel>
+                    
+                    <apex:outputPanel layout="block" styleClass="actionButtonWrapper">
+                        <div class="actionButtonLeft"></div>
+                        <a href="javascript:;" class="actionButtonMiddle" onclick="discardChangesConfirm(window.location.href);">
+                            <apex:outputtext escape="false" value="{!$Label.xactlyexpress__DiscardChanges}">
+                               <apex:param value="{!URLFOR($Resource.XactlyExpress__XactlySMBResources ,'img/buttons/navigateCancelMiddle.gif')}" />
+                            </apex:outputtext>
+                        </a>
+                        <div class="actionButtonRight"></div>    
+                    </apex:outputPanel>
+                </apex:outputPanel>
+                
+                <apex:outputPanel layout="block" styleClass="nextStepWrapper" style="margin-right:100px;">
+                    <!-- CHATTER DISABLED -->
+                </apex:outputPanel>
+            </apex:outputPanel> 
+            </div>  <!-- Close PageContent  -->
+            
+            <apex:outputPanel id="auxPanel" />  
+    
+
+    
+    <c:XactlySMBFooterScript /> 
+    <script type="text/javascript" language="javascript" src="{!URLFOR($Resource.XactlySMBResources, 'js/XactlySMBJavascript.js')}"></script>
+    <script type="text/javascript" src="{!URLFOR($Resource.XactlySMBResources ,'js/jquery.superbox-min.js')}"></script>
+    <script type="text/javascript">
+    
+        var rerenderNoCompare = true;
+        
+        function saveOtherSettings () {
+            if(!validateFile()){
+                return false;
+            }
+            savePageHandler.disableBottomBar();
+            storeValues();
+            saveOtherSettingsAction();
+        }
+        
+        function saveNextOtherSettings () {
+            storeValues();
+            savePageHandler.disableBottomBar();
+            saveNextOtherSettingsAction();
+        }
+        
+        $(function(){
+            $.superbox.settings = {
+                closeTxt: "X",
+                loadTxt: "Loading...",
+                nextTxt: "Next",
+                prevTxt: "Previous"
+            };
+            $.superbox();
+        });
+    </script>
+    <script type="text/javascript" charset="utf-8">
+
+       $(document).ready(function()
+        {
+        
+            savePageHandler.storeBottomBarOnclickEvents();
+            savePageHandler.setExtraBottomBarClick(); 
+            storeValues();  
+        }); 
+        
+       
+        window.onbeforeunload = function(){
+			if(compareValues(true,rerenderNoCompare) != undefined){
+				setTimeout("savePageHandler.enableBottomBar();",1000);
+			}
+			window.onunload = function() {
+				savePageHandler.disableBottomBar();
+			}
+		  return compareValues(true,rerenderNoCompare);
+		}
+        
+        
+        var errorFiles = '';
+        
+        function LimitAttach(tField,iType) {
+            errorFiles='';
+            file=tField.value;
+            if (iType==1) {
+                extArray = new Array(".gif",".jpg",".jpeg",".png");
+            }
+            if (iType==2) {
+                extArray = new Array(".csv");
+            }
+            if (iType==3) {
+                extArray = new Array(".exe",".sit",".zip",".tar",".swf",".mov",".hqx",".ra",".wmf",".mp3",".qt",".med",".et");
+            }
+            if (iType==4) {
+                extArray = new Array(".mov",".ra",".wmf",".mp3",".qt",".med",".et",".wav");
+            }
+            if (iType==5) {
+                extArray = new Array(".html",".htm",".shtml");
+            }
+            if (iType==6) {
+                extArray = new Array(".doc",".xls",".ppt");
+            }
+            allowSubmit = false;
+            if (!file) return;
+            while (file.indexOf("\\") != -1) file = file.slice(file.indexOf("\\") + 1);
+            ext = file.slice(file.indexOf(".")).toLowerCase();
+            for (var i = 0; i < extArray.length; i++) {
+                if (extArray[i] == ext) {
+                     allowSubmit = true;
+                     break;
+                }
+            }
+            if (allowSubmit) {
+            } else {
+                errorFiles = "{!$Label.wrongExtension}: " + (extArray.join(" "));
+            }
+        }  
+        
+        function validateFile(){
+           if(errorFiles != ''){
+               alert(errorFiles);
+               return false;
+           }
+           else{
+               return true;
+           }
+        }
+    </script>
+    
+</apex:page>

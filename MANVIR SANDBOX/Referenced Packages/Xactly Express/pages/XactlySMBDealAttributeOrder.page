@@ -1,0 +1,354 @@
+<apex:page controller="XactlyExpress.XactlySMBDealAttributeOrderController" showHeader="false" sidebar="false" >
+    <link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.XactlySMBResources ,'css/XactlySMBFontStyles.css')}" /> 
+    <style>
+        body {
+            font-family: 'Helvetica', Arial, sans-serif !important;
+            margin: 0px !important;
+            padding: 0px !important;
+        }
+        body td{font-family: 'Helvetica', Arial, sans-serif !important;}
+        body .x-btn button, body .btn, body .btnImportant, body .btnDisabled, body .btnCancel, body .menuButton .menuButtonButton, body .menuButton .menuButtonMenu a, body .menuButton .menuButtonMenu input.theOption, h1, h2, h3, h4, h5, h6 {font-family: 'Helvetica', Arial, sans-serif !important;}
+        
+        
+        .content {
+            font-size: 11px;
+            padding: 0px;
+            margin: 20px;
+            position:relative;
+            overflow: hidden;
+        }  
+        
+        a {
+            text-decoration: none;
+        }
+        
+        .btnAction {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btnAction input {
+            float: left;
+        }
+        
+        .btnAction .leftBtnOrange {
+            background:url({!URLFOR($Resource.XactlySMBResources, 'img/buttons/orange_button_left.png')}) transparent  no-repeat scroll 0 0;
+            float: left;
+            height:19px;
+            padding:0px 0px 0px 5px;
+            width:auto;
+        }
+        .btnAction .middleBtnOrange {
+            color: white;
+            font-size: 10px;
+            font-weight: bold;
+            padding: 3px 5px;
+            width: auto;
+        }
+        .btnAction .rightBtnOrange {
+            background: url({!URLFOR($Resource.XactlySMBResources, 'img/buttons/orange_button_right.png')}) transparent no-repeat scroll right center;
+            float:left;
+            height:19px;
+            padding:0px 5px 0px 0px;
+            width:auto;
+            margin-top: 1px;
+            margin-left: 5px;
+        }  
+        
+        .header {
+            background: url({!URLFOR($Resource.XactlySMBResources, 'img/layout/SearchBackgroundHeader.jpg')}) white repeat-x;
+            height: 28px;
+            margin: 0px;
+            padding: 0px;
+        }
+        
+        .topBorder {
+            background: url({!URLFOR($Resource.XactlySMBResources, 'img/layout/SearchBackgroundTopBorder.jpg')}) white repeat-x;
+            height: 9px;
+            margin: 0px;
+            padding: 0px;
+        }
+        
+        .bottomBorder {
+            background: url({!URLFOR($Resource.XactlySMBResources, 'img/layout/SearchBackgroundBottomBorder.jpg')}) white repeat-x;
+            height: 4px;
+            padding: 0px;
+            bottom: 69px;
+            right: 20px;
+            left: 20px;
+        }
+        
+        .xactlyLogo {
+            background: url({!URLFOR($Resource.XactlySMBResources, 'img/layout/SearchXactlyLogo.png')}) white no-repeat right bottom;
+            height: 59px;
+            width: 100%;
+            margin: 0px;
+            padding: 0px;
+            bottom: 10px;
+            right: 20px;
+        }
+        
+        .resultPanel {
+            overflow:auto;
+            height:300px;
+        }
+        
+        .titleLabel { 
+            color: #E26E1B;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        
+        .titleTip {
+            margin-top: 3px;
+            font-size: 12px;    
+        }
+        
+        .saveAndCancel {
+            padding: 20px 0px 0px 40px;
+            width: 200px;
+        }
+        
+        .importCategory {
+            font-weight: bold;
+            font-size: 14px;
+            color: #3B6080;
+        }
+        
+        .importCategoryOptions {
+            
+        }
+        
+        .optionsContainer {
+            border: 1px solid black; 
+            margin: 5px 20px;
+            padding: 20px;
+        }
+        
+        #dealAttrList {
+		    list-style: none;
+		    margin: 0px;
+		    padding: 0px;
+		}
+		
+		#dealAttrList li {
+		    display: block;
+		    padding: 4px 10px; 
+		    margin-bottom: 3px;
+		    background-color: #efefef;
+		    cursor: move;
+		    border: 1px solid white;
+		}
+		
+		#dealAttrList li img.handle2 {
+		    margin-right: 20px;
+		}
+		
+		/*************** footer button styles ***************/
+        
+        /**
+		 * AO 02/11/10: this class is used to identify in JS which bottom bar button is "none"
+		 **/
+		div.displayNone{
+			display:none;
+			
+		}
+		
+		.btnAction .middleBtnSilver, .btnAction .middleBtnSilverDisabled {
+			font-size: 10px;
+			font-weight: bold;
+			padding: 3px 5px;
+			width: auto;
+		}
+		
+		/**
+		 * AO 02/10/10: I have changed the background property from this class to a gif image
+		 */
+		.btnAction .leftBtnSilver {
+			/*background:url(../img/buttons/silver_button_left.png) transparent  no-repeat scroll top left;*/
+			background:url({!URLFOR($Resource.XactlySMBResources, 'img/buttons/silver_button_left.gif')}) transparent  no-repeat scroll top left;
+			float: left;
+			height:19px;
+			padding:0px 0px 0px 5px;
+			width:auto;
+		}
+		
+		
+		/**
+		 * AO 02/10/10: I have changed the background property from this class to a gif image
+		 */
+		.btnAction .rightBtnSilver {
+			background: url({!URLFOR($Resource.XactlySMBResources, 'img/buttons/silver_button_right.gif')}) transparent no-repeat scroll right top;
+			/*background: url(../img/buttons/silver_button_right.png) transparent no-repeat scroll right top;*/
+			float:left;
+			height:19px;
+			padding:0px 5px 0px 0px;
+			width:auto;
+			margin-left: 5px;			
+		}
+		
+		/*************** end of footer button styles ***************/
+		
+    </style>
+    <div class="header"></div>
+    <div class="content">
+        <apex:form >
+            <apex:outputpanel layout="block">
+                <div class="titleLabel">
+                    <apex:outputtext value="{!$Label.xactlyexpress__ChangeDealAttrOrder}" />
+                </div>
+                <div class="titleTip">
+                    <apex:outputtext value="{!$Label.xactlyexpress__DragAndDrop}" />
+                </div>
+            </apex:outputpanel>
+            <br />
+            <div class="topBorder"></div>
+            <apex:outputpanel styleclass="resultPanel" layout="block" id="resultPanel">
+                <ul id="dealAttrList">
+                <apex:repeat value="{!dealAttributes}" var="iter">
+                    <apex:outputPanel layout="none" rendered="{!IF(iter.dealA.XactlyExpress__toImport__c == true,true,false)}">
+	                    <li class="toOrder handle" onmouseover="dragAndDropMe(this, true);" onmouseout="dragAndDropMe(this, false);">
+	                        <div style="{!If(OR(iter.dealA.IsRequired__c==true,iter.dealA.IsKey__c==true),'color:#FF0000;','')}">
+		                        <img src="{!URLFOR($Resource.XactlySMBResources, 'img/icons/move.png')}" alt="move" class="handle2" />
+		                        <apex:outputtext value="{!IF(iter.dealA.name == 'Product Id',$Label.xactlyexpress__Product,IF(iter.dealA.name == 'Account Id',$Label.xactlyexpress__Account,iter.dealA.name))}" />
+		                        <apex:outputtext styleclass="dealAttributeIds" value="{!iter.dealA.id}" style="display:none;" />
+		                        <apex:inputText styleclass="dealAttributeImp" value="{!iter.dealA.XactlyExpress__toImport__c}" style="display: none;"/>
+		                        <input type="text" class="dealAttributeReqKey" value="{!If(OR(iter.dealA.IsRequired__c==true,iter.dealA.IsKey__c==true),true,false)}" style="display: none;"/>
+	                        </div>
+	                    </li>
+                    </apex:outputPanel>
+                </apex:repeat>
+                <li class="toOrder limitLine" style="background-color:#F6A828;text-align:center;font-weight:bold;">{!$Label.xactlyexpress__dropLineImport}</li>
+                <apex:repeat value="{!dealAttributes}" var="iter">
+                    <apex:outputPanel layout="none" rendered="{!IF(iter.dealA.XactlyExpress__toImport__c == false,true,false)}">
+	                    <li class="toOrder handle" onmouseover="dragAndDropMe(this, true);" onmouseout="dragAndDropMe(this, false);">
+	                        <img src="{!URLFOR($Resource.XactlySMBResources, 'img/icons/move.png')}" alt="move" class="handle2" />
+	                        <apex:outputtext value="{!IF(iter.dealA.name == 'Product Id',$Label.xactlyexpress__Product,IF(iter.dealA.name == 'Account Id',$Label.xactlyexpress__Account,iter.dealA.name))}" />
+	                        <apex:outputtext styleclass="dealAttributeIds" value="{!iter.dealA.id}" style="display:none;" />
+	                        <apex:inputText styleclass="dealAttributeImp" value="{!iter.dealA.XactlyExpress__toImport__c}" style="display: none;"/>
+	                        <input type="text" class="dealAttributeReqKey" value="{!If(OR(iter.dealA.IsRequired__c==true,iter.dealA.IsKey__c==true),true,false)}" style="display: none;"/>
+	                    </li>
+                    </apex:outputPanel>
+                </apex:repeat>
+                </ul>
+                <apex:inputText value="{!newOrder}" styleclass="newOrderInputHidden" style="display: none;"/>
+            </apex:outputpanel>
+            <div class="bottomBorder"></div>
+            <div class="xactlyLogo">
+                <div class="btnToCenter btnAction saveAndCancel">
+                   <div class="separateBtn">
+                       <apex:commandLink styleClass="saveBtn" id="saveBtn" onclick="updateNewOrder();" action="{!saveNewOrder}" rerender="resultPanel" oncomplete="refreshMainPage();">
+                           <apex:outputPanel layout="block" styleClass="rightBtnOrange">
+	                    		<apex:outputPanel layout="block" styleClass="leftBtnOrange">
+		                       		<apex:outputPanel layout="block" styleClass="middleBtnOrange" style="color: white;">
+		                           		{!$Label.xactlyexpress__Save}
+		                           </apex:outputPanel>
+	                           </apex:outputPanel>
+							</apex:outputPanel>   
+							<apex:outputPanel layout="block" styleClass="rightBtnSilver displayNone">
+								<apex:outputPanel layout="block" styleClass="leftBtnSilver">
+									<apex:outputPanel layout="block" styleClass="middleBtnSilver">
+										{!$Label.xactlyexpress__Save}
+									</apex:outputPanel>
+								</apex:outputPanel>
+							</apex:outputPanel>
+                       </apex:commandLink> 
+                   </div> 
+                   <div class="separateBtn">
+                       <apex:outputLink styleClass="discardChanges" value="javascript:;" onclick="window.close();">							
+	                    	<apex:outputPanel layout="block" styleClass="rightBtnOrange">
+	                    		<apex:outputPanel layout="block" styleClass="leftBtnOrange">
+		                       		<apex:outputPanel layout="block" styleClass="middleBtnOrange" style="color: white;">
+		                           		{!$Label.xactlyexpress__Cancel}
+		                           </apex:outputPanel>
+	                           </apex:outputPanel>
+							</apex:outputPanel>   
+							<apex:outputPanel layout="block" styleClass="rightBtnSilver displayNone">
+								<apex:outputPanel layout="block" styleClass="leftBtnSilver">
+									<apex:outputPanel layout="block" styleClass="middleBtnSilver">
+										{!$Label.xactlyexpress__Cancel}
+									</apex:outputPanel>
+								</apex:outputPanel>
+							</apex:outputPanel>       
+						</apex:outputLink>
+                   </div>
+               </div>
+            </div>
+        </apex:form>
+    </div>
+    
+    <apex:includeScript value="{!URLFOR($Resource.XactlyExpress__CSN, 'jquery.js')}" />
+    <c:XactlySMBFooterScript /> 
+    <script type="text/javascript" src="{!URLFOR($Resource.XactlySMBResources, 'js/jquery-ui.min.js')}"></script>
+    <script type="text/javascript" language="javascript" src="{!URLFOR($Resource.XactlySMBResources, 'js/XactlySMBJavascript.js')}"></script>
+    <script>
+        $(document).ready(function() {
+        
+		    savePageHandler.setClassContainer('xactlyLogo');
+        	savePageHandler.storeBottomBarOnclickEvents();
+    		savePageHandler.setExtraBottomBarClick(); 
+		    
+		    makeListSortable();
+		    
+		});
+
+		
+		var saveBtn = function(){
+	    	savePageHandler.disableBottomBar();			        
+		
+		}
+		
+		function makeListSortable () {
+		    $("#dealAttrList").sortable();
+		}
+		
+		function dragAndDropMe (ele, isOn) {
+		  if (isOn) {
+            ele.style.color = '#E26E1B';
+            ele.style.border = '1px solid #AAAAAA';
+          }
+          else {
+            ele.style.color = 'black';
+            ele.style.border = '1px solid white';
+          }
+		}
+        
+        function updateNewOrder () {
+            var dealAttrIds = $('.dealAttributeIds');
+            var newOrderInputHidden = $('.newOrderInputHidden')[0];
+            var ids = '';
+            for (var i=0; i < dealAttrIds.length; i++) {
+                ids += dealAttrIds[i].innerHTML + ';';
+            }
+            if (dealAttrIds.length > 0) {
+                ids = ids.substring(0, ids.length -1);
+            }
+            newOrderInputHidden.value = ids;
+            updateToImport()
+        }
+        
+        function updateToImport() {
+            var dStatus = true;
+            var dealAttrIds = $('.toOrder');
+            for (var i=0; i < dealAttrIds.length; i++) {
+                if(!$(dealAttrIds[i]).hasClass('limitLine')){
+                    if($('.dealAttributeReqKey',$(dealAttrIds[i])).val()!='true'){
+                        $('.dealAttributeImp',$(dealAttrIds[i])).val(dStatus);
+                    } 
+                    else{
+                        $('.dealAttributeImp',$(dealAttrIds[i])).val('true');
+                    }
+                }
+                else{
+                    dStatus = false;
+                }
+            }
+        }
+        
+        function refreshMainPage () {
+            window.opener.waitOn();
+            window.opener.refreshOrder();
+            window.close();  
+        }
+    </script>
+</apex:page>

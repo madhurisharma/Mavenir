@@ -1,0 +1,201 @@
+<apex:component controller="XactlyExpress.XactlySMBLeftPanelPlans">
+    <apex:attribute name="fiscalYear" description="the FY" type="Id" required="true" assignTo="{!currentFiscalYear}" />
+    <apex:attribute name="currentPlan" description="Current Plan" type="Id" required="false" assignTo="{!crrntPlan}"/>
+    <apex:attribute name="step" description="Current step" type="String" required="false" assignTo="{!step}"/>
+    
+    <style>
+    	#planQuotas.xactlySuperBox div.close{
+    		display: none;
+    	}
+    	
+    	#planQuotas a div.closeBtn{
+    		background: url({!URLFOR($Resource.XactlySMBResources ,'img/layout/closeBtnSearch.png')});
+			display:block;
+			float:right;
+			height:24px;
+			margin-left:-26px;
+			position:relative;
+			width:25px;	
+			top:-35px;
+			left:-5px;
+    	}
+    	#planRates.xactlySuperBox div.close{
+    		display: none;
+    	}
+    	#planRates a div.closeBtn{
+    		background: url({!URLFOR($Resource.XactlySMBResources ,'img/layout/closeBtnSearch.png')});
+			display:block;
+			float:right;
+			height:24px;
+			margin-left:-26px;
+			position:relative;
+			width:25px;	
+			top:-35px;
+			left:-5px;
+    	}
+    	#planReview.xactlySuperBox div.close{
+    		display: none;
+    	}
+    	#planReview a div.closeBtn{
+    		background: url({!URLFOR($Resource.XactlySMBResources ,'img/layout/closeBtnSearch.png')});
+			display:block;
+			float:right;
+			height:24px;
+			margin-left:-26px;
+			position:relative;
+			width:25px;	
+			top:-35px;
+			left:-5px;
+    	}
+    	#planCredits.xactlySuperBox div.close{
+    		display: none;
+    	}
+    	#planCredits a div.closeBtn{
+    		background: url({!URLFOR($Resource.XactlySMBResources ,'img/layout/closeBtnSearch.png')});
+			display:block;
+			float:right;
+			height:24px;
+			margin-left:-26px;
+			position:relative;
+			width:25px;	
+			top:-35px;
+			left:-5px;
+    	}
+    </style>
+        <div id='planQuotas' style="display:none;">
+            <div style="background-image: url('{!URLFOR($Resource.XactlySMBResources ,'img/layout/topOrange.png')}');margin-left:15px;margin-right:15px;height:15px;margin-bottom:-2px;">
+                <div style="float: left;margin-left:-15px;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/topLeftOrange.png')}"/></div>
+                <div style="float: right;margin-right:-15px;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/topRightOrange.png')}"/></div>
+                <div style="clear:both"></div>
+            </div> 
+            
+            <div style="width:346px;border-right:2px solid #D49761;border-left:2px solid #D49761;background-color:#FFF;margin-right:4px;">
+                 <div style="font-size:20px;margin-left:20px;margin-right:10px;">{!$Label.SelectPlan}</div>
+                 <a onclick="jQuery.superbox.close();">
+		            <div class="closeBtn" style="margin-top: 3px;">
+		            	<span></span>
+		            </div>
+            	 </a>
+                 <br/>
+                <apex:selectList style="margin-left:20px;width:280px;" multiselect="false" size="1" onchange="waitOn();document.location.href = '{!$Page.XactlyExpress__XactlySMBPlanCreateQuotaOverview}?step=3.1&id=' + this.value;">
+                    <apex:selectOptions value="{!PlanList}"/>
+                </apex:selectList>
+                <div class="selectedUserInfo"></div>
+            </div>
+            <div style="background-image: url('{!URLFOR($Resource.XactlySMBResources ,'img/layout/bottomOrange.png')}');margin-left:15px;margin-right:15px;height:15px;margin-bottom:-2px;">
+               <div style="float: left;margin-left:-15px;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/bottomLeftOrange.png')}"/></div>
+               <div style="float: right;margin-right:-15px;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/bottomRightOrange.png')}"/></div>
+               <div style="clear:both;height:0px:"></div>
+            </div> 
+        </div>  
+
+        <div id='planRates' style="display:none;">
+            <div style="background-image: url('{!URLFOR($Resource.XactlySMBResources ,'img/layout/topOrange.png')}');margin-left:15px;margin-right:15px;height:15px;margin-bottom:-2px;">
+                <div style="float: left;margin-left:-15px;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/topLeftOrange.png')}"/></div>
+                <div style="float: right;margin-right:-15px;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/topRightOrange.png')}"/></div>
+                <div style="clear:both"></div>
+            </div> 
+            <div style="width:346px;border-right:2px solid #D49761;border-left:2px solid #D49761;background-color:#FFF;margin-right:4px;">
+                 <div style="font-size:20px;margin-left:20px;margin-right:10px;">{!$Label.SelectPlan}</div>
+                 <a onclick="jQuery.superbox.close();">
+		            <div class="closeBtn" style="margin-top: 3px;">
+		            	<span></span>
+		            </div>
+            	 </a>
+                 <br/>
+                <apex:selectList style="margin-left:20px;width:280px;" multiselect="false" size="1" onchange="waitOn();document.location.href = '{!$Page.XactlyExpress__XactlySMBPlanCreateStep5}?step=5&id=' + this.value;">
+                    <apex:selectOptions value="{!PlanList}"/>
+                </apex:selectList>
+                <div class="selectedUserInfo"></div>
+            </div>
+            <div style="background-image: url('{!URLFOR($Resource.XactlySMBResources ,'img/layout/bottomOrange.png')}');margin-left:15px;margin-right:15px;height:15px;margin-bottom:-2px;">
+               <div style="float: left;margin-left:-15px;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/bottomLeftOrange.png')}"/></div>
+               <div style="float: right;margin-right:-15px;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/bottomRightOrange.png')}"/></div>
+               <div style="clear:both"></div>
+            </div> 
+        </div>          
+        
+         <div id='planReview' style="display:none;">
+            <div style="background-image: url('{!URLFOR($Resource.XactlySMBResources ,'img/layout/topOrange.png')}');margin-left:15px;margin-right:15px;height:15px;margin-bottom:-2px;">
+                <div style="float: left;margin-left:-15px;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/topLeftOrange.png')}"/></div>
+                <div style="float: right;margin-right:-15px;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/topRightOrange.png')}"/></div>
+                <div style="clear:both"></div>
+            </div> 
+            <div style="width:346px;border-right:2px solid #D49761;border-left:2px solid #D49761;background-color:#FFF;margin-right:4px;">
+                 <div style="font-size:20px;margin-left:20px;margin-right:10px;">{!$Label.SelectPlan}</div>
+                 <a onclick="jQuery.superbox.close();">
+		            <div class="closeBtn" style="margin-top: 3px;">
+		            	<span></span>
+		            </div>
+            	 </a>
+                 <br/>
+                <apex:selectList style="margin-left:20px;width:280px;" multiselect="false" size="1" onchange="waitOn();document.location.href = '{!$Page.XactlyExpress__XactlySMBReviewPlan}?step=6&id=' + this.value;">
+                    <apex:selectOptions value="{!PlanList}"/>
+                </apex:selectList>
+                <div class="selectedUserInfo"></div>
+            </div>
+            <div style="background-image: url('{!URLFOR($Resource.XactlySMBResources ,'img/layout/bottomOrange.png')}');margin-left:15px;margin-right:15px;height:15px;margin-bottom:-2px;">
+               <div style="float: left;margin-left:-15px;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/bottomLeftOrange.png')}"/></div>
+               <div style="float: right;margin-right:-15px;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/bottomRightOrange.png')}"/></div>
+               <div style="clear:both"></div>
+            </div> 
+        </div>
+        
+        <div id='planCredits' style="display:none;">
+            <div style="background-image: url('{!URLFOR($Resource.XactlySMBResources ,'img/layout/topOrange.png')}');margin-left:15px;margin-right:15px;height:15px;margin-bottom:-2px;">
+                <div style="float: left;margin-left:-15px;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/topLeftOrange.png')}"/></div>
+                <div style="float: right;margin-right:-15px;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/topRightOrange.png')}"/></div>
+                <div style="clear:both"></div>
+            </div> 
+            <div style="width:346px;border-right:2px solid #D49761;border-left:2px solid #D49761;background-color:#FFF;margin-right:4px;">
+                 <div style="font-size:20px;margin-left:20px;margin-right:10px;">{!$Label.SelectPlan}</div>
+                 <a onclick="jQuery.superbox.close();">
+		            <div class="closeBtn" style="margin-top: 3px;">
+		            	<span></span>
+		            </div>
+            	 </a>
+                 <br/>
+                <apex:selectList style="margin-left:20px;width:280px;" multiselect="false" size="1" onchange="waitOn();document.location.href = '{!$Page.XactlyExpress__XactlySMBPlanCreateCredits}?step=2&id=' + this.value;">
+                    <apex:selectOptions value="{!PlanList}"/>
+                </apex:selectList>
+                <div class="selectedUserInfo"></div>
+            </div>
+            <div style="background-image: url('{!URLFOR($Resource.XactlySMBResources ,'img/layout/bottomOrange.png')}');margin-left:15px;margin-right:15px;height:15px;margin-bottom:-2px; 15px; ">
+               <div style="float: left;margin-left:-15px;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/bottomLeftOrange.png')}"/></div>
+               <div style="float: right;margin-right:-15px;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/bottomRightOrange.png')}"/></div>
+               <div style="clear:both"></div>
+            </div> 
+        </div>      
+<script>
+    function planClickQuotas(){    	
+        if(1 == {!PlanList.size}){
+            document.location.href = '{!$Page.XactlySMBPlanCreate}';
+        }else{
+            jQuery('#linkPlanQuotas').trigger('click');
+        }
+    }
+    function planClickRates(){
+        if(1 == {!PlanList.size}){
+            document.location.href = '{!$Page.XactlySMBPlanCreate}';
+        }else{
+            jQuery('#linkPlanRates').trigger('click');
+        }
+    }
+    function planClickReview(){
+        if(1 == {!PlanList.size}){
+            document.location.href = '{!$Page.XactlySMBPlanCreate}';
+        }else{
+            jQuery('#linkPlanReview').trigger('click');
+        }
+    }    
+    function planClickCredits(){    	
+    	if(1=={!PlanList.size}){
+    		document.location.href = '{!$Page.XactlySMBPlanCreate}';
+    	}else{
+			jQuery('#linkPlanCredits').trigger('click');
+    	}
+    }
+</script>
+
+    
+</apex:component>

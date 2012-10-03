@@ -1,0 +1,109 @@
+<apex:component controller="XactlyExpress.XactlySMBUserSearch">
+    <apex:attribute name="emulatingUserURLAppend" description="The Emulated User" type="String" required="false" />
+<style>
+    .bottomLinks{
+		color:#396081;
+		font-size:10px;
+    }
+    
+   	#searchUser #superbox-innerbox{
+    	padding-top:15px;
+    	padding-right:10px;
+   	}
+   	.close{
+    	margin-right:12px;
+   	}
+
+</style>
+<link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.XactlySMBResources ,'autocomplete/jquery.autocomplete.css')}" />
+<apex:actionFunction action="{!dummy}" name="reloadData" rerender="toReload" oncomplete="changeSelectedUserInfo();"/>
+<div id="searchUser" style="display:none;">
+    <div style="background: url('{!URLFOR($Resource.XactlySMBResources ,'img/layout/topOrange.png')}');margin-left:15px;margin-right:11px;background-repeat:repeat-x;">
+        <div style="float: left;margin-left:-15px;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/topLeftOrange.png')}"/></div>
+        <div style="float: right;margin-right:-15px;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/topRightOrange.png')}"/></div>
+        <div style="clear:both"></div>
+    </div> 
+    <div style="width:100%;border-right:2px solid #D49761;border-left:2px solid #D49761;background-color:#FFF;">
+        <apex:outputText value="{!$Label.xactlyexpress__userShortcuts}" style="font-size:15pt;font-weight:bold;margin-left:15px;"/><br/><br/>
+        <!--  
+            <apex:selectList onchange="changeSelectedUser(this);waitOn();" size="1" multiselect="false" style="margin-left:15px;color:#6F6F6F;">
+                <apex:selectOptions value="{!userList}" />
+            </apex:selectList><br/><br/>
+        -->
+        <input onfocus="autoc();" class="usersInput" type="text" style="margin-left:15px;color:#6F6F6F;"></input><br/><br/>
+        <input type="hidden" class="chk" value="0"/>
+        <input style="display:none;" class="hiddenId"/>
+        <div class="selectedUserInfo"></div>
+    </div>
+    <div style="background-image: url('{!URLFOR($Resource.XactlySMBResources ,'img/layout/bottomOrange.png')}');margin-left:15px;margin-right:11px;">
+       <div style="float: left;margin-left:-15px;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/bottomLeftOrange.png')}"/></div>
+       <div style="float: right;margin-right:-15px;"><img src="{!URLFOR($Resource.XactlySMBResources ,'img/layout/bottomRightOrange.png')}"/></div>
+       <div style="clear:both"></div>
+    </div> 
+</div>
+<apex:inputHidden value="{!selectedId}" id="selectedUser"/>
+<apex:outputPanel id="toReload" layout="block" style="display:none;">
+	<div style="margin-left:15px;color:#6F6F6F;">
+	    <div class="hiddenResults" style="display:none;">
+		    <apex:outputText value="{!$Label.xactlyexpress__periodCompensation}" style="color:#6F6F6F;">
+		        <apex:param value="{!CrrntPeriod}" />
+		    </apex:outputText>:&nbsp;
+		    <apex:outputPanel layout="block" rendered="{!if(YTDPay.size > 0,false,true)}" style="margin-left:15px;">
+		        <br/>
+		        <apex:outputText value="{!$Label.xactlyexpress__noCompPeriod}" style="color:#6F6F6F;font-size:7pt;"/>
+		    </apex:outputPanel>
+		    <br/><br/>
+		    <apex:repeat value="{!YTDPay}" var="iter">
+		        <a href="{!$Page.XactlySMBPlanCreate}?id={!iter.planId}{!IF(LEN(emulatingUserURLAppend)>0,'&'&emulatingUserURLAppend,'')}">{!iter.Name}</a>:&nbsp;
+		        <apex:outputPanel layout="none" rendered="{!IF(iter.manualAdjustment > 0,true,false)}"><span style="color:#ff0000;">* </span></apex:outputPanel>{!iter.ytdPlusManualAdj}<br/><br/>
+		    </apex:repeat>
+		    <a href="{!$Page.XactlySMBDashRepHome}?userId={!selectedId}" style="margin-left: -7px;" class="bottomLinks" onclick="rerenderNoCompare = false;">{!$Label.Dashboard}</a>&nbsp;|&nbsp;<a href="{!$Page.XactlySMBCommStmt}?userId={!selectedId}&prd={!currentPeriod.id}"  class="bottomLinks" onclick="rerenderNoCompare = false;">{!$Label.DetailCap}</a> <span  class="bottomLinks">{!$Label.Or}</span> <a href="{!$Page.XactlySMBCommStmt}?userId={!selectedId}&prd={!currentPeriod.id}&noDeals=1"  class="bottomLinks" onclick="rerenderNoCompare = false;">{!$Label.SummaryCap}</a> <span class="bottomLinks">{!$Label.Statement}</span> | <a href="{!$Page.XactlySMBPlanList}"   class="bottomLinks"  onclick="rerenderNoCompare = false;">{!$Label.Plan}</a>
+	    </div>
+    </div>
+</apex:outputPanel>
+<apex:includeScript value="{!URLFOR($Resource.XactlyExpress__CSN, 'jquery.js')}" /> 
+<script type="text/javascript" language="javascript" src="{!URLFOR($Resource.XactlySMBResources, 'autocomplete/jquery.autocomplete.js')}"></script>
+<script type="text/javascript" language="javascript" src="{!URLFOR($Resource.XactlySMBResources, 'js/XactlySMBJavascript.js')}"></script>
+
+
+<script>
+
+    var userData = new Array();
+
+    jQuery(document).ready(function(){
+        var toReload = '{!$Component.toReload}';
+        jQuery('.selectedUserInfo')[0].innerHTML = document.getElementById(toReload).innerHTML;
+        
+    });
+    
+    function autoc(){
+        userData = new Array();
+        if(jQuery(jQuery(".chk")[1]).val()!= '1'){
+            jQuery('.act_results').remove();
+	        <apex:variable var="count" value="{!0}"/> 
+	        <apex:repeat value="{!usrList}" var="iterUser">
+	            userData[{!JSENCODE(TEXT(count))}] = "{!JSENCODE(iterUser.UserId__r.Name)}<div style=\'display:none;\'>{!JSENCODE(iterUser.XactlyExpress__UserID__c)}</div>";
+	        <apex:variable var="count" value="{!count + 1}"/>
+	        </apex:repeat> 
+	        jQuery(jQuery(".usersInput")[1]).autocompleteThis();
+	        jQuery(jQuery(".usersInput")[1]).autocompleteThisArray(userData,{minChars:1,matchSubset:1,autoFill:true,maxItemsToShow:10,selectFirst:true});
+	        jQuery(jQuery(".chk")[1]).val(1);
+	    }
+    }
+    
+    function changeSelectedUser (ele) {
+        waitOn();
+        var selectedId = '{!$Component.selectedUser}';
+        document.getElementById(selectedId).value = ele.val();
+        reloadData();
+    }
+    
+    function changeSelectedUserInfo () {
+        var toReload = '{!$Component.toReload}';
+        jQuery('.selectedUserInfo').html(document.getElementById(toReload).innerHTML);
+        jQuery('.hiddenResults').show();
+        waitOff();
+    }
+</script>
+
+</apex:component>

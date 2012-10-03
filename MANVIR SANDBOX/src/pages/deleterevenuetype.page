@@ -1,0 +1,45 @@
+<!-- 
+Page:addrevenuetype
+Created Date : 21 Aug 2012
+Description : Add Revenue Type in Opportunity 
+Requested By:
+ --> 
+<apex:page standardController="Revenue_Type__c" extensions="RTDeleteController" tabStyle="Revenue_Type__c"> 
+    
+    <apex:sectionHeader title="Delete Revenue Type" subtitle="{!opportunity.Name}" />
+    <apex:form >
+    
+    
+    <apex:pageMessages id="messages1"/>
+         <apex:outputPanel id="otPanel" layout="block">
+            <apex:pageBlock title="Revenue Type Delete">
+                 <apex:outputLabel style="display:block;color:red;" value="Warning: This will remove the selected product and all of its revenue types from this opportunity" rendered="{!hasProducts}"/>
+                 <apex:pageBlockSection columns="2" title="Information" collapsible="false"> 
+                       
+                        <apex:pageBlockSectionItem rendered="{!hasProducts}">
+                            <apex:outputLabel value="Select Product to Delete"/>
+                             <apex:outputPanel layout="block" id="rtproduct" styleclass="requiredBlock">
+                            <apex:actionRegion >
+                                
+                                <apex:selectList size="1" value="{!selectedProduct}" required="true"> 
+                                    <apex:selectOptions value="{!prodList}"/>
+                                </apex:selectList> 
+                             </apex:actionRegion>
+                            </apex:outputPanel>
+                        </apex:pageBlockSectionItem>
+                        
+                        <apex:pageBlockSectionItem rendered="{!NOT(hasProducts)}">
+                        	<apex:outputLabel value="No products to delete" style="color:red;padding-left:50px;"/>
+                        </apex:pageBlockSectionItem>
+                        
+                 </apex:pageBlockSection>
+               <apex:pageBlockButtons >
+                    
+                    <apex:commandButton value="Delete" action="{!deleteRevTypes}" onclick="if(!confirm('Do you really want to delete this product?')) return false;" rendered="{!hasProducts}"/>
+                    <apex:commandButton value="Cancel" action="{!cancel}"/>
+                    
+                </apex:pageBlockButtons>
+           </apex:pageBlock>
+         </apex:outputPanel>  
+    </apex:form>
+</apex:page>

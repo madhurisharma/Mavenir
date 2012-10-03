@@ -1,0 +1,302 @@
+<apex:component id="criteriasComp" controller="XactlyExpress.XactlySMBCriteriasComp">
+    <apex:attribute name="criterias" description="List of criterias" type="XactlyExpress.XactlySMBCriteria[]" required="true" assignTo="{!criterias}" />
+    <apex:attribute name="typeOptions" description="List of typeOptions" type="SelectOption[]" required="true" assignTo="{!typeOptions}" />
+    <apex:attribute name="criteriasInstance" description="criteriasInstance" type="XactlyExpress.XactlySMBCriterias" required="true" assignTo="{!criteriasInstance}" />
+    <apex:attribute name="isAdvancedFormula" description="isAdvancedFormula" type="boolean" required="true" assignTo="{!isAdvancedFormula}" />
+    
+    <apex:attribute name="qualifierTypes" description="qualifierTypes" type="SelectOption[]" required="false" assignTo="{!qualifierTypes}" />
+    <apex:attribute name="creditListQuota" description="creditListQuota" type="SelectOption[]" required="false" assignTo="{!creditListQuota}" />
+    <apex:attribute name="creditList" description="creditList" type="SelectOption[]" required="false" assignTo="{!creditList}" />
+    <apex:attribute name="formulaOptions" description="formulaOptions" type="SelectOption[]" required="false" assignTo="{!formulaOptions}" />
+    <apex:attribute name="periodOptions" description="periodOptions" type="SelectOption[]" required="false" assignTo="{!periodOptions}" />
+    <apex:attribute name="isQualifier" description="isQualifier" type="Boolean" required="false" assignTo="{!isQualifier}" />
+    
+    <!-- code related to qualifier FX criterias -->
+ 	<apex:attribute name="systemFieldOptions" description="SystemFieldOptions" type="SelectOption[]" required="false" assignTo="{!systemFieldOptions}" />
+ 	<apex:attribute name="dataFieldOptions" description="dataFieldOptions" type="SelectOption[]" required="false" assignTo="{!dataFieldOptions}" />
+    <!-- end of code related to qualifier FX criterias -->
+     
+    <div id="tableCrtieriasContainer">
+	    <div id="tableCriterias" width="100%" class="tableCriterias">
+            <apex:variable var="iterIndex" value="{!1}"/>
+            <apex:variable var="rowCount" value="{!0}"/>
+            <apex:repeat value="{!criterias}" id="repCriterias" var="c">
+            
+                <div class="{!IF(rowCount = 0, 'even','odd')} criteriaRow">
+                    <div style="float: left;padding-right: 5px;text-align: right;width: 40px;">
+                    	<div class="inputCriteria criteriaRowNumber">{!ROUND(iterIndex,0)}</div>
+                    </div>
+                    <apex:outputpanel layout="none" rendered="{!IF(QualifierTypes.size > 0,true,false)}">
+                    <!-- Next TD is related to qualifiers -->
+                       <div class="typeCell" style="float:left;">
+                           <apex:selectList id="selectType" value="{!c.functionType}" multiselect="false" size="1" styleClass="typeSelect" onchange="criteriasHandler.changeQualifierType(this, selectAttr{!ROUND(iterIndex,0)},selectCredit{!ROUND(iterIndex,0)},selectCreditQuota{!ROUND(iterIndex,0)},'selectedCredit{!ROUND(iterIndex,0)}',dataType{!ROUND(iterIndex,0)});criteriasHandler.reloadFrequenciesMain(document.getElementById(selectCreditQuota{!ROUND(iterIndex,0)}), {!ROUND(iterIndex,0)}, this);">
+                               <apex:selectOptions value="{!QualifierTypes}" />
+                           </apex:selectList>
+                           <script>
+                               var selectType{!ROUND(iterIndex,0)} = '{!$Component.selectType}';
+                           </script>
+                       </div> 
+                       <!-- End of qualifiers TD -->
+                       </apex:outputpanel>
+                       
+                    <div class="dealAttrCell" style="padding-left:7px;float:left;">
+                        <apex:selectList id="selectAttr" style="{!IF(c.functionType == 'DealAttr','','display:none;')}" value="{!c.field}" multiselect="false" size="1" styleClass="criteriaAttributeSelect" onchange="criteriasHandler.criteriaAttributeChange(document.getElementById(selectAttr{!ROUND(iterIndex,0)}),document.getElementById(dataType{!ROUND(iterIndex,0)}));jQuery('.errorMsg',jQuery(this).parent().parent()).remove();">
+                            <apex:selectOptions value="{!typeOptions}" />
+                        </apex:selectList>
+                        <script>
+                            var selectAttr{!ROUND(iterIndex,0)} = '{!$Component.selectAttr}';
+                        </script>
+                           
+                        <apex:outputpanel layout="none">
+                        <!-- Next selects are related to qualifiers -->
+                           <apex:selectList id="selectCreditQuota" value="{!c.systemFunctionHelperInstance.creditRuleIdQ}" multiselect="false" size="1" style="{!IF(c.functionType != FUNCTION_TYPE_ATTAINMENT,'display:none;','')}" onchange="criteriasHandler.reloadFrequencies(this, {!ROUND(iterIndex,0)});">
+                               <apex:selectOptions value="{!CreditListQuota}" />
+                           </apex:selectList>
+                           <script>
+                               var selectCreditQuota{!ROUND(iterIndex,0)} = '{!$Component.selectCreditQuota}';
+                           </script>
+                           </apex:outputpanel>
+                          
+                           <apex:outputpanel layout="none" rendered="{!IF(CreditList.size > 0,true,false)}">
+                           <apex:selectList id="selectCredit" value="{!c.systemFunctionHelperInstance.creditRuleId}" multiselect="false" size="1" style="{!IF(c.functionType != FUNCTION_TYPE_CREDIT,'display:none;','')}">
+                               <apex:selectOptions value="{!CreditList}" />
+                           </apex:selectList>
+                           <script>
+                               var selectCredit{!ROUND(iterIndex,0)} = '{!$Component.selectCredit}';
+                           </script>
+                           <!-- End of qualifiers selects -->
+                           </apex:outputpanel>
+                           
+                    </div>
+                    
+                    <apex:outputpanel layout="none" rendered="{!IF(isQualifier == true,true,false)}">
+                    <!-- Next TD is related to qualifiers -->
+                       <div style="padding-left:7px;float:left;" class="frequency">
+                           <span id="selectedCredit{!ROUND(iterIndex,0)}">
+                               <select name = "Month{!ROUND(iterIndex,0)}" onchange="$(document.getElementById(hiddenFreq{!ROUND(iterIndex,0)})).val($(this).val());" class="Month{!ROUND(iterIndex,0)}" style="{!IF(c.functionType == FUNCTION_TYPE_ATTAINMENT && c.systemFunctionHelperInstance.CreditFreq == 'Month','','display:none;')}">
+                                   <apex:outputpanel layout="none" rendered="{!IF(c.systemFunctionHelperInstance.Frequency == 'MTD',true,false)}">
+                                      <option value="MTD" selected="selected">{!$Label.MonthlyToDate}</option>
+                                   </apex:outputpanel>
+                                   <apex:outputpanel layout="none" rendered="{!IF(c.systemFunctionHelperInstance.Frequency == 'MTD',false,true)}">
+                                      <option value="MTD">{!$Label.xactlyexpress__MonthlyToDate}</option>
+                                   </apex:outputpanel>
+                                   
+                                   <apex:outputpanel layout="none" rendered="{!IF(c.systemFunctionHelperInstance.Frequency == 'QTD',true,false)}">
+                                      <option value="QTD" selected="selected">{!$Label.QuarterlyToDate}</option>
+                                   </apex:outputpanel>
+                                   <apex:outputpanel layout="none" rendered="{!IF(c.systemFunctionHelperInstance.Frequency == 'QTD',false,true)}">
+                                      <option value="QTD" >{!$Label.QuarterlyToDate}</option>
+                                   </apex:outputpanel>
+                                   
+                                   <apex:outputpanel layout="none" rendered="{!IF(c.systemFunctionHelperInstance.Frequency == 'YTD',true,false)}">
+                                      <option value="YTD" selected="selected">{!$Label.AnnualToDate}</option>
+                                   </apex:outputpanel>
+                                   <apex:outputpanel layout="none" rendered="{!IF(c.systemFunctionHelperInstance.Frequency == 'YTD',false,true)}">
+                                      <option value="YTD">{!$Label.xactlyexpress__AnnualToDate}</option>
+                                   </apex:outputpanel>
+                                   
+                                   <apex:outputpanel layout="none" rendered="{!IF(c.systemFunctionHelperInstance.Frequency == 'QTD-M',true,false)}">
+                                      <option value="QTD-M" selected="selected">{!$Label.QTDMonthly}</option>
+                                   </apex:outputpanel>
+                                   <apex:outputpanel layout="none" rendered="{!IF(c.systemFunctionHelperInstance.Frequency == 'QTD-M',false,true)}">
+                                      <option value="QTD-M">{!$Label.xactlyexpress__QTDMonthly}</option>
+                                   </apex:outputpanel>
+                                   
+                                   <apex:outputpanel layout="none" rendered="{!IF(c.systemFunctionHelperInstance.Frequency == 'YTD-M',true,false)}">
+                                      <option value="YTD-M" selected="selected">{!$Label.YTDMonthlyLarge}</option>
+                                   </apex:outputpanel>
+                                   <apex:outputpanel layout="none" rendered="{!IF(c.systemFunctionHelperInstance.Frequency == 'YTD-M',false,true)}">
+                                      <option value="YTD-M">{!$Label.xactlyexpress__YTDMonthlyLarge}</option>
+                                   </apex:outputpanel>
+                                   
+                                   <apex:outputpanel layout="none" rendered="{!IF(c.systemFunctionHelperInstance.Frequency == 'YTD-Q',true,false)}">
+                                      <option value="YTD-Q" selected="selected">{!$Label.YTDQuarterlyLarge}</option>
+                                   </apex:outputpanel>
+                                   <apex:outputpanel layout="none" rendered="{!IF(c.systemFunctionHelperInstance.Frequency == 'YTD-Q',false,true)}">
+                                      <option value="YTD-Q">{!$Label.xactlyexpress__YTDQuarterlyLarge}</option>
+                                   </apex:outputpanel>
+                               </select>
+                               
+                               <select name = "Quarter{!ROUND(iterIndex,0)}" onchange="$(document.getElementById(hiddenFreq{!ROUND(iterIndex,0)})).val($(this).val());" class="Quarter{!ROUND(iterIndex,0)}" style="{!IF(c.functionType == FUNCTION_TYPE_ATTAINMENT && c.systemFunctionHelperInstance.CreditFreq == 'Quarter','','display:none;')}">
+                                   <apex:outputpanel layout="none" rendered="{!IF(c.systemFunctionHelperInstance.Frequency == 'QTD',true,false)}">
+                                      <option value="QTD" selected="selected">{!$Label.QuarterlyToDate}</option>
+                                   </apex:outputpanel>
+                                   <apex:outputpanel layout="none" rendered="{!IF(c.systemFunctionHelperInstance.Frequency == 'QTD',false,true)}">
+                                      <option value="QTD">{!$Label.xactlyexpress__QuarterlyToDate}</option>
+                                   </apex:outputpanel>
+                                   
+                                   <apex:outputpanel layout="none" rendered="{!IF(c.systemFunctionHelperInstance.Frequency == 'YTD',true,false)}">
+                                      <option value="YTD" selected="selected">{!$Label.AnnualToDate}</option>
+                                   </apex:outputpanel>
+                                   <apex:outputpanel layout="none" rendered="{!IF(c.systemFunctionHelperInstance.Frequency == 'YTD',false,true)}">
+                                      <option value="YTD">{!$Label.xactlyexpress__AnnualToDate}</option>
+                                   </apex:outputpanel>
+                                   
+                                   <apex:outputpanel layout="none" rendered="{!IF(c.systemFunctionHelperInstance.Frequency == 'YTD-Q',true,false)}">
+                                      <option value="YTD-Q" selected="selected">{!$Label.YTDQuarterlyLarge}</option>
+                                   </apex:outputpanel>
+                                   <apex:outputpanel layout="none" rendered="{!IF(c.systemFunctionHelperInstance.Frequency == 'YTD-Q',false,true)}">
+                                      <option value="YTD-Q">{!$Label.xactlyexpress__YTDQuarterlyLarge}</option>
+                                   </apex:outputpanel>
+                               </select>
+                               
+                               <select name = "Year{!ROUND(iterIndex,0)}" onchange="$(document.getElementById(hiddenFreq{!ROUND(iterIndex,0)})).val($(this).val());" class="Year{!ROUND(iterIndex,0)}" style="{!IF(c.functionType == FUNCTION_TYPE_ATTAINMENT && c.systemFunctionHelperInstance.CreditFreq == 'Year','','display:none;')}">
+                                   <apex:outputpanel layout="none" rendered="{!IF(c.systemFunctionHelperInstance.Frequency == 'YTD',true,false)}">
+                                      <option value="YTD" selected="selected">{!$Label.AnnualToDate}</option>
+                                   </apex:outputpanel>
+                                   <apex:outputpanel layout="none" rendered="{!IF(c.systemFunctionHelperInstance.Frequency == 'YTD',false,true)}">
+                                      <option value="YTD">{!$Label.xactlyexpress__AnnualToDate}</option>
+                                   </apex:outputpanel>
+                               </select>
+                               
+                               <select name = "Credit{!ROUND(iterIndex,0)}" onchange="$(document.getElementById(hiddenFreq{!ROUND(iterIndex,0)})).val($(this).val());" class="Credit{!ROUND(iterIndex,0)}" style="{!IF(c.functionType == FUNCTION_TYPE_CREDIT,'','display:none;')}">
+                                   <apex:outputpanel layout="none" rendered="{!IF(c.systemFunctionHelperInstance.Frequency == 'MTD',true,false)}">
+                                      <option value="MTD" selected="selected">{!$Label.MonthlyToDate}</option>
+                                   </apex:outputpanel>
+                                   <apex:outputpanel layout="none" rendered="{!IF(c.systemFunctionHelperInstance.Frequency == 'MTD',false,true)}">
+                                      <option value="MTD">{!$Label.xactlyexpress__MonthlyToDate}</option>
+                                   </apex:outputpanel>
+                                   
+                                   <apex:outputpanel layout="none" rendered="{!IF(c.systemFunctionHelperInstance.Frequency == 'QTD',true,false)}">
+                                      <option value="QTD" selected="selected">{!$Label.QuarterlyToDate}</option>
+                                   </apex:outputpanel>
+                                   <apex:outputpanel layout="none" rendered="{!IF(c.systemFunctionHelperInstance.Frequency == 'QTD',false,true)}">
+                                      <option value="QTD">{!$Label.xactlyexpress__QuarterlyToDate}</option>
+                                   </apex:outputpanel>
+                                   
+                                   <apex:outputpanel layout="none" rendered="{!IF(c.systemFunctionHelperInstance.Frequency == 'YTD',true,false)}">
+                                      <option value="YTD" selected="selected">{!$Label.AnnualToDate}</option>
+                                   </apex:outputpanel>
+                                   <apex:outputpanel layout="none" rendered="{!IF(c.systemFunctionHelperInstance.Frequency == 'YTD',false,true)}">
+                                      <option value="YTD">{!$Label.xactlyexpress__AnnualToDate}</option>
+                                   </apex:outputpanel>
+                               </select>
+                               
+                               <apex:inputHidden id="hiddenFreq" value="{!c.systemFunctionHelperInstance.Frequency}" />
+                               
+                               <script>
+                                   var hiddenFreq{!ROUND(iterIndex,0)} = '{!$Component.hiddenFreq}';
+                               </script>
+                           </span>
+                       </div>
+                       
+                       <div style="padding-left:7px;float:left;" class="periods {!IF(c.functionType == FUNCTION_TYPE_ATTAINMENT || c.functionType == FUNCTION_TYPE_CREDIT,'displayed','hidden')}">
+							<apex:selectList id="periodOptionsLst" value="{!c.systemFunctionHelperInstance.period}" multiselect="false" size="1">
+                            	<apex:selectOptions value="{!periodOptions}" />
+                        	</apex:selectList>
+                       </div>
+                       
+                       <!-- End of qualifiers TD -->
+                    </apex:outputpanel>
+                    <div class="operatorCell" style="padding-left:7px;float:left;">
+                        <apex:selectList id="comparatorOptionsLst" value="{!c.c.XactlyExpress__Operator__c}" multiselect="false" size="1" styleClass="strOps hiddenOpSelect{!IF(c.c.XactlyExpress__AttributeID__c != criteriasInstance.accountAttrId && c.c.XactlyExpress__AttributeID__c != criteriasInstance.salespersonAttrId && c.c.XactlyExpress__AttributeID__c != criteriasInstance.productAttrId && c.dataType == 'String' && c.dataType != 'Boolean' && c.functionType == 'DealAttr',' displayed',' hidden')}" onchange="criteriasHandler.hiddenOpChange(this);criteriasHandler.toogleValueCell(this);">
+                            <apex:selectOptions value="{!comparatorOptions}" />
+                        </apex:selectList>
+                        
+                        <apex:selectList id="NonStrcomparatorOptionsLst" value="{!c.c.XactlyExpress__Operator__c}" multiselect="false" size="1" styleClass="nonStrOps hiddenOpSelect{!IF(c.functionType == FUNCTION_TYPE_ATTAINMENT || c.functionType == FUNCTION_TYPE_FORMULA || c.functionType == FUNCTION_TYPE_CREDIT || c.dataType == 'Currency' || c.dataType == 'Decimal',' displayed',' hidden')}" onchange="criteriasHandler.hiddenOpChange(this);">
+                            <apex:selectOptions value="{!NonStrcomparatorOptions}" />
+                        </apex:selectList>
+                        
+                        <apex:selectList id="lookupComparatorOptionsLst" value="{!c.c.XactlyExpress__Operator__c}" multiselect="false" size="1" styleClass="lookupOps hiddenOpSelect{!IF(c.c.XactlyExpress__AttributeID__c == criteriasInstance.accountAttrId || c.c.XactlyExpress__AttributeID__c == criteriasInstance.productAttrId, ' displayed',' hidden')}" onchange="criteriasHandler.hiddenOpChange(this);criteriasHandler.toogleValueCell(this);">
+                            <apex:selectOptions value="{!lookupComparatorOptions}" />
+                        </apex:selectList>
+                        
+                        <apex:selectList id="comparatorEqualNotEqualOptionsLst" value="{!c.c.XactlyExpress__Operator__c}" multiselect="false" size="1" styleClass="equalNotEqualOps hiddenOpSelect{!IF(c.c.XactlyExpress__AttributeID__c == criteriasInstance.salespersonAttrId || c.dataType == 'Boolean', ' displayed',' hidden')}" onchange="criteriasHandler.hiddenOpChange(this);">
+                            <apex:selectOptions value="{!comparatorEqualNotEqualOptions}" />
+                        </apex:selectList>
+
+                        <apex:selectList id="DateComparatorOptionsLst" value="{!c.c.XactlyExpress__Operator__c}" multiselect="false" size="1" styleClass="dateByCurrPrdOps hiddenOpSelect{!IF(c.dataType == 'Date' && c.dealColumnName != 'DealDate__c',' displayed',' hidden')}" onchange="criteriasHandler.hiddenOpChange(this);criteriasHandler.toogleValueCell(this)">
+                            <apex:selectOptions value="{!DateComparatorOptions}" />
+                        </apex:selectList>
+                        
+                        <apex:selectList id="DealDateComparatorOptionsLst" value="{!c.c.XactlyExpress__Operator__c}" multiselect="false" size="1" styleClass="dealDateOps hiddenOpSelect{!IF(c.dealColumnName == 'DealDate__c',' displayed',' hidden')}" onchange="criteriasHandler.hiddenOpChange(this);criteriasHandler.toogleValueCell(this)">
+                            <apex:selectOptions value="{!DealDateComparatorOptions}" />
+                        </apex:selectList>
+                        
+                        <apex:inputHidden value="{!c.c.XactlyExpress__Operator__c}" />
+                    </div>
+                    <div class="valueCell" style="padding-left:7px;float:left;">                                                                   
+                        <apex:inputText id="inpString" styleClass="stringInputCriteria inputCriteria{!IF(c.c.XactlyExpress__AttributeID__c != criteriasInstance.salespersonAttrId && c.c.XactlyExpress__AttributeID__c != criteriasInstance.accountAttrId && c.c.XactlyExpress__AttributeID__c != criteriasInstance.productAttrId && c.dataType == 'String' && c.c.XactlyExpress__Operator__c != 'blankOrNot' && c.functionType == 'DealAttr',' displayed',' hidden')}" value="{!c.c.XactlyExpress__StrValue__c}" onclick="criteriasHandler.clrErr(this);"/>
+                        <apex:inputText id="decimalC" onchange="criteriasHandler.formatNbr(this, document.getElementById(dataType{!ROUND(iterIndex,0)}));criteriasHandler.chkVal(this, document.getElementById(dataType{!ROUND(iterIndex,0)}));" styleClass="numberInputCriteria inputCriteria{!IF((c.c.XactlyExpress__AttributeID__c != criteriasInstance.accountAttrId && c.c.XactlyExpress__AttributeID__c != criteriasInstance.productAttrId && (c.dataType == 'Decimal' || c.dataType == 'Currency') || c.functionType != 'DealAttr'),' displayed',' hidden')}" value="{!c.DecimalValue}" onclick="criteriasHandler.clrErr(this);"/>
+                        <apex:inputField id="inputDate" onchange="criteriasHandler.chkVal(this, document.getElementById(dataType{!ROUND(iterIndex,0)}));" styleClass="dateInputCriteria inputCriteria{!IF(c.dataType == 'Date' && (c.c.XactlyExpress__Operator__c != 'crrPrd' && c.c.XactlyExpress__Operator__c != 'blankOrNot' && c.functionType == 'DealAttr'),' displayed',' hidden')}" value="{!c.c.XactlyExpress__DateValue__c}" onclick="criteriasHandler.clrErr(this);"/>
+                        
+                        <div id="{!TEXT(ROUND(c.c.Index__c,0)) & '-account'}" class="accountInputCriteria{!IF(c.c.AttributeID__c = criteriasInstance.accountAttrId && c.functionType == 'DealAttr' && c.c.Operator__c != 'blankOrNot',' displayed',' hidden')}" >
+                            <apex:inputText id="inputAcc" styleClass="{!ROUND(c.c.XactlyExpress__Index__c,0)}-accountName accountName" onfocus="this.blur();jQuery(this).attr('readonly', true);" value="{!c.accountName}" style="color:#000000;cursor:default;background-color:#EFEFEF;"/>
+                            <apex:image url="{!URLFOR($Resource.XactlyExpress__XactlySMBResources, 'img/icons/magnifier.png')}" style="cursor:pointer;" onclick="criteriasHandler.clrErr(this);javascript: accountsWindow = window.open('/apex/XactlySMBAccountPopup?index={!ROUND(c.c.XactlyExpress__Index__c,0)}', 'Accounts','location=0,status=0,scrollbars=1,width=700px,height=500px'); accountsWindow.moveTo(100,100);"/>
+                            <input type="text" style="display:none;" class="{!ROUND(c.c.Index__c,0)}-accountId lookupHiddenId" value="{!c.accountId}"/>
+                        </div> 
+                        
+                        <div id="{!TEXT(ROUND(c.c.Index__c,0)) & '-product'}" class="productInputCriteria{!IF(c.c.AttributeID__c = criteriasInstance.productAttrId && c.functionType == 'DealAttr' && c.c.Operator__c != 'blankOrNot',' displayed',' hidden')}">
+                            <apex:inputText id="inputPrd" styleClass="{!ROUND(c.c.XactlyExpress__Index__c,0)}-productName productName" onfocus="this.blur();jQuery(this).attr('readonly', true);" value="{!c.productName}" style="color:#000000;cursor:default;background-color:#EFEFEF;"/>
+                            <apex:image url="{!URLFOR($Resource.XactlyExpress__XactlySMBResources, 'img/icons/magnifier.png')}" style="cursor:pointer;" onclick="criteriasHandler.clrErr(this);javascript: productsWindow = window.open('/apex/XactlySMBProductPopup?index={!ROUND(c.c.XactlyExpress__Index__c,0)}', 'Products','location=0,status=0,scrollbars=1,width=700px,height=500px'); productsWindow.moveTo(100,100);"/>
+                            <input type="text" style="display:none;" class="{!ROUND(c.c.Index__c,0)}-productId lookupHiddenId" value="{!c.productId}"/>
+                        </div>
+                        
+                        <apex:selectList id="booleanOptionsLst" multiselect="false" size="1" value="{!c.c.XactlyExpress__BooleanValue__c}" styleClass="booleanInputCriteria{!IF(c.dataType == 'Boolean' && c.functionType == 'DealAttr',' displayed',' hidden')}">
+                            <apex:selectOptions value="{!booleanOptions}" />
+                        </apex:selectList>
+                        
+                        <apex:selectList id="ByCurrentPeriodOptionsLst" multiselect="false" size="1" value="{!c.byPeriod}" styleClass="dateCurrPrdInputCriteria {!IF(c.dataType == 'Date' && c.functionType == 'DealAttr' && c.c.XactlyExpress__Operator__c == 'crrPrd',' displayed',' hidden')}">
+                            <apex:selectOptions value="{!ByCurrentPeriodOptions}" />
+                        </apex:selectList>
+                        
+                        <apex:selectList id="blankNotBlankOptionsLst" multiselect="false" size="1" value="{!c.blankOrNot}" styleClass="blankNotBlankCriteria {!IF((c.dataType == 'String' || c.dataType == 'Date') && c.c.XactlyExpress__Operator__c == 'blankOrNot',' displayed',' hidden')}">
+                            <apex:selectOptions value="{!blankNotBlankOptions}" />
+                        </apex:selectList>
+                        
+                        <div class="salespersonInputCriteria" style="float:left;">
+                            <apex:selectList multiselect="false" size="1" value="{!c.SalesPersonId}" onchange="jQuery('.HiddenId',jQuery(this).parent()).val(this.options[this.selectedIndex].value);" styleClass="salespersonDropdown{!IF(c.c.XactlyExpress__AttributeID__c == criteriasInstance.salespersonAttrId,' displayed',' hidden')}">
+                                <apex:selectOptions value="{!Salespersons}" />
+                            </apex:selectList>
+                            <input type="text" style="display:none;" class="HiddenId" value="{!c.salespersonId}"/>
+                        </div>
+                        <apex:inputHidden value="{!c.dataType}" id="dataType"/>
+                        <script>
+                            var dataType{!ROUND(iterIndex,0)} = '{!$Component.dataType}';
+                        </script>
+                        
+                        <!-- Next outputPanel is related to qualifiers -->
+                           <apex:outputPanel styleClass="typeQuotaPercent" style="{!IF(c.functionType != FUNCTION_TYPE_ATTAINMENT || c.functionType == 'DealAttr','display:none;','')}">%</apex:outputPanel>
+                           <!-- End of outputPanel -->
+                        
+                    </div>
+                    <div class="operatorAndOrCell" style="padding-left:7px;float:left;">
+                        <apex:selectList id="booleanOperatorOptionsLst" styleClass="operatorSelectClass" multiselect="false" size="1" onchange="criteriasHandler.refreshCriteriaOperator(this, '{!$Component.advancedFormula}','criteriaRow');" value="{!c.operator}" style="{!IF(ROUND(iterIndex,0)!=criterias.size && isAdvancedFormula == false,'','display:none;')}">
+                            <apex:selectOptions value="{!booleanOperatorOptions}" />
+                        </apex:selectList>
+                    </div>
+                    
+                    <div style="width:33px;float:right;">
+                    	<div class="inputCriteria" style="padding-right:15px;text-align:right">
+                            <a href="javascript:;" style="color:#CE641B;font-size:7pt;font-weight:bolder;" onclick="criteriasHandler.updateHiddenToSelectedValues();criteriasHandler.removeCriteria('{!$Component.deleteCriteriaKeyInput}','{!c.c.Index__c}', '{!$Component.advancedFormula}', 'criteriaRow');">
+                                <img src="{!URLFOR($Resource.XactlySMBResources ,'img/buttons/delete_small.png')}" />
+                            </a>    
+                        </div>
+                    </div>
+                     
+                    <div class="formulaTabCell" style="float:right;">
+					    <div style="float: right; padding-right: 22px; height: 30px;width:115px;" class="{!if(c.functionType != FUNCTION_TYPE_FORMULA ,'hidden','')}">
+							<div class="criteriasPanelTabLeft{!IF(rowCount = 0, 'Gray','White')}"></div>
+							<div class="criteriasPanelTabMiddle{!IF(rowCount = 0, 'Gray','White')}">
+								<span style="float:left;padding-top:5px;cursor:pointer;" class="HelveticaRegular12c4">{!$Label.hideFormula}</span>
+								<span style="float:left;padding-top:5px;display:none;" class="HelveticaRegular12c4">{!$Label.showFormula}</span>
+							</div>
+							<div class="criteriasPanelTabRight{!IF(rowCount = 0, 'Gray','White')}"></div>
+							<div style="clear: both;"></div>
+						</div>
+						<div style="clear: both;"></div>
+					</div>
+                    
+                    <div style="clear: both;"></div>
+                    
+                    <c:XactlySMBSubCriteriasComp id="SubCritComp" sysFuncHelp="{!c.systemFunctionHelperInstanceList}" showOrNot="{!c.functionType == FUNCTION_TYPE_FORMULA}" rowCount="{!rowCount}" iterIndex="{!iterIndex}" formulaOptions="{!formulaOptions}" creditListQuota="{!creditListQuota}" FUNCTION_TYPE_ATTAINMENT="{!FUNCTION_TYPE_ATTAINMENT}" FUNCTION_TYPE_CREDIT="{!FUNCTION_TYPE_CREDIT}" CreditList="{!CreditList}" periodOptions="{!periodOptions}" operatorsOptions="{!operatorsOptions}" isAdvFormula="{!c.isAdvFormula}" isFormula="{!c.isFormula}" humanReadableSystemFunction="{!c.humanReadableSystemFunction}" systemFieldOptions="{!systemFieldOptions}" dataFieldOptions="{!dataFieldOptions}"  showWtespce="false"/>
+                    
+                </div>
+            <apex:variable var="iterIndex" value="{!iterIndex + 1}"/>
+            <apex:variable var="rowCount" value="{!(rowCount * -1) + 1}"/>
+            </apex:repeat> 
+	        
+	    </div>
+	</div>
+    
+</apex:component>
